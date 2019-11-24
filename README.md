@@ -6,7 +6,6 @@ This is yet another attempt to port Doom to C#.
 
 
 
-
 ### Screenshots
 
 ![Managed Doom](screenshots/doom-e1m1-start.png)
