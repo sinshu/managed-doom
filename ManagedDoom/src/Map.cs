@@ -14,6 +14,7 @@ namespace ManagedDoom
         private Subsector[] subsectors;
         private Node[] nodes;
         private Thing[] things;
+        private Texture skyTexture;
 
         public Map(Wad wad, string name)
         {
@@ -29,6 +30,32 @@ namespace ManagedDoom
             subsectors = Subsector.FromWad(wad, map + 6, segs);
             nodes = Node.FromWad(wad, map + 7, subsectors);
             things = Thing.FromWad(wad, map + 1);
+
+            skyTexture = GetSkyTextureByMapName(name);
+        }
+
+        private Texture GetSkyTextureByMapName(string name)
+        {
+            if (name.Length == 4)
+            {
+                return textures["SKY1"];
+            }
+            else
+            {
+                var number = int.Parse(name.Substring(3));
+                if (number <= 11)
+                {
+                    return textures["SKY1"];
+                }
+                else if (number <= 21)
+                {
+                    return textures["SKY2"];
+                }
+                else
+                {
+                    return textures["SKY3"];
+                }
+            }
         }
 
         public FlatLookup Flats => flats;
@@ -41,5 +68,6 @@ namespace ManagedDoom
         public Subsector[] Subsectors => subsectors;
         public Node[] Nodes => nodes;
         public Thing[] Things => things;
+        public Texture SkyTexture => skyTexture;
     }
 }

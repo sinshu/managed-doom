@@ -21,6 +21,10 @@ namespace ManagedDoom
         private const int LightZShift = 20;
         private const int NumColorMaps = 32;
 
+        private const int AngleToSkyShift = 22;
+        private static readonly Fixed skyTextureMid = Fixed.FromInt(100);
+
+
         private TextureLookup textures;
         private FlatLookup flats;
 
@@ -91,14 +95,18 @@ namespace ManagedDoom
 
 
 
-
         // Color map
         private byte[][] colorMap;
         private byte[][][] scaleLight;
         private byte[][][] zLight;
 
 
+        // ???
+        private Fixed pspritescale;
+        private Fixed pspriteiscale;
 
+
+        private World world;
         private Fixed cameraX;
         private Fixed cameraY;
         private Fixed cameraZ;
@@ -121,6 +129,9 @@ namespace ManagedDoom
             InitTextureMapping();
             InitFlat();
             InitColorMap(wad);
+
+            pspritescale = Fixed.FromInt(windowWidth) / screenWidth;
+            pspriteiscale = Fixed.FromInt(screenWidth) / windowWidth;
         }
 
         private byte[][] ReadColorMap(Wad wad)
@@ -436,24 +447,25 @@ namespace ManagedDoom
             }
         }
 
-        public void Go(Fixed viewX, Fixed viewY, Fixed viewZ, Angle viewAngle,World world)
+        public void Go(Fixed viewX, Fixed viewY, Fixed viewZ, Angle viewAngle, World world)
         {
             cameraX = viewX;
             cameraY = viewY;
             cameraZ = viewZ;
             cameraAngle = viewAngle;
+            this.world = world;
 
             ClearClipSegs();
             ClearClipData();
             ClearDrawSegs();
             ClearFlat();
 
-            GoSub(world, world.Map.Nodes.Last());
+            GoSub(world.Map.Nodes.Last());
 
             DrawMasked();
         }
 
-        public void GoSub(World world, Node node)
+        public void GoSub(Node node)
         {
             var map = world.Map;
             if (Geometry.PointOnSide(cameraX, cameraY, node) == 0)
@@ -469,7 +481,7 @@ namespace ManagedDoom
                 else
                 {
                     var next = map.Nodes[node.Children0];
-                    GoSub(world, next);
+                    GoSub(next);
                 }
 
                 if (Node.IsSubsector(node.Children1))
@@ -483,7 +495,7 @@ namespace ManagedDoom
                 else
                 {
                     var next = map.Nodes[node.Children1];
-                    GoSub(world, next);
+                    GoSub(next);
                 }
             }
             else
@@ -499,7 +511,7 @@ namespace ManagedDoom
                 else
                 {
                     var next = map.Nodes[node.Children1];
-                    GoSub(world, next);
+                    GoSub(next);
                 }
 
                 if (Node.IsSubsector(node.Children0))
@@ -513,7 +525,7 @@ namespace ManagedDoom
                 else
                 {
                     var next = map.Nodes[node.Children0];
-                    GoSub(world, next);
+                    GoSub(next);
                 }
             }
         }
@@ -1314,6 +1326,12 @@ namespace ManagedDoom
 
         public void DrawCeilingColumn(Flat flat, Fixed height, int lightlevel, int x, int y1, int y2)
         {
+            if (flat == flats.SkyFlat)
+            {
+                DrawSkyColumn(x, y1, y2);
+                return;
+            }
+
             if (y2 - y1 < 0)
             {
                 return;
@@ -1452,6 +1470,12 @@ namespace ManagedDoom
 
         public void DrawFloorColumn(Flat flat, Fixed height, int lightlevel, int x, int y1, int y2)
         {
+            if (flat == flats.SkyFlat)
+            {
+                DrawSkyColumn(x, y1, y2);
+                return;
+            }
+
             if (y2 - y1 < 0)
             {
                 return;
@@ -1605,6 +1629,14 @@ namespace ManagedDoom
                 frac += fracStep;
 
             }
+        }
+
+        public void DrawSkyColumn(int x, int y1, int y2)
+        {
+            var angle = (cameraAngle + xToAngle[x]).Data >> AngleToSkyShift;
+            var mask = world.Map.SkyTexture.Width - 1;
+            var source = world.Map.SkyTexture.Composite.Columns[angle & mask];
+            DrawColumn(source[0], colorMap[0], x, y1, y2, pspriteiscale, skyTextureMid);
         }
 
         private void DrawMaskedColumn(Column[] columns, byte[] map, int x, Fixed iScale, Fixed textureMid, Fixed spryscale, Fixed sprtopscreen, int ceilClip, int floorClip)

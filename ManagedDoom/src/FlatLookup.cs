@@ -11,6 +11,7 @@ namespace ManagedDoom
         private Dictionary<string, Flat> nameToFlat;
         private Dictionary<string, int> nameToNumber;
         private int skyFlatNumber;
+        private Flat skyFlat;
 
         public FlatLookup(Wad wad)
         {
@@ -53,13 +54,8 @@ namespace ManagedDoom
                 }
             }
 
-            var skyData = nameToFlat["F_SKY1"].Data;
-            for (var i = 0; i < skyData.Length; i++)
-            {
-                skyData[i] = 196;
-            }
-
             skyFlatNumber = nameToNumber["F_SKY1"];
+            skyFlat = nameToFlat["F_SKY1"];
         }
 
         public int GetNumber(string name)
@@ -90,5 +86,6 @@ namespace ManagedDoom
         public Flat this[int num] => flats[num];
         public Flat this[string name] => nameToFlat[name];
         public int SkyFlatNumber => skyFlatNumber;
+        public Flat SkyFlat => skyFlat;
     }
 }
