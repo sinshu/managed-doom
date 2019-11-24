@@ -1,4 +1,4 @@
-## Managed Doom
+# Managed Doom
 
 ![Managed Doom](screenshots/window.png)
 
@@ -6,7 +6,7 @@ This is yet another attempt to port Doom to C#.
 
 
 
-### Screenshots
+## Screenshots
 
 ![Managed Doom](screenshots/doom-e1m1-start.png)
 
@@ -20,8 +20,11 @@ This is yet another attempt to port Doom to C#.
 
 
 
-# References
+## References
 
 - __The Game Engine Black Book: DOOM by Fabien Sanglard__  
 If you want to understand the big picture of the rendering process in Doom, buy this one.  
 http://fabiensanglard.net/gebbdoom/
+
+- __SFML - Simple and Fast Multimedia Library__  
+https://www.sfml-dev.org
