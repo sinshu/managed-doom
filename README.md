@@ -17,3 +17,11 @@ This is yet another attempt to port Doom to C#.
 ![Managed Doom](screenshots/requiem-map13-bridge2.png)
 
 ![Managed Doom](screenshots/doom-e1m1-slime.png)
+
+
+
+# References
+
+- __The Game Engine Black Book: DOOM by Fabien Sanglard__  
+If you want to understand the big picture of the rendering process in Doom, buy this one.  
+http://fabiensanglard.net/gebbdoom/
