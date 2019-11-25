@@ -2,7 +2,9 @@
 
 ![Managed Doom](screenshots/window.png)
 
-This is yet another attempt to port Doom to C#.
+The goal of this project is to make a fully functional Doom source port written in C#.
+
+I'm currently working on the software renderer. The screenshots below show the current progress.
 
 
 
