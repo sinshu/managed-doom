@@ -32,6 +32,7 @@ I'm currently working on the software renderer. The screenshots below show the p
     * [x] Diminishing lighting
     * [x] Sky rendering
     * [ ] Sprite rendering
+    * [ ] High resolution rendering
     * [ ] Optimization and benchmark
 
 - Gaming code
