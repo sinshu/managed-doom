@@ -4,7 +4,7 @@
 
 The goal of this project is to make a fully functional Doom source port written in C#.
 
-I'm currently working on the software renderer. The screenshots below show the current progress.
+I'm currently working on the software renderer. The screenshots below show the progress so far.
 
 
 
@@ -19,6 +19,26 @@ I'm currently working on the software renderer. The screenshots below show the c
 ![Another 3D bridge](screenshots/requiem-map13-bridge2.png)
 
 ![Slime trail](screenshots/doom-e1m1-slime.png)
+
+
+
+# Todo
+
+- Software renderer  
+    * [x] Front-to-back rendering using BSP
+    * [x] Wall texture mapping
+    * [x] Ceiling / floor texture mapping
+    * [x] Transparent textures
+    * [x] Diminishing lighting
+    * [x] Sky rendering
+    * [ ] Sprite rendering
+    * [ ] Optimization and benchmark
+
+- Gaming code
+    * [ ] Lots of things
+
+- Audio
+    * [ ] Lots of things
 
 
 
