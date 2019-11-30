@@ -52,7 +52,7 @@ https://github.com/id-Software/DOOM
 If you want to understand the big picture of the rendering process in Doom, buy this one.  
 http://fabiensanglard.net/gebbdoom/
 
-- __The Unofficial Doom Specs__  
+- __The Unofficial Doom Specs by Matthew S Fell__  
 http://www.gamers.org/dhs/helpdocs/dmsp1666.html
 
 - __Doom Wiki__  
