@@ -15,9 +15,9 @@ namespace ManagedDoom
             using (var window = new RenderWindow(new VideoMode(1280, 800), "Managed Doom", style))
             using (var texture = new SFML.Graphics.Texture(256, 512))
             using (var sprite = new Sprite(texture, new IntRect(0, 0, 200, 320)))
-            using (var wad = new Wad("DOOM.WAD"))
+            using (var wad = new Wad("DOOM2.WAD"))
             {
-                var world = new World(wad, "E1M1");
+                var world = new World(wad, "MAP01");
 
                 var renderer = new SoftwareRenderer(wad);
 
