@@ -860,9 +860,9 @@ namespace ManagedDoom
             worldFrontY2 = new Fixed(worldFrontY2.Data >> 4);
 
             var wallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
-            var wallY1Step = -rwScaleStep * worldFrontY1;
+            var wallY1Step = -(rwScaleStep * worldFrontY1);
             var wallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
-            var wallY2Step = -rwScaleStep * worldFrontY2;
+            var wallY2Step = -(rwScaleStep * worldFrontY2);
 
             var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extralight;
 
@@ -1079,19 +1079,19 @@ namespace ManagedDoom
             worldBackY2 = new Fixed(worldBackY2.Data >> 4);
 
             var upperWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
-            var upperWallY1Step = -rwScaleStep * worldFrontY1;
+            var upperWallY1Step = -(rwScaleStep * worldFrontY1);
 
             Fixed upperWallY2Frac;
             Fixed upperWallY2Step;
             if (worldBackY1 > worldFrontY2)
             {
                 upperWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY1 * rwScale;
-                upperWallY2Step = -rwScaleStep * worldBackY1;
+                upperWallY2Step = -(rwScaleStep * worldBackY1);
             }
             else
             {
                 upperWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
-                upperWallY2Step = -rwScaleStep * worldFrontY2;
+                upperWallY2Step = -(rwScaleStep * worldFrontY2);
             }
 
             Fixed lowerWallY1Frac;
@@ -1099,16 +1099,16 @@ namespace ManagedDoom
             if (worldBackY2 < worldFrontY1)
             {
                 lowerWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY2 * rwScale;
-                lowerWallY1Step = -rwScaleStep * worldBackY2;
+                lowerWallY1Step = -(rwScaleStep * worldBackY2);
             }
             else
             {
                 lowerWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
-                lowerWallY1Step = -rwScaleStep * worldFrontY1;
+                lowerWallY1Step = -(rwScaleStep * worldFrontY1);
             }
 
             var lowerWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
-            var lowerWallY2Step = -rwScaleStep * worldFrontY2;
+            var lowerWallY2Step = -(rwScaleStep * worldFrontY2);
 
             var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extraLight;
 
