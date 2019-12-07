@@ -9,17 +9,17 @@ namespace ManagedDoom
 {
     public sealed class SoftwareRenderer
     {
-        private const int FineFieldOfView = 2048;
+        private const int FineFov = 2048;
         private const int HeightBits = 12;
         private const int HeightUnit = 1 << HeightBits;
 
-        private const int LightLevels = 16;
+        private const int LightLevelCount = 16;
         private const int LightSegShift = 4;
-        private const int MaxLightScale = 48;
-        private const int LightScaleShift = 12;
-        private const int MaxLightZ = 128;
-        private const int LightZShift = 20;
-        private const int NumColorMaps = 32;
+        private const int MaxScaleLight = 48;
+        private const int ScaleLightShift = 12;
+        private const int MaxZLight = 128;
+        private const int ZLightShift = 20;
+        private const int ColorMapCount = 32;
 
         private const int AngleToSkyShift = 22;
         private static readonly Fixed skyTextureMid = Fixed.FromInt(100);
@@ -67,18 +67,16 @@ namespace ManagedDoom
 
 
 
-        // Flats
-        private Fixed[] flatYSlope;
-        private Fixed[] flatDistScale;
-        private Fixed flatBaseXScale;
-        private Fixed flatBaseYScale;
+        // Planes
+        private Fixed[] planeYSlope;
+        private Fixed[] planeDistScale;
+        private Fixed planeBaseXScale;
+        private Fixed planeBaseYScale;
 
         private Sector ceilingPrevSector;
         private int ceilingPrevX;
         private int ceilingPrevY1;
         private int ceilingPrevY2;
-        private Fixed ceilingPrevHeight;
-        private int ceilingPrevLightLevel;
         private Fixed[] ceilingXFrac;
         private Fixed[] ceilingYFrac;
         private Fixed[] ceilingXStep;
@@ -89,8 +87,6 @@ namespace ManagedDoom
         private int floorPrevX;
         private int floorPrevY1;
         private int floorPrevY2;
-        private Fixed floorPrevHeight;
-        private int floorPrevLightLevel;
         private Fixed[] floorXFrac;
         private Fixed[] floorYFrac;
         private Fixed[] floorXStep;
@@ -131,7 +127,7 @@ namespace ManagedDoom
 
             SetViewWindow(0, 0, 320, 200);
             InitTextureMapping();
-            InitFlat();
+            InitPlanes();
             InitColorMap(wad);
 
             pspritescale = Fixed.FromInt(windowWidth) / screenWidth;
@@ -191,7 +187,7 @@ namespace ManagedDoom
 
         public void InitTextureMapping()
         {
-            var focalLength = centerXFrac / Trig.Tan(Trig.FineAngleCount / 4 + FineFieldOfView / 2);
+            var focalLength = centerXFrac / Trig.Tan(Trig.FineAngleCount / 4 + FineFov / 2);
 
             angleToX = new int[Trig.FineAngleCount / 2];
             for (var i = 0; i < Trig.FineAngleCount / 2; i++)
@@ -251,11 +247,11 @@ namespace ManagedDoom
             clipAngle2 = new Angle(2 * clipAngle.Data);
         }
 
-        public void InitFlat()
+        public void InitPlanes()
         {
             // planes
 
-            flatYSlope = new Fixed[windowHeight];
+            planeYSlope = new Fixed[windowHeight];
             for (int i = 0; i < windowHeight; i++)
             {
                 //dy = ((i-viewheight/2)<<FRACBITS)+FRACUNIT/2;
@@ -265,17 +261,17 @@ namespace ManagedDoom
                 dy = Fixed.Abs(dy);
 
                 //yslope[i] = FixedDiv ( (viewwidth<<detailshift)/2*FRACUNIT, dy);
-                flatYSlope[i] = Fixed.FromInt(windowWidth / 2) / dy;
+                planeYSlope[i] = Fixed.FromInt(windowWidth / 2) / dy;
             }
 
-            flatDistScale = new Fixed[windowWidth];
+            planeDistScale = new Fixed[windowWidth];
             for (var i = 0; i < windowWidth; i++)
             {
                 //cosadj = abs(finecosine[xtoviewangle[i] >> ANGLETOFINESHIFT]);
                 var cosadj = Fixed.Abs(Trig.Cos(xToAngle[i]));
 
                 //distscale[i] = FixedDiv(FRACUNIT, cosadj);
-                flatDistScale[i] = Fixed.One / cosadj;
+                planeDistScale[i] = Fixed.One / cosadj;
             }
 
             ceilingXFrac = new Fixed[windowHeight];
@@ -300,12 +296,12 @@ namespace ManagedDoom
 
             // Calculate the light levels to use
             //  for each level / scale combination.
-            scaleLight = new byte[LightLevels][][];
-            for (var i = 0; i < LightLevels; i++)
+            scaleLight = new byte[LightLevelCount][][];
+            for (var i = 0; i < LightLevelCount; i++)
             {
-                scaleLight[i] = new byte[MaxLightScale][];
-                var startmap = ((LightLevels - 1 - i) * 2) * NumColorMaps / LightLevels;
-                for (var j = 0; j < MaxLightScale; j++)
+                scaleLight[i] = new byte[MaxScaleLight][];
+                var startmap = ((LightLevelCount - 1 - i) * 2) * ColorMapCount / LightLevelCount;
+                for (var j = 0; j < MaxScaleLight; j++)
                 {
                     var level = startmap - j * screenWidth / windowWidth / distMap;
 
@@ -314,9 +310,9 @@ namespace ManagedDoom
                         level = 0;
                     }
 
-                    if (level >= NumColorMaps)
+                    if (level >= ColorMapCount)
                     {
-                        level = NumColorMaps - 1;
+                        level = ColorMapCount - 1;
                     }
 
                     scaleLight[i][j] = colorMap[level];
@@ -325,15 +321,15 @@ namespace ManagedDoom
 
             // Calculate the light levels to use
             //  for each level / distance combination.
-            zLight = new byte[LightLevels][][];
-            for (var i = 0; i < LightLevels; i++)
+            zLight = new byte[LightLevelCount][][];
+            for (var i = 0; i < LightLevelCount; i++)
             {
-                zLight[i] = new byte[MaxLightZ][];
-                var startmap = ((LightLevels - 1 - i) * 2) * NumColorMaps / LightLevels;
-                for (var j = 0; j < MaxLightZ; j++)
+                zLight[i] = new byte[MaxZLight][];
+                var startmap = ((LightLevelCount - 1 - i) * 2) * ColorMapCount / LightLevelCount;
+                for (var j = 0; j < MaxZLight; j++)
                 {
-                    var scale = Fixed.FromInt(screenWidth / 2) / new Fixed((j + 1) << LightZShift);
-                    scale = new Fixed(scale.Data >> LightScaleShift);
+                    var scale = Fixed.FromInt(screenWidth / 2) / new Fixed((j + 1) << ZLightShift);
+                    scale = new Fixed(scale.Data >> ScaleLightShift);
                     var level = startmap - scale.Data / distMap;
 
                     if (level < 0)
@@ -341,9 +337,9 @@ namespace ManagedDoom
                         level = 0;
                     }
 
-                    if (level >= NumColorMaps)
+                    if (level >= ColorMapCount)
                     {
-                        level = NumColorMaps - 1;
+                        level = ColorMapCount - 1;
                     }
 
                     zLight[i][j] = colorMap[level];
@@ -386,10 +382,10 @@ namespace ManagedDoom
             var angle = cameraAngle - Angle.Ang90;
 
             // basexscale = FixedDiv (finecosine[angle],centerxfrac);
-            flatBaseXScale = Trig.Cos(angle) / centerXFrac;
+            planeBaseXScale = Trig.Cos(angle) / centerXFrac;
 
             // baseyscale = -FixedDiv (finesine[angle],centerxfrac);
-            flatBaseYScale = -(Trig.Sin(angle) / centerXFrac);
+            planeBaseYScale = -(Trig.Sin(angle) / centerXFrac);
 
             ceilingPrevSector = null;
             ceilingPrevX = int.MaxValue;
@@ -864,7 +860,7 @@ namespace ManagedDoom
             var wallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
             var wallY2Step = -(rwScaleStep * worldFrontY2);
 
-            var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extralight;
+            var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extraLight;
 
             if (seg.Vertex1.Y == seg.Vertex2.Y)
             {
@@ -880,14 +876,21 @@ namespace ManagedDoom
             {
                 wallLights = scaleLight[0];
             }
-            else if (wallLightLevel >= LightLevels)
+            else if (wallLightLevel >= LightLevelCount)
             {
-                wallLights = scaleLight[LightLevels - 1];
+                wallLights = scaleLight[LightLevelCount - 1];
             }
             else
             {
                 wallLights = scaleLight[wallLightLevel];
             }
+
+            var planeLightLevel = frontSector.LightLevel >> LightSegShift; // + extraLight;
+            if (planeLightLevel >= LightLevelCount)
+            {
+                planeLightLevel = LightLevelCount - 1;
+            }
+            var planeLights = zLight[planeLightLevel];
 
             var visSeg = drawSegs[drawSegCount];
             visSeg.Seg = seg;
@@ -906,7 +909,7 @@ namespace ManagedDoom
                 {
                     var cy1 = upperClip[x] + 1;
                     var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
-                    DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], x, cy1, cy2);
+                    DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], planeLights, x, cy1, cy2);
                 }
 
                 if (drawWall)
@@ -920,10 +923,10 @@ namespace ManagedDoom
                     var textureColumn = (rwOffset - Trig.Tan(angle) * rwDistance).Data >> Fixed.FracBits;
                     var source = wallTexture.Composite.Columns[textureColumn & wallWidthMask][0];
 
-                    var lightScale = rwScale.Data >> LightScaleShift;
-                    if (lightScale >= MaxLightScale)
+                    var lightScale = rwScale.Data >> ScaleLightShift;
+                    if (lightScale >= MaxScaleLight)
                     {
-                        lightScale = MaxLightScale - 1;
+                        lightScale = MaxScaleLight - 1;
                     }
 
                     var iScale = new Fixed((int)(0xffffffffu / (uint)rwScale.Data));
@@ -934,7 +937,7 @@ namespace ManagedDoom
                 {
                     var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
                     var fy2 = lowerClip[x] - 1;
-                    DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], x, fy1, fy2);
+                    DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], planeLights, x, fy1, fy2);
                 }
 
                 rwScale += rwScaleStep;
@@ -1126,14 +1129,21 @@ namespace ManagedDoom
             {
                 wallLights = scaleLight[0];
             }
-            else if (wallLightLevel >= LightLevels)
+            else if (wallLightLevel >= LightLevelCount)
             {
-                wallLights = scaleLight[LightLevels - 1];
+                wallLights = scaleLight[LightLevelCount - 1];
             }
             else
             {
                 wallLights = scaleLight[wallLightLevel];
             }
+
+            var planeLightLevel = frontSector.LightLevel >> LightSegShift; // + extraLight;
+            if (planeLightLevel >= LightLevelCount)
+            {
+                planeLightLevel = LightLevelCount - 1;
+            }
+            var planeLights = zLight[planeLightLevel];
 
             var visSeg = drawSegs[drawSegCount];
             visSeg.Seg = seg;
@@ -1166,10 +1176,10 @@ namespace ManagedDoom
                     angle = new Angle(angle.Data & 0x7FFFFFFF);
                     textureColumn = (rwOffset - Trig.Tan(angle) * rwDistance).Data >> Fixed.FracBits;
 
-                    lightScale = rwScale.Data >> LightScaleShift;
-                    if (lightScale >= MaxLightScale)
+                    lightScale = rwScale.Data >> ScaleLightShift;
+                    if (lightScale >= MaxScaleLight)
                     {
-                        lightScale = MaxLightScale - 1;
+                        lightScale = MaxScaleLight - 1;
                     }
                 }
 
@@ -1182,7 +1192,7 @@ namespace ManagedDoom
                     {
                         var cy1 = upperClip[x] + 1;
                         var cy2 = Math.Min(drawMiddleWallY1 - 1, lowerClip[x] - 1);
-                        DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], x, cy1, cy2);
+                        DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], planeLights, x, cy1, cy2);
                     }
 
                     var wy1 = Math.Max(drawUpperWallY1, upperClip[x] + 1);
@@ -1200,7 +1210,7 @@ namespace ManagedDoom
                 {
                     var cy1 = upperClip[x] + 1;
                     var cy2 = Math.Min(drawMiddleWallY1 - 1, lowerClip[x] - 1);
-                    DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], x, cy1, cy2);
+                    DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], planeLights, x, cy1, cy2);
 
                     if (upperClip[x] < cy2)
                     {
@@ -1223,7 +1233,7 @@ namespace ManagedDoom
                     {
                         var fy1 = Math.Max(drawMiddleWallY2 + 1, upperClip[x] + 1);
                         var fy2 = lowerClip[x] - 1;
-                        DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], x, fy1, fy2);
+                        DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], planeLights, x, fy1, fy2);
                     }
 
                     if (lowerClip[x] > wy1)
@@ -1235,7 +1245,7 @@ namespace ManagedDoom
                 {
                     var fy1 = Math.Max(drawMiddleWallY2 + 1, upperClip[x] + 1);
                     var fy2 = lowerClip[x] - 1;
-                    DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], x, fy1, fy2);
+                    DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], planeLights, x, fy1, fy2);
 
                     if (lowerClip[x] > drawMiddleWallY2 + 1)
                     {
@@ -1292,9 +1302,9 @@ namespace ManagedDoom
                     {
                         walllights = scaleLight[0];
                     }
-                    else if (lightnum >= LightLevels)
+                    else if (lightnum >= LightLevelCount)
                     {
-                        walllights = scaleLight[LightLevels - 1];
+                        walllights = scaleLight[LightLevelCount - 1];
                     }
                     else
                     {
@@ -1325,10 +1335,10 @@ namespace ManagedDoom
 
                     for (var x = drawSeg.X1; x <= drawSeg.X2; x++)
                     {
-                        var index = spryscale.Data >> LightScaleShift;
-                        if (index >= MaxLightScale)
+                        var index = spryscale.Data >> ScaleLightShift;
+                        if (index >= MaxScaleLight)
                         {
-                            index = MaxLightScale - 1;
+                            index = MaxScaleLight - 1;
                         }
 
                         var col = clipData[drawSeg.MaskedTextureColumn + x];
@@ -1372,7 +1382,7 @@ namespace ManagedDoom
             }
         }
 
-        public void DrawCeilingColumn(Sector sector, Flat flat, int x, int y1, int y2)
+        public void DrawCeilingColumn(Sector sector, Flat flat, byte[][] planeLights, int x, int y1, int y2)
         {
             if (flat == flats.SkyFlat)
             {
@@ -1390,11 +1400,7 @@ namespace ManagedDoom
 
             var height = Fixed.Abs(sector.CeilingHeight - cameraZ);
 
-            var lightLevel = sector.LightLevel;
-
-            var light = lightLevel >> LightSegShift;
-            light = Math.Min(light, LightLevels - 1);
-            var planezlight = zLight[light];
+            var data = flat.Data;
 
             if (sector == ceilingPrevSector && ceilingPrevX == x - 1)
             {
@@ -1405,31 +1411,31 @@ namespace ManagedDoom
 
                 for (var y = y1; y < p1; y++)
                 {
-                    var distance = height * flatYSlope[y];
-                    ceilingXStep[y] = distance * flatBaseXScale;
-                    ceilingYStep[y] = distance * flatBaseYScale;
+                    var distance = height * planeYSlope[y];
+                    ceilingXStep[y] = distance * planeBaseXScale;
+                    ceilingYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * flatDistScale[x];
+                    var length = distance * planeDistScale[x];
                     var angle = cameraAngle + xToAngle[x];
                     var xFrac = cameraX + Trig.Cos(angle) * length;
                     var yFrac = -cameraY - Trig.Sin(angle) * length;
                     ceilingXFrac[y] = xFrac;
                     ceilingYFrac[y] = yFrac;
 
-                    var index = distance.Data >> LightZShift;
-                    if (index < 0)
+                    var zLightLevel = distance.Data >> ZLightShift;
+                    if (zLightLevel < 0)
                     {
-                        index = 0;
+                        zLightLevel = 0;
                     }
-                    if (index >= MaxLightZ)
+                    if (zLightLevel >= MaxZLight)
                     {
-                        index = MaxLightZ - 1;
+                        zLightLevel = MaxZLight - 1;
                     }
-                    var table = planezlight[index];
-                    ceilingLights[y] = table;
+                    var colorMap = planeLights[zLightLevel];
+                    ceilingLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = table[flat.Data[spot]];
+                    screenData[pos] = colorMap[data[spot]];
                     pos++;
                 }
 
@@ -1439,7 +1445,7 @@ namespace ManagedDoom
                     var yFrac = ceilingYFrac[y] + ceilingYStep[y];
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = ceilingLights[y][flat.Data[spot]];
+                    screenData[pos] = ceilingLights[y][data[spot]];
                     pos++;
 
                     ceilingXFrac[y] = xFrac;
@@ -1448,31 +1454,31 @@ namespace ManagedDoom
 
                 for (var y = p2 + 1; y <= y2; y++)
                 {
-                    var distance = height * flatYSlope[y];
-                    ceilingXStep[y] = distance * flatBaseXScale;
-                    ceilingYStep[y] = distance * flatBaseYScale;
+                    var distance = height * planeYSlope[y];
+                    ceilingXStep[y] = distance * planeBaseXScale;
+                    ceilingYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * flatDistScale[x];
+                    var length = distance * planeDistScale[x];
                     var angle = cameraAngle + xToAngle[x];
                     var xFrac = cameraX + Trig.Cos(angle) * length;
                     var yFrac = -cameraY - Trig.Sin(angle) * length;
                     ceilingXFrac[y] = xFrac;
                     ceilingYFrac[y] = yFrac;
 
-                    var index = distance.Data >> LightZShift;
-                    if (index < 0)
+                    var zLightLevel = distance.Data >> ZLightShift;
+                    if (zLightLevel < 0)
                     {
-                        index = 0;
+                        zLightLevel = 0;
                     }
-                    if (index >= MaxLightZ)
+                    if (zLightLevel >= MaxZLight)
                     {
-                        index = MaxLightZ - 1;
+                        zLightLevel = MaxZLight - 1;
                     }
-                    var table = planezlight[index];
-                    ceilingLights[y] = table;
+                    var colorMap = planeLights[zLightLevel];
+                    ceilingLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = table[flat.Data[spot]];
+                    screenData[pos] = colorMap[data[spot]];
                     pos++;
                 }
             }
@@ -1482,44 +1488,42 @@ namespace ManagedDoom
 
                 for (var y = y1; y <= y2; y++)
                 {
-                    var distance = height * flatYSlope[y];
-                    ceilingXStep[y] = distance * flatBaseXScale;
-                    ceilingYStep[y] = distance * flatBaseYScale;
+                    var distance = height * planeYSlope[y];
+                    ceilingXStep[y] = distance * planeBaseXScale;
+                    ceilingYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * flatDistScale[x];
+                    var length = distance * planeDistScale[x];
                     var angle = cameraAngle + xToAngle[x];
                     var xFrac = cameraX + Trig.Cos(angle) * length;
                     var yFrac = -cameraY - Trig.Sin(angle) * length;
                     ceilingXFrac[y] = xFrac;
                     ceilingYFrac[y] = yFrac;
 
-                    var index = distance.Data >> LightZShift;
-                    if (index < 0)
+                    var zLightLevel = distance.Data >> ZLightShift;
+                    if (zLightLevel < 0)
                     {
-                        index = 0;
+                        zLightLevel = 0;
                     }
-                    if (index >= MaxLightZ)
+                    if (zLightLevel >= MaxZLight)
                     {
-                        index = MaxLightZ - 1;
+                        zLightLevel = MaxZLight - 1;
                     }
-                    var table = planezlight[index];
-                    ceilingLights[y] = table;
+                    var colorMap = planeLights[zLightLevel];
+                    ceilingLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = table[flat.Data[spot]];
+                    screenData[pos] = colorMap[data[spot]];
                     pos++;
                 }
             }
 
             ceilingPrevSector = sector;
             ceilingPrevX = x;
-            ceilingPrevHeight = height;
-            ceilingPrevLightLevel = lightLevel;
             ceilingPrevY1 = y1;
             ceilingPrevY2 = y2;
         }
 
-        public void DrawFloorColumn(Sector sector, Flat flat, int x, int y1, int y2)
+        public void DrawFloorColumn(Sector sector, Flat flat, byte[][] planeLights, int x, int y1, int y2)
         {
             if (flat == flats.SkyFlat)
             {
@@ -1537,11 +1541,7 @@ namespace ManagedDoom
 
             var height = Fixed.Abs(sector.FloorHeight - cameraZ);
 
-            var lightLevel = sector.LightLevel;
-
-            var light = lightLevel >> LightSegShift;
-            light = Math.Min(light, LightLevels - 1);
-            var planezlight = zLight[light];
+            var data = flat.Data;
 
             if (sector == floorPrevSector && floorPrevX == x - 1)
             {
@@ -1552,31 +1552,31 @@ namespace ManagedDoom
 
                 for (var y = y1; y < p1; y++)
                 {
-                    var distance = height * flatYSlope[y];
-                    floorXStep[y] = distance * flatBaseXScale;
-                    floorYStep[y] = distance * flatBaseYScale;
+                    var distance = height * planeYSlope[y];
+                    floorXStep[y] = distance * planeBaseXScale;
+                    floorYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * flatDistScale[x];
+                    var length = distance * planeDistScale[x];
                     var angle = cameraAngle + xToAngle[x];
                     var xFrac = cameraX + Trig.Cos(angle) * length;
                     var yFrac = -cameraY - Trig.Sin(angle) * length;
                     floorXFrac[y] = xFrac;
                     floorYFrac[y] = yFrac;
 
-                    var index = distance.Data >> LightZShift;
-                    if (index < 0)
+                    var zLightLevel = distance.Data >> ZLightShift;
+                    if (zLightLevel < 0)
                     {
-                        index = 0;
+                        zLightLevel = 0;
                     }
-                    if (index >= MaxLightZ)
+                    if (zLightLevel >= MaxZLight)
                     {
-                        index = MaxLightZ - 1;
+                        zLightLevel = MaxZLight - 1;
                     }
-                    var table = planezlight[index];
-                    floorLights[y] = table;
+                    var colorMap = planeLights[zLightLevel];
+                    floorLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = table[flat.Data[spot]];
+                    screenData[pos] = colorMap[data[spot]];
                     pos++;
                 }
 
@@ -1586,7 +1586,7 @@ namespace ManagedDoom
                     var yFrac = floorYFrac[y] + floorYStep[y];
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = floorLights[y][flat.Data[spot]];
+                    screenData[pos] = floorLights[y][data[spot]];
                     pos++;
 
                     floorXFrac[y] = xFrac;
@@ -1595,31 +1595,31 @@ namespace ManagedDoom
 
                 for (var y = p2 + 1; y <= y2; y++)
                 {
-                    var distance = height * flatYSlope[y];
-                    floorXStep[y] = distance * flatBaseXScale;
-                    floorYStep[y] = distance * flatBaseYScale;
+                    var distance = height * planeYSlope[y];
+                    floorXStep[y] = distance * planeBaseXScale;
+                    floorYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * flatDistScale[x];
+                    var length = distance * planeDistScale[x];
                     var angle = cameraAngle + xToAngle[x];
                     var xFrac = cameraX + Trig.Cos(angle) * length;
                     var yFrac = -cameraY - Trig.Sin(angle) * length;
                     floorXFrac[y] = xFrac;
                     floorYFrac[y] = yFrac;
 
-                    var index = distance.Data >> LightZShift;
-                    if (index < 0)
+                    var zLightLevel = distance.Data >> ZLightShift;
+                    if (zLightLevel < 0)
                     {
-                        index = 0;
+                        zLightLevel = 0;
                     }
-                    if (index >= MaxLightZ)
+                    if (zLightLevel >= MaxZLight)
                     {
-                        index = MaxLightZ - 1;
+                        zLightLevel = MaxZLight - 1;
                     }
-                    var table = planezlight[index];
-                    floorLights[y] = table;
+                    var colorMap = planeLights[zLightLevel];
+                    floorLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = table[flat.Data[spot]];
+                    screenData[pos] = colorMap[data[spot]];
                     pos++;
                 }
             }
@@ -1629,39 +1629,37 @@ namespace ManagedDoom
 
                 for (var y = y1; y <= y2; y++)
                 {
-                    var distance = height * flatYSlope[y];
-                    floorXStep[y] = distance * flatBaseXScale;
-                    floorYStep[y] = distance * flatBaseYScale;
+                    var distance = height * planeYSlope[y];
+                    floorXStep[y] = distance * planeBaseXScale;
+                    floorYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * flatDistScale[x];
+                    var length = distance * planeDistScale[x];
                     var angle = cameraAngle + xToAngle[x];
                     var xFrac = cameraX + Trig.Cos(angle) * length;
                     var yFrac = -cameraY - Trig.Sin(angle) * length;
                     floorXFrac[y] = xFrac;
                     floorYFrac[y] = yFrac;
 
-                    var index = distance.Data >> LightZShift;
-                    if (index < 0)
+                    var zLightLevel = distance.Data >> ZLightShift;
+                    if (zLightLevel < 0)
                     {
-                        index = 0;
+                        zLightLevel = 0;
                     }
-                    if (index >= MaxLightZ)
+                    if (zLightLevel >= MaxZLight)
                     {
-                        index = MaxLightZ - 1;
+                        zLightLevel = MaxZLight - 1;
                     }
-                    var table = planezlight[index];
-                    floorLights[y] = table;
+                    var colorMap = planeLights[zLightLevel];
+                    floorLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = table[flat.Data[spot]];
+                    screenData[pos] = colorMap[data[spot]];
                     pos++;
                 }
             }
 
             floorPrevSector = sector;
             floorPrevX = x;
-            floorPrevHeight = height;
-            floorPrevLightLevel = lightLevel;
             floorPrevY1 = y1;
             floorPrevY2 = y2;
         }
