@@ -996,37 +996,46 @@ namespace ManagedDoom
                 worldFrontY1 = worldBackY1;
             }
 
-            var skipAllowed = worldFrontY1 != worldFrontY2
-                && worldFrontY1 == worldBackY1
-                && worldFrontY2 == worldBackY2
-                && frontSector.CeilingFlat == backSector.CeilingFlat
-                && frontSector.FloorFlat == backSector.FloorFlat
-                && frontSector.LightLevel == backSector.LightLevel;
-
-            var drawMaskedTexture = side.MiddleTexture != 0;
-
-            if (skipAllowed && !drawMaskedTexture)
-            {
-                return;
-            }
+            var solidWall = backSector.CeilingHeight <= frontSector.FloorHeight
+                || backSector.FloorHeight >= frontSector.CeilingHeight;
 
             bool drawUpperWall;
-            bool drawLowerWall;
             bool drawCeiling;
-            bool drawFloor;
-            if (skipAllowed)
+            if (!solidWall
+                && worldFrontY1 == worldBackY1
+                && frontSector.CeilingFlat == backSector.CeilingFlat
+                && frontSector.LightLevel == backSector.LightLevel)
             {
                 drawUpperWall = false;
-                drawLowerWall = false;
                 drawCeiling = false;
-                drawFloor = false;
             }
             else
             {
                 drawUpperWall = side.TopTexture != 0 && worldBackY1 < worldFrontY1;
-                drawLowerWall = side.BottomTexture != 0 && worldBackY2 > worldFrontY2;
                 drawCeiling = worldFrontY1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
+            }
+
+            bool drawLowerWall;
+            bool drawFloor;
+            if (!solidWall
+                && worldFrontY2 == worldBackY2
+                && frontSector.FloorFlat == backSector.FloorFlat
+                && frontSector.LightLevel == backSector.LightLevel)
+            {
+                drawLowerWall = false;
+                drawFloor = false;
+            }
+            else
+            {
+                drawLowerWall = side.BottomTexture != 0 && worldBackY2 > worldFrontY2;
                 drawFloor = worldFrontY2 < Fixed.Zero;
+            }
+
+            var drawMaskedTexture = side.MiddleTexture != 0;
+
+            if (!drawUpperWall && !drawCeiling && !drawLowerWall && !drawFloor && !drawMaskedTexture)
+            {
+                return;
             }
 
             var upperWallTexture = textures[side.TopTexture];
