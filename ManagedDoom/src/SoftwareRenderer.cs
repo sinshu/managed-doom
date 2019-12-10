@@ -104,6 +104,7 @@ namespace ManagedDoom
         // ???
         private Fixed pspritescale;
         private Fixed pspriteiscale;
+        private Fixed skyiscale;
 
 
         private World world;
@@ -119,19 +120,20 @@ namespace ManagedDoom
             textures = new TextureLookup(wad);
             flats = new FlatLookup(wad);
 
-            screenWidth = 320;
-            screenHeight = 200;
+            screenWidth = 640;
+            screenHeight = 400;
             screenData = new byte[screenWidth * screenHeight];
             glTextureData = new byte[4 * screenWidth * screenHeight];
             palette = wad.ReadLump("PLAYPAL");
 
-            SetViewWindow(0, 0, 320, 200);
+            SetViewWindow(0, 0, 640, 400);
             InitTextureMapping();
             InitPlanes();
             InitColorMap(wad);
 
             pspritescale = Fixed.FromInt(windowWidth) / screenWidth;
             pspriteiscale = Fixed.FromInt(screenWidth) / windowWidth;
+            skyiscale = new Fixed((int)(((long)Fixed.FracUnit * screenWidth * 200) / (windowWidth * screenHeight)));
         }
 
         private byte[][] ReadColorMap(Wad wad)
@@ -1715,7 +1717,7 @@ namespace ManagedDoom
             var angle = (cameraAngle + xToAngle[x]).Data >> AngleToSkyShift;
             var mask = world.Map.SkyTexture.Width - 1;
             var source = world.Map.SkyTexture.Composite.Columns[angle & mask];
-            DrawColumn(source[0], colorMap[0], x, y1, y2, pspriteiscale, skyTextureMid);
+            DrawColumn(source[0], colorMap[0], x, y1, y2, skyiscale, skyTextureMid);
         }
 
         private void DrawMaskedColumn(Column[] columns, byte[] map, int x, Fixed iScale, Fixed textureMid, Fixed spryscale, Fixed sprtopscreen, int ceilClip, int floorClip)
