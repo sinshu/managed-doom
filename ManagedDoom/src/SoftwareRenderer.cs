@@ -741,12 +741,12 @@ namespace ManagedDoom
                 if (x2 < solidSegs[start].First - 1)
                 {
                     // Post is entirely visible (above start).
-                    DrawPassWallRange(seg, rwAngle1, x1, x2);
+                    DrawPassWallRange(seg, rwAngle1, x1, x2, false);
                     return;
                 }
 
                 // There is a fragment above *start.
-                DrawPassWallRange(seg, rwAngle1, x1, solidSegs[start].First - 1);
+                DrawPassWallRange(seg, rwAngle1, x1, solidSegs[start].First - 1, false);
             }
 
             // Bottom contained in start?
@@ -758,7 +758,7 @@ namespace ManagedDoom
             while (x2 >= solidSegs[start + 1].First - 1)
             {
                 // There is a fragment between two posts.
-                DrawPassWallRange(seg, rwAngle1, solidSegs[start].Last + 1, solidSegs[start + 1].First - 1);
+                DrawPassWallRange(seg, rwAngle1, solidSegs[start].Last + 1, solidSegs[start + 1].First - 1, false);
                 start++;
 
                 if (x2 <= solidSegs[start].Last)
@@ -768,14 +768,14 @@ namespace ManagedDoom
             }
 
             // There is a fragment after *next.
-            DrawPassWallRange(seg, rwAngle1, solidSegs[start].Last + 1, x2);
+            DrawPassWallRange(seg, rwAngle1, solidSegs[start].Last + 1, x2, false);
         }
 
         public void DrawSolidWallRange(Seg seg, Angle rwAngle1, int x1, int x2)
         {
             if (seg.BackSector != null)
             {
-                DrawPassWallRange(seg, rwAngle1, x1, x2);
+                DrawPassWallRange(seg, rwAngle1, x1, x2, true);
                 return;
             }
 
@@ -950,7 +950,7 @@ namespace ManagedDoom
             drawSegCount++;
         }
 
-        public void DrawPassWallRange(Seg seg, Angle rwAngle1, int x1, int x2)
+        public void DrawPassWallRange(Seg seg, Angle rwAngle1, int x1, int x2, bool drawAsSolidWall)
         {
             var rwNormalAngle = seg.Angle + Angle.Ang90;
 
@@ -998,12 +998,9 @@ namespace ManagedDoom
                 worldFrontY1 = worldBackY1;
             }
 
-            var solidWall = backSector.CeilingHeight <= frontSector.FloorHeight
-                || backSector.FloorHeight >= frontSector.CeilingHeight;
-
             bool drawUpperWall;
             bool drawCeiling;
-            if (!solidWall
+            if (!drawAsSolidWall
                 && worldFrontY1 == worldBackY1
                 && frontSector.CeilingFlat == backSector.CeilingFlat
                 && frontSector.LightLevel == backSector.LightLevel)
@@ -1019,7 +1016,7 @@ namespace ManagedDoom
 
             bool drawLowerWall;
             bool drawFloor;
-            if (!solidWall
+            if (!drawAsSolidWall
                 && worldFrontY2 == worldBackY2
                 && frontSector.FloorFlat == backSector.FloorFlat
                 && frontSector.LightLevel == backSector.LightLevel)
