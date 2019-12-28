@@ -954,20 +954,20 @@ namespace ManagedDoom
 
         public void DrawPassWallRange(Seg seg, Angle rwAngle1, int x1, int x2, bool drawAsSolidWall)
         {
+            // Make some aliases to shorten the following code.
             var line = seg.LineDef;
             var side = seg.SideDef;
             var frontSector = seg.FrontSector;
             var backSector = seg.BackSector;
 
-
-
+            // Calculate the relative plane heights of front and back sector.
+            // These values are later 4 bits right shifted to calculate the rendering area.
             var worldFrontY1 = frontSector.CeilingHeight - cameraZ;
             var worldFrontY2 = frontSector.FloorHeight - cameraZ;
             var worldBackY1 = backSector.CeilingHeight - cameraZ;
             var worldBackY2 = backSector.FloorHeight - cameraZ;
 
-
-
+            // The hack below enables ceiling height change in outdoor area without showing the upper wall.
             if (frontSector.CeilingFlat == flats.SkyFlatNumber
                 && backSector.CeilingFlat == flats.SkyFlatNumber)
             {
@@ -975,6 +975,19 @@ namespace ManagedDoom
             }
 
 
+
+            //
+            //
+            // Determine which walls or planes must be rendered.
+            //
+            // Wall / plane rendering for two-sided line can be partially skipped under the following conditions.
+            //
+            //     - The line is not treated as a solid wall (like a closed door).
+            //     - The wall texture is not set.
+            //     - The front and back sectors have the identical height, flat texture and light level.
+            //     - The camera sees the wrong side of the plane.
+            //
+            //
 
             bool drawUpperWall;
             bool drawCeiling;
@@ -1010,6 +1023,7 @@ namespace ManagedDoom
 
             var drawMaskedTexture = side.MiddleTexture != 0;
 
+            // If nothing must be rendered, we can skip this seg.
             if (!drawUpperWall && !drawCeiling && !drawLowerWall && !drawFloor && !drawMaskedTexture)
             {
                 return;
@@ -1018,6 +1032,12 @@ namespace ManagedDoom
             var segTextured = drawUpperWall || drawLowerWall || drawMaskedTexture;
 
 
+
+            //
+            //
+            // Determine how the wall textures are aligned (if necessary).
+            //
+            //
 
             var upperWallTexture = default(Texture);
             var upperWallWidthMask = default(int);
@@ -1060,6 +1080,12 @@ namespace ManagedDoom
 
 
 
+            //
+            //
+            // Determine where on the screen the wall is drawn.
+            //
+            //
+
             var rwNormalAngle = seg.Angle + Angle.Ang90;
 
             var offsetAngle = Angle.Abs(rwNormalAngle - rwAngle1);
@@ -1070,9 +1096,9 @@ namespace ManagedDoom
 
             var distAngle = Angle.Ang90 - offsetAngle;
 
-            var hyp = Geometry.PointToDist(cameraX, cameraY, seg.Vertex1.X, seg.Vertex1.Y);
+            var hypotenuse = Geometry.PointToDist(cameraX, cameraY, seg.Vertex1.X, seg.Vertex1.Y);
 
-            var rwDistance = hyp * Trig.Sin(distAngle);
+            var rwDistance = hypotenuse * Trig.Sin(distAngle);
 
             var rwScale = ScaleFromGlobalAngle(cameraAngle + xToAngle[x1], cameraAngle, rwNormalAngle, rwDistance);
 
@@ -1092,71 +1118,28 @@ namespace ManagedDoom
 
 
 
-
-
-
-
-            worldFrontY1 = new Fixed(worldFrontY1.Data >> 4);
-            worldFrontY2 = new Fixed(worldFrontY2.Data >> 4);
-            worldBackY1 = new Fixed(worldBackY1.Data >> 4);
-            worldBackY2 = new Fixed(worldBackY2.Data >> 4);
-
-
-
-            var upperWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
-            var upperWallY1Step = -(rwScaleStep * worldFrontY1);
-            var lowerWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
-            var lowerWallY2Step = -(rwScaleStep * worldFrontY2);
-
-            var upperWallY2Frac = default(Fixed);
-            var upperWallY2Step = default(Fixed);
-            if (drawUpperWall)
-            {
-                if (worldBackY1 > worldFrontY2)
-                {
-                    upperWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY1 * rwScale;
-                    upperWallY2Step = -(rwScaleStep * worldBackY1);
-                }
-                else
-                {
-                    upperWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
-                    upperWallY2Step = -(rwScaleStep * worldFrontY2);
-                }
-            }
-
-            var lowerWallY1Frac = default(Fixed);
-            var lowerWallY1Step = default(Fixed);
-            if (drawLowerWall)
-            {
-                if (worldBackY2 < worldFrontY1)
-                {
-                    lowerWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY2 * rwScale;
-                    lowerWallY1Step = -(rwScaleStep * worldBackY2);
-                }
-                else
-                {
-                    lowerWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
-                    lowerWallY1Step = -(rwScaleStep * worldFrontY1);
-                }
-            }
-
+            //
+            //
+            // Determine how the wall textures are drawn (if necessary).
+            //
+            //
 
             var rwOffset = default(Fixed);
             var rwCenterAngle = default(Angle);
             var wallLights = default(byte[][]);
             if (segTextured)
             {
-                offsetAngle = rwNormalAngle - rwAngle1;
-                if (offsetAngle > Angle.Ang180)
+                var textureOffsetAngle = rwNormalAngle - rwAngle1;
+                if (textureOffsetAngle > Angle.Ang180)
                 {
-                    offsetAngle = -offsetAngle;
+                    textureOffsetAngle = -textureOffsetAngle;
                 }
-                if (offsetAngle > Angle.Ang90)
+                if (textureOffsetAngle > Angle.Ang90)
                 {
-                    offsetAngle = Angle.Ang90;
+                    textureOffsetAngle = Angle.Ang90;
                 }
 
-                rwOffset = hyp * Trig.Sin(offsetAngle);
+                rwOffset = hypotenuse * Trig.Sin(textureOffsetAngle);
                 if (rwNormalAngle - rwAngle1 < Angle.Ang180)
                 {
                     rwOffset = -rwOffset;
@@ -1166,7 +1149,6 @@ namespace ManagedDoom
                 rwCenterAngle = Angle.Ang90 + cameraAngle - rwNormalAngle;
 
                 var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extraLight;
-
                 if (seg.Vertex1.Y == seg.Vertex2.Y)
                 {
                     wallLightLevel--;
@@ -1192,6 +1174,52 @@ namespace ManagedDoom
 
 
 
+            worldFrontY1 = new Fixed(worldFrontY1.Data >> 4);
+            worldFrontY2 = new Fixed(worldFrontY2.Data >> 4);
+            worldBackY1 = new Fixed(worldBackY1.Data >> 4);
+            worldBackY2 = new Fixed(worldBackY2.Data >> 4);
+
+
+
+            var wallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
+            var wallY1Step = -(rwScaleStep * worldFrontY1);
+            var wallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
+            var wallY2Step = -(rwScaleStep * worldFrontY2);
+
+            var portalY1Frac = default(Fixed);
+            var portalY1Step = default(Fixed);
+            if (drawUpperWall)
+            {
+                if (worldBackY1 > worldFrontY2)
+                {
+                    portalY1Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY1 * rwScale;
+                    portalY1Step = -(rwScaleStep * worldBackY1);
+                }
+                else
+                {
+                    portalY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
+                    portalY1Step = -(rwScaleStep * worldFrontY2);
+                }
+            }
+
+            var portalY2Frac = default(Fixed);
+            var portalY2Step = default(Fixed);
+            if (drawLowerWall)
+            {
+                if (worldBackY2 < worldFrontY1)
+                {
+                    portalY2Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY2 * rwScale;
+                    portalY2Step = -(rwScaleStep * worldBackY2);
+                }
+                else
+                {
+                    portalY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
+                    portalY2Step = -(rwScaleStep * worldFrontY1);
+                }
+            }
+
+
+
             var planeLightLevel = frontSector.LightLevel >> LightSegShift; // + extraLight;
             if (planeLightLevel >= LightLevelCount)
             {
@@ -1207,8 +1235,9 @@ namespace ManagedDoom
             visSeg.Scale2 = scale2;
             visSeg.ScaleStep = rwScaleStep;
 
-            var maskedTextureColumn = default(int);
             var range = x2 - x1 + 1;
+
+            var maskedTextureColumn = default(int);
             if (drawMaskedTexture)
             {
                 maskedTextureColumn = clipDataLength - x1;
@@ -1220,34 +1249,33 @@ namespace ManagedDoom
 
             for (var x = x1; x <= x2; x++)
             {
-                var drawMiddleWallY1 = (upperWallY1Frac.Data + HeightUnit - 1) >> HeightBits;
-                var drawMiddleWallY2 = lowerWallY2Frac.Data >> HeightBits;
+                var drawWallY1 = (wallY1Frac.Data + HeightUnit - 1) >> HeightBits;
+                var drawWallY2 = wallY2Frac.Data >> HeightBits;
 
-                Angle angle;
-                var textureColumn = 0;
-                var lightScale = 0;
-                if (drawUpperWall || drawLowerWall || drawMaskedTexture)
+                var textureColumn = default(int);
+                var lightIndex = default(int);
+                if (segTextured)
                 {
-                    angle = rwCenterAngle + xToAngle[x];
+                    var angle = rwCenterAngle + xToAngle[x];
                     angle = new Angle(angle.Data & 0x7FFFFFFF);
                     textureColumn = (rwOffset - Trig.Tan(angle) * rwDistance).Data >> Fixed.FracBits;
 
-                    lightScale = rwScale.Data >> ScaleLightShift;
-                    if (lightScale >= MaxScaleLight)
+                    lightIndex = rwScale.Data >> ScaleLightShift;
+                    if (lightIndex >= MaxScaleLight)
                     {
-                        lightScale = MaxScaleLight - 1;
+                        lightIndex = MaxScaleLight - 1;
                     }
                 }
 
                 if (drawUpperWall)
                 {
-                    var drawUpperWallY1 = (upperWallY1Frac.Data + HeightUnit - 1) >> HeightBits;
-                    var drawUpperWallY2 = upperWallY2Frac.Data >> HeightBits;
+                    var drawUpperWallY1 = (wallY1Frac.Data + HeightUnit - 1) >> HeightBits;
+                    var drawUpperWallY2 = portalY1Frac.Data >> HeightBits;
 
                     if (drawCeiling)
                     {
                         var cy1 = upperClip[x] + 1;
-                        var cy2 = Math.Min(drawMiddleWallY1 - 1, lowerClip[x] - 1);
+                        var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
                         DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], planeLights, x, cy1, cy2);
                     }
 
@@ -1255,19 +1283,19 @@ namespace ManagedDoom
                     var wy2 = Math.Min(drawUpperWallY2, lowerClip[x] - 1);
                     var source = upperWallTexture.Composite.Columns[textureColumn & upperWallWidthMask][0];
                     var iScale = new Fixed((int)(0xffffffffu / (uint)rwScale.Data));
-                    DrawColumn(source, wallLights[lightScale], x, wy1, wy2, iScale, rwUpperTextureMid);
+                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, iScale, rwUpperTextureMid);
 
                     if (upperClip[x] < wy2)
                     {
                         upperClip[x] = (short)wy2;
                     }
 
-                    upperWallY2Frac += upperWallY2Step;
+                    portalY1Frac += portalY1Step;
                 }
                 else if (drawCeiling)
                 {
                     var cy1 = upperClip[x] + 1;
-                    var cy2 = Math.Min(drawMiddleWallY1 - 1, lowerClip[x] - 1);
+                    var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
                     DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], planeLights, x, cy1, cy2);
 
                     if (upperClip[x] < cy2)
@@ -1278,18 +1306,18 @@ namespace ManagedDoom
 
                 if (drawLowerWall)
                 {
-                    var drawLowerWallY1 = (lowerWallY1Frac.Data + HeightUnit - 1) >> HeightBits;
-                    var drawLowerWallY2 = lowerWallY2Frac.Data >> HeightBits;
+                    var drawLowerWallY1 = (portalY2Frac.Data + HeightUnit - 1) >> HeightBits;
+                    var drawLowerWallY2 = wallY2Frac.Data >> HeightBits;
 
                     var wy1 = Math.Max(drawLowerWallY1, upperClip[x] + 1);
                     var wy2 = Math.Min(drawLowerWallY2, lowerClip[x] - 1);
                     var source = lowerWallTexture.Composite.Columns[textureColumn & lowerWallWidthMask][0];
                     var iScale = new Fixed((int)(0xffffffffu / (uint)rwScale.Data));
-                    DrawColumn(source, wallLights[lightScale], x, wy1, wy2, iScale, rwLowerTextureMid);
+                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, iScale, rwLowerTextureMid);
 
                     if (drawFloor)
                     {
-                        var fy1 = Math.Max(drawMiddleWallY2 + 1, upperClip[x] + 1);
+                        var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
                         var fy2 = lowerClip[x] - 1;
                         DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], planeLights, x, fy1, fy2);
                     }
@@ -1299,15 +1327,15 @@ namespace ManagedDoom
                         lowerClip[x] = (short)wy1;
                     }
 
-                    lowerWallY1Frac += lowerWallY1Step;
+                    portalY2Frac += portalY2Step;
                 }
                 else if (drawFloor)
                 {
-                    var fy1 = Math.Max(drawMiddleWallY2 + 1, upperClip[x] + 1);
+                    var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
                     var fy2 = lowerClip[x] - 1;
                     DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], planeLights, x, fy1, fy2);
 
-                    if (lowerClip[x] > drawMiddleWallY2 + 1)
+                    if (lowerClip[x] > drawWallY2 + 1)
                     {
                         lowerClip[x] = (short)fy1;
                     }
@@ -1319,8 +1347,8 @@ namespace ManagedDoom
                 }
 
                 rwScale += rwScaleStep;
-                upperWallY1Frac += upperWallY1Step;
-                lowerWallY2Frac += lowerWallY2Step;
+                wallY1Frac += wallY1Step;
+                wallY2Frac += wallY2Step;
             }
 
             Array.Copy(upperClip, x1, clipData, clipDataLength, range);
