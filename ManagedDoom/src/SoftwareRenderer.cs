@@ -950,8 +950,116 @@ namespace ManagedDoom
             drawSegCount++;
         }
 
+
+
         public void DrawPassWallRange(Seg seg, Angle rwAngle1, int x1, int x2, bool drawAsSolidWall)
         {
+            var line = seg.LineDef;
+            var side = seg.SideDef;
+            var frontSector = seg.FrontSector;
+            var backSector = seg.BackSector;
+
+
+
+            var worldFrontY1 = frontSector.CeilingHeight - cameraZ;
+            var worldFrontY2 = frontSector.FloorHeight - cameraZ;
+            var worldBackY1 = backSector.CeilingHeight - cameraZ;
+            var worldBackY2 = backSector.FloorHeight - cameraZ;
+
+
+
+            if (frontSector.CeilingFlat == flats.SkyFlatNumber
+                && backSector.CeilingFlat == flats.SkyFlatNumber)
+            {
+                worldFrontY1 = worldBackY1;
+            }
+
+
+
+            bool drawUpperWall;
+            bool drawCeiling;
+            if (drawAsSolidWall
+                || worldFrontY1 != worldBackY1
+                || frontSector.CeilingFlat != backSector.CeilingFlat
+                || frontSector.LightLevel != backSector.LightLevel)
+            {
+                drawUpperWall = side.TopTexture != 0 && worldBackY1 < worldFrontY1;
+                drawCeiling = worldFrontY1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
+            }
+            else
+            {
+                drawUpperWall = false;
+                drawCeiling = false;
+            }
+
+            bool drawLowerWall;
+            bool drawFloor;
+            if (drawAsSolidWall
+                || worldFrontY2 != worldBackY2
+                || frontSector.FloorFlat != backSector.FloorFlat
+                || frontSector.LightLevel != backSector.LightLevel)
+            {
+                drawLowerWall = side.BottomTexture != 0 && worldBackY2 > worldFrontY2;
+                drawFloor = worldFrontY2 < Fixed.Zero;
+            }
+            else
+            {
+                drawLowerWall = false;
+                drawFloor = false;
+            }
+
+            var drawMaskedTexture = side.MiddleTexture != 0;
+
+            if (!drawUpperWall && !drawCeiling && !drawLowerWall && !drawFloor && !drawMaskedTexture)
+            {
+                return;
+            }
+
+            var segTextured = drawUpperWall || drawLowerWall || drawMaskedTexture;
+
+
+
+            var upperWallTexture = default(Texture);
+            var upperWallWidthMask = default(int);
+            var rwUpperTextureMid = default(Fixed);
+            if (drawUpperWall)
+            {
+                upperWallTexture = textures[side.TopTexture];
+                upperWallWidthMask = upperWallTexture.Width - 1;
+
+                if ((line.Flags & LineFlags.DontPegTop) != 0)
+                {
+                    rwUpperTextureMid = worldFrontY1;
+                }
+                else
+                {
+                    var vTop = backSector.CeilingHeight + Fixed.FromInt(upperWallTexture.Height);
+                    rwUpperTextureMid = vTop - cameraZ;
+                }
+                rwUpperTextureMid += side.RowOffset;
+            }
+
+            var lowerWallTexture = default(Texture);
+            var lowerWallWidthMask = default(int);
+            var rwLowerTextureMid = default(Fixed);
+            if (drawLowerWall)
+            {
+                lowerWallTexture = textures[side.BottomTexture];
+                lowerWallWidthMask = lowerWallTexture.Width - 1;
+
+                if ((line.Flags & LineFlags.DontPegBottom) != 0)
+                {
+                    rwLowerTextureMid = worldFrontY1;
+                }
+                else
+                {
+                    rwLowerTextureMid = worldBackY2;
+                }
+                rwLowerTextureMid += side.RowOffset;
+            }
+
+
+
             var rwNormalAngle = seg.Angle + Angle.Ang90;
 
             var offsetAngle = Angle.Abs(rwNormalAngle - rwAngle1);
@@ -982,169 +1090,107 @@ namespace ManagedDoom
                 rwScaleStep = Fixed.Zero;
             }
 
-            var line = seg.LineDef;
-            var side = seg.SideDef;
-            var frontSector = seg.FrontSector;
-            var backSector = seg.BackSector;
 
-            var worldFrontY1 = frontSector.CeilingHeight - cameraZ;
-            var worldFrontY2 = frontSector.FloorHeight - cameraZ;
-            var worldBackY1 = backSector.CeilingHeight - cameraZ;
-            var worldBackY2 = backSector.FloorHeight - cameraZ;
 
-            if (frontSector.CeilingFlat == flats.SkyFlatNumber
-                && backSector.CeilingFlat == flats.SkyFlatNumber)
-            {
-                worldFrontY1 = worldBackY1;
-            }
 
-            bool drawUpperWall;
-            bool drawCeiling;
-            if (!drawAsSolidWall
-                && worldFrontY1 == worldBackY1
-                && frontSector.CeilingFlat == backSector.CeilingFlat
-                && frontSector.LightLevel == backSector.LightLevel)
-            {
-                drawUpperWall = false;
-                drawCeiling = false;
-            }
-            else
-            {
-                drawUpperWall = side.TopTexture != 0 && worldBackY1 < worldFrontY1;
-                drawCeiling = worldFrontY1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
-            }
 
-            bool drawLowerWall;
-            bool drawFloor;
-            if (!drawAsSolidWall
-                && worldFrontY2 == worldBackY2
-                && frontSector.FloorFlat == backSector.FloorFlat
-                && frontSector.LightLevel == backSector.LightLevel)
-            {
-                drawLowerWall = false;
-                drawFloor = false;
-            }
-            else
-            {
-                drawLowerWall = side.BottomTexture != 0 && worldBackY2 > worldFrontY2;
-                drawFloor = worldFrontY2 < Fixed.Zero;
-            }
 
-            var drawMaskedTexture = side.MiddleTexture != 0;
-
-            if (!drawUpperWall && !drawCeiling && !drawLowerWall && !drawFloor && !drawMaskedTexture)
-            {
-                return;
-            }
-
-            var upperWallTexture = textures[side.TopTexture];
-            var upperWallWidthMask = upperWallTexture.Width - 1;
-            var lowerWallTexture = textures[side.BottomTexture];
-            var lowerWallWidthMask = lowerWallTexture.Width - 1;
-
-            Fixed rwUpperTextureMid;
-            if ((line.Flags & LineFlags.DontPegTop) != 0)
-            {
-                rwUpperTextureMid = worldFrontY1;
-            }
-            else
-            {
-                var vTop = backSector.CeilingHeight + Fixed.FromInt(upperWallTexture.Height);
-                rwUpperTextureMid = vTop - cameraZ;
-            }
-            rwUpperTextureMid += side.RowOffset;
-
-            Fixed rwLowerTextureMid;
-            if ((line.Flags & LineFlags.DontPegBottom) != 0)
-            {
-                rwLowerTextureMid = worldFrontY1;
-            }
-            else
-            {
-                rwLowerTextureMid = worldBackY2;
-            }
-            rwLowerTextureMid += side.RowOffset;
-
-            offsetAngle = rwNormalAngle - rwAngle1;
-            if (offsetAngle > Angle.Ang180)
-            {
-                offsetAngle = -offsetAngle;
-            }
-            if (offsetAngle > Angle.Ang90)
-            {
-                offsetAngle = Angle.Ang90;
-            }
-
-            var rwOffset = hyp * Trig.Sin(offsetAngle);
-            if (rwNormalAngle - rwAngle1 < Angle.Ang180)
-            {
-                rwOffset = -rwOffset;
-            }
-            rwOffset += seg.Offset + side.TextureOffset;
-
-            var rwCenterAngle = Angle.Ang90 + cameraAngle - rwNormalAngle;
 
             worldFrontY1 = new Fixed(worldFrontY1.Data >> 4);
             worldFrontY2 = new Fixed(worldFrontY2.Data >> 4);
             worldBackY1 = new Fixed(worldBackY1.Data >> 4);
             worldBackY2 = new Fixed(worldBackY2.Data >> 4);
 
+
+
             var upperWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
             var upperWallY1Step = -(rwScaleStep * worldFrontY1);
-
-            Fixed upperWallY2Frac;
-            Fixed upperWallY2Step;
-            if (worldBackY1 > worldFrontY2)
-            {
-                upperWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY1 * rwScale;
-                upperWallY2Step = -(rwScaleStep * worldBackY1);
-            }
-            else
-            {
-                upperWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
-                upperWallY2Step = -(rwScaleStep * worldFrontY2);
-            }
-
-            Fixed lowerWallY1Frac;
-            Fixed lowerWallY1Step;
-            if (worldBackY2 < worldFrontY1)
-            {
-                lowerWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY2 * rwScale;
-                lowerWallY1Step = -(rwScaleStep * worldBackY2);
-            }
-            else
-            {
-                lowerWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
-                lowerWallY1Step = -(rwScaleStep * worldFrontY1);
-            }
-
             var lowerWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
             var lowerWallY2Step = -(rwScaleStep * worldFrontY2);
 
-            var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extraLight;
+            var upperWallY2Frac = default(Fixed);
+            var upperWallY2Step = default(Fixed);
+            if (drawUpperWall)
+            {
+                if (worldBackY1 > worldFrontY2)
+                {
+                    upperWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY1 * rwScale;
+                    upperWallY2Step = -(rwScaleStep * worldBackY1);
+                }
+                else
+                {
+                    upperWallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
+                    upperWallY2Step = -(rwScaleStep * worldFrontY2);
+                }
+            }
 
-            if (seg.Vertex1.Y == seg.Vertex2.Y)
+            var lowerWallY1Frac = default(Fixed);
+            var lowerWallY1Step = default(Fixed);
+            if (drawLowerWall)
             {
-                wallLightLevel--;
-            }
-            else if (seg.Vertex1.X == seg.Vertex2.X)
-            {
-                wallLightLevel++;
+                if (worldBackY2 < worldFrontY1)
+                {
+                    lowerWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY2 * rwScale;
+                    lowerWallY1Step = -(rwScaleStep * worldBackY2);
+                }
+                else
+                {
+                    lowerWallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
+                    lowerWallY1Step = -(rwScaleStep * worldFrontY1);
+                }
             }
 
-            byte[][] wallLights;
-            if (wallLightLevel < 0)
+
+            var rwOffset = default(Fixed);
+            var rwCenterAngle = default(Angle);
+            var wallLights = default(byte[][]);
+            if (segTextured)
             {
-                wallLights = scaleLight[0];
+                offsetAngle = rwNormalAngle - rwAngle1;
+                if (offsetAngle > Angle.Ang180)
+                {
+                    offsetAngle = -offsetAngle;
+                }
+                if (offsetAngle > Angle.Ang90)
+                {
+                    offsetAngle = Angle.Ang90;
+                }
+
+                rwOffset = hyp * Trig.Sin(offsetAngle);
+                if (rwNormalAngle - rwAngle1 < Angle.Ang180)
+                {
+                    rwOffset = -rwOffset;
+                }
+                rwOffset += seg.Offset + side.TextureOffset;
+
+                rwCenterAngle = Angle.Ang90 + cameraAngle - rwNormalAngle;
+
+                var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extraLight;
+
+                if (seg.Vertex1.Y == seg.Vertex2.Y)
+                {
+                    wallLightLevel--;
+                }
+                else if (seg.Vertex1.X == seg.Vertex2.X)
+                {
+                    wallLightLevel++;
+                }
+
+                if (wallLightLevel < 0)
+                {
+                    wallLights = scaleLight[0];
+                }
+                else if (wallLightLevel >= LightLevelCount)
+                {
+                    wallLights = scaleLight[LightLevelCount - 1];
+                }
+                else
+                {
+                    wallLights = scaleLight[wallLightLevel];
+                }
             }
-            else if (wallLightLevel >= LightLevelCount)
-            {
-                wallLights = scaleLight[LightLevelCount - 1];
-            }
-            else
-            {
-                wallLights = scaleLight[wallLightLevel];
-            }
+
+
 
             var planeLightLevel = frontSector.LightLevel >> LightSegShift; // + extraLight;
             if (planeLightLevel >= LightLevelCount)
@@ -1161,7 +1207,7 @@ namespace ManagedDoom
             visSeg.Scale2 = scale2;
             visSeg.ScaleStep = rwScaleStep;
 
-            var maskedTextureColumn = 0;
+            var maskedTextureColumn = default(int);
             var range = x2 - x1 + 1;
             if (drawMaskedTexture)
             {
@@ -1169,6 +1215,8 @@ namespace ManagedDoom
                 visSeg.MaskedTextureColumn = maskedTextureColumn;
                 clipDataLength += range;
             }
+
+
 
             for (var x = x1; x <= x2; x++)
             {
@@ -1213,6 +1261,8 @@ namespace ManagedDoom
                     {
                         upperClip[x] = (short)wy2;
                     }
+
+                    upperWallY2Frac += upperWallY2Step;
                 }
                 else if (drawCeiling)
                 {
@@ -1248,6 +1298,8 @@ namespace ManagedDoom
                     {
                         lowerClip[x] = (short)wy1;
                     }
+
+                    lowerWallY1Frac += lowerWallY1Step;
                 }
                 else if (drawFloor)
                 {
@@ -1268,8 +1320,6 @@ namespace ManagedDoom
 
                 rwScale += rwScaleStep;
                 upperWallY1Frac += upperWallY1Step;
-                upperWallY2Frac += upperWallY2Step;
-                lowerWallY1Frac += lowerWallY1Step;
                 lowerWallY2Frac += lowerWallY2Step;
             }
 
@@ -1283,6 +1333,8 @@ namespace ManagedDoom
 
             drawSegCount++;
         }
+
+
 
         public void DrawMasked()
         {

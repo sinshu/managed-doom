@@ -12,7 +12,7 @@ namespace ManagedDoom
         static void Main(string[] args)
         {
             var style = Styles.Close | Styles.Titlebar;
-            using (var window = new RenderWindow(new VideoMode(1280, 800), "Managed Doom", style))
+            using (var window = new RenderWindow(new VideoMode(640, 400), "Managed Doom", style))
             using (var texture = new SFML.Graphics.Texture(512, 1024))
             using (var sprite = new Sprite(texture, new IntRect(0, 0, 400, 640)))
             using (var wad = new Wad("DOOM2.WAD"))
@@ -26,7 +26,7 @@ namespace ManagedDoom
 
                 sprite.Position = new Vector2f(0, 0);
                 sprite.Rotation = 90;
-                sprite.Scale = new Vector2f(2, -2);
+                sprite.Scale = new Vector2f(1, -1);
 
                 while (window.IsOpen)
                 {
