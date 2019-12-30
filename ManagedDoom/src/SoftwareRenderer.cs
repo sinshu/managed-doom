@@ -771,13 +771,64 @@ namespace ManagedDoom
             DrawPassWallRange(seg, rwAngle1, solidSegs[start].Last + 1, x2, false);
         }
 
+
+
         public void DrawSolidWallRange(Seg seg, Angle rwAngle1, int x1, int x2)
         {
+            // Unlike the original code, the rendering functions for one / two-sided wall are separated.
+            // Since DrawSolidWallRange() is for one-sided, DrawPassWallRange() must be used for two-sided.
+            // This fallback is necessary because DrawSeg() treats closed doors as solid wall.
             if (seg.BackSector != null)
             {
                 DrawPassWallRange(seg, rwAngle1, x1, x2, true);
                 return;
             }
+
+            // Make some aliases to shorten the following code.
+            var line = seg.LineDef;
+            var side = seg.SideDef;
+            var frontSector = seg.FrontSector;
+
+            // Calculate the relative plane heights of front and back sector.
+            // These values are later 4 bits right shifted to calculate the rendering area.
+            var worldFrontY1 = frontSector.CeilingHeight - cameraZ;
+            var worldFrontY2 = frontSector.FloorHeight - cameraZ;
+
+            // Check which parts must be rendered.
+            var drawWall = side.MiddleTexture != 0;
+            var drawCeiling = worldFrontY1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
+            var drawFloor = worldFrontY2 < Fixed.Zero;
+
+
+
+            //
+            //
+            // Determine how the wall textures are vertically aligned.
+            //
+            //
+
+            var wallTexture = textures[side.MiddleTexture];
+            var wallWidthMask = wallTexture.Width - 1;
+
+            Fixed rwMiddleTextureMid;
+            if ((line.Flags & LineFlags.DontPegBottom) != 0)
+            {
+                var vTop = frontSector.FloorHeight + Fixed.FromInt(wallTexture.Height);
+                rwMiddleTextureMid = vTop - cameraZ;
+            }
+            else
+            {
+                rwMiddleTextureMid = worldFrontY1;
+            }
+            rwMiddleTextureMid += side.RowOffset;
+
+
+
+            //
+            //
+            // Calculate the scaling factors of the left and right edges of the wall range.
+            //
+            //
 
             var rwNormalAngle = seg.Angle + Angle.Ang90;
 
@@ -789,9 +840,9 @@ namespace ManagedDoom
 
             var distAngle = Angle.Ang90 - offsetAngle;
 
-            var hyp = Geometry.PointToDist(cameraX, cameraY, seg.Vertex1.X, seg.Vertex1.Y);
+            var hypotenuse = Geometry.PointToDist(cameraX, cameraY, seg.Vertex1.X, seg.Vertex1.Y);
 
-            var rwDistance = hyp * Trig.Sin(distAngle);
+            var rwDistance = hypotenuse * Trig.Sin(distAngle);
 
             var rwScale = ScaleFromGlobalAngle(cameraAngle + xToAngle[x1], cameraAngle, rwNormalAngle, rwDistance);
 
@@ -809,43 +860,26 @@ namespace ManagedDoom
                 rwScaleStep = Fixed.Zero;
             }
 
-            var line = seg.LineDef;
-            var side = seg.SideDef;
-            var frontSector = seg.FrontSector;
 
-            var worldFrontY1 = frontSector.CeilingHeight - cameraZ;
-            var worldFrontY2 = frontSector.FloorHeight - cameraZ;
 
-            var drawWall = side.MiddleTexture != 0;
-            var drawCeiling = worldFrontY1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
-            var drawFloor = worldFrontY2 < Fixed.Zero;
+            //
+            //
+            // Determine how the wall textures are horizontally aligned
+            // and which color map is used according to the light level (if necessary).
+            //
+            //
 
-            var wallTexture = textures[side.MiddleTexture];
-            var wallWidthMask = wallTexture.Width - 1;
-
-            Fixed rwMiddleTextureMid;
-            if ((line.Flags & LineFlags.DontPegBottom) != 0)
+            var textureOffsetAngle = rwNormalAngle - rwAngle1;
+            if (textureOffsetAngle > Angle.Ang180)
             {
-                var vTop = frontSector.FloorHeight + Fixed.FromInt(wallTexture.Height);
-                rwMiddleTextureMid = vTop - cameraZ;
+                textureOffsetAngle = -textureOffsetAngle;
             }
-            else
+            if (textureOffsetAngle > Angle.Ang90)
             {
-                rwMiddleTextureMid = worldFrontY1;
-            }
-            rwMiddleTextureMid += side.RowOffset;
-
-            offsetAngle = rwNormalAngle - rwAngle1;
-            if (offsetAngle > Angle.Ang180)
-            {
-                offsetAngle = -offsetAngle;
-            }
-            if (offsetAngle > Angle.Ang90)
-            {
-                offsetAngle = Angle.Ang90;
+                textureOffsetAngle = Angle.Ang90;
             }
 
-            var rwOffset = hyp * Trig.Sin(offsetAngle);
+            var rwOffset = hypotenuse * Trig.Sin(textureOffsetAngle);
             if (rwNormalAngle - rwAngle1 < Angle.Ang180)
             {
                 rwOffset = -rwOffset;
@@ -853,14 +887,6 @@ namespace ManagedDoom
             rwOffset += seg.Offset + side.TextureOffset;
 
             var rwCenterAngle = Angle.Ang90 + cameraAngle - rwNormalAngle;
-
-            worldFrontY1 = new Fixed(worldFrontY1.Data >> 4);
-            worldFrontY2 = new Fixed(worldFrontY2.Data >> 4);
-
-            var wallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
-            var wallY1Step = -(rwScaleStep * worldFrontY1);
-            var wallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
-            var wallY2Step = -(rwScaleStep * worldFrontY2);
 
             var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extraLight;
 
@@ -887,12 +913,46 @@ namespace ManagedDoom
                 wallLights = scaleLight[wallLightLevel];
             }
 
+
+
+            //
+            //
+            // Determine where on the screen the wall is drawn.
+            //
+            //
+
+            // Now these values are right shifted to adjust the scale to the screen coord calculation.
+            worldFrontY1 = new Fixed(worldFrontY1.Data >> 4);
+            worldFrontY2 = new Fixed(worldFrontY2.Data >> 4);
+
+            // The Y positions of the top / bottom edges of the wall.
+            var wallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
+            var wallY1Step = -(rwScaleStep * worldFrontY1);
+            var wallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
+            var wallY2Step = -(rwScaleStep * worldFrontY2);
+
+
+
+            //
+            //
+            // Determine which color map is used for the plane according to the light level.
+            //
+            //
+
             var planeLightLevel = frontSector.LightLevel >> LightSegShift; // + extraLight;
             if (planeLightLevel >= LightLevelCount)
             {
                 planeLightLevel = LightLevelCount - 1;
             }
             var planeLights = zLight[planeLightLevel];
+
+
+
+            //
+            //
+            // Prepare to record the rendering history.
+            //
+            //
 
             var visSeg = drawSegs[drawSegCount];
             visSeg.Seg = seg;
@@ -901,6 +961,14 @@ namespace ManagedDoom
             visSeg.Scale1 = scale1;
             visSeg.Scale2 = scale2;
             visSeg.ScaleStep = rwScaleStep;
+
+
+
+            //
+            //
+            // Now the rendering is carried out.
+            //
+            //
 
             for (var x = x1; x <= x2; x++)
             {
@@ -978,7 +1046,7 @@ namespace ManagedDoom
 
             //
             //
-            // Determine which walls or planes must be rendered.
+            // Check which parts must be rendered.
             //
             // Wall / plane rendering for two-sided line can be partially skipped under the following conditions.
             //
