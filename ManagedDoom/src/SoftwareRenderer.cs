@@ -25,16 +25,52 @@ namespace ManagedDoom
         private static readonly Fixed skyTextureMid = Fixed.FromInt(100);
 
 
+
+        private Wad wad;
         private TextureLookup textures;
         private FlatLookup flats;
-
-
 
         private int screenWidth;
         private int screenHeight;
         private byte[] screenData;
         private byte[] glTextureData;
         private byte[] palette;
+
+        public SoftwareRenderer(Wad wad)
+        {
+            this.wad = wad;
+            textures = new TextureLookup(wad);
+            flats = new FlatLookup(wad);
+
+            screenWidth = 640;
+            screenHeight = 400;
+            screenData = new byte[screenWidth * screenHeight];
+            glTextureData = new byte[4 * screenWidth * screenHeight];
+            palette = wad.ReadLump("PLAYPAL");
+
+            InitWallRendering();
+            InitPlaneRendering();
+            InitLighting();
+            InitRenderingHistory();
+
+            ResetWindow(0, 0, screenWidth, screenHeight);
+            ResetWallRendering();
+            ResetPlaneRendering();
+            ResetLighting();
+            ResetRenderingHistory();
+
+            pspritescale = Fixed.FromInt(windowWidth) / screenWidth;
+            pspriteiscale = Fixed.FromInt(screenWidth) / windowWidth;
+            skyiscale = new Fixed((int)(((long)Fixed.FracUnit * screenWidth * 200) / (windowWidth * screenHeight)));
+        }
+
+
+
+        //
+        //
+        // Window settings
+        //
+        //
 
         private int windowX;
         private int windowY;
@@ -46,114 +82,7 @@ namespace ManagedDoom
         private Fixed centerYFrac;
         private Fixed projection;
 
-        private short[] upperClip;
-        private short[] lowerClip;
-
-        private int newEnd;
-        private ClipRange[] solidSegs;
-
-        private int clipDataLength;
-        private short[] clipData;
-
-        private int drawSegCount;
-        private VisSeg[] drawSegs;
-
-
-        // Texture mapping
-        private int[] angleToX;
-        private Angle[] xToAngle;
-        private Angle clipAngle;
-        private Angle clipAngle2;
-
-
-
-        // Planes
-        private Fixed[] planeYSlope;
-        private Fixed[] planeDistScale;
-        private Fixed planeBaseXScale;
-        private Fixed planeBaseYScale;
-
-        private Sector ceilingPrevSector;
-        private int ceilingPrevX;
-        private int ceilingPrevY1;
-        private int ceilingPrevY2;
-        private Fixed[] ceilingXFrac;
-        private Fixed[] ceilingYFrac;
-        private Fixed[] ceilingXStep;
-        private Fixed[] ceilingYStep;
-        private byte[][] ceilingLights;
-
-        private Sector floorPrevSector;
-        private int floorPrevX;
-        private int floorPrevY1;
-        private int floorPrevY2;
-        private Fixed[] floorXFrac;
-        private Fixed[] floorYFrac;
-        private Fixed[] floorXStep;
-        private Fixed[] floorYStep;
-        private byte[][] floorLights;
-
-
-
-        // Color map
-        private byte[][] colorMap;
-        private byte[][][] scaleLight;
-        private byte[][][] zLight;
-
-
-        // ???
-        private Fixed pspritescale;
-        private Fixed pspriteiscale;
-        private Fixed skyiscale;
-
-
-        private World world;
-        private Fixed cameraX;
-        private Fixed cameraY;
-        private Fixed cameraZ;
-        private Angle cameraAngle;
-
-
-
-        public SoftwareRenderer(Wad wad)
-        {
-            textures = new TextureLookup(wad);
-            flats = new FlatLookup(wad);
-
-            screenWidth = 640;
-            screenHeight = 400;
-            screenData = new byte[screenWidth * screenHeight];
-            glTextureData = new byte[4 * screenWidth * screenHeight];
-            palette = wad.ReadLump("PLAYPAL");
-
-            SetViewWindow(0, 0, 640, 400);
-            InitTextureMapping();
-            InitPlanes();
-            InitColorMap(wad);
-
-            pspritescale = Fixed.FromInt(windowWidth) / screenWidth;
-            pspriteiscale = Fixed.FromInt(screenWidth) / windowWidth;
-            skyiscale = new Fixed((int)(((long)Fixed.FracUnit * screenWidth * 200) / (windowWidth * screenHeight)));
-        }
-
-        private byte[][] ReadColorMap(Wad wad)
-        {
-            var data = wad.ReadLump("COLORMAP");
-            var num = data.Length / 256;
-            var map = new byte[num][];
-            for (var i = 0; i < num; i++)
-            {
-                map[i] = new byte[256];
-                var offset = 256 * i;
-                for (var c = 0; c < 256; c++)
-                {
-                    map[i][c] = data[offset + c];
-                }
-            }
-            return map;
-        }
-
-        public void SetViewWindow(int x, int y, int width, int height)
+        public void ResetWindow(int x, int y, int width, int height)
         {
             windowX = x;
             windowY = y;
@@ -165,33 +94,31 @@ namespace ManagedDoom
             centerXFrac = Fixed.FromInt(centerX);
             centerYFrac = Fixed.FromInt(centerY);
             projection = centerXFrac;
-
-            upperClip = new short[width];
-            lowerClip = new short[width];
-
-            newEnd = 0;
-            solidSegs = new ClipRange[1024];
-            for (var i = 0; i < solidSegs.Length; i++)
-            {
-                solidSegs[i] = new ClipRange();
-            }
-
-            clipDataLength = 0;
-            clipData = new short[128 * width];
-
-            drawSegCount = 0;
-            drawSegs = new VisSeg[1024];
-            for (var i = 0; i < drawSegs.Length; i++)
-            {
-                drawSegs[i] = new VisSeg();
-            }
         }
 
-        public void InitTextureMapping()
+
+
+        //
+        //
+        // Wall rendering
+        //
+        //
+
+        private int[] angleToX;
+        private Angle[] xToAngle;
+        private Angle clipAngle;
+        private Angle clipAngle2;
+
+        public void InitWallRendering()
+        {
+            angleToX = new int[Trig.FineAngleCount / 2];
+            xToAngle = new Angle[screenWidth];
+        }
+
+        public void ResetWallRendering()
         {
             var focalLength = centerXFrac / Trig.Tan(Trig.FineAngleCount / 4 + FineFov / 2);
 
-            angleToX = new int[Trig.FineAngleCount / 2];
             for (var i = 0; i < Trig.FineAngleCount / 2; i++)
             {
                 int t;
@@ -222,7 +149,6 @@ namespace ManagedDoom
                 angleToX[i] = t;
             }
 
-            xToAngle = new Angle[windowWidth];
             for (var x = 0; x < windowWidth; x++)
             {
                 var i = 0;
@@ -249,96 +175,124 @@ namespace ManagedDoom
             clipAngle2 = new Angle(2 * clipAngle.Data);
         }
 
-        public void InitPlanes()
-        {
-            // planes
 
-            planeYSlope = new Fixed[windowHeight];
+
+        //
+        //
+        // Plane rendering
+        //
+        //
+
+        private Fixed[] planeYSlope;
+        private Fixed[] planeDistScale;
+        private Fixed planeBaseXScale;
+        private Fixed planeBaseYScale;
+
+        private Sector ceilingPrevSector;
+        private int ceilingPrevX;
+        private int ceilingPrevY1;
+        private int ceilingPrevY2;
+        private Fixed[] ceilingXFrac;
+        private Fixed[] ceilingYFrac;
+        private Fixed[] ceilingXStep;
+        private Fixed[] ceilingYStep;
+        private byte[][] ceilingLights;
+
+        private Sector floorPrevSector;
+        private int floorPrevX;
+        private int floorPrevY1;
+        private int floorPrevY2;
+        private Fixed[] floorXFrac;
+        private Fixed[] floorYFrac;
+        private Fixed[] floorXStep;
+        private Fixed[] floorYStep;
+        private byte[][] floorLights;
+
+        public void InitPlaneRendering()
+        {
+            planeYSlope = new Fixed[screenHeight];
+            planeDistScale = new Fixed[screenWidth];
+            ceilingXFrac = new Fixed[screenHeight];
+            ceilingYFrac = new Fixed[screenHeight];
+            ceilingXStep = new Fixed[screenHeight];
+            ceilingYStep = new Fixed[screenHeight];
+            ceilingLights = new byte[screenHeight][];
+            floorXFrac = new Fixed[screenHeight];
+            floorYFrac = new Fixed[screenHeight];
+            floorXStep = new Fixed[screenHeight];
+            floorYStep = new Fixed[screenHeight];
+            floorLights = new byte[screenHeight][];
+        }
+
+        public void ResetPlaneRendering()
+        {
             for (int i = 0; i < windowHeight; i++)
             {
-                //dy = ((i-viewheight/2)<<FRACBITS)+FRACUNIT/2;
                 var dy = Fixed.FromInt(i - windowHeight / 2) + Fixed.One / 2;
-
-                //dy = abs(dy);
                 dy = Fixed.Abs(dy);
-
-                //yslope[i] = FixedDiv ( (viewwidth<<detailshift)/2*FRACUNIT, dy);
                 planeYSlope[i] = Fixed.FromInt(windowWidth / 2) / dy;
             }
 
-            planeDistScale = new Fixed[windowWidth];
             for (var i = 0; i < windowWidth; i++)
             {
-                //cosadj = abs(finecosine[xtoviewangle[i] >> ANGLETOFINESHIFT]);
                 var cosadj = Fixed.Abs(Trig.Cos(xToAngle[i]));
-
-                //distscale[i] = FixedDiv(FRACUNIT, cosadj);
                 planeDistScale[i] = Fixed.One / cosadj;
             }
-
-            ceilingXFrac = new Fixed[windowHeight];
-            ceilingYFrac = new Fixed[windowHeight];
-            ceilingXStep = new Fixed[windowHeight];
-            ceilingYStep = new Fixed[windowHeight];
-            ceilingLights = new byte[windowHeight][];
-            floorXFrac = new Fixed[windowHeight];
-            floorYFrac = new Fixed[windowHeight];
-            floorXStep = new Fixed[windowHeight];
-            floorYStep = new Fixed[windowHeight];
-            floorLights = new byte[windowHeight][];
         }
 
-        private void InitColorMap(Wad wad)
+        public void ClearPlaneRendering()
         {
-            var distMap = 2;
+            var angle = cameraAngle - Angle.Ang90;
+            planeBaseXScale = Trig.Cos(angle) / centerXFrac;
+            planeBaseYScale = -(Trig.Sin(angle) / centerXFrac);
 
+            ceilingPrevSector = null;
+            ceilingPrevX = int.MaxValue;
+
+            floorPrevSector = null;
+            floorPrevX = int.MaxValue;
+        }
+
+
+
+        //
+        //
+        // Lighting
+        //
+        //
+
+        private byte[][] colorMap;
+        private byte[][][] scaleLight;
+        private byte[][][] zLight;
+
+        private void InitLighting()
+        {
             colorMap = ReadColorMap(wad);
 
-
-
-            // Calculate the light levels to use
-            //  for each level / scale combination.
             scaleLight = new byte[LightLevelCount][][];
-            for (var i = 0; i < LightLevelCount; i++)
-            {
-                scaleLight[i] = new byte[MaxScaleLight][];
-                var startmap = ((LightLevelCount - 1 - i) * 2) * ColorMapCount / LightLevelCount;
-                for (var j = 0; j < MaxScaleLight; j++)
-                {
-                    var level = startmap - j * screenWidth / windowWidth / distMap;
-
-                    if (level < 0)
-                    {
-                        level = 0;
-                    }
-
-                    if (level >= ColorMapCount)
-                    {
-                        level = ColorMapCount - 1;
-                    }
-
-                    scaleLight[i][j] = colorMap[level];
-                }
-            }
-
-            // Calculate the light levels to use
-            //  for each level / distance combination.
             zLight = new byte[LightLevelCount][][];
             for (var i = 0; i < LightLevelCount; i++)
             {
+                scaleLight[i] = new byte[MaxScaleLight][];
                 zLight[i] = new byte[MaxZLight][];
+            }
+
+            var distMap = 2;
+
+            // Calculate the light levels to use for each level / distance combination.
+            for (var i = 0; i < LightLevelCount; i++)
+            {
                 var startmap = ((LightLevelCount - 1 - i) * 2) * ColorMapCount / LightLevelCount;
                 for (var j = 0; j < MaxZLight; j++)
                 {
                     var scale = Fixed.FromInt(screenWidth / 2) / new Fixed((j + 1) << ZLightShift);
                     scale = new Fixed(scale.Data >> ScaleLightShift);
-                    var level = startmap - scale.Data / distMap;
 
+                    var level = startmap - scale.Data / distMap;
                     if (level < 0)
                     {
                         level = 0;
                     }
-
                     if (level >= ColorMapCount)
                     {
                         level = ColorMapCount - 1;
@@ -349,52 +303,136 @@ namespace ManagedDoom
             }
         }
 
-
-
-        public void ClearClipData()
+        private void ResetLighting()
         {
-            for (var x = 0; x < upperClip.Length; x++)
+            var distMap = 2;
+
+            // Calculate the light levels to use for each level / scale combination.
+            for (var i = 0; i < LightLevelCount; i++)
             {
-                upperClip[x] = -1;
-            }
-            for (var x = 0; x < lowerClip.Length; x++)
-            {
-                lowerClip[x] = (short)windowHeight;
+                var startmap = ((LightLevelCount - 1 - i) * 2) * ColorMapCount / LightLevelCount;
+                for (var j = 0; j < MaxScaleLight; j++)
+                {
+                    var level = startmap - j * screenWidth / windowWidth / distMap;
+                    if (level < 0)
+                    {
+                        level = 0;
+                    }
+                    if (level >= ColorMapCount)
+                    {
+                        level = ColorMapCount - 1;
+                    }
+
+                    scaleLight[i][j] = colorMap[level];
+                }
             }
         }
 
-        public void ClearClipSegs()
+
+
+        //
+        //
+        // Rendering history
+        //
+        //
+
+        private short[] upperClip;
+        private short[] lowerClip;
+
+        private int newEnd;
+        private ClipRange[] solidSegs;
+
+        private int clipDataLength;
+        private short[] clipData;
+
+        private int drawSegCount;
+        private VisSeg[] drawSegs;
+
+        private void InitRenderingHistory()
         {
+            upperClip = new short[screenWidth];
+            lowerClip = new short[screenWidth];
+
+            solidSegs = new ClipRange[1024];
+            for (var i = 0; i < solidSegs.Length; i++)
+            {
+                solidSegs[i] = new ClipRange();
+            }
+
+            clipData = new short[128 * screenWidth];
+
+            drawSegs = new VisSeg[1024];
+            for (var i = 0; i < drawSegs.Length; i++)
+            {
+                drawSegs[i] = new VisSeg();
+            }
+        }
+
+        private void ResetRenderingHistory()
+        {
+        }
+
+        private void ClearRenderingHistory()
+        {
+            for (var x = 0; x < windowWidth; x++)
+            {
+                upperClip[x] = -1;
+            }
+            for (var x = 0; x < windowWidth; x++)
+            {
+                lowerClip[x] = (short)windowHeight;
+            }
+
             solidSegs[0].First = -0x7fffffff;
             solidSegs[0].Last = -1;
             solidSegs[1].First = windowWidth;
             solidSegs[1].Last = 0x7fffffff;
             newEnd = 2;
-        }
 
-        public void ClearDrawSegs()
-        {
             clipDataLength = 0;
+
             drawSegCount = 0;
         }
 
-        public void ClearFlat()
+
+
+        //
+        //
+        // ???
+        //
+        //
+
+        private Fixed pspritescale;
+        private Fixed pspriteiscale;
+        private Fixed skyiscale;
+
+        private World world;
+        private Fixed cameraX;
+        private Fixed cameraY;
+        private Fixed cameraZ;
+        private Angle cameraAngle;
+
+
+
+
+        private byte[][] ReadColorMap(Wad wad)
         {
-            // angle = (viewangle-ANG90)>>ANGLETOFINESHIFT;
-            var angle = cameraAngle - Angle.Ang90;
-
-            // basexscale = FixedDiv (finecosine[angle],centerxfrac);
-            planeBaseXScale = Trig.Cos(angle) / centerXFrac;
-
-            // baseyscale = -FixedDiv (finesine[angle],centerxfrac);
-            planeBaseYScale = -(Trig.Sin(angle) / centerXFrac);
-
-            ceilingPrevSector = null;
-            ceilingPrevX = int.MaxValue;
-
-            floorPrevSector = null;
-            floorPrevX = int.MaxValue;
+            var data = wad.ReadLump("COLORMAP");
+            var num = data.Length / 256;
+            var map = new byte[num][];
+            for (var i = 0; i < num; i++)
+            {
+                map[i] = new byte[256];
+                var offset = 256 * i;
+                for (var c = 0; c < 256; c++)
+                {
+                    map[i][c] = data[offset + c];
+                }
+            }
+            return map;
         }
+
+        
 
         public Fixed ScaleFromGlobalAngle(Angle visAngle, Angle viewAngle, Angle rwNormal, Fixed rwDistance)
         {
@@ -460,10 +498,8 @@ namespace ManagedDoom
             cameraAngle = viewAngle;
             this.world = world;
 
-            ClearClipSegs();
-            ClearClipData();
-            ClearDrawSegs();
-            ClearFlat();
+            ClearPlaneRendering();
+            ClearRenderingHistory();
 
             GoSub(world.Map.Nodes.Last());
 
