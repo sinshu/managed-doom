@@ -987,6 +987,12 @@ namespace ManagedDoom
             //     - The front and back sectors have the identical height, flat texture and light level.
             //     - The camera sees the wrong side of the plane.
             //
+            // These are important not only for performance but also to reproduce the following tricks.
+            //
+            //     - The entrance to the outdoor area in E1M1 has the different height from the adjacent walls.
+            //     - The sky texture is shown where a wall should be (the chainsaw area in MAP01 for example).
+            //     - Fake 3D bridges in REQUIEM.WAD.
+            //
             //
 
             bool drawUpperWall;
@@ -1035,7 +1041,7 @@ namespace ManagedDoom
 
             //
             //
-            // Determine how the wall textures are aligned (if necessary).
+            // Determine how the wall textures are vertically aligned (if necessary).
             //
             //
 
@@ -1082,7 +1088,7 @@ namespace ManagedDoom
 
             //
             //
-            // Determine where on the screen the wall is drawn.
+            // Calculate the scaling factors of the left and right edges of the wall range.
             //
             //
 
@@ -1120,7 +1126,8 @@ namespace ManagedDoom
 
             //
             //
-            // Determine how the wall textures are drawn (if necessary).
+            // Determine how the wall textures are horizontally aligned
+            // and which color map is used according to the light level (if necessary).
             //
             //
 
@@ -1174,18 +1181,25 @@ namespace ManagedDoom
 
 
 
+            //
+            //
+            // Determine where on the screen the wall is drawn.
+            //
+            //
+
+            // Now these values are right shifted to adjust the scale to the screen coord calculation.
             worldFrontY1 = new Fixed(worldFrontY1.Data >> 4);
             worldFrontY2 = new Fixed(worldFrontY2.Data >> 4);
             worldBackY1 = new Fixed(worldBackY1.Data >> 4);
             worldBackY2 = new Fixed(worldBackY2.Data >> 4);
 
-
-
+            // The Y positions of the top / bottom edges of the wall.
             var wallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
             var wallY1Step = -(rwScaleStep * worldFrontY1);
             var wallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
             var wallY2Step = -(rwScaleStep * worldFrontY2);
 
+            // The Y position of the top edge of the portal (if visible).
             var portalY1Frac = default(Fixed);
             var portalY1Step = default(Fixed);
             if (drawUpperWall)
@@ -1202,6 +1216,7 @@ namespace ManagedDoom
                 }
             }
 
+            // The Y position of the bottom edge of the portal (if visible).
             var portalY2Frac = default(Fixed);
             var portalY2Step = default(Fixed);
             if (drawLowerWall)
@@ -1220,12 +1235,26 @@ namespace ManagedDoom
 
 
 
+            //
+            //
+            // Determine which color map is used for the plane according to the light level.
+            //
+            //
+
             var planeLightLevel = frontSector.LightLevel >> LightSegShift; // + extraLight;
             if (planeLightLevel >= LightLevelCount)
             {
                 planeLightLevel = LightLevelCount - 1;
             }
             var planeLights = zLight[planeLightLevel];
+
+
+
+            //
+            //
+            // Prepare to record the rendering history.
+            //
+            //
 
             var visSeg = drawSegs[drawSegCount];
             visSeg.Seg = seg;
@@ -1246,6 +1275,12 @@ namespace ManagedDoom
             }
 
 
+
+            //
+            //
+            // Now the rendering is carried out.
+            //
+            //
 
             for (var x = x1; x <= x2; x++)
             {
