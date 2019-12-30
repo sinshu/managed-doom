@@ -59,26 +59,26 @@ namespace ManagedDoom
             {
                 if (Geometry.PointOnSide(x, y, node) == 0)
                 {
-                    if (Node.IsSubsector(node.Children0))
+                    if (Node.IsSubsector(node.Children[0]))
                     {
-                        target = map.Subsectors[Node.GetSubsector(node.Children0)];
+                        target = map.Subsectors[Node.GetSubsector(node.Children[0])];
                         break;
                     }
                     else
                     {
-                        node = map.Nodes[node.Children0];
+                        node = map.Nodes[node.Children[0]];
                     }
                 }
                 else
                 {
-                    if (Node.IsSubsector(node.Children1))
+                    if (Node.IsSubsector(node.Children[1]))
                     {
-                        target = map.Subsectors[Node.GetSubsector(node.Children1)];
+                        target = map.Subsectors[Node.GetSubsector(node.Children[1])];
                         break;
                     }
                     else
                     {
-                        node = map.Nodes[node.Children1];
+                        node = map.Nodes[node.Children[1]];
                     }
                 }
             }

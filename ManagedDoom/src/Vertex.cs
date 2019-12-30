@@ -20,27 +20,25 @@ namespace ManagedDoom
             var x = BitConverter.ToInt16(data, offset);
             var y = BitConverter.ToInt16(data, offset + 2);
 
-            return new Vertex(
-                Fixed.FromInt(x),
-                Fixed.FromInt(y));
+            return new Vertex(Fixed.FromInt(x), Fixed.FromInt(y));
         }
 
         public static Vertex[] FromWad(Wad wad, int lump)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % Vertex.DataSize != 0)
+            if (length % DataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / Vertex.DataSize;
+            var count = length / DataSize;
             var vertices = new Vertex[count]; ;
 
             for (var i = 0; i < count; i++)
             {
-                var offset = Vertex.DataSize * i;
-                vertices[i] = Vertex.FromData(data, offset);
+                var offset = DataSize * i;
+                vertices[i] = FromData(data, offset);
             }
 
             return vertices;

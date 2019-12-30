@@ -101,19 +101,19 @@ namespace ManagedDoom
         public static LineDef[] FromWad(Wad wad, int lump, Vertex[] vertices, SideDef[] sides)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % 14 != 0)
+            if (length % DataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / 14;
+            var count = length / DataSize;
             var lines = new LineDef[count]; ;
 
             for (var i = 0; i < count; i++)
             {
                 var offset = 14 * i;
-                lines[i] = LineDef.FromData(data, offset, vertices, sides);
+                lines[i] = FromData(data, offset, vertices, sides);
             }
 
             return lines;

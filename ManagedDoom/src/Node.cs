@@ -11,34 +11,23 @@ namespace ManagedDoom
         private Fixed dx;
         private Fixed dy;
 
-        private Fixed[] bbox0;
-        private Fixed[] bbox1;
+        private Fixed[][] bbox;
 
-        private int children0;
-        private int children1;
+        private int[] children;
 
         public Node(
-            Fixed x,
-            Fixed y,
-            Fixed dx,
-            Fixed dy,
-            Fixed bbox0Top,
-            Fixed bbox0Bottom,
-            Fixed bbox0Left,
-            Fixed bbox0Right,
-            Fixed bbox1Top,
-            Fixed bbox1Bottom,
-            Fixed bbox1Left,
-            Fixed bbox1Right,
-            int children0,
-            int children1)
+            Fixed x, Fixed y,
+            Fixed dx, Fixed dy,
+            Fixed bbox0Top, Fixed bbox0Bottom, Fixed bbox0Left, Fixed bbox0Right,
+            Fixed bbox1Top, Fixed bbox1Bottom, Fixed bbox1Left, Fixed bbox1Right,
+            int children0, int children1)
         {
             this.x = x;
             this.y = y;
             this.dx = dx;
             this.dy = dy;
 
-            this.bbox0 = new Fixed[4]
+            var bbox0 = new Fixed[4]
             {
                 bbox0Top,
                 bbox0Bottom,
@@ -46,7 +35,7 @@ namespace ManagedDoom
                 bbox0Right
             };
 
-            this.bbox1 = new Fixed[4]
+            var bbox1 = new Fixed[4]
             {
                 bbox1Top,
                 bbox1Bottom,
@@ -54,8 +43,17 @@ namespace ManagedDoom
                 bbox1Right
             };
 
-            this.children0 = children0;
-            this.children1 = children1;
+            bbox = new Fixed[][]
+            {
+                bbox0,
+                bbox1
+            };
+
+            children = new int[]
+            {
+                children0,
+                children1
+            };
         }
 
         public static Node FromData(byte[] data, int offset)
@@ -76,20 +74,11 @@ namespace ManagedDoom
             var children1 = BitConverter.ToInt16(data, offset + 26);
 
             return new Node(
-                Fixed.FromInt(x),
-                Fixed.FromInt(y),
-                Fixed.FromInt(dx),
-                Fixed.FromInt(dy),
-                Fixed.FromInt(bbox0Top),
-                Fixed.FromInt(bbox0Bottom),
-                Fixed.FromInt(bbox0Left),
-                Fixed.FromInt(bbox0Right),
-                Fixed.FromInt(bbox1Top),
-                Fixed.FromInt(bbox1Bottom),
-                Fixed.FromInt(bbox1Left),
-                Fixed.FromInt(bbox1Right),
-                children0,
-                children1);
+                Fixed.FromInt(x), Fixed.FromInt(y),
+                Fixed.FromInt(dx), Fixed.FromInt(dy),
+                Fixed.FromInt(bbox0Top), Fixed.FromInt(bbox0Bottom), Fixed.FromInt(bbox0Left), Fixed.FromInt(bbox0Right),
+                Fixed.FromInt(bbox1Top), Fixed.FromInt(bbox1Bottom), Fixed.FromInt(bbox1Left), Fixed.FromInt(bbox1Right),
+                children0, children1);
         }
 
         public static Node[] FromWad(Wad wad, int lump, Subsector[] subsectors)
@@ -127,20 +116,7 @@ namespace ManagedDoom
         public Fixed Y => y;
         public Fixed Dx => dx;
         public Fixed Dy => dy;
-
-        public Fixed[] Bbox0 => bbox0;
-        public Fixed Bbox0Top => bbox0[0];
-        public Fixed Bbox0Bottom => bbox0[1];
-        public Fixed Bbox0Left => bbox0[2];
-        public Fixed Bbox0Right => bbox0[3];
-
-        public Fixed[] Bbox1 => bbox1;
-        public Fixed Bbox1Top => bbox1[0];
-        public Fixed Bbox1Bottom => bbox1[1];
-        public Fixed Bbox1Left => bbox1[2];
-        public Fixed Bbox1Right => bbox1[3];
-
-        public int Children0 => children0;
-        public int Children1 => children1;
+        public Fixed[][] Bbox => bbox;
+        public int[] Children => children;
     }
 }

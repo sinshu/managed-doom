@@ -55,19 +55,19 @@ namespace ManagedDoom
         public static Sector[] FromWad(Wad wad, int lump, FlatLookup flats)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % Sector.DataSize != 0)
+            if (length % DataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / Sector.DataSize;
+            var count = length / DataSize;
             var sectors = new Sector[count]; ;
 
             for (var i = 0; i < count; i++)
             {
-                var offset = Sector.DataSize * i;
-                sectors[i] = Sector.FromData(data, offset, flats);
+                var offset = DataSize * i;
+                sectors[i] = FromData(data, offset, flats);
             }
 
             return sectors;

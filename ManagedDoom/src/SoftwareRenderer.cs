@@ -511,9 +511,9 @@ namespace ManagedDoom
             var map = world.Map;
             if (Geometry.PointOnSide(cameraX, cameraY, node) == 0)
             {
-                if (Node.IsSubsector(node.Children0))
+                if (Node.IsSubsector(node.Children[0]))
                 {
-                    var subsector = map.Subsectors[Node.GetSubsector(node.Children0)];
+                    var subsector = map.Subsectors[Node.GetSubsector(node.Children[0])];
                     for (var i = 0; i < subsector.SegCount; i++)
                     {
                         DrawSeg(map.Segs[subsector.FirstSeg + i]);
@@ -521,13 +521,13 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    var next = map.Nodes[node.Children0];
+                    var next = map.Nodes[node.Children[0]];
                     GoSub(next);
                 }
 
-                if (Node.IsSubsector(node.Children1))
+                if (Node.IsSubsector(node.Children[1]))
                 {
-                    var subsector = map.Subsectors[Node.GetSubsector(node.Children1)];
+                    var subsector = map.Subsectors[Node.GetSubsector(node.Children[1])];
                     for (var i = 0; i < subsector.SegCount; i++)
                     {
                         DrawSeg(map.Segs[subsector.FirstSeg + i]);
@@ -535,15 +535,15 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    var next = map.Nodes[node.Children1];
+                    var next = map.Nodes[node.Children[1]];
                     GoSub(next);
                 }
             }
             else
             {
-                if (Node.IsSubsector(node.Children1))
+                if (Node.IsSubsector(node.Children[1]))
                 {
-                    var subsector = map.Subsectors[Node.GetSubsector(node.Children1)];
+                    var subsector = map.Subsectors[Node.GetSubsector(node.Children[1])];
                     for (var i = 0; i < subsector.SegCount; i++)
                     {
                         DrawSeg(map.Segs[subsector.FirstSeg + i]);
@@ -551,13 +551,13 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    var next = map.Nodes[node.Children1];
+                    var next = map.Nodes[node.Children[1]];
                     GoSub(next);
                 }
 
-                if (Node.IsSubsector(node.Children0))
+                if (Node.IsSubsector(node.Children[0]))
                 {
-                    var subsector = map.Subsectors[Node.GetSubsector(node.Children0)];
+                    var subsector = map.Subsectors[Node.GetSubsector(node.Children[0])];
                     for (var i = 0; i < subsector.SegCount; i++)
                     {
                         DrawSeg(map.Segs[subsector.FirstSeg + i]);
@@ -565,7 +565,7 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    var next = map.Nodes[node.Children0];
+                    var next = map.Nodes[node.Children[0]];
                     GoSub(next);
                 }
             }

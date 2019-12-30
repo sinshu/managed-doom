@@ -89,11 +89,7 @@ namespace ManagedDoom
 
                 if (patchCount[x] >= 2)
                 {
-                    var column = new Column(
-                        0,
-                        data,
-                        height * i,
-                        height);
+                    var column = new Column(0, data, height * i, height);
 
                     foreach (var patch in patches)
                     {
@@ -117,13 +113,7 @@ namespace ManagedDoom
                 }
             }
 
-            return new Patch(
-                name,
-                width,
-                height,
-                0,
-                0,
-                columns);
+            return new Patch(name, width, height, 0, 0, columns);
         }
 
         private static void DrawColumnInCache(
