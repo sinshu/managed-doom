@@ -9,23 +9,6 @@ namespace ManagedDoom
 {
     public sealed class SoftwareRenderer
     {
-        private const int FineFov = 2048;
-        private const int HeightBits = 12;
-        private const int HeightUnit = 1 << HeightBits;
-
-        private const int LightLevelCount = 16;
-        private const int LightSegShift = 4;
-        private const int MaxScaleLight = 48;
-        private const int ScaleLightShift = 12;
-        private const int MaxZLight = 128;
-        private const int ZLightShift = 20;
-        private const int ColorMapCount = 32;
-
-        private const int AngleToSkyShift = 22;
-        private static readonly Fixed skyTextureMid = Fixed.FromInt(100);
-
-
-
         private Wad wad;
         private TextureLookup textures;
         private FlatLookup flats;
@@ -50,18 +33,19 @@ namespace ManagedDoom
 
             InitWallRendering();
             InitPlaneRendering();
+            InitSkyRendering();
             InitLighting();
             InitRenderingHistory();
 
             ResetWindow(0, 0, screenWidth, screenHeight);
             ResetWallRendering();
             ResetPlaneRendering();
+            ResetSkyRendering();
             ResetLighting();
             ResetRenderingHistory();
 
             pspritescale = Fixed.FromInt(windowWidth) / screenWidth;
             pspriteiscale = Fixed.FromInt(screenWidth) / windowWidth;
-            skyiscale = new Fixed((int)(((long)Fixed.FracUnit * screenWidth * 200) / (windowWidth * screenHeight)));
         }
 
 
@@ -103,6 +87,8 @@ namespace ManagedDoom
         // Wall rendering
         //
         //
+
+        private const int FineFov = 2048;
 
         private int[] angleToX;
         private Angle[] xToAngle;
@@ -257,9 +243,39 @@ namespace ManagedDoom
 
         //
         //
+        // Sky rendering
+        //
+        //
+
+        private const int AngleToSkyShift = 22;
+        private Fixed skyTextureMid;
+        private Fixed skyiscale;
+
+        private void InitSkyRendering()
+        {
+            skyTextureMid = Fixed.FromInt(100);
+        }
+
+        private void ResetSkyRendering()
+        {
+            skyiscale = new Fixed((int)(((long)Fixed.FracUnit * screenWidth * 200) / (windowWidth * screenHeight)));
+        }
+
+
+
+        //
+        //
         // Lighting
         //
         //
+
+        private const int LightLevelCount = 16;
+        private const int LightSegShift = 4;
+        private const int MaxScaleLight = 48;
+        private const int ScaleLightShift = 12;
+        private const int MaxZLight = 128;
+        private const int ZLightShift = 20;
+        private const int ColorMapCount = 32;
 
         private byte[][] colorMap;
         private byte[][][] scaleLight;
@@ -404,7 +420,6 @@ namespace ManagedDoom
 
         private Fixed pspritescale;
         private Fixed pspriteiscale;
-        private Fixed skyiscale;
 
         private World world;
         private Fixed cameraX;
@@ -808,6 +823,9 @@ namespace ManagedDoom
         }
 
 
+
+        private const int HeightBits = 12;
+        private const int HeightUnit = 1 << HeightBits;
 
         public void DrawSolidWallRange(Seg seg, Angle rwAngle1, int x1, int x2)
         {
