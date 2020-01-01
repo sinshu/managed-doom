@@ -564,8 +564,117 @@ namespace ManagedDoom
             new[] { 2, 1, 3, 0 }
         };
 
-        public bool CheckBbox(Fixed[] bbox)
+        public bool CheckBbox(Fixed[] bspcoord)
         {
+            int boxx;
+            int boxy;
+
+            // Find the corners of the box
+            // that define the edges from current viewpoint.
+            if (cameraX <= bspcoord[Bbox.Left])
+            {
+                boxx = 0;
+            }
+            else if (cameraX < bspcoord[Bbox.Right])
+            {
+                boxx = 1;
+            }
+            else
+            {
+                boxx = 2;
+            }
+
+            if (cameraY >= bspcoord[Bbox.Top])
+            {
+                boxy = 0;
+            }
+            else if (cameraY > bspcoord[Bbox.Bottom])
+            {
+                boxy = 1;
+            }
+            else
+            {
+                boxy = 2;
+            }
+
+            var boxpos = (boxy << 2) + boxx;
+            if (boxpos == 5)
+            {
+                return true;
+            }
+
+            var x1 = bspcoord[checkcoord[boxpos][0]];
+            var y1 = bspcoord[checkcoord[boxpos][1]];
+            var x2 = bspcoord[checkcoord[boxpos][2]];
+            var y2 = bspcoord[checkcoord[boxpos][3]];
+
+            // check clip list for an open space
+            var angle1 = Geometry.PointToAngle(cameraX, cameraY, x1, y1) - cameraAngle;
+            var angle2 = Geometry.PointToAngle(cameraX, cameraY, x2, y2) - cameraAngle;
+
+            var span = angle1 - angle2;
+
+            // Sitting on a line?
+            if (span >= Angle.Ang180)
+            {
+                return true;
+            }
+
+            var tspan = angle1 + clipAngle;
+
+            if (tspan > clipAngle2)
+            {
+                tspan -= clipAngle2;
+
+                // Totally off the left edge?
+                if (tspan >= span)
+                {
+                    return false;
+                }
+
+                angle1 = clipAngle;
+            }
+
+            tspan = clipAngle - angle2;
+            if (tspan > clipAngle2)
+            {
+                tspan -= clipAngle2;
+
+                // Totally off the left edge?
+                if (tspan >= span)
+                {
+                    return false;
+                }
+
+                angle2 = -clipAngle;
+            }
+
+            // Find the first clippost
+            //  that touches the source post
+            //  (adjacent pixels are touching).
+            var sx1 = angleToX[(angle1 + Angle.Ang90).Data >> Trig.AngleToFineShift];
+            var sx2 = angleToX[(angle2 + Angle.Ang90).Data >> Trig.AngleToFineShift];
+
+            // Does not cross a pixel.
+            if (sx1 == sx2)
+            {
+                return false;
+            }
+
+            sx2--;
+
+            var start = 0;
+            while (solidSegs[start].Last < sx2)
+            {
+                start++;
+            }
+
+            if (sx1 >= solidSegs[start].First && sx2 <= solidSegs[start].Last)
+            {
+                // The clippost contains the new span.
+                return false;
+            }
+
             return true;
         }
 
