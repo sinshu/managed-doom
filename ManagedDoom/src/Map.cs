@@ -4,8 +4,9 @@ namespace ManagedDoom
 {
     public sealed class Map
     {
-        private FlatLookup flats;
         private TextureLookup textures;
+        private FlatLookup flats;
+
         private Vertex[] vertices;
         private Sector[] sectors;
         private SideDef[] sides;
@@ -16,10 +17,10 @@ namespace ManagedDoom
         private Thing[] things;
         private Texture skyTexture;
 
-        public Map(Wad wad, string name)
+        public Map(TextureLookup textures, FlatLookup flats, Wad wad, string name)
         {
-            flats = new FlatLookup(wad);
-            textures = new TextureLookup(wad);
+            this.textures = textures;
+            this.flats = flats;
 
             var map = wad.GetLumpNumber(name);
             vertices = Vertex.FromWad(wad, map + 4);
@@ -58,8 +59,6 @@ namespace ManagedDoom
             }
         }
 
-        public FlatLookup Flats => flats;
-        public TextureLookup Textures => textures;
         public Vertex[] Vertices => vertices;
         public Sector[] Sectors => sectors;
         public SideDef[] Sides => sides;

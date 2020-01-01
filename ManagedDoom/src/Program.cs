@@ -13,20 +13,22 @@ namespace ManagedDoom
         {
             var style = Styles.Close | Styles.Titlebar;
             using (var window = new RenderWindow(new VideoMode(640, 400), "Managed Doom", style))
-            using (var texture = new SFML.Graphics.Texture(512, 1024))
-            using (var sprite = new Sprite(texture, new IntRect(0, 0, 400, 640)))
             using (var wad = new Wad("DOOM2.WAD"))
             {
-                var world = new World(wad, "MAP01");
+                var palette = new Palette(wad);
+                var colorMap = new ColorMap(wad);
 
-                var renderer = new SoftwareRenderer(wad);
+                var textures = new TextureLookup(wad);
+                var flats = new FlatLookup(wad);
+
+                var renderer = new SoftwareRendering.Renderer(window, palette, colorMap, textures, flats, true);
+
+                var world = new World(textures, flats, wad, "MAP01");
+
+                renderer.BindWorld(world);
 
                 window.Closed += (sender, e) => window.Close();
                 window.SetFramerateLimit(35);
-
-                sprite.Position = new Vector2f(0, 0);
-                sprite.Rotation = 90;
-                sprite.Scale = new Vector2f(1, -1);
 
                 while (window.IsOpen)
                 {
@@ -37,10 +39,8 @@ namespace ManagedDoom
                     var left = Keyboard.IsKeyPressed(Keyboard.Key.Left);
                     var right = Keyboard.IsKeyPressed(Keyboard.Key.Right);
                     world.Update(up, dowm, left, right);
-                    renderer.Render(world);
-                    texture.Update(renderer.GlTextureData, 400, 640, 0, 0);
-                    window.Draw(sprite);
-                    window.Display();
+
+                    renderer.Render();
                 }
             }
         }

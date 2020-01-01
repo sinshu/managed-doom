@@ -11,9 +11,9 @@ namespace ManagedDoom
         private Vertex player;
         private Angle playerViewAngle;
 
-        public World(Wad wad, string mapName)
+        public World(TextureLookup textures, FlatLookup flats, Wad wad, string mapName)
         {
-            map = new Map(wad, mapName);
+            map = new Map(textures, flats, wad, mapName);
 
             var playerThing = map.Things.First(t => (int)t.Type == 1);
             player = new Vertex(playerThing.X, playerThing.Y);

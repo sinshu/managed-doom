@@ -5,31 +5,33 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
-namespace ManagedDoom
+namespace ManagedDoom.SoftwareRendering
 {
-    public sealed class SoftwareRenderer
+    public sealed class ThreeDRenderer
     {
-        private Wad wad;
+        private ColorMap colorMap;
         private TextureLookup textures;
         private FlatLookup flats;
 
         private int screenWidth;
         private int screenHeight;
         private byte[] screenData;
-        private byte[] glTextureData;
-        private byte[] palette;
 
-        public SoftwareRenderer(Wad wad)
+        public ThreeDRenderer(
+            ColorMap colorMap,
+            TextureLookup textures,
+            FlatLookup flats,
+            int screenWidth,
+            int screenHeight,
+            byte[] screenData)
         {
-            this.wad = wad;
-            textures = new TextureLookup(wad);
-            flats = new FlatLookup(wad);
+            this.colorMap = colorMap;
+            this.textures = textures;
+            this.flats = flats;
 
-            screenWidth = 640;
-            screenHeight = 400;
-            screenData = new byte[screenWidth * screenHeight];
-            glTextureData = new byte[4 * screenWidth * screenHeight];
-            palette = wad.ReadLump("PLAYPAL");
+            this.screenWidth = screenWidth;
+            this.screenHeight = screenHeight;
+            this.screenData = screenData;
 
             InitWallRendering();
             InitPlaneRendering();
@@ -277,14 +279,11 @@ namespace ManagedDoom
         private const int ZLightShift = 20;
         private const int ColorMapCount = 32;
 
-        private byte[][] colorMap;
         private byte[][][] scaleLight;
         private byte[][][] zLight;
 
         private void InitLighting()
         {
-            colorMap = ReadColorMap(wad);
-
             scaleLight = new byte[LightLevelCount][][];
             zLight = new byte[LightLevelCount][][];
             for (var i = 0; i < LightLevelCount; i++)
@@ -314,7 +313,7 @@ namespace ManagedDoom
                         level = ColorMapCount - 1;
                     }
 
-                    zLight[i][j] = colorMap[level];
+                    zLight[i][j] = colorMap.Data[level];
                 }
             }
         }
@@ -339,7 +338,7 @@ namespace ManagedDoom
                         level = ColorMapCount - 1;
                     }
 
-                    scaleLight[i][j] = colorMap[level];
+                    scaleLight[i][j] = colorMap.Data[level];
                 }
             }
         }
@@ -427,24 +426,14 @@ namespace ManagedDoom
         private Fixed cameraZ;
         private Angle cameraAngle;
 
-
-
-
-        private byte[][] ReadColorMap(Wad wad)
+        public void BindWorld(World world)
         {
-            var data = wad.ReadLump("COLORMAP");
-            var num = data.Length / 256;
-            var map = new byte[num][];
-            for (var i = 0; i < num; i++)
-            {
-                map[i] = new byte[256];
-                var offset = 256 * i;
-                for (var c = 0; c < 256; c++)
-                {
-                    map[i][c] = data[offset + c];
-                }
-            }
-            return map;
+            this.world = world;
+        }
+
+        public void UnbindWorld()
+        {
+            world = null;
         }
 
         
@@ -486,9 +475,8 @@ namespace ManagedDoom
             }
         }
 
-        public void Render(World world)
+        public void Render()
         {
-            this.world = world;
             cameraX = world.ViewX;
             cameraY = world.ViewY;
             cameraZ = world.ViewZ;
@@ -498,16 +486,6 @@ namespace ManagedDoom
             ClearRenderingHistory();
             RenderBspNode(world.Map.Nodes.Length - 1);
             DrawMasked();
-
-            for (var i = 0; i < screenData.Length; i++)
-            {
-                var po = 3 * screenData[i];
-                var offset = 4 * i;
-                glTextureData[offset + 0] = palette[po + 0];
-                glTextureData[offset + 1] = palette[po + 1];
-                glTextureData[offset + 2] = palette[po + 2];
-                glTextureData[offset + 3] = 255;
-            }
         }
 
         public void RenderBspNode(int node)
@@ -2043,7 +2021,7 @@ namespace ManagedDoom
             var angle = (cameraAngle + xToAngle[x]).Data >> AngleToSkyShift;
             var mask = world.Map.SkyTexture.Width - 1;
             var source = world.Map.SkyTexture.Composite.Columns[angle & mask];
-            DrawColumn(source[0], colorMap[0], x, y1, y2, skyiscale, skyTextureMid);
+            DrawColumn(source[0], colorMap.Data[0], x, y1, y2, skyiscale, skyTextureMid);
         }
 
         private void DrawMaskedColumn(Column[] columns, byte[] map, int x, Fixed iScale, Fixed textureMid, Fixed spryscale, Fixed sprtopscreen, int ceilClip, int floorClip)
@@ -2066,35 +2044,6 @@ namespace ManagedDoom
             }
         }
 
-
-
-
-        /*
-        public void DrawScreen(Bitmap target)
-        {
-            for (var y = 0; y < screenHeight; y++)
-            {
-                for (var x = 0; x < screenWidth; x++)
-                {
-                    var value = screenData[screenHeight * x + y];
-                    var r = palette[3 * value];
-                    var g = palette[3 * value + 1];
-                    var b = palette[3 * value + 2];
-                    var color = Color.FromArgb(r, g, b);
-                    target.SetPixel(x, y, color);
-                }
-            }
-        }
-        */
-
-
-        public byte[] GlTextureData
-        {
-            get
-            {
-                return glTextureData;
-            }
-        }
 
 
         private class ClipRange
