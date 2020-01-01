@@ -22,54 +22,64 @@ namespace ManagedDoom
             nameToFlat = new Dictionary<string, Flat>();
             nameToNumber = new Dictionary<string, int>();
 
-            for (var lump = start; lump < end; lump++)
+            foreach (var lump in EnumerateFlats(wad))
             {
-                var size = wad.GetLumpSize(lump);
-
-                if (size == 0)
-                {
-                    continue;
-                }
-
-                if (size != 4096)
-                {
-                    continue;
-                    throw new Exception("The size of a flat must be 4096.");
-                }
-
                 var name = wad.LumpInfos[lump].Name;
+
+                if (nameToFlat.ContainsKey(name))
+                {
+                    continue;
+                }
+
                 var data = wad.ReadLump(lump);
+
                 var flat = Flat.FromData(name, data);
 
-                // This ugly try-catch is to avoid crash in some PWADs.
-                // Need to fix.
-                try
-                {
-                    nameToNumber.Add(name, flats.Count);
-                    flats.Add(flat);
-                    nameToFlat.Add(name, flat);
-                }
-                catch
-                {
-                }
+                nameToNumber.Add(name, flats.Count);
+                flats.Add(flat);
+                nameToFlat.Add(name, flat);
+
             }
 
             skyFlatNumber = nameToNumber["F_SKY1"];
             skyFlat = nameToFlat["F_SKY1"];
         }
 
+        private static IEnumerable<int> EnumerateFlats(Wad wad)
+        {
+            var flatSection = false;
+
+            for (var lump = wad.LumpInfos.Count - 1; lump >= 0; lump--)
+            {
+                var name = wad.LumpInfos[lump].Name;
+
+                if (name.StartsWith("F"))
+                {
+                    if (name.EndsWith("_END"))
+                    {
+                        flatSection = true;
+                        continue;
+                    }
+                    else if (name.EndsWith("_START"))
+                    {
+                        flatSection = false;
+                        continue;
+                    }
+                }
+
+                if (flatSection)
+                {
+                    if (wad.LumpInfos[lump].Size == 4096)
+                    {
+                        yield return lump;
+                    }
+                }
+            }
+        }
+
         public int GetNumber(string name)
         {
-            if (nameToFlat.ContainsKey(name))
-            {
-                return nameToNumber[name];
-            }
-            else
-            {
-                // This hack is to avoid crash in some PWADs.
-                // Need to fix.
-                return 3;
-            }
+            return nameToNumber[name];
         }
 
         public IEnumerator<Flat> GetEnumerator()
