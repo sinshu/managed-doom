@@ -57,6 +57,13 @@ namespace ManagedDoom
             for (var i = 0; i < patches.Length; i++)
             {
                 var name = patchNames[i];
+
+                // This check is necessary to avoid crash in DOOM1.WAD.
+                if (wad.GetLumpNumber(name) == -1)
+                {
+                    continue;
+                }
+
                 var data = wad.ReadLump(name);
                 patches[i] = Patch.FromData(name, data);
             }
