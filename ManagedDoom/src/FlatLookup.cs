@@ -15,9 +15,6 @@ namespace ManagedDoom
 
         public FlatLookup(Wad wad)
         {
-            var start = wad.GetLumpNumber("F_START") + 1;
-            var end = wad.GetLumpNumber("F_END");
-
             flats = new List<Flat>();
             nameToFlat = new Dictionary<string, Flat>();
             nameToNumber = new Dictionary<string, int>();
