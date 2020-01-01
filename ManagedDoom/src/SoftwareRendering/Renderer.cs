@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -12,6 +13,8 @@ namespace ManagedDoom.SoftwareRendering
     {
         private RenderWindow sfmlWindow;
         private Palette palette;
+
+        private uint[] colors;
 
         private int sfmlWindowWidth;
         private int sfmlWindowHeight;
@@ -40,6 +43,8 @@ namespace ManagedDoom.SoftwareRendering
             {
                 this.sfmlWindow = window;
                 this.palette = palette;
+
+                colors = InitColors(palette);
 
                 sfmlWindowWidth = (int)window.Size.X;
                 sfmlWindowHeight = (int)window.Size.Y;
@@ -79,6 +84,22 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
+        private static uint[] InitColors(Palette palette)
+        {
+            var colors = new uint[256];
+            for (var i = 0; i < 256; i++)
+            {
+                var offset = 3 * i;
+                var r = palette.Data[offset + 0];
+                var g = palette.Data[offset + 1];
+                var b = palette.Data[offset + 2];
+                var a = 255;
+                var color = new SFML.Graphics.Color(r, g, b);
+                colors[i] = (uint)((r << 0) | (g << 8) | (b << 16) | (a << 24));
+            }
+            return colors;
+        }
+
         public void BindWorld(World world)
         {
             threeD.BindWorld(world);
@@ -93,14 +114,10 @@ namespace ManagedDoom.SoftwareRendering
         {
             threeD.Render();
 
-            for (var i = 0; i < screenData.Length; i++)
+            var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
+            for (var i = 0; i < p.Length; i++)
             {
-                var po = 3 * screenData[i];
-                var offset = 4 * i;
-                sfmlTextureData[offset + 0] = palette.Data[po + 0];
-                sfmlTextureData[offset + 1] = palette.Data[po + 1];
-                sfmlTextureData[offset + 2] = palette.Data[po + 2];
-                sfmlTextureData[offset + 3] = 255;
+                p[i] = colors[screenData[i]];
             }
 
             sfmlTexture.Update(sfmlTextureData, (uint)screenHeight, (uint)screenWidth, 0, 0);
