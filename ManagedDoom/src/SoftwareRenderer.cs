@@ -549,6 +549,21 @@ namespace ManagedDoom
             }
         }
 
+        private static readonly int[][] checkcoord =
+        {
+            new[] { 3, 0, 2, 1 },
+            new[] { 3, 0, 2, 0 },
+            new[] { 3, 1, 2, 0 },
+            new[] { 0 },
+            new[] { 2, 0, 2, 1 },
+            new[] { 0, 0, 0, 0 },
+            new[] { 3, 1, 3, 0 },
+            new[] { 0 },
+            new[] { 2, 0, 3, 1 },
+            new[] { 2, 1, 3, 1 },
+            new[] { 2, 1, 3, 0 }
+        };
+
         public bool CheckBbox(Fixed[] bbox)
         {
             return true;
