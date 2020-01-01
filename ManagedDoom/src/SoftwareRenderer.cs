@@ -488,11 +488,16 @@ namespace ManagedDoom
 
         public void Render(World world)
         {
-            var x = world.ViewX;
-            var y = world.ViewY;
-            var z = world.ViewZ;
-            var angle = world.ViewAngle;
-            Go(x, y, z, angle, world);
+            this.world = world;
+            cameraX = world.ViewX;
+            cameraY = world.ViewY;
+            cameraZ = world.ViewZ;
+            cameraAngle = world.ViewAngle;
+
+            ClearPlaneRendering();
+            ClearRenderingHistory();
+            RenderBspNode(world.Map.Nodes.Length - 1);
+            DrawMasked();
 
             for (var i = 0; i < screenData.Length; i++)
             {
@@ -505,85 +510,48 @@ namespace ManagedDoom
             }
         }
 
-        public void Go(Fixed viewX, Fixed viewY, Fixed viewZ, Angle viewAngle, World world)
+        public void RenderBspNode(int node)
         {
-            cameraX = viewX;
-            cameraY = viewY;
-            cameraZ = viewZ;
-            cameraAngle = viewAngle;
-            this.world = world;
+            if (Node.IsSubsector(node))
+            {
+                if (node == -1)
+                {
+                    DrawSubsector(0);
+                }
+                else
+                {
+                    DrawSubsector(Node.GetSubsector(node));
+                }
+                return;
+            }
 
-            ClearPlaneRendering();
-            ClearRenderingHistory();
+            var bsp = world.Map.Nodes[node];
 
-            GoSub(world.Map.Nodes.Last());
+            // Decide which side the view point is on.
+            var side = Geometry.PointOnSide(cameraX, cameraY, bsp);
 
-            DrawMasked();
+            // Recursively divide front space.
+            RenderBspNode(bsp.Children[side]);
+
+            // Possibly divide back space.
+            if (CheckBbox(bsp.Bbox[side ^ 1]))
+            {
+                RenderBspNode(bsp.Children[side ^ 1]);
+            }
         }
 
-        public void GoSub(Node node)
+        public void DrawSubsector(int subsector)
         {
-            var map = world.Map;
-            if (Geometry.PointOnSide(cameraX, cameraY, node) == 0)
+            var target = world.Map.Subsectors[subsector];
+            for (var i = 0; i < target.SegCount; i++)
             {
-                if (Node.IsSubsector(node.Children[0]))
-                {
-                    var subsector = map.Subsectors[Node.GetSubsector(node.Children[0])];
-                    for (var i = 0; i < subsector.SegCount; i++)
-                    {
-                        DrawSeg(map.Segs[subsector.FirstSeg + i]);
-                    }
-                }
-                else
-                {
-                    var next = map.Nodes[node.Children[0]];
-                    GoSub(next);
-                }
-
-                if (Node.IsSubsector(node.Children[1]))
-                {
-                    var subsector = map.Subsectors[Node.GetSubsector(node.Children[1])];
-                    for (var i = 0; i < subsector.SegCount; i++)
-                    {
-                        DrawSeg(map.Segs[subsector.FirstSeg + i]);
-                    }
-                }
-                else
-                {
-                    var next = map.Nodes[node.Children[1]];
-                    GoSub(next);
-                }
+                DrawSeg(world.Map.Segs[target.FirstSeg + i]);
             }
-            else
-            {
-                if (Node.IsSubsector(node.Children[1]))
-                {
-                    var subsector = map.Subsectors[Node.GetSubsector(node.Children[1])];
-                    for (var i = 0; i < subsector.SegCount; i++)
-                    {
-                        DrawSeg(map.Segs[subsector.FirstSeg + i]);
-                    }
-                }
-                else
-                {
-                    var next = map.Nodes[node.Children[1]];
-                    GoSub(next);
-                }
+        }
 
-                if (Node.IsSubsector(node.Children[0]))
-                {
-                    var subsector = map.Subsectors[Node.GetSubsector(node.Children[0])];
-                    for (var i = 0; i < subsector.SegCount; i++)
-                    {
-                        DrawSeg(map.Segs[subsector.FirstSeg + i]);
-                    }
-                }
-                else
-                {
-                    var next = map.Nodes[node.Children[0]];
-                    GoSub(next);
-                }
-            }
+        public bool CheckBbox(Fixed[] bbox)
+        {
+            return true;
         }
 
         public void DrawSeg(Seg seg)
