@@ -9,14 +9,14 @@ namespace ManagedDoom
         private Fixed x;
         private Fixed y;
         private Angle facing;
-        private ThingType type;
+        private int type;
         private ThingFlags flags;
 
         public Thing(
             Fixed x,
             Fixed y,
             Angle facing,
-            ThingType type,
+            int type,
             ThingFlags flags)
         {
             this.x = x;
@@ -38,7 +38,7 @@ namespace ManagedDoom
                 Fixed.FromInt(x),
                 Fixed.FromInt(y),
                 Angle.FromDegree(facing),
-                (ThingType)type,
+                type,
                 (ThingFlags)flags);
         }
 
@@ -66,7 +66,7 @@ namespace ManagedDoom
         public Fixed X => x;
         public Fixed Y => y;
         public Angle Facing => facing;
-        public ThingType Type => type;
+        public int Type => type;
         public ThingFlags Flags => flags;
     }
 }
