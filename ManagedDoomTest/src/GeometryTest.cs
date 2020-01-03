@@ -168,5 +168,123 @@ namespace ManagedDoomTest
                 }
             }
         }
+
+        [TestMethod]
+        public void PointInSubsectorE1M1()
+        {
+            using (var wad = new Wad(WadPath.Doom1))
+            {
+                var flats = new FlatLookup(wad);
+                var textures = new TextureLookup(wad);
+                var map = wad.GetLumpNumber("E1M1");
+                var vertices = Vertex.FromWad(wad, map + 4);
+                var sectors = Sector.FromWad(wad, map + 8, flats);
+                var sides = SideDef.FromWad(wad, map + 3, textures, sectors);
+                var lines = LineDef.FromWad(wad, map + 2, vertices, sides);
+                var segs = Seg.FromWad(wad, map + 5, vertices, lines);
+                var subsectors = Subsector.FromWad(wad, map + 6, segs);
+                var nodes = Node.FromWad(wad, map + 7, subsectors);
+
+                var ok = 0;
+                var count = 0;
+
+                foreach (var subsector in subsectors)
+                {
+                    for (var i = 0; i < subsector.SegCount; i++)
+                    {
+                        var seg = segs[subsector.FirstSeg + i];
+
+                        var p1x = seg.Vertex1.X.ToDouble();
+                        var p1y = seg.Vertex1.Y.ToDouble();
+                        var p2x = seg.Vertex2.X.ToDouble();
+                        var p2y = seg.Vertex2.Y.ToDouble();
+
+                        var dx = p2x - p1x;
+                        var dy = p2y - p1y;
+                        var length = Math.Sqrt(dx * dx + dy * dy);
+
+                        var centerX = (p1x + p2x) / 2;
+                        var centerY = (p1y + p2y) / 2;
+                        var stepX = dy / length;
+                        var stepY = -dx / length;
+
+                        var targetX = centerX + 3 * stepX;
+                        var targetY = centerY + 3 * stepY;
+
+                        var fx = Fixed.FromDouble(targetX);
+                        var fy = Fixed.FromDouble(targetY);
+
+                        var result = Geometry.PointInSubsector(fx, fy, nodes, subsectors);
+
+                        if (result == subsector)
+                        {
+                            ok++;
+                        }
+                        count++;
+                    }
+                }
+
+                Assert.IsTrue((double)ok / count >= 0.995);
+            }
+        }
+
+        [TestMethod]
+        public void PointInSubsectorMap01()
+        {
+            using (var wad = new Wad(WadPath.Doom2))
+            {
+                var flats = new FlatLookup(wad);
+                var textures = new TextureLookup(wad);
+                var map = wad.GetLumpNumber("MAP01");
+                var vertices = Vertex.FromWad(wad, map + 4);
+                var sectors = Sector.FromWad(wad, map + 8, flats);
+                var sides = SideDef.FromWad(wad, map + 3, textures, sectors);
+                var lines = LineDef.FromWad(wad, map + 2, vertices, sides);
+                var segs = Seg.FromWad(wad, map + 5, vertices, lines);
+                var subsectors = Subsector.FromWad(wad, map + 6, segs);
+                var nodes = Node.FromWad(wad, map + 7, subsectors);
+
+                var ok = 0;
+                var count = 0;
+
+                foreach (var subsector in subsectors)
+                {
+                    for (var i = 0; i < subsector.SegCount; i++)
+                    {
+                        var seg = segs[subsector.FirstSeg + i];
+
+                        var p1x = seg.Vertex1.X.ToDouble();
+                        var p1y = seg.Vertex1.Y.ToDouble();
+                        var p2x = seg.Vertex2.X.ToDouble();
+                        var p2y = seg.Vertex2.Y.ToDouble();
+
+                        var dx = p2x - p1x;
+                        var dy = p2y - p1y;
+                        var length = Math.Sqrt(dx * dx + dy * dy);
+
+                        var centerX = (p1x + p2x) / 2;
+                        var centerY = (p1y + p2y) / 2;
+                        var stepX = dy / length;
+                        var stepY = -dx / length;
+
+                        var targetX = centerX + 3 * stepX;
+                        var targetY = centerY + 3 * stepY;
+
+                        var fx = Fixed.FromDouble(targetX);
+                        var fy = Fixed.FromDouble(targetY);
+
+                        var result = Geometry.PointInSubsector(fx, fy, nodes, subsectors);
+
+                        if (result == subsector)
+                        {
+                            ok++;
+                        }
+                        count++;
+                    }
+                }
+
+                Assert.IsTrue((double)ok / count >= 0.995);
+            }
+        }
     }
 }

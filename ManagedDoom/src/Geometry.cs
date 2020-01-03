@@ -177,5 +177,25 @@ namespace ManagedDoom
                 }
             }
         }
+
+        public static Subsector PointInSubsector(Fixed x, Fixed y, Node[] nodes, Subsector[] subsectors)
+        {
+            // single subsector is a special case
+            if (nodes.Length == 0)
+            {
+                return subsectors[0];
+            }
+
+            var nodenum = nodes.Length - 1;
+
+            while (!Node.IsSubsector(nodenum))
+            {
+                var node = nodes[nodenum];
+                var side = PointOnSide(x, y, node);
+                nodenum = node.Children[side];
+            }
+
+            return subsectors[Node.GetSubsector(nodenum)];
+        }
     }
 }
