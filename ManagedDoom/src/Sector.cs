@@ -6,6 +6,37 @@ namespace ManagedDoom
     {
         public const int DataSize = 26;
 
+        public Fixed FloorHeight;
+        public Fixed CeilingHeight;
+        public int FloorFlat;
+        public int CeilingFlat;
+        public int LightLevel;
+        public SectorSpecial Special;
+        public int Tag;
+
+        // 0 = untraversed, 1,2 = sndlines -1
+        public int SoundTraversed;
+
+        // thing that made a sound (or null)
+        public Mobj SoundTarget;
+
+        // mapblock bounding box for height changes
+        public int[] BlockBox;
+
+        // origin for any sounds played by the sector
+        public DegenMobj SoundOrigin;
+
+        // if == validcount, already checked
+        public int ValidCount;
+
+        // list of mobjs in sector
+        public Mobj ThingList;
+
+        // thinker_t for reversable actions
+        public object SpecialData;
+
+        public LineDef[] Lines;
+
         public Sector(
             Fixed floorHeight,
             Fixed ceilingHeight,
@@ -15,22 +46,14 @@ namespace ManagedDoom
             SectorSpecial special,
             int tag)
         {
-            this.floorHeight = floorHeight;
-            this.ceilingHeight = ceilingHeight;
-            this.floorFlat = floorFlat;
-            this.ceilingFlat = ceilingFlat;
-            this.lightLevel = lightLevel;
-            this.special = special;
-            this.tag = tag;
+            FloorHeight = floorHeight;
+            CeilingHeight = ceilingHeight;
+            FloorFlat = floorFlat;
+            CeilingFlat = ceilingFlat;
+            LightLevel = lightLevel;
+            Special = special;
+            Tag = tag;
         }
-
-        private Fixed floorHeight;
-        private Fixed ceilingHeight;
-        private int floorFlat;
-        private int ceilingFlat;
-        private int lightLevel;
-        private SectorSpecial special;
-        private int tag;
 
         public static Sector FromData(byte[] data, int offset, FlatLookup flats)
         {
@@ -72,13 +95,5 @@ namespace ManagedDoom
 
             return sectors;
         }
-
-        public Fixed FloorHeight => floorHeight;
-        public Fixed CeilingHeight => ceilingHeight;
-        public int FloorFlat => floorFlat;
-        public int CeilingFlat => ceilingFlat;
-        public int LightLevel => lightLevel;
-        public SectorSpecial Special => special;
-        public int Tag => tag;
     }
 }
