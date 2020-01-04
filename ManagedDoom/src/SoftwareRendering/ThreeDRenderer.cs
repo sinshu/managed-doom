@@ -2088,7 +2088,7 @@ namespace ManagedDoom.SoftwareRendering
             }
 
             // Handle all things in sector.
-            for (var thing = sector.ThingList; thing != null; thing = thing.SNext)
+            foreach (var thing in sector)
             {
                 ProjectSprite(thing);
             }

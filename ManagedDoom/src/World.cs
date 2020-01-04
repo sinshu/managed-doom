@@ -229,6 +229,15 @@ namespace ManagedDoom
             {
                 playerViewAngle -= Angle.FromDegree(3);
             }
+
+            /*
+            var sector = GetSector(player.X, player.Y);
+            foreach (var thing in sector)
+            {
+                Console.Write(thing.Sprite + ", ");
+            }
+            Console.WriteLine();
+            */
         }
 
         private Sector GetSector(Fixed x, Fixed y)

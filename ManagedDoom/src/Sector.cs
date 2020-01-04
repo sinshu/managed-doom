@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace ManagedDoom
 {
@@ -94,6 +96,56 @@ namespace ManagedDoom
             }
 
             return sectors;
+        }
+
+        public ThingListEnumerator GetEnumerator()
+        {
+            return new ThingListEnumerator(this);
+        }
+
+
+
+        public struct ThingListEnumerator : IEnumerator<Mobj>
+        {
+            private Sector sector;
+            private Mobj thing;
+            private Mobj current;
+
+            public ThingListEnumerator(Sector sector)
+            {
+                this.sector = sector;
+                thing = sector.ThingList;
+                current = null;
+            }
+
+            public bool MoveNext()
+            {
+                if (thing != null)
+                {
+                    current = thing;
+                    thing = thing.SNext;
+                    return true;
+                }
+                else
+                {
+                    current = null;
+                    return false;
+                }
+            }
+
+            public void Reset()
+            {
+                thing = sector.ThingList;
+                current = null;
+            }
+
+            public void Dispose()
+            {
+            }
+
+            public Mobj Current => current;
+
+            object IEnumerator.Current => throw new NotImplementedException();
         }
     }
 }
