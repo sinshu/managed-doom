@@ -4,6 +4,12 @@ namespace ManagedDoom
 {
     public sealed class Mobj
     {
+        public static readonly Fixed OnFloorZ = Fixed.MinValue;
+        public static readonly Fixed OnCeilingZ = Fixed.MaxValue;
+
+
+        public World World;
+
         // List: thinker links.
         public Thinker Thinker;
 
@@ -49,7 +55,7 @@ namespace ManagedDoom
 
         public int Tics; // state tic counter
         public StateDef State;
-        public int Flags;
+        public MobjFlags Flags;
         public int Health;
 
         // Movement direction, movement generation (zig-zagging).
@@ -80,5 +86,12 @@ namespace ManagedDoom
 
         // Thing being chased/attacked for tracers.
         public Mobj Tracer;
+
+
+
+        public Mobj(World world)
+        {
+            World = world;
+        }
     }
 }

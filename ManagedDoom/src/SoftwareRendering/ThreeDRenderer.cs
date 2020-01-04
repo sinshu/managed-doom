@@ -426,6 +426,8 @@ namespace ManagedDoom.SoftwareRendering
         private Fixed cameraZ;
         private Angle cameraAngle;
 
+        private int validCount;
+
         public void BindWorld(World world)
         {
             this.world = world;
@@ -477,6 +479,8 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Render()
         {
+            validCount++;
+
             cameraX = world.ViewX;
             cameraY = world.ViewY;
             cameraZ = world.ViewZ;
@@ -521,6 +525,9 @@ namespace ManagedDoom.SoftwareRendering
         public void DrawSubsector(int subsector)
         {
             var target = world.Map.Subsectors[subsector];
+
+            AddSprites(target.Sector, validCount);
+
             for (var i = 0; i < target.SegCount; i++)
             {
                 DrawSeg(world.Map.Segs[target.FirstSeg + i]);
@@ -2043,6 +2050,59 @@ namespace ManagedDoom.SoftwareRendering
                 }
             }
         }
+
+
+
+
+
+
+
+        private void AddSprites(Sector sector, int validCount)
+        {
+            // BSP is traversed by subsector.
+            // A sector might have been split into several
+            //  subsectors during BSP building.
+            // Thus we check whether its already added.
+            if (sector.ValidCount == validCount)
+            {
+                return;
+            }
+
+            // Well, now it will be done.
+            sector.ValidCount = validCount;
+
+            var lightnum = (sector.LightLevel >> LightSegShift); // + extralight;
+
+            byte[][] spritelights;
+            if (lightnum < 0)
+            {
+                spritelights = scaleLight[0];
+            }
+            else if (lightnum >= LightLevelCount)
+            {
+                spritelights = scaleLight[LightLevelCount - 1];
+            }
+            else
+            {
+                spritelights = scaleLight[lightnum];
+            }
+
+            // Handle all things in sector.
+            for (var thing = sector.ThingList; thing != null; thing = thing.SNext)
+            {
+                ProjectSprite(thing);
+            }
+        }
+
+        private void ProjectSprite(Mobj thing)
+        {
+
+        }
+
+
+
+
+
 
 
 

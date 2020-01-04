@@ -11,6 +11,9 @@ namespace ManagedDoom
         public static readonly Fixed Zero = new Fixed(0);
         public static readonly Fixed One = new Fixed(FracUnit);
 
+        public static readonly Fixed MaxValue = new Fixed(int.MaxValue);
+        public static readonly Fixed MinValue = new Fixed(int.MinValue);
+
         private int data;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
