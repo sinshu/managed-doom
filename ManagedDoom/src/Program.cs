@@ -33,7 +33,7 @@ namespace ManagedDoom
                         textures,
                         flats,
                         sprites,
-                        false);
+                        true);
 
                     var world = new World(textures, flats, wad, "MAP01");
 
