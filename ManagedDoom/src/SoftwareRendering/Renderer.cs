@@ -37,6 +37,7 @@ namespace ManagedDoom.SoftwareRendering
             ColorMap colorMap,
             TextureLookup textures,
             FlatLookup flats,
+            SpriteLookup sprites,
             bool highResolution)
         {
             try
@@ -75,7 +76,12 @@ namespace ManagedDoom.SoftwareRendering
                 var scaleY = (float)sfmlWindowHeight / screenHeight;
                 sfmlSprite.Scale = new Vector2f(scaleY, -scaleX);
 
-                threeD = new ThreeDRenderer(colorMap, textures, flats, screenWidth, screenHeight, screenData);
+                threeD = new ThreeDRenderer(
+                    colorMap,
+                    textures,
+                    flats,
+                    sprites,
+                    screenWidth, screenHeight, screenData);
             }
             catch (Exception e)
             {

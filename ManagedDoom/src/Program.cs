@@ -24,10 +24,16 @@ namespace ManagedDoom
 
                     var textures = new TextureLookup(wad);
                     var flats = new FlatLookup(wad);
-                    //var sprites = new SpriteLookup(wad);
-                    //sprites.DumpInfo();
+                    var sprites = new SpriteLookup(wad);
 
-                    var renderer = new SoftwareRendering.Renderer(window, palette, colorMap, textures, flats, true);
+                    var renderer = new SoftwareRendering.Renderer(
+                        window,
+                        palette,
+                        colorMap,
+                        textures,
+                        flats,
+                        sprites,
+                        false);
 
                     var world = new World(textures, flats, wad, "MAP01");
 

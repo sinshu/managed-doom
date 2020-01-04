@@ -8,20 +8,20 @@ namespace ManagedDoom
 
         private Fixed x;
         private Fixed y;
-        private Angle facing;
+        private int angle;
         private int type;
         private ThingFlags flags;
 
         public Thing(
             Fixed x,
             Fixed y,
-            Angle facing,
+            int angle,
             int type,
             ThingFlags flags)
         {
             this.x = x;
             this.y = y;
-            this.facing = facing;
+            this.angle = angle;
             this.type = type;
             this.flags = flags;
         }
@@ -30,14 +30,14 @@ namespace ManagedDoom
         {
             var x = BitConverter.ToInt16(data, offset);
             var y = BitConverter.ToInt16(data, offset + 2);
-            var facing = BitConverter.ToInt16(data, offset + 4);
+            var angle = BitConverter.ToInt16(data, offset + 4);
             var type = BitConverter.ToInt16(data, offset + 6);
             var flags = BitConverter.ToInt16(data, offset + 8);
 
             return new Thing(
                 Fixed.FromInt(x),
                 Fixed.FromInt(y),
-                Angle.FromDegree(facing),
+                angle,
                 type,
                 (ThingFlags)flags);
         }
@@ -65,7 +65,7 @@ namespace ManagedDoom
 
         public Fixed X => x;
         public Fixed Y => y;
-        public Angle Facing => facing;
+        public int Angle => angle;
         public int Type => type;
         public ThingFlags Flags => flags;
     }

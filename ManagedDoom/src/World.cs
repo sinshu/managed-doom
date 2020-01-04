@@ -32,7 +32,7 @@ namespace ManagedDoom
 
             var playerThing = map.Things.First(t => (int)t.Type == 1);
             player = new Vertex(playerThing.X, playerThing.Y);
-            playerViewAngle = playerThing.Facing;
+            playerViewAngle = Angle.FromDegree(playerThing.Angle);
 
             var viewZ = GetSector(player.X, player.Y).FloorHeight + Fixed.FromInt(41);
         }
@@ -194,7 +194,8 @@ namespace ManagedDoom
                 TotalItems++;
             }
 
-            mobj.Angle = new Angle(Angle.Ang45.Data * (mthing.Facing.Data / 45));
+            // mobj->angle = ANG45 * (mthing->angle/45);
+            mobj.Angle = new Angle(Angle.Ang45.Data * (uint)(mthing.Angle / 45));
 
             if ((mthing.Flags & ThingFlags.Ambush) != 0)
             {

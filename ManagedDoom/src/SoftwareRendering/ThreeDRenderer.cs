@@ -12,6 +12,7 @@ namespace ManagedDoom.SoftwareRendering
         private ColorMap colorMap;
         private TextureLookup textures;
         private FlatLookup flats;
+        private SpriteLookup sprites;
 
         private int screenWidth;
         private int screenHeight;
@@ -21,6 +22,7 @@ namespace ManagedDoom.SoftwareRendering
             ColorMap colorMap,
             TextureLookup textures,
             FlatLookup flats,
+            SpriteLookup sprites,
             int screenWidth,
             int screenHeight,
             byte[] screenData)
@@ -28,6 +30,7 @@ namespace ManagedDoom.SoftwareRendering
             this.colorMap = colorMap;
             this.textures = textures;
             this.flats = flats;
+            this.sprites = sprites;
 
             this.screenWidth = screenWidth;
             this.screenHeight = screenHeight;
@@ -38,6 +41,7 @@ namespace ManagedDoom.SoftwareRendering
             InitSkyRendering();
             InitLighting();
             InitRenderingHistory();
+            InitSpriteRendering();
 
             ResetWindow(0, 0, screenWidth, screenHeight);
             ResetWallRendering();
@@ -413,6 +417,33 @@ namespace ManagedDoom.SoftwareRendering
 
         //
         //
+        // Sprite rendering
+        //
+        //
+
+        private static readonly Fixed MinZ = Fixed.FromInt(4);
+
+        private VisSprite[] visSprites;
+        private int visSpriteCount;
+
+        private void InitSpriteRendering()
+        {
+            visSprites = new VisSprite[1024];
+            for (var i = 0; i < visSprites.Length; i++)
+            {
+                visSprites[i] = new VisSprite();
+            }
+        }
+
+        private void ClearSpriteRendering()
+        {
+            visSpriteCount = 0;
+        }
+
+
+
+        //
+        //
         // ???
         //
         //
@@ -426,6 +457,9 @@ namespace ManagedDoom.SoftwareRendering
         private Fixed cameraZ;
         private Angle cameraAngle;
 
+        private Fixed viewSin;
+        private Fixed viewCos;
+
         private int validCount;
 
         public void BindWorld(World world)
@@ -438,7 +472,7 @@ namespace ManagedDoom.SoftwareRendering
             world = null;
         }
 
-        
+
 
         public Fixed ScaleFromGlobalAngle(Angle visAngle, Angle viewAngle, Angle rwNormal, Fixed rwDistance)
         {
@@ -479,8 +513,6 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Render()
         {
-            validCount++;
-
             cameraX = world.ViewX;
             cameraY = world.ViewY;
             cameraZ = world.ViewZ;
@@ -488,8 +520,16 @@ namespace ManagedDoom.SoftwareRendering
 
             ClearPlaneRendering();
             ClearRenderingHistory();
+            ClearSpriteRendering();
+
+            viewSin = Trig.Sin(cameraAngle);
+            viewCos = Trig.Cos(cameraAngle);
+            validCount++;
+
             RenderBspNode(world.Map.Nodes.Length - 1);
             DrawMasked();
+
+            //R_DrawVisSprite();
         }
 
         public void RenderBspNode(int node)
@@ -2090,16 +2130,186 @@ namespace ManagedDoom.SoftwareRendering
             // Handle all things in sector.
             foreach (var thing in sector)
             {
-                ProjectSprite(thing);
+                ProjectSprite(thing, spritelights);
             }
         }
 
-        private void ProjectSprite(Mobj thing)
+        private void ProjectSprite(Mobj thing, byte[][] spritelights)
         {
+            // transform the origin point
+            var tr_x = thing.X - cameraX;
+            var tr_y = thing.Y - cameraY;
 
+            var gxt = (tr_x * viewCos);
+            var gyt = -(tr_y * viewSin);
+
+            var tz = gxt - gyt;
+
+            // thing is behind view plane?
+            if (tz < MinZ)
+            {
+                return;
+            }
+
+            var xscale = projection / tz;
+
+            gxt = -tr_x * viewSin;
+            gyt = tr_y * viewCos;
+            var tx = -(gyt + gxt);
+
+            // too far off the side?
+            if (Fixed.Abs(tx) > new Fixed(tz.Data << 2))
+            {
+                return;
+            }
+
+            var sprdef = sprites.SpriteDefs[(int)thing.Sprite];
+            var framenum = thing.Frame & 0x7F;
+            var sprframe = sprdef.Frames[framenum];
+
+            Patch lump;
+            bool flip;
+            if (sprframe.Rotate)
+            {
+                // choose a different rotation based on player view
+                var ang = Geometry.PointToAngle(cameraX, cameraY, thing.X, thing.Y);
+                var rot = (ang.Data - thing.Angle.Data + (uint)(Angle.Ang45.Data / 2) * 9) >> 29;
+                lump = sprframe.Patches[rot];
+                flip = sprframe.Flip[rot];
+            }
+            else
+            {
+                // use single rotation for all views
+                lump = sprframe.Patches[0];
+                flip = sprframe.Flip[0];
+            }
+
+            // calculate edges of the shape
+            tx -= Fixed.FromInt(lump.LeftOffset);
+            var x1 = (centerXFrac + (tx * xscale)).Data >> Fixed.FracBits;
+
+            // off the right side?
+            if (x1 > windowWidth)
+            {
+                return;
+            }
+
+            tx += Fixed.FromInt(lump.Width);
+            var x2 = ((centerXFrac + (tx * xscale)).Data >> Fixed.FracBits) - 1;
+
+            // off the left side
+            if (x2 < 0)
+            {
+                return;
+            }
+
+            // store information in a vissprite
+            var vis = R_NewVisSprite();
+            vis.MobjFlags = thing.Flags;
+            vis.Scale = xscale;
+            vis.Gx = thing.X;
+            vis.Gy = thing.Y;
+            vis.Gz = thing.Z;
+            vis.GzT = thing.Z + Fixed.FromInt(lump.TopOffset);
+            vis.TextureMid = vis.GzT - cameraZ;
+            vis.X1 = x1 < 0 ? 0 : x1;
+            vis.X2 = x2 >= windowWidth ? windowWidth - 1 : x2;
+            var iscale = Fixed.One / xscale;
+
+            if (flip)
+            {
+                vis.StartFrac = new Fixed(Fixed.FromInt(lump.Width).Data - 1);
+                vis.XIScale = -iscale;
+            }
+            else
+            {
+                vis.StartFrac = Fixed.Zero;
+                vis.XIScale = iscale;
+            }
+
+            if (vis.X1 > x1)
+            {
+                vis.StartFrac += vis.XIScale * (vis.X1 - x1);
+            }
+
+            vis.Patch = lump;
+
+            /*
+            // get light level
+            if (thing->flags & MF_SHADOW)
+            {
+                // shadow draw
+                vis->colormap = NULL;
+            }
+            else if (fixedcolormap)
+            {
+                // fixed map
+                vis->colormap = fixedcolormap;
+            }
+            else if (thing->frame & FF_FULLBRIGHT)
+            {
+                // full bright
+                vis->colormap = colormaps;
+            }
+
+            else
+            {
+                // diminished light
+                index = xscale >> (LIGHTSCALESHIFT - detailshift);
+
+                if (index >= MAXLIGHTSCALE)
+                    index = MAXLIGHTSCALE - 1;
+
+                vis->colormap = spritelights[index];
+            }
+            */
+
+            // diminished light
+            var index = xscale.Data >> ScaleLightShift;
+
+            if (index >= MaxScaleLight)
+            {
+                index = MaxScaleLight - 1;
+            }
+
+            vis.Colormap = spritelights[index];
         }
 
+        private VisSprite R_NewVisSprite()
+        {
+            var visSprite = visSprites[visSpriteCount];
+            visSpriteCount++;
+            return visSprite;
+        }
 
+        private void R_DrawVisSprite()
+        {
+
+            for (var i = 0; i < visSpriteCount; i++)
+            {
+                var vis = visSprites[i];
+                var dc_iscale = Fixed.Abs(vis.XIScale);
+                var dc_texturemid = vis.TextureMid;
+                var frac = vis.StartFrac;
+                var spryscale = vis.Scale;
+                var sprtopscreen = centerYFrac - (dc_texturemid * spryscale);
+
+                for (var dc_x = vis.X1; dc_x <= vis.X2; dc_x++)
+                {
+                    var texturecolumn = frac.Data >> Fixed.FracBits;
+                    DrawMaskedColumn(
+                        vis.Patch.Columns[texturecolumn],
+                        vis.Colormap,
+                        dc_x,
+                        dc_iscale,
+                        dc_texturemid,
+                        spryscale,
+                        sprtopscreen,
+                        1, windowHeight - 1);
+                    frac += vis.XIScale;
+                }
+            }
+        }
 
 
 
@@ -2129,6 +2339,41 @@ namespace ManagedDoom.SoftwareRendering
             public int TopClip;
             public int BottomClip;
             public int MaskedTextureColumn;
+        }
+
+        private class VisSprite
+        {
+            // Doubly linked list.
+            public VisSprite Prev;
+            public VisSprite Next;
+
+            public int X1;
+            public int X2;
+
+            // for line side calculation
+            public Fixed Gx;
+            public Fixed Gy;
+
+            // global bottom / top for silhouette clipping
+            public Fixed Gz;
+            public Fixed GzT;
+
+            // horizontal position of x1
+            public Fixed StartFrac;
+
+            public Fixed Scale;
+
+            // negative if flipped
+            public Fixed XIScale;
+
+            public Fixed TextureMid;
+            public Patch Patch;
+
+            // for color translation and shadow draw,
+            //  maxbright frames as well
+            public byte[] Colormap;
+
+            public MobjFlags MobjFlags;
         }
     }
 }

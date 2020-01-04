@@ -230,5 +230,7 @@ namespace ManagedDoom
                 return false;
             }
         }
+
+        public SpriteDef[] SpriteDefs => spriteDefs;
     }
 }
