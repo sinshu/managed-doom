@@ -2284,6 +2284,18 @@ namespace ManagedDoom.SoftwareRendering
 
         private void R_DrawVisSprite()
         {
+            for (var i = 0; i < visSpriteCount - 1; i++)
+            {
+                for (var j = i + 1; j > 0; j--)
+                {
+                    if (visSprites[j - 1].Scale > visSprites[j].Scale)
+                    {
+                        var temp = visSprites[j - 1];
+                        visSprites[j - 1] = visSprites[j];
+                        visSprites[j] = temp;
+                    }
+                }
+            }
 
             for (var i = 0; i < visSpriteCount; i++)
             {
