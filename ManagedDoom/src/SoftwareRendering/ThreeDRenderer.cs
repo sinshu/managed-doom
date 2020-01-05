@@ -2288,7 +2288,7 @@ namespace ManagedDoom.SoftwareRendering
             {
                 for (var j = i + 1; j > 0; j--)
                 {
-                    if (visSprites[j - 1].Scale > visSprites[j].Scale)
+                    if (visSprites[j - 1].Scale < visSprites[j].Scale)
                     {
                         var temp = visSprites[j - 1];
                         visSprites[j - 1] = visSprites[j];
@@ -2297,7 +2297,7 @@ namespace ManagedDoom.SoftwareRendering
                 }
             }
 
-            for (var i = 0; i < visSpriteCount; i++)
+            for (var i = visSpriteCount - 1; i >= 0; i--)
             {
                 var vis = visSprites[i];
                 var dc_iscale = Fixed.Abs(vis.XIScale);
