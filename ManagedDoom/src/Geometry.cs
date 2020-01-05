@@ -83,9 +83,11 @@ namespace ManagedDoom
                 // front side
                 return 0;
             }
-
-            // back side
-            return 1;
+            else
+            {
+                // back side
+                return 1;
+            }
         }
 
         public static Angle PointToAngle(Fixed fromX, Fixed fromY, Fixed toX, Fixed toY)
@@ -196,6 +198,70 @@ namespace ManagedDoom
             }
 
             return map.Subsectors[Node.GetSubsector(nodenum)];
+        }
+
+        public static int PointOnSegSide(Fixed x, Fixed y, Seg line)
+        {
+            var lx = line.Vertex1.X;
+            var ly = line.Vertex1.Y;
+
+            var ldx = line.Vertex2.X - lx;
+            var ldy = line.Vertex2.Y - ly;
+
+            if (ldx == Fixed.Zero)
+            {
+                if (x <= lx)
+                {
+                    return ldy > Fixed.Zero ? 1 : 0;
+                }
+                else
+                {
+                    return ldy < Fixed.Zero ? 1 : 0;
+                }
+            }
+
+            if (ldy == Fixed.Zero)
+            {
+                if (y <= ly)
+                {
+                    return ldx < Fixed.Zero ? 1 : 0;
+                }
+                else
+                {
+                    return ldx > Fixed.Zero ? 1 : 0;
+                }
+            }
+
+            var dx = (x - lx);
+            var dy = (y - ly);
+
+            // Try to quickly decide by looking at sign bits.
+            if (((ldy.Data ^ ldx.Data ^ dx.Data ^ dy.Data) & 0x80000000) != 0)
+            {
+                if (((ldy.Data ^ dx.Data) & 0x80000000) != 0)
+                {
+                    // (left is negative)
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+            var left = new Fixed(ldy.Data >> Fixed.FracBits) * dx;
+            var right = dy * new Fixed(ldx.Data >> Fixed.FracBits);
+
+            if (right < left)
+            {
+                // front side
+                return 0;
+            }
+            else
+            {
+                // back side
+                return 1;
+            }
         }
     }
 }
