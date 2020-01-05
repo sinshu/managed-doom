@@ -176,23 +176,16 @@ namespace ManagedDoomTest
             {
                 var flats = new FlatLookup(wad);
                 var textures = new TextureLookup(wad);
-                var map = wad.GetLumpNumber("E1M1");
-                var vertices = Vertex.FromWad(wad, map + 4);
-                var sectors = Sector.FromWad(wad, map + 8, flats);
-                var sides = SideDef.FromWad(wad, map + 3, textures, sectors);
-                var lines = LineDef.FromWad(wad, map + 2, vertices, sides);
-                var segs = Seg.FromWad(wad, map + 5, vertices, lines);
-                var subsectors = Subsector.FromWad(wad, map + 6, segs);
-                var nodes = Node.FromWad(wad, map + 7, subsectors);
+                var map = new Map(textures, flats, wad, "E1M1");
 
                 var ok = 0;
                 var count = 0;
 
-                foreach (var subsector in subsectors)
+                foreach (var subsector in map.Subsectors)
                 {
                     for (var i = 0; i < subsector.SegCount; i++)
                     {
-                        var seg = segs[subsector.FirstSeg + i];
+                        var seg = map.Segs[subsector.FirstSeg + i];
 
                         var p1x = seg.Vertex1.X.ToDouble();
                         var p1y = seg.Vertex1.Y.ToDouble();
@@ -214,7 +207,7 @@ namespace ManagedDoomTest
                         var fx = Fixed.FromDouble(targetX);
                         var fy = Fixed.FromDouble(targetY);
 
-                        var result = Geometry.PointInSubsector(fx, fy, nodes, subsectors);
+                        var result = Geometry.PointInSubsector(fx, fy, map);
 
                         if (result == subsector)
                         {
@@ -235,23 +228,16 @@ namespace ManagedDoomTest
             {
                 var flats = new FlatLookup(wad);
                 var textures = new TextureLookup(wad);
-                var map = wad.GetLumpNumber("MAP01");
-                var vertices = Vertex.FromWad(wad, map + 4);
-                var sectors = Sector.FromWad(wad, map + 8, flats);
-                var sides = SideDef.FromWad(wad, map + 3, textures, sectors);
-                var lines = LineDef.FromWad(wad, map + 2, vertices, sides);
-                var segs = Seg.FromWad(wad, map + 5, vertices, lines);
-                var subsectors = Subsector.FromWad(wad, map + 6, segs);
-                var nodes = Node.FromWad(wad, map + 7, subsectors);
+                var map = new Map(textures, flats, wad, "MAP01");
 
                 var ok = 0;
                 var count = 0;
 
-                foreach (var subsector in subsectors)
+                foreach (var subsector in map.Subsectors)
                 {
                     for (var i = 0; i < subsector.SegCount; i++)
                     {
-                        var seg = segs[subsector.FirstSeg + i];
+                        var seg = map.Segs[subsector.FirstSeg + i];
 
                         var p1x = seg.Vertex1.X.ToDouble();
                         var p1y = seg.Vertex1.Y.ToDouble();
@@ -273,7 +259,7 @@ namespace ManagedDoomTest
                         var fx = Fixed.FromDouble(targetX);
                         var fy = Fixed.FromDouble(targetY);
 
-                        var result = Geometry.PointInSubsector(fx, fy, nodes, subsectors);
+                        var result = Geometry.PointInSubsector(fx, fy, map);
 
                         if (result == subsector)
                         {

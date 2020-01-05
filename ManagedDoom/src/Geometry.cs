@@ -178,24 +178,24 @@ namespace ManagedDoom
             }
         }
 
-        public static Subsector PointInSubsector(Fixed x, Fixed y, Node[] nodes, Subsector[] subsectors)
+        public static Subsector PointInSubsector(Fixed x, Fixed y, Map map)
         {
             // single subsector is a special case
-            if (nodes.Length == 0)
+            if (map.Nodes.Length == 0)
             {
-                return subsectors[0];
+                return map.Subsectors[0];
             }
 
-            var nodenum = nodes.Length - 1;
+            var nodenum = map.Nodes.Length - 1;
 
             while (!Node.IsSubsector(nodenum))
             {
-                var node = nodes[nodenum];
+                var node = map.Nodes[nodenum];
                 var side = PointOnSide(x, y, node);
                 nodenum = node.Children[side];
             }
 
-            return subsectors[Node.GetSubsector(nodenum)];
+            return map.Subsectors[Node.GetSubsector(nodenum)];
         }
     }
 }

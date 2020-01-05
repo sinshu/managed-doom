@@ -19,7 +19,9 @@ namespace ManagedDoom
 
         private DoomRandom random;
 
-        private Vertex player;
+        private Fixed playerX;
+        private Fixed playerY;
+        private Fixed playerZ;
         private Angle playerViewAngle;
 
         public World(TextureLookup textures, FlatLookup flats, Wad wad, string mapName)
@@ -31,10 +33,10 @@ namespace ManagedDoom
             LoadThings();
 
             var playerThing = map.Things.First(t => (int)t.Type == 1);
-            player = new Vertex(playerThing.X, playerThing.Y);
+            playerX = playerThing.X;
+            playerY = playerThing.Y;
+            playerZ = Geometry.PointInSubsector(playerX, playerY, map).Sector.FloorHeight;
             playerViewAngle = Angle.FromDegree(playerThing.Angle);
-
-            var viewZ = GetSector(player.X, player.Y).FloorHeight + Fixed.FromInt(41);
         }
 
         private void LoadThings()
@@ -209,16 +211,14 @@ namespace ManagedDoom
 
             if (up)
             {
-                var x = player.X + speed * Trig.Cos(playerViewAngle);
-                var y = player.Y + speed * Trig.Sin(playerViewAngle);
-                player = new Vertex(x, y);
+                playerX += speed * Trig.Cos(playerViewAngle);
+                playerY += speed * Trig.Sin(playerViewAngle);
             }
 
             if (down)
             {
-                var x = player.X - speed * Trig.Cos(playerViewAngle);
-                var y = player.Y - speed * Trig.Sin(playerViewAngle);
-                player = new Vertex(x, y);
+                playerX -= speed * Trig.Cos(playerViewAngle);
+                playerY -= speed * Trig.Sin(playerViewAngle);
             }
 
             if (left)
@@ -231,20 +231,17 @@ namespace ManagedDoom
                 playerViewAngle -= Angle.FromDegree(3);
             }
 
-            /*
-            var sector = GetSector(player.X, player.Y);
-            foreach (var thing in sector)
+            var floor = Geometry.PointInSubsector(playerX, playerY, map).Sector.FloorHeight;
+            var dz = floor - playerZ;
+            if (dz < Fixed.Zero)
             {
-                Console.Write(thing.Sprite + ", ");
+                dz = new Fixed(4096) * dz;
             }
-            Console.WriteLine();
-            */
-        }
-
-        private Sector GetSector(Fixed x, Fixed y)
-        {
-            var subsector = Geometry.PointInSubsector(x, y, map.Nodes, map.Subsectors);
-            return subsector.Sector;
+            else
+            {
+                dz = new Fixed(32768) * dz;
+            }
+            playerZ += dz;
         }
 
 
@@ -254,7 +251,7 @@ namespace ManagedDoom
         public void SetThingPosition(Mobj thing)
         {
             // link into subsector
-            var ss = Geometry.PointInSubsector(thing.X, thing.Y, map.Nodes, map.Subsectors);
+            var ss = Geometry.PointInSubsector(thing.X, thing.Y, map);
 
             thing.Subsector = ss;
 
@@ -369,9 +366,9 @@ namespace ManagedDoom
 
 
         public Map Map => map;
-        public Fixed ViewX => player.X;
-        public Fixed ViewY => player.Y;
-        public Fixed ViewZ => GetSector(player.X, player.Y).FloorHeight + Fixed.FromInt(41);
+        public Fixed ViewX => playerX;
+        public Fixed ViewY => playerY;
+        public Fixed ViewZ => playerZ + Fixed.FromInt(41);
         public Angle ViewAngle => playerViewAngle;
     }
 }
