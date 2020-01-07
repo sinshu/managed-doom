@@ -28,6 +28,7 @@ namespace ManagedDoom.SoftwareRendering
         private byte[] sfmlTextureData;
         private SFML.Graphics.Texture sfmlTexture;
         private SFML.Graphics.Sprite sfmlSprite;
+        private SFML.Graphics.RenderStates sfmlStates;
 
         private ThreeDRenderer threeD;
 
@@ -75,6 +76,8 @@ namespace ManagedDoom.SoftwareRendering
                 var scaleX = (float)sfmlWindowWidth / screenWidth;
                 var scaleY = (float)sfmlWindowHeight / screenHeight;
                 sfmlSprite.Scale = new Vector2f(scaleY, -scaleX);
+
+                sfmlStates = new RenderStates(BlendMode.None);
 
                 threeD = new ThreeDRenderer(
                     colorMap,
@@ -128,7 +131,7 @@ namespace ManagedDoom.SoftwareRendering
 
             sfmlTexture.Update(sfmlTextureData, (uint)screenHeight, (uint)screenWidth, 0, 0);
 
-            sfmlWindow.Draw(sfmlSprite);
+            sfmlWindow.Draw(sfmlSprite, sfmlStates);
 
             sfmlWindow.Display();
         }

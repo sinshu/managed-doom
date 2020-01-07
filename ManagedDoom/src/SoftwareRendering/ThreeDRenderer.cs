@@ -2039,7 +2039,8 @@ namespace ManagedDoom.SoftwareRendering
             // Framebuffer destination address.
             // Use ylookup LUT to avoid multiply with ScreenWidth.
             // Use columnofs LUT for subwindows? 
-            var pos = screenHeight * (windowX + x) + windowY + y1;
+            var pos1 = screenHeight * (windowX + x) + windowY + y1;
+            var pos2 = pos1 + (y2 - y1);
 
             // Determine scaling,
             //  which is the only mapping to be done.
@@ -2051,12 +2052,11 @@ namespace ManagedDoom.SoftwareRendering
             // This is as fast as it gets.
             var source = column.Data;
             var offset = column.Offset;
-            for (var y = y1; y <= y2; y++)
+            for (var pos = pos1; pos <= pos2; pos++)
             {
                 // Re-map color indices from wall texture column
                 //  using a lighting/special effects LUT.
                 screenData[pos] = map[source[offset + ((frac.Data >> Fixed.FracBits) & 127)]];
-                pos++;
 
                 frac += fracStep;
 

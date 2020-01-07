@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SFML.Graphics;
 using SFML.System;
@@ -42,6 +43,10 @@ namespace ManagedDoom
                     window.Closed += (sender, e) => window.Close();
                     window.SetFramerateLimit(35);
 
+                    var sw = new Stopwatch();
+                    var count = 0;
+                    sw.Start();
+                    var prev = sw.Elapsed;
                     while (window.IsOpen)
                     {
                         window.DispatchEvents();
@@ -53,6 +58,17 @@ namespace ManagedDoom
                         world.Update(up, dowm, left, right);
 
                         renderer.Render();
+                        count++;
+
+                        var curr = sw.Elapsed;
+                        var delta = curr - prev;
+                        if (delta.TotalSeconds >= 3 && count >= 3)
+                        {
+                            var fps = count / delta.TotalSeconds;
+                            Console.WriteLine("FPS: " + fps.ToString("0.0"));
+                            count = 0;
+                            prev = curr;
+                        }
                     }
                 }
             }

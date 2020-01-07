@@ -207,28 +207,28 @@ namespace ManagedDoom
 
         public void Update(bool up, bool down, bool left, bool right)
         {
-            var speed = 8;
+            var speed = 8.0;
 
             if (up)
             {
-                playerX += speed * Trig.Cos(playerViewAngle);
-                playerY += speed * Trig.Sin(playerViewAngle);
+                playerX += Fixed.FromDouble(speed) * Trig.Cos(playerViewAngle);
+                playerY += Fixed.FromDouble(speed) * Trig.Sin(playerViewAngle);
             }
 
             if (down)
             {
-                playerX -= speed * Trig.Cos(playerViewAngle);
-                playerY -= speed * Trig.Sin(playerViewAngle);
+                playerX -= Fixed.FromDouble(speed) * Trig.Cos(playerViewAngle);
+                playerY -= Fixed.FromDouble(speed) * Trig.Sin(playerViewAngle);
             }
 
             if (left)
             {
-                playerViewAngle += Angle.FromDegree(3);
+                playerViewAngle += Angle.FromDegree(speed / 2);
             }
 
             if (right)
             {
-                playerViewAngle -= Angle.FromDegree(3);
+                playerViewAngle -= Angle.FromDegree(speed / 2);
             }
 
             var floor = Geometry.PointInSubsector(playerX, playerY, map).Sector.FloorHeight;
