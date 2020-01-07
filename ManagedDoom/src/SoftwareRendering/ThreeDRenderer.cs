@@ -2356,8 +2356,8 @@ namespace ManagedDoom.SoftwareRendering
         private class VisSprite
         {
             // Doubly linked list.
-            public VisSprite Prev;
-            public VisSprite Next;
+            //public VisSprite Prev;
+            //public VisSprite Next;
 
             public int X1;
             public int X2;

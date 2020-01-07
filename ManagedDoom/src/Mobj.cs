@@ -2,16 +2,10 @@
 
 namespace ManagedDoom
 {
-    public sealed class Mobj
+    public sealed class Mobj : Thinker
     {
         public static readonly Fixed OnFloorZ = Fixed.MinValue;
         public static readonly Fixed OnCeilingZ = Fixed.MaxValue;
-
-
-        public World World;
-
-        // List: thinker links.
-        public Thinker Thinker;
 
         // Info for drawing: position.
         public Fixed X;
@@ -89,9 +83,8 @@ namespace ManagedDoom
 
 
 
-        public Mobj(World world)
+        public Mobj(World world) : base(world)
         {
-            World = world;
         }
     }
 }
