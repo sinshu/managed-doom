@@ -231,6 +231,12 @@ namespace ManagedDoom
             }
         }
 
-        public SpriteDef[] SpriteDefs => spriteDefs;
+        public SpriteDef this[Sprite sprite]
+        {
+            get
+            {
+                return spriteDefs[(int)sprite];
+            }
+        }
     }
 }

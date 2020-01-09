@@ -49,9 +49,6 @@ namespace ManagedDoom.SoftwareRendering
             ResetSkyRendering();
             ResetLighting();
             ResetRenderingHistory();
-
-            pspritescale = Fixed.FromInt(windowWidth) / screenWidth;
-            pspriteiscale = Fixed.FromInt(screenWidth) / windowWidth;
         }
 
 
@@ -447,9 +444,6 @@ namespace ManagedDoom.SoftwareRendering
         // ???
         //
         //
-
-        private Fixed pspritescale;
-        private Fixed pspriteiscale;
 
         private World world;
         private Fixed cameraX;
@@ -2163,7 +2157,7 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            var sprdef = sprites.SpriteDefs[(int)thing.Sprite];
+            var sprdef = sprites[thing.Sprite];
             var framenum = thing.Frame & 0x7F;
             var sprframe = sprdef.Frames[framenum];
 
