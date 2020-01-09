@@ -1779,11 +1779,7 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    //if (zLightLevel < 0)
-                    //{
-                    //    zLightLevel = 0;
-                    //}
-                    if (zLightLevel >= MaxZLight)
+                    if (zLightLevel >= MaxZLight || zLightLevel < 0)
                     {
                         zLightLevel = MaxZLight - 1;
                     }
@@ -1822,11 +1818,7 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    //if (zLightLevel < 0)
-                    //{
-                    //    zLightLevel = 0;
-                    //}
-                    if (zLightLevel >= MaxZLight)
+                    if (zLightLevel >= MaxZLight || zLightLevel < 0)
                     {
                         zLightLevel = MaxZLight - 1;
                     }
@@ -1856,11 +1848,7 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    //if (zLightLevel < 0)
-                    //{
-                    //    zLightLevel = 0;
-                    //}
-                    if (zLightLevel >= MaxZLight)
+                    if (zLightLevel >= MaxZLight || zLightLevel < 0)
                     {
                         zLightLevel = MaxZLight - 1;
                     }
@@ -1920,11 +1908,7 @@ namespace ManagedDoom.SoftwareRendering
                     floorYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    //if (zLightLevel < 0)
-                    //{
-                    //    zLightLevel = 0;
-                    //}
-                    if (zLightLevel >= MaxZLight)
+                    if (zLightLevel >= MaxZLight || zLightLevel < 0)
                     {
                         zLightLevel = MaxZLight - 1;
                     }
@@ -1963,11 +1947,7 @@ namespace ManagedDoom.SoftwareRendering
                     floorYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    //if (zLightLevel < 0)
-                    //{
-                    //    zLightLevel = 0;
-                    //}
-                    if (zLightLevel >= MaxZLight)
+                    if (zLightLevel >= MaxZLight || zLightLevel < 0)
                     {
                         zLightLevel = MaxZLight - 1;
                     }
@@ -1997,11 +1977,7 @@ namespace ManagedDoom.SoftwareRendering
                     floorYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    //if (zLightLevel < 0)
-                    //{
-                    //    zLightLevel = 0;
-                    //}
-                    if (zLightLevel >= MaxZLight)
+                    if (zLightLevel >= MaxZLight || zLightLevel < 0)
                     {
                         zLightLevel = MaxZLight - 1;
                     }
