@@ -62,7 +62,7 @@ namespace ManagedDoom
 
                         var curr = sw.Elapsed;
                         var delta = curr - prev;
-                        if (delta.TotalSeconds >= 3 && count >= 3)
+                        if (delta.TotalSeconds >= 1 && count >= 1)
                         {
                             var fps = count / delta.TotalSeconds;
                             Console.WriteLine("FPS: " + fps.ToString("0.0"));

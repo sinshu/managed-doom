@@ -1751,8 +1751,8 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            y1 = Math.Max(y1, 0);
-            y2 = Math.Min(y2, screenHeight - 1);
+            //y1 = Math.Max(y1, 0);
+            //y2 = Math.Min(y2, screenHeight - 1);
 
             var height = Fixed.Abs(sector.CeilingHeight - cameraZ);
 
@@ -1779,10 +1779,10 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    if (zLightLevel < 0)
-                    {
-                        zLightLevel = 0;
-                    }
+                    //if (zLightLevel < 0)
+                    //{
+                    //    zLightLevel = 0;
+                    //}
                     if (zLightLevel >= MaxZLight)
                     {
                         zLightLevel = MaxZLight - 1;
@@ -1822,10 +1822,10 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    if (zLightLevel < 0)
-                    {
-                        zLightLevel = 0;
-                    }
+                    //if (zLightLevel < 0)
+                    //{
+                    //    zLightLevel = 0;
+                    //}
                     if (zLightLevel >= MaxZLight)
                     {
                         zLightLevel = MaxZLight - 1;
@@ -1856,10 +1856,10 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    if (zLightLevel < 0)
-                    {
-                        zLightLevel = 0;
-                    }
+                    //if (zLightLevel < 0)
+                    //{
+                    //    zLightLevel = 0;
+                    //}
                     if (zLightLevel >= MaxZLight)
                     {
                         zLightLevel = MaxZLight - 1;
@@ -1892,8 +1892,8 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            y1 = Math.Max(y1, 0);
-            y2 = Math.Min(y2, screenHeight - 1);
+            //y1 = Math.Max(y1, 0);
+            //y2 = Math.Min(y2, screenHeight - 1);
 
             var height = Fixed.Abs(sector.FloorHeight - cameraZ);
 
@@ -1920,10 +1920,10 @@ namespace ManagedDoom.SoftwareRendering
                     floorYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    if (zLightLevel < 0)
-                    {
-                        zLightLevel = 0;
-                    }
+                    //if (zLightLevel < 0)
+                    //{
+                    //    zLightLevel = 0;
+                    //}
                     if (zLightLevel >= MaxZLight)
                     {
                         zLightLevel = MaxZLight - 1;
@@ -1963,10 +1963,10 @@ namespace ManagedDoom.SoftwareRendering
                     floorYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    if (zLightLevel < 0)
-                    {
-                        zLightLevel = 0;
-                    }
+                    //if (zLightLevel < 0)
+                    //{
+                    //    zLightLevel = 0;
+                    //}
                     if (zLightLevel >= MaxZLight)
                     {
                         zLightLevel = MaxZLight - 1;
@@ -1997,10 +1997,10 @@ namespace ManagedDoom.SoftwareRendering
                     floorYFrac[y] = yFrac;
 
                     var zLightLevel = distance.Data >> ZLightShift;
-                    if (zLightLevel < 0)
-                    {
-                        zLightLevel = 0;
-                    }
+                    //if (zLightLevel < 0)
+                    //{
+                    //    zLightLevel = 0;
+                    //}
                     if (zLightLevel >= MaxZLight)
                     {
                         zLightLevel = MaxZLight - 1;
@@ -2027,8 +2027,8 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            y1 = Math.Max(y1, 0);
-            y2 = Math.Min(y2, screenHeight - 1);
+            //y1 = Math.Max(y1, 0);
+            //y2 = Math.Min(y2, screenHeight - 1);
 
             // Framebuffer destination address.
             // Use ylookup LUT to avoid multiply with ScreenWidth.
