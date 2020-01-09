@@ -314,7 +314,7 @@ namespace ManagedDoom.SoftwareRendering
                         level = ColorMapCount - 1;
                     }
 
-                    zLight[i][j] = colorMap.Data[level];
+                    zLight[i][j] = colorMap[level];
                 }
             }
         }
@@ -339,7 +339,7 @@ namespace ManagedDoom.SoftwareRendering
                         level = ColorMapCount - 1;
                     }
 
-                    scaleLight[i][j] = colorMap.Data[level];
+                    scaleLight[i][j] = colorMap[level];
                 }
             }
         }
@@ -2062,7 +2062,7 @@ namespace ManagedDoom.SoftwareRendering
             var angle = (cameraAngle + xToAngle[x]).Data >> AngleToSkyShift;
             var mask = world.Map.SkyTexture.Width - 1;
             var source = world.Map.SkyTexture.Composite.Columns[angle & mask];
-            DrawColumn(source[0], colorMap.Data[0], x, y1, y2, skyiscale, skyTextureMid);
+            DrawColumn(source[0], colorMap[0], x, y1, y2, skyiscale, skyTextureMid);
         }
 
         private void DrawMaskedColumn(Column[] columns, byte[] map, int x, Fixed iScale, Fixed textureMid, Fixed spryscale, Fixed sprtopscreen, int ceilClip, int floorClip)

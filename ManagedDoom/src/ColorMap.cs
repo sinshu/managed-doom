@@ -4,7 +4,7 @@ namespace ManagedDoom
 {
     public sealed class ColorMap
     {
-        byte[][] data;
+        private byte[][] data;
 
         public ColorMap(Wad wad)
         {
@@ -22,6 +22,12 @@ namespace ManagedDoom
             }
         }
 
-        public byte[][] Data => data;
+        public byte[] this[int index]
+        {
+            get
+            {
+                return data[index];
+            }
+        }
     }
 }
