@@ -521,9 +521,10 @@ namespace ManagedDoom.SoftwareRendering
             validCount++;
 
             RenderBspNode(world.Map.Nodes.Length - 1);
-            DrawMasked();
 
-            //R_DrawVisSprite();
+            //DrawSprites();
+
+            DrawMasked();
         }
 
         public void RenderBspNode(int node)
@@ -1126,6 +1127,7 @@ namespace ManagedDoom.SoftwareRendering
             visSeg.Scale1 = scale1;
             visSeg.Scale2 = scale2;
             visSeg.ScaleStep = rwScaleStep;
+            visSeg.MaskedTextureColumn = -1;
 
 
 
@@ -1506,6 +1508,10 @@ namespace ManagedDoom.SoftwareRendering
                 visSeg.MaskedTextureColumn = maskedTextureColumn;
                 clipDataLength += range;
             }
+            else
+            {
+                visSeg.MaskedTextureColumn = -1;
+            }
 
 
 
@@ -1639,84 +1645,92 @@ namespace ManagedDoom.SoftwareRendering
                 var drawSeg = drawSegs[i];
                 var seg = drawSeg.Seg;
 
-                if ((seg.LineDef.Flags & LineFlags.TwoSided) != 0
-                    && seg.SideDef.MiddleTexture != 0)
+                if (drawSeg.MaskedTextureColumn != -1)
                 {
-                    var lightnum = (seg.FrontSector.LightLevel >> LightSegShift); // + extraLight;
-
-                    if (seg.Vertex1.Y == seg.Vertex2.Y)
-                    {
-                        lightnum--;
-                    }
-                    else if (seg.Vertex1.X == seg.Vertex2.X)
-                    {
-                        lightnum++;
-                    }
-
-                    byte[][] walllights;
-                    if (lightnum < 0)
-                    {
-                        walllights = scaleLight[0];
-                    }
-                    else if (lightnum >= LightLevelCount)
-                    {
-                        walllights = scaleLight[LightLevelCount - 1];
-                    }
-                    else
-                    {
-                        walllights = scaleLight[lightnum];
-                    }
-
-                    var wallTexture = textures[seg.SideDef.MiddleTexture];
-                    var mask = wallTexture.Width - 1;
-
-                    Fixed rwMidTextureMid;
-                    if ((seg.LineDef.Flags & LineFlags.DontPegBottom) != 0)
-                    {
-                        rwMidTextureMid = seg.FrontSector.FloorHeight > seg.BackSector.FloorHeight
-                            ? seg.FrontSector.FloorHeight : seg.BackSector.FloorHeight;
-                        rwMidTextureMid = rwMidTextureMid + Fixed.FromInt(wallTexture.Height) - cameraZ;
-                    }
-                    else
-                    {
-                        rwMidTextureMid = seg.FrontSector.CeilingHeight < seg.BackSector.CeilingHeight
-                            ? seg.FrontSector.CeilingHeight : seg.BackSector.CeilingHeight;
-                        rwMidTextureMid = rwMidTextureMid - cameraZ;
-                    }
-                    rwMidTextureMid += seg.SideDef.RowOffset;
-
-                    var rwScaleStep = drawSeg.ScaleStep;
-                    var spryscale = drawSeg.Scale1;
-
-
-                    for (var x = drawSeg.X1; x <= drawSeg.X2; x++)
-                    {
-                        var index = spryscale.Data >> ScaleLightShift;
-                        if (index >= MaxScaleLight)
-                        {
-                            index = MaxScaleLight - 1;
-                        }
-
-                        var col = clipData[drawSeg.MaskedTextureColumn + x];
-                        var sprtopscreen = centerYFrac - rwMidTextureMid * spryscale;
-                        var iScale = new Fixed((int)(0xffffffffu / (uint)spryscale.Data));
-                        var ceilClip = clipData[drawSeg.TopClip + x];
-                        var floorClip = clipData[drawSeg.BottomClip + x];
-                        DrawMaskedColumn(
-                            wallTexture.Composite.Columns[col & mask],
-                            walllights[index],
-                            x, iScale,
-                            rwMidTextureMid,
-                            spryscale,
-                            sprtopscreen,
-                            ceilClip,
-                            floorClip);
-
-                        spryscale += rwScaleStep;
-                    }
-
-
+                    DrawMaskedRange(drawSeg, drawSeg.X1, drawSeg.X2);
                 }
+            }
+        }
+
+        private void DrawMaskedRange(VisSeg drawSeg, int x1, int x2)
+        {
+            var seg = drawSeg.Seg;
+
+            var lightnum = (seg.FrontSector.LightLevel >> LightSegShift); // + extraLight;
+
+            if (seg.Vertex1.Y == seg.Vertex2.Y)
+            {
+                lightnum--;
+            }
+            else if (seg.Vertex1.X == seg.Vertex2.X)
+            {
+                lightnum++;
+            }
+
+            byte[][] walllights;
+            if (lightnum < 0)
+            {
+                walllights = scaleLight[0];
+            }
+            else if (lightnum >= LightLevelCount)
+            {
+                walllights = scaleLight[LightLevelCount - 1];
+            }
+            else
+            {
+                walllights = scaleLight[lightnum];
+            }
+
+            var wallTexture = textures[seg.SideDef.MiddleTexture];
+            var mask = wallTexture.Width - 1;
+
+            Fixed rwMidTextureMid;
+            if ((seg.LineDef.Flags & LineFlags.DontPegBottom) != 0)
+            {
+                rwMidTextureMid = seg.FrontSector.FloorHeight > seg.BackSector.FloorHeight
+                    ? seg.FrontSector.FloorHeight : seg.BackSector.FloorHeight;
+                rwMidTextureMid = rwMidTextureMid + Fixed.FromInt(wallTexture.Height) - cameraZ;
+            }
+            else
+            {
+                rwMidTextureMid = seg.FrontSector.CeilingHeight < seg.BackSector.CeilingHeight
+                    ? seg.FrontSector.CeilingHeight : seg.BackSector.CeilingHeight;
+                rwMidTextureMid = rwMidTextureMid - cameraZ;
+            }
+            rwMidTextureMid += seg.SideDef.RowOffset;
+
+            var rwScaleStep = drawSeg.ScaleStep;
+            var spryscale = drawSeg.Scale1 + (x1 - drawSeg.X1) * rwScaleStep;
+
+
+            for (var x = x1; x <= x2; x++)
+            {
+                var index = spryscale.Data >> ScaleLightShift;
+                if (index >= MaxScaleLight)
+                {
+                    index = MaxScaleLight - 1;
+                }
+
+                var col = clipData[drawSeg.MaskedTextureColumn + x];
+
+                if (col != short.MaxValue)
+                {
+                    var sprtopscreen = centerYFrac - rwMidTextureMid * spryscale;
+                    var iScale = new Fixed((int)(0xffffffffu / (uint)spryscale.Data));
+                    var ceilClip = clipData[drawSeg.TopClip + x];
+                    var floorClip = clipData[drawSeg.BottomClip + x];
+                    DrawMaskedColumn(
+                        wallTexture.Composite.Columns[col & mask],
+                        walllights[index],
+                        x, iScale,
+                        rwMidTextureMid,
+                        spryscale,
+                        sprtopscreen,
+                        ceilClip,
+                        floorClip);
+                }
+
+                spryscale += rwScaleStep;
             }
         }
 
@@ -2252,7 +2266,7 @@ namespace ManagedDoom.SoftwareRendering
             return visSprite;
         }
 
-        private void R_DrawVisSprite()
+        private void DrawSprites()
         {
             for (var i = 0; i < visSpriteCount - 1; i++)
             {
