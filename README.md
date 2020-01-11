@@ -4,7 +4,7 @@
 
 The goal of this project is to make a fully functional Doom source port written in C#.
 
-I'm currently working on the software renderer. The screenshots below show the progress so far.
+The software renderer is almost complete. The screenshots below show the progress so far.
 
 
 
@@ -31,11 +31,14 @@ I'm currently working on the software renderer. The screenshots below show the p
     * [x] Transparent textures
     * [x] Diminishing lighting
     * [x] Sky rendering
-    * [ ] Sprite rendering
-    * [ ] High resolution rendering
-    * [ ] Optimization and benchmark
+    * [x] Sprite rendering
+    * [x] High resolution rendering
+    * [x] Optimization
 
 - Gaming code
+    * [ ] Player movement
+    * [ ] Monster movement
+    * [ ] Doors and platforms
     * [ ] Lots of things
 
 - Audio
