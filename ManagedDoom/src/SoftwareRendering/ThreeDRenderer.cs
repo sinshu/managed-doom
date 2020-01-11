@@ -536,7 +536,7 @@ namespace ManagedDoom.SoftwareRendering
 
             RenderBspNode(world.Map.Nodes.Length - 1);
 
-            //DrawSprites();
+            DrawSprites();
 
             DrawMasked();
         }
@@ -1816,6 +1816,8 @@ namespace ManagedDoom.SoftwareRendering
                         sprtopscreen,
                         ceilClip,
                         floorClip);
+
+                    clipData[drawSeg.MaskedTextureColumn + x] = short.MaxValue;
                 }
 
                 spryscale += rwScaleStep;
@@ -2371,27 +2373,150 @@ namespace ManagedDoom.SoftwareRendering
 
             for (var i = visSpriteCount - 1; i >= 0; i--)
             {
-                var vis = visSprites[i];
-                var dc_iscale = Fixed.Abs(vis.XIScale);
-                var dc_texturemid = vis.TextureMid;
-                var frac = vis.StartFrac;
-                var spryscale = vis.Scale;
-                var sprtopscreen = centerYFrac - (dc_texturemid * spryscale);
+                DrawSprite(visSprites[i]);
+            }
+        }
 
-                for (var dc_x = vis.X1; dc_x <= vis.X2; dc_x++)
+        private void DrawSprite(VisSprite vis)
+        {
+            for (var x = vis.X1; x <= vis.X2; x++)
+            {
+                lowerClip[x] = -2;
+                upperClip[x] = -2;
+            }
+
+            // Scan drawsegs from end to start for obscuring segs.
+            // The first drawseg that has a greater scale
+            //  is the clip seg.
+            for (var ds_p = drawSegCount - 1; ds_p >= 0; ds_p--)
+            {
+                var ds = drawSegs[ds_p];
+
+                // determine if the drawseg obscures the sprite
+                if (ds.X1 > vis.X2 || ds.X2 < vis.X1 || (ds.Silhouette == 0 && ds.MaskedTextureColumn == -1))
                 {
-                    var texturecolumn = frac.Data >> Fixed.FracBits;
-                    DrawMaskedColumn(
-                        vis.Patch.Columns[texturecolumn],
-                        vis.Colormap,
-                        dc_x,
-                        dc_iscale,
-                        dc_texturemid,
-                        spryscale,
-                        sprtopscreen,
-                        1, windowHeight - 1);
-                    frac += vis.XIScale;
+                    // does not cover sprite
+                    continue;
                 }
+
+                var r1 = ds.X1 < vis.X1 ? vis.X1 : ds.X1;
+                var r2 = ds.X2 > vis.X2 ? vis.X2 : ds.X2;
+
+                Fixed lowscale;
+                Fixed scale;
+                if (ds.Scale1 > ds.Scale2)
+                {
+                    lowscale = ds.Scale2;
+                    scale = ds.Scale1;
+                }
+                else
+                {
+                    lowscale = ds.Scale1;
+                    scale = ds.Scale2;
+                }
+
+                if (scale < vis.Scale
+                    || (lowscale < vis.Scale
+                     && Geometry.PointOnSegSide(vis.Gx, vis.Gy, ds.Seg) == 0))
+                {
+                    // masked mid texture?
+                    if (ds.MaskedTextureColumn != -1)
+                    {
+                        DrawMaskedRange(ds, r1, r2);
+                    }
+                    // seg is behind sprite
+                    continue;
+                }
+
+
+                // clip this piece of the sprite
+                var silhouette = ds.Silhouette;
+
+                if (vis.Gz >= ds.bsilheight)
+                {
+                    silhouette &= ~Silhouette.Bottom;
+                }
+
+                if (vis.GzT <= ds.tsilheight)
+                {
+                    silhouette &= ~Silhouette.Top;
+                }
+
+                if (silhouette == Silhouette.Bottom)
+                {
+                    // bottom sil
+                    for (var x = r1; x <= r2; x++)
+                    {
+                        if (lowerClip[x] == -2)
+                        {
+                            lowerClip[x] = clipData[ds.BottomClip + x];
+                        }
+                    }
+                }
+                else if (silhouette == Silhouette.Top)
+                {
+                    // top sil
+                    for (var x = r1; x <= r2; x++)
+                    {
+                        if (upperClip[x] == -2)
+                        {
+                            upperClip[x] = clipData[ds.TopClip + x];
+                        }
+                    }
+                }
+                else if (silhouette == Silhouette.Both)
+                {
+                    // both
+                    for (var x = r1; x <= r2; x++)
+                    {
+                        if (lowerClip[x] == -2)
+                        {
+                            lowerClip[x] = clipData[ds.BottomClip + x];
+                        }
+                        if (upperClip[x] == -2)
+                        {
+                            upperClip[x] = clipData[ds.TopClip + x];
+                        }
+                    }
+                }
+
+            }
+
+            // all clipping has been performed, so draw the sprite
+
+            // check for unclipped columns
+            for (var x = vis.X1; x <= vis.X2; x++)
+            {
+                if (lowerClip[x] == -2)
+                {
+                    lowerClip[x] = (short)windowHeight;
+                }
+                if (upperClip[x] == -2)
+                {
+                    upperClip[x] = -1;
+                }
+            }
+
+            var dc_iscale = Fixed.Abs(vis.XIScale);
+            var dc_texturemid = vis.TextureMid;
+            var frac = vis.StartFrac;
+            var spryscale = vis.Scale;
+            var sprtopscreen = centerYFrac - (dc_texturemid * spryscale);
+
+            for (var dc_x = vis.X1; dc_x <= vis.X2; dc_x++)
+            {
+                var texturecolumn = frac.Data >> Fixed.FracBits;
+                DrawMaskedColumn(
+                    vis.Patch.Columns[texturecolumn],
+                    vis.Colormap,
+                    dc_x,
+                    dc_iscale,
+                    dc_texturemid,
+                    spryscale,
+                    sprtopscreen,
+                    upperClip[dc_x],
+                    lowerClip[dc_x]);
+                frac += vis.XIScale;
             }
         }
 
