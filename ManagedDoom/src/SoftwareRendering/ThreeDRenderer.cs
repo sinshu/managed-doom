@@ -355,6 +355,9 @@ namespace ManagedDoom.SoftwareRendering
         private short[] upperClip;
         private short[] lowerClip;
 
+        private int negOneArray;
+        private int windowHeightArray;
+
         private int newEnd;
         private ClipRange[] solidSegs;
 
@@ -386,6 +389,17 @@ namespace ManagedDoom.SoftwareRendering
 
         private void ResetRenderingHistory()
         {
+            for (var i = 0; i < windowWidth; i++)
+            {
+                clipData[i] = -1;
+            }
+            negOneArray = 0;
+
+            for (var i = windowWidth; i < 2 * windowWidth; i++)
+            {
+                clipData[i] = (short)windowHeight;
+            }
+            windowHeightArray = windowWidth;
         }
 
         private void ClearRenderingHistory()
@@ -405,7 +419,7 @@ namespace ManagedDoom.SoftwareRendering
             solidSegs[1].Last = 0x7fffffff;
             newEnd = 2;
 
-            clipDataLength = 0;
+            clipDataLength = 2 * windowWidth;
 
             drawSegCount = 0;
         }
@@ -1127,8 +1141,12 @@ namespace ManagedDoom.SoftwareRendering
             visSeg.Scale1 = scale1;
             visSeg.Scale2 = scale2;
             visSeg.ScaleStep = rwScaleStep;
+            visSeg.Silhouette = Silhouette.Both;
+            visSeg.bsilheight = Fixed.MaxValue;
+            visSeg.tsilheight = Fixed.MinValue;
             visSeg.MaskedTextureColumn = -1;
-
+            visSeg.TopClip = windowHeightArray;
+            visSeg.BottomClip = negOneArray;
 
 
             //
@@ -1499,6 +1517,48 @@ namespace ManagedDoom.SoftwareRendering
             visSeg.Scale2 = scale2;
             visSeg.ScaleStep = rwScaleStep;
 
+            visSeg.TopClip = -1;
+            visSeg.BottomClip = -1;
+            visSeg.Silhouette = 0;
+
+            if (frontSector.FloorHeight > backSector.FloorHeight)
+            {
+                visSeg.Silhouette = Silhouette.Bottom;
+                visSeg.bsilheight = frontSector.FloorHeight;
+            }
+            else if (backSector.FloorHeight > cameraZ)
+            {
+                visSeg.Silhouette = Silhouette.Bottom;
+                visSeg.bsilheight = Fixed.MaxValue;
+                // ds_p->sprbottomclip = negonearray;
+            }
+
+            if (frontSector.CeilingHeight < backSector.CeilingHeight)
+            {
+                visSeg.Silhouette |= Silhouette.Top;
+                visSeg.tsilheight = frontSector.CeilingHeight;
+            }
+            else if (backSector.CeilingHeight < cameraZ)
+            {
+                visSeg.Silhouette |= Silhouette.Top;
+                visSeg.tsilheight = Fixed.MinValue;
+                // ds_p->sprtopclip = screenheightarray;
+            }
+
+            if (backSector.CeilingHeight <= frontSector.FloorHeight)
+            {
+                visSeg.BottomClip = negOneArray;
+                visSeg.bsilheight = Fixed.MaxValue;
+                visSeg.Silhouette |= Silhouette.Bottom;
+            }
+
+            if (backSector.FloorHeight >= frontSector.CeilingHeight)
+            {
+                visSeg.TopClip = windowHeightArray;
+                visSeg.tsilheight = Fixed.MinValue;
+                visSeg.Silhouette |= Silhouette.Top;
+            }
+
             var range = x2 - x1 + 1;
 
             var maskedTextureColumn = default(int);
@@ -1625,6 +1685,7 @@ namespace ManagedDoom.SoftwareRendering
                 wallY2Frac += wallY2Step;
             }
 
+            /*
             Array.Copy(upperClip, x1, clipData, clipDataLength, range);
             visSeg.TopClip = clipDataLength - x1;
             clipDataLength += range;
@@ -1632,6 +1693,33 @@ namespace ManagedDoom.SoftwareRendering
             Array.Copy(lowerClip, x1, clipData, clipDataLength, range);
             visSeg.BottomClip = clipDataLength - x1;
             clipDataLength += range;
+            */
+
+            // save sprite clipping info
+            if (((visSeg.Silhouette & Silhouette.Top) != 0 || drawMaskedTexture) && visSeg.TopClip == -1)
+            {
+                Array.Copy(upperClip, x1, clipData, clipDataLength, range);
+                visSeg.TopClip = clipDataLength - x1;
+                clipDataLength += range;
+            }
+
+            if (((visSeg.Silhouette & Silhouette.Bottom) != 0 || drawMaskedTexture) && visSeg.BottomClip == -1)
+            {
+                Array.Copy(lowerClip, x1, clipData, clipDataLength, range);
+                visSeg.BottomClip = clipDataLength - x1;
+                clipDataLength += range;
+            }
+
+            if (drawMaskedTexture && (visSeg.Silhouette & Silhouette.Top) == 0)
+            {
+                visSeg.Silhouette |= Silhouette.Top;
+                visSeg.tsilheight = Fixed.MinValue;
+            }
+            if (drawMaskedTexture && (visSeg.Silhouette & Silhouette.Bottom) == 0)
+            {
+                visSeg.Silhouette |= Silhouette.Bottom;
+                visSeg.bsilheight = Fixed.MaxValue;
+            }
 
             drawSegCount++;
         }
@@ -2327,14 +2415,29 @@ namespace ManagedDoom.SoftwareRendering
         private class VisSeg
         {
             public Seg Seg;
+
             public int X1;
             public int X2;
+
             public Fixed Scale1;
             public Fixed Scale2;
             public Fixed ScaleStep;
+
+            public Silhouette Silhouette;
+            public Fixed tsilheight;
+            public Fixed bsilheight;
+
             public int TopClip;
             public int BottomClip;
             public int MaskedTextureColumn;
+        }
+
+        [Flags]
+        private enum Silhouette
+        {
+            Top = 1,
+            Bottom = 2,
+            Both = 3
         }
 
         private class VisSprite
