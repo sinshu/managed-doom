@@ -20,6 +20,8 @@ The software renderer is almost complete. The screenshots below show the progres
 
 ![Slime trail](screenshots/doom-e1m1-slime.png)
 
+[![YouTube video of Managed Doom](https://img.youtube.com/vi/NwTEDQsBduI/0.jpg)](https://www.youtube.com/watch?v=NwTEDQsBduI)
+
 
 
 # Todo
