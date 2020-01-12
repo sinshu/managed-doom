@@ -29,5 +29,13 @@ namespace ManagedDoom
                 return data[index];
             }
         }
+
+        public byte[] FullBright
+        {
+            get
+            {
+                return data[0];
+            }
+        }
     }
 }

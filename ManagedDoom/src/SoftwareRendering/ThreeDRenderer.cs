@@ -2235,7 +2235,14 @@ namespace ManagedDoom.SoftwareRendering
             */
 
             // diminished light
-            vis.ColorMap = spritelights[Math.Min(xscale.Data >> ScaleLightShift, MaxScaleLight - 1)];
+            if ((thing.Frame & 0x8000) == 0)
+            {
+                vis.ColorMap = spritelights[Math.Min(xscale.Data >> ScaleLightShift, MaxScaleLight - 1)];
+            }
+            else
+            {
+                vis.ColorMap = colorMap.FullBright;
+            }
         }
 
         private VisSprite R_NewVisSprite()
