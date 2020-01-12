@@ -4,38 +4,34 @@ namespace ManagedDoom
 {
     public class StateDef
     {
-        private Sprite sprite;
-        private int frame;
-        private int tics;
-        private Action action;
-        private State next;
-        private int misc1;
-        private int misc2;
+        public Sprite Sprite;
+        public int Frame;
+        public int Tics;
+        public Action<Player, PlayerSprite> PlayerAction;
+        public Action<Mobj> MobjAction;
+        public State Next;
+        public int Misc1;
+        public int Misc2;
 
         public StateDef(
             Sprite sprite,
             int frame,
             int tics,
-            Action action,
+            Action<Player, PlayerSprite> playerAction,
+            Action<Mobj> mobjAction,
             State next,
             int misc1,
             int misc2)
         {
-            this.sprite = sprite;
-            this.frame = frame;
-            this.tics = tics;
-            this.action = action;
-            this.next = next;
-            this.misc1 = misc1;
-            this.misc2 = misc2;
+            Sprite = sprite;
+            Frame = frame;
+            Tics = tics;
+            PlayerAction = playerAction;
+            MobjAction = mobjAction;
+            MobjAction = null;
+            Next = next;
+            Misc1 = misc1;
+            Misc2 = misc2;
         }
-
-        public Sprite Sprite => sprite;
-        public int Frame => frame;
-        public int Tics => tics;
-        public Action Action => action;
-        public State Next => next;
-        public int Misc1 => misc1;
-        public int Misc2 => misc2;
     }
 }

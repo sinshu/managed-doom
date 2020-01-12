@@ -970,7 +970,6 @@ namespace ManagedDoom
         Tech2Lamp,
         Tech2Lamp2,
         Tech2Lamp3,
-        Tech2Lamp4,
-        Count
+        Tech2Lamp4
     }
 }

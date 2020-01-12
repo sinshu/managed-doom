@@ -112,7 +112,6 @@ namespace ManagedDoom
         SKEACT,
         SKESIT,
         SKEATK,
-        RADIO,
-        Count
+        RADIO
     }
 }

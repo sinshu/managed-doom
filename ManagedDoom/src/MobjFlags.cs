@@ -18,7 +18,7 @@ namespace ManagedDoom
         NoSector = 8,
 
         // Don't use the blocklinks (inert but displayable)
-        NoBlockmap = 16,
+        NoBlockMap = 16,
 
         // Not to be activated by sound, deaf monster.
         Ambush = 32,
@@ -98,7 +98,7 @@ namespace ManagedDoom
 
         // Don't spawn this object
         //  in death match mode (e.g. key cards).
-        NotDmatch = 0x2000000,
+        NotDeathmatch = 0x2000000,
 
         // Player sprites in multiplayer modes are modified
         //  using an internal color lookup table for re-indexing.

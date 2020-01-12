@@ -140,7 +140,6 @@ namespace ManagedDoom
         Misc83,
         Misc84,
         Misc85,
-        Misc86,
-        Count
+        Misc86
     }
 }

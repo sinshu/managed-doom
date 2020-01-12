@@ -152,7 +152,7 @@ namespace ManagedDoom
             }
 
             // don't spawn keycards and players in deathmatch
-            if (Deathmatch && (Info.MobjInfos[i].Flags & MobjFlags.NotDmatch) != 0)
+            if (Deathmatch && (Info.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
             {
                 return;
             }
