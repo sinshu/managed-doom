@@ -5,6 +5,8 @@ namespace ManagedDoom
     public class Thinker
     {
         public World World;
+        public Thinker Prev;
+        public Thinker Next;
         public bool Removed;
 
         public Thinker(World world)

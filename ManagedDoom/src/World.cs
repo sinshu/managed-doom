@@ -19,6 +19,8 @@ namespace ManagedDoom
 
         private DoomRandom random;
 
+        private Thinker thinkerCap;
+
         private Fixed playerX;
         private Fixed playerY;
         private Fixed playerZ;
@@ -29,6 +31,9 @@ namespace ManagedDoom
             map = new Map(textures, flats, wad, mapName);
 
             random = new DoomRandom();
+
+            thinkerCap = new Thinker(this);
+            thinkerCap.Prev = thinkerCap.Next = thinkerCap;
 
             LoadThings();
 
@@ -207,6 +212,8 @@ namespace ManagedDoom
 
         public void Update(bool up, bool down, bool left, bool right)
         {
+            RunThinkers();
+
             var speed = 8.0;
 
             if (up)
@@ -235,7 +242,7 @@ namespace ManagedDoom
             var dz = floor - playerZ;
             if (dz < Fixed.Zero)
             {
-                dz = new Fixed(4096) * dz;
+                dz = new Fixed(8192) * dz;
             }
             else
             {
@@ -357,12 +364,80 @@ namespace ManagedDoom
 
             //mobj->thinker.function.acp1 = (actionf_p1)P_MobjThinker;
 
-            //P_AddThinker(&mobj->thinker);
+            AddThinker(mobj);
 
             return mobj;
         }
 
 
+        public void AddThinker(Thinker thinker)
+        {
+            thinkerCap.Prev.Next = thinker;
+            thinker.Next = thinkerCap;
+            thinker.Prev = thinkerCap.Prev;
+            thinkerCap.Prev = thinker;
+        }
+
+        public void RunThinkers()
+        {
+            Thinker currentthinker;
+
+            currentthinker = thinkerCap.Next;
+            while (currentthinker != thinkerCap)
+            {
+                if (currentthinker.Removed)
+                {
+                    // time to remove it
+                    currentthinker.Next.Prev = currentthinker.Prev;
+                    currentthinker.Prev.Next = currentthinker.Next;
+                    //Z_Free(currentthinker);
+                }
+                else
+                {
+                    /*
+                    if (currentthinker->function.acp1)
+                    {
+                        currentthinker->function.acp1(currentthinker);
+                    }
+                    */
+                    currentthinker.Run();
+                }
+                currentthinker = currentthinker.Next;
+            }
+        }
+
+        public bool SetMobjState(Mobj mobj, State state)
+        {
+            StateDef st;
+
+            do
+            {
+                if (state == State.Null)
+                {
+                    mobj.State = Info.States[(int)State.Null];
+                    //P_RemoveMobj(mobj);
+                    return false;
+                }
+
+                st = Info.States[(int)state];
+                mobj.State = st;
+                mobj.Tics = st.Tics;
+                mobj.Sprite = st.Sprite;
+                mobj.Frame = st.Frame;
+
+                // Modified handling.
+                // Call action functions when the state is set
+                if (st.MobjAction != null)
+                {
+                    st.MobjAction(mobj);
+                }
+
+                state = st.Next;
+            }
+            while (mobj.Tics == 0);
+
+            return true;
+        }
 
 
         public Map Map => map;

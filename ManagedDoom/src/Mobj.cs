@@ -86,5 +86,73 @@ namespace ManagedDoom
         public Mobj(World world) : base(world)
         {
         }
+
+
+        public override void Run()
+        {
+            /*
+            // momentum movement
+            if (mobj->momx
+            || mobj->momy
+            || (mobj->flags & MF_SKULLFLY))
+            {
+                P_XYMovement(mobj);
+
+                // FIXME: decent NOP/NULL/Nil function pointer please.
+                if (mobj->thinker.function.acv == (actionf_v)(-1))
+                    return;     // mobj was removed
+            }
+            if ((mobj->z != mobj->floorz)
+             || mobj->momz)
+            {
+                P_ZMovement(mobj);
+
+                // FIXME: decent NOP/NULL/Nil function pointer please.
+                if (mobj->thinker.function.acv == (actionf_v)(-1))
+                    return;     // mobj was removed
+            }
+            */
+
+            // cycle through states,
+            // calling action functions at transitions
+            if (Tics != -1)
+            {
+                Tics--;
+
+                // you can cycle through multiple states in a tic
+                if (Tics == 0)
+                {
+                    if (!World.SetMobjState(this, State.Next))
+                    {
+                        return;     // freed itself
+                    }
+                }
+            }
+            else
+            {
+                /*
+                // check for nightmare respawn
+                if (!(mobj->flags & MF_COUNTKILL))
+                    return;
+
+                if (!respawnmonsters)
+                    return;
+
+                mobj->movecount++;
+
+                if (mobj->movecount < 12 * 35)
+                    return;
+
+                if (leveltime & 31)
+                    return;
+
+                if (P_Random() > 4)
+                    return;
+
+                P_NightmareRespawn(mobj);
+                */
+            }
+
+        }
     }
 }
