@@ -990,7 +990,7 @@ namespace ManagedDoom
             new StateDef(Sprite.TLP2, 32768, 4, null, null, State.Tech2Lamp2, 0, 0), // State.Tech2Lamp
             new StateDef(Sprite.TLP2, 32769, 4, null, null, State.Tech2Lamp3, 0, 0), // State.Tech2Lamp2
             new StateDef(Sprite.TLP2, 32770, 4, null, null, State.Tech2Lamp4, 0, 0), // State.Tech2Lamp3
-            new StateDef(Sprite.TLP2, 32771, 4, null, null, State.Tech2Lamp, 0, 0) // State.Tech2Lamp4
+            new StateDef(Sprite.TLP2, 32771, 4, null, null, State.Tech2Lamp, 0, 0), // State.Tech2Lamp4
         };
 
         public static readonly MobjInfo[] MobjInfos =
@@ -4393,7 +4393,32 @@ namespace ManagedDoom
                 0, // damage
                 Sfx.NONE, // activeSound
                 MobjFlags.NoBlockMap, // flags
-                State.Null) // raiseState
+                State.Null), // raiseState
+
+            new MobjInfo( // MobjType.Misc86
+                81, // doomEdNum
+                State.Brainstem, // spawnState
+                1000, // spawnHealth
+                State.Null, // seeState
+                Sfx.NONE, // seeSound
+                8, // reactionTime
+                Sfx.NONE, // attackSound
+                State.Null, // painState
+                0, // painChance
+                Sfx.NONE, // painSound
+                State.Null, // meleeState
+                State.Null, // missileState
+                State.Null, // deathState
+                State.Null, // xdeathState
+                Sfx.NONE, // deathSound
+                0, // speed
+                Fixed.FromInt(20), // radius
+                Fixed.FromInt(16), // height
+                100, // mass
+                0, // damage
+                Sfx.NONE, // activeSound
+                MobjFlags.NoBlockMap, // flags
+                State.Null), // raiseState
         };
     }
 }
