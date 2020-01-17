@@ -20,13 +20,17 @@ The software renderer is almost complete. The screenshots below show the progres
 
 ![Slime trail](screenshots/doom-e1m1-slime.png)
 
-__Video sample__  
+
+
+## Video sample
+
 https://www.youtube.com/watch?v=NwTEDQsBduI  
+
 [![YouTube video of Managed Doom](https://img.youtube.com/vi/NwTEDQsBduI/0.jpg)](https://www.youtube.com/watch?v=NwTEDQsBduI)
 
 
 
-# Todo
+## Todo
 
 - Software renderer  
     * [x] Front-to-back rendering using BSP
@@ -56,7 +60,7 @@ https://www.youtube.com/watch?v=NwTEDQsBduI
 https://github.com/id-Software/DOOM
 
 - __The Game Engine Black Book: DOOM by Fabien Sanglard__  
-If you want to understand the big picture of the rendering process in Doom, buy this one.  
+If you want to understand the big picture of the rendering process in Doom, buy this one!  
 http://fabiensanglard.net/gebbdoom/
 
 - __The Unofficial Doom Specs by Matthew S Fell__  
