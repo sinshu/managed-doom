@@ -6,28 +6,32 @@ namespace ManagedDoom
     {
         public const int DataSize = 14;
 
-        private Vertex vertex1;
-        private Vertex vertex2;
+        public Vertex Vertex1;
+        public Vertex Vertex2;
 
-        private Fixed dx;
-        private Fixed dy;
+        public Fixed Dx;
+        public Fixed Dy;
 
-        private LineFlags flags;
-        private LineSpecial special;
-        private short tag;
+        public LineFlags Flags;
+        public LineSpecial Special;
+        public short Tag;
 
-        private SideDef side0;
-        private SideDef side1;
+        public SideDef Side0;
+        public SideDef Side1;
 
-        private Fixed bboxTop;
-        private Fixed bboxBottom;
-        private Fixed bboxLeft;
-        private Fixed bboxRight;
+        public Fixed BboxTop;
+        public Fixed BboxBottom;
+        public Fixed BboxLeft;
+        public Fixed BboxRight;
 
-        private SlopeType slopeType;
+        public SlopeType SlopeType;
 
-        private Sector frontSector;
-        private Sector backSector;
+        public Sector FrontSector;
+        public Sector BackSector;
+
+        public int ValidCount;
+
+        public object SpecialData;
 
         public LineDef(
             Vertex vertex1,
@@ -38,44 +42,44 @@ namespace ManagedDoom
             SideDef side0,
             SideDef side1)
         {
-            this.vertex1 = vertex1;
-            this.vertex2 = vertex2;
-            this.flags = flags;
-            this.special = special;
-            this.tag = tag;
-            this.side0 = side0;
-            this.side1 = side1;
+            Vertex1 = vertex1;
+            Vertex2 = vertex2;
+            Flags = flags;
+            Special = special;
+            Tag = tag;
+            Side0 = side0;
+            Side1 = side1;
 
-            dx = vertex2.X - vertex1.X;
-            dy = vertex2.Y - vertex1.Y;
+            Dx = vertex2.X - vertex1.X;
+            Dy = vertex2.Y - vertex1.Y;
 
-            if (dx == Fixed.Zero)
+            if (Dx == Fixed.Zero)
             {
-                slopeType = SlopeType.Vertical;
+                SlopeType = SlopeType.Vertical;
             }
-            else if (dy == Fixed.Zero)
+            else if (Dy == Fixed.Zero)
             {
-                slopeType = SlopeType.Horizontal;
+                SlopeType = SlopeType.Horizontal;
             }
             else
             {
-                if (dy / dx > Fixed.Zero)
+                if (Dy / Dx > Fixed.Zero)
                 {
-                    slopeType = SlopeType.Positive;
+                    SlopeType = SlopeType.Positive;
                 }
                 else
                 {
-                    slopeType = SlopeType.Negative;
+                    SlopeType = SlopeType.Negative;
                 }
             }
 
-            bboxTop = Fixed.Max(vertex1.Y, vertex2.Y);
-            bboxBottom = Fixed.Min(vertex1.Y, vertex2.Y);
-            bboxLeft = Fixed.Min(vertex1.X, vertex2.X);
-            bboxRight = Fixed.Max(vertex1.X, vertex2.X);
+            BboxTop = Fixed.Max(vertex1.Y, vertex2.Y);
+            BboxBottom = Fixed.Min(vertex1.Y, vertex2.Y);
+            BboxLeft = Fixed.Min(vertex1.X, vertex2.X);
+            BboxRight = Fixed.Max(vertex1.X, vertex2.X);
 
-            frontSector = side0.Sector;
-            backSector = side1?.Sector;
+            FrontSector = side0.Sector;
+            BackSector = side1?.Sector;
         }
 
         public static LineDef FromData(byte[] data, int offset, Vertex[] vertices, SideDef[] sides)
@@ -118,28 +122,5 @@ namespace ManagedDoom
 
             return lines;
         }
-
-        public Vertex Vertex1 => vertex1;
-        public Vertex Vertex2 => vertex2;
-
-        public Fixed Dx => dx;
-        public Fixed Dy => dy;
-
-        public LineFlags Flags => flags;
-        public LineSpecial Special => special;
-        public int Tag => tag;
-
-        public SideDef Side0 => side0;
-        public SideDef Side1 => side1;
-
-        public Fixed BboxTop => bboxTop;
-        public Fixed BboxBottom => bboxBottom;
-        public Fixed BboxLeft => bboxLeft;
-        public Fixed BboxRight => bboxRight;
-
-        public SlopeType SlopeType => slopeType;
-
-        public Sector FrontSector => frontSector;
-        public Sector BackSector => backSector;
     }
 }

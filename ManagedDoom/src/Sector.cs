@@ -98,20 +98,20 @@ namespace ManagedDoom
             return sectors;
         }
 
-        public ThingListEnumerator GetEnumerator()
+        public ThingEnumerator GetEnumerator()
         {
-            return new ThingListEnumerator(this);
+            return new ThingEnumerator(this);
         }
 
 
 
-        public struct ThingListEnumerator : IEnumerator<Mobj>
+        public struct ThingEnumerator : IEnumerator<Mobj>
         {
             private Sector sector;
             private Mobj thing;
             private Mobj current;
 
-            public ThingListEnumerator(Sector sector)
+            public ThingEnumerator(Sector sector)
             {
                 this.sector = sector;
                 thing = sector.ThingList;
