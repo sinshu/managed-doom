@@ -35,96 +35,63 @@ namespace ManagedDoomTest
                     Assert.AreEqual((blockMap.OriginY + BlockMap.MapBlockSize * blockMap.Height).ToDouble(), maxY, 128);
                 }
 
+                var spots = new List<Tuple<int, int>>();
+                for (var blockY = -2; blockY < blockMap.Height + 2; blockY++)
                 {
+                    for (var blockX = -2; blockX < blockMap.Width + 2; blockX++)
+                    {
+                        spots.Add(Tuple.Create(blockX, blockY));
+                    }
+                }
+
+                var random = new Random(666);
+
+                for (var i = 0; i < 50; i++)
+                {
+                    var ordered = spots.OrderBy(spot => random.NextDouble()).ToArray();
+
                     var total = 0;
 
-                    for (var blockY = -2; blockY < blockMap.Height + 2; blockY++)
+                    foreach (var spot in ordered)
                     {
-                        for (var blockX = -2; blockX < blockMap.Width + 2; blockX++)
-                        {
-                            var minX = double.MaxValue;
-                            var maxX = double.MinValue;
-                            var minY = double.MaxValue;
-                            var maxY = double.MinValue;
-                            var count = 0;
+                        var blockX = spot.Item1;
+                        var blockY = spot.Item2;
 
-                            blockMap.EnumBlockLines(
-                                blockX,
-                                blockY,
-                                line =>
-                                {
-                                    if (count != 0)
-                                    {
-                                        minX = Math.Min(Math.Min(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), minX);
-                                        maxX = Math.Max(Math.Max(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), maxX);
-                                        minY = Math.Min(Math.Min(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), minY);
-                                        maxY = Math.Max(Math.Max(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), maxY);
-                                    }
-                                    count++;
-                                    return true;
-                                },
-                                -1);
+                        var minX = double.MaxValue;
+                        var maxX = double.MinValue;
+                        var minY = double.MaxValue;
+                        var maxY = double.MinValue;
+                        var count = 0;
 
-                            if (count > 1)
+                        blockMap.EnumBlockLines(
+                            blockX,
+                            blockY,
+                            line =>
                             {
-                                Assert.IsTrue(minX <= (blockMap.OriginX + BlockMap.MapBlockSize * (blockX + 1)).ToDouble());
-                                Assert.IsTrue(maxX >= (blockMap.OriginX + BlockMap.MapBlockSize * blockX).ToDouble());
-                                Assert.IsTrue(minY <= (blockMap.OriginY + BlockMap.MapBlockSize * (blockY + 1)).ToDouble());
-                                Assert.IsTrue(maxY >= (blockMap.OriginY + BlockMap.MapBlockSize * blockY).ToDouble());
-                            }
+                                if (count != 0)
+                                {
+                                    minX = Math.Min(Math.Min(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), minX);
+                                    maxX = Math.Max(Math.Max(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), maxX);
+                                    minY = Math.Min(Math.Min(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), minY);
+                                    maxY = Math.Max(Math.Max(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), maxY);
+                                }
+                                count++;
+                                return true;
+                            },
+                            i + 1);
 
-                            total += count;
+                        if (count > 1)
+                        {
+                            Assert.IsTrue(minX <= (blockMap.OriginX + BlockMap.MapBlockSize * (blockX + 1)).ToDouble());
+                            Assert.IsTrue(maxX >= (blockMap.OriginX + BlockMap.MapBlockSize * blockX).ToDouble());
+                            Assert.IsTrue(minY <= (blockMap.OriginY + BlockMap.MapBlockSize * (blockY + 1)).ToDouble());
+                            Assert.IsTrue(maxY >= (blockMap.OriginY + BlockMap.MapBlockSize * blockY).ToDouble());
                         }
+
+                        total += count;
                     }
 
                     Assert.AreEqual(lines.Length, total);
-                }
-
-                {
-                    var total = 0;
-
-                    var validCount = 0;
-
-                    for (var blockY = -2; blockY < blockMap.Height + 2; blockY++)
-                    {
-                        for (var blockX = -2; blockX < blockMap.Width + 2; blockX++)
-                        {
-                            var minX = double.MaxValue;
-                            var maxX = double.MinValue;
-                            var minY = double.MaxValue;
-                            var maxY = double.MinValue;
-                            var count = 0;
-
-                            blockMap.EnumBlockLines(
-                                blockX,
-                                blockY,
-                                line =>
-                                {
-                                    if (count != 0)
-                                    {
-                                        minX = Math.Min(Math.Min(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), minX);
-                                        maxX = Math.Max(Math.Max(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), maxX);
-                                        minY = Math.Min(Math.Min(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), minY);
-                                        maxY = Math.Max(Math.Max(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), maxY);
-                                    }
-                                    count++;
-                                    return true;
-                                },
-                                validCount++);
-
-                            if (count > 1)
-                            {
-                                Assert.IsTrue(minX <= (blockMap.OriginX + BlockMap.MapBlockSize * (blockX + 1)).ToDouble());
-                                Assert.IsTrue(maxX >= (blockMap.OriginX + BlockMap.MapBlockSize * blockX).ToDouble());
-                                Assert.IsTrue(minY <= (blockMap.OriginY + BlockMap.MapBlockSize * (blockY + 1)).ToDouble());
-                                Assert.IsTrue(maxY >= (blockMap.OriginY + BlockMap.MapBlockSize * blockY).ToDouble());
-                            }
-
-                            total += count;
-                        }
-                    }
-
-                    Assert.IsTrue(total > lines.Length);
                 }
             }
         }
@@ -155,96 +122,63 @@ namespace ManagedDoomTest
                     Assert.AreEqual((blockMap.OriginY + BlockMap.MapBlockSize * blockMap.Height).ToDouble(), maxY, 128);
                 }
 
+                var spots = new List<Tuple<int, int>>();
+                for (var blockY = -2; blockY < blockMap.Height + 2; blockY++)
                 {
+                    for (var blockX = -2; blockX < blockMap.Width + 2; blockX++)
+                    {
+                        spots.Add(Tuple.Create(blockX, blockY));
+                    }
+                }
+
+                var random = new Random(666);
+
+                for (var i = 0; i < 50; i++)
+                {
+                    var ordered = spots.OrderBy(spot => random.NextDouble()).ToArray();
+
                     var total = 0;
 
-                    for (var blockY = -2; blockY < blockMap.Height + 2; blockY++)
+                    foreach (var spot in ordered)
                     {
-                        for (var blockX = -2; blockX < blockMap.Width + 2; blockX++)
-                        {
-                            var minX = double.MaxValue;
-                            var maxX = double.MinValue;
-                            var minY = double.MaxValue;
-                            var maxY = double.MinValue;
-                            var count = 0;
+                        var blockX = spot.Item1;
+                        var blockY = spot.Item2;
 
-                            blockMap.EnumBlockLines(
-                                blockX,
-                                blockY,
-                                line =>
-                                {
-                                    if (count != 0)
-                                    {
-                                        minX = Math.Min(Math.Min(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), minX);
-                                        maxX = Math.Max(Math.Max(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), maxX);
-                                        minY = Math.Min(Math.Min(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), minY);
-                                        maxY = Math.Max(Math.Max(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), maxY);
-                                    }
-                                    count++;
-                                    return true;
-                                },
-                                -1);
+                        var minX = double.MaxValue;
+                        var maxX = double.MinValue;
+                        var minY = double.MaxValue;
+                        var maxY = double.MinValue;
+                        var count = 0;
 
-                            if (count > 1)
+                        blockMap.EnumBlockLines(
+                            blockX,
+                            blockY,
+                            line =>
                             {
-                                Assert.IsTrue(minX <= (blockMap.OriginX + BlockMap.MapBlockSize * (blockX + 1)).ToDouble());
-                                Assert.IsTrue(maxX >= (blockMap.OriginX + BlockMap.MapBlockSize * blockX).ToDouble());
-                                Assert.IsTrue(minY <= (blockMap.OriginY + BlockMap.MapBlockSize * (blockY + 1)).ToDouble());
-                                Assert.IsTrue(maxY >= (blockMap.OriginY + BlockMap.MapBlockSize * blockY).ToDouble());
-                            }
+                                if (count != 0)
+                                {
+                                    minX = Math.Min(Math.Min(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), minX);
+                                    maxX = Math.Max(Math.Max(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), maxX);
+                                    minY = Math.Min(Math.Min(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), minY);
+                                    maxY = Math.Max(Math.Max(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), maxY);
+                                }
+                                count++;
+                                return true;
+                            },
+                            i + 1);
 
-                            total += count;
+                        if (count > 1)
+                        {
+                            Assert.IsTrue(minX <= (blockMap.OriginX + BlockMap.MapBlockSize * (blockX + 1)).ToDouble());
+                            Assert.IsTrue(maxX >= (blockMap.OriginX + BlockMap.MapBlockSize * blockX).ToDouble());
+                            Assert.IsTrue(minY <= (blockMap.OriginY + BlockMap.MapBlockSize * (blockY + 1)).ToDouble());
+                            Assert.IsTrue(maxY >= (blockMap.OriginY + BlockMap.MapBlockSize * blockY).ToDouble());
                         }
+
+                        total += count;
                     }
 
                     Assert.AreEqual(lines.Length, total);
-                }
-
-                {
-                    var total = 0;
-
-                    var validCount = 0;
-
-                    for (var blockY = -2; blockY < blockMap.Height + 2; blockY++)
-                    {
-                        for (var blockX = -2; blockX < blockMap.Width + 2; blockX++)
-                        {
-                            var minX = double.MaxValue;
-                            var maxX = double.MinValue;
-                            var minY = double.MaxValue;
-                            var maxY = double.MinValue;
-                            var count = 0;
-
-                            blockMap.EnumBlockLines(
-                                blockX,
-                                blockY,
-                                line =>
-                                {
-                                    if (count != 0)
-                                    {
-                                        minX = Math.Min(Math.Min(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), minX);
-                                        maxX = Math.Max(Math.Max(line.Vertex1.X.ToDouble(), line.Vertex2.X.ToDouble()), maxX);
-                                        minY = Math.Min(Math.Min(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), minY);
-                                        maxY = Math.Max(Math.Max(line.Vertex1.Y.ToDouble(), line.Vertex2.Y.ToDouble()), maxY);
-                                    }
-                                    count++;
-                                    return true;
-                                },
-                                validCount++);
-
-                            if (count > 1)
-                            {
-                                Assert.IsTrue(minX <= (blockMap.OriginX + BlockMap.MapBlockSize * (blockX + 1)).ToDouble());
-                                Assert.IsTrue(maxX >= (blockMap.OriginX + BlockMap.MapBlockSize * blockX).ToDouble());
-                                Assert.IsTrue(minY <= (blockMap.OriginY + BlockMap.MapBlockSize * (blockY + 1)).ToDouble());
-                                Assert.IsTrue(maxY >= (blockMap.OriginY + BlockMap.MapBlockSize * blockY).ToDouble());
-                            }
-
-                            total += count;
-                        }
-                    }
-
-                    Assert.IsTrue(total > lines.Length);
                 }
             }
         }
