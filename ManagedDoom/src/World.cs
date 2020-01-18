@@ -257,14 +257,15 @@ namespace ManagedDoom
 
         public void SetThingPosition(Mobj thing)
         {
-            // link into subsector
             var ss = Geometry.PointInSubsector(thing.X, thing.Y, map);
 
             thing.Subsector = ss;
 
+            // invisible things don't go into the sector links
             if ((thing.Flags & MobjFlags.NoSector) == 0)
             {
-                // invisible things don't go into the sector links
+                // link into subsector    
+
                 var sec = ss.Sector;
 
                 thing.SPrev = null;
@@ -278,36 +279,82 @@ namespace ManagedDoom
                 sec.ThingList = thing;
             }
 
-            // The code below must be implemented later when blockmap related code is done.
-
-            /*
-            // link into blockmap
-            if (!(thing->flags & MF_NOBLOCKMAP))
+            // inert things don't need to be in blockmap
+            if ((thing.Flags & MobjFlags.NoBlockMap) == 0)
             {
-                // inert things don't need to be in blockmap		
-                blockx = (thing->x - bmaporgx) >> MAPBLOCKSHIFT;
-                blocky = (thing->y - bmaporgy) >> MAPBLOCKSHIFT;
+                // link into blockmap
 
-                if (blockx >= 0
-                    && blockx < bmapwidth
-                    && blocky >= 0
-                    && blocky < bmapheight)
+                var index = map.BlockMap.GetIndex(thing.X, thing.Y);
+
+                if (index != -1)
                 {
-                    link = &blocklinks[blocky * bmapwidth + blockx];
-                    thing->bprev = NULL;
-                    thing->bnext = *link;
-                    if (*link)
-                        (*link)->bprev = thing;
+                    var link = map.BlockMap.ThingLists[index];
 
-                    *link = thing;
+                    thing.BPrev = null;
+                    thing.BNext = link;
+
+                    if (link != null)
+                    {
+                        link.BPrev = thing;
+                    }
+
+                    map.BlockMap.ThingLists[index] = thing;
                 }
                 else
                 {
                     // thing is off the map
-                    thing->bnext = thing->bprev = NULL;
+                    thing.BNext = null;
+                    thing.BPrev = null;
                 }
             }
-            */
+        }
+
+        public void UnsetThingPosition(Mobj thing)
+        {
+            // invisible things don't go into the sector links
+            if ((thing.Flags & MobjFlags.NoSector) == 0)
+            {
+                // unlink from subsector
+
+                if (thing.SNext != null)
+                {
+                    thing.SNext.SPrev = thing.SPrev;
+                }
+
+                if (thing.SPrev != null)
+                {
+                    thing.SPrev.SNext = thing.SNext;
+                }
+                else
+                {
+                    thing.Subsector.Sector.ThingList = thing.SNext;
+                }
+            }
+
+            // inert things don't need to be in blockmap
+            if ((thing.Flags & MobjFlags.NoBlockMap) == 0)
+            {
+                // unlink from block map
+
+                if (thing.BNext != null)
+                {
+                    thing.BNext.BPrev = thing.BPrev;
+                }
+
+                if (thing.BPrev != null)
+                {
+                    thing.BPrev.BNext = thing.BNext;
+                }
+                else
+                {
+                    var index = map.BlockMap.GetIndex(thing.X, thing.Y);
+
+                    if (index != -1)
+                    {
+                        map.BlockMap.ThingLists[index] = thing.BNext;
+                    }
+                }
+            }
         }
 
 
