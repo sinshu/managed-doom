@@ -45,7 +45,7 @@ https://www.youtube.com/watch?v=NwTEDQsBduI
     * [x] Sprite rendering
     * [x] High resolution rendering
     * [x] Optimization
-        - Now the rendeing speed is comparble with other C-based ports even without unsafe code.
+        - Now the rendeing speed is comparable with other C-based ports even without unsafe code.
 
 - Gaming code
     * [ ] Player movement
