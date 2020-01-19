@@ -4,7 +4,11 @@
 
 The goal of this project is to make a fully functional Doom source port written in C#.
 
-The software renderer is almost complete. The screenshots below show the progress so far.
+The software renderer is almost complete and capable of showing 3D image which is almost identical to the original DOS version.
+
+Now I'm working on the game physics, including the thing movement, interaction and so on.
+
+The screenshots below show the progress so far.
 
 
 
@@ -34,6 +38,7 @@ https://www.youtube.com/watch?v=NwTEDQsBduI
 
 - Software renderer  
     * [x] Front-to-back rendering using BSP
+        - Since all the special culling methods that the original version has are implemented, many cool tricks like 3D bridges, deep water and linguortal are correctly shown.
     * [x] Wall texture mapping
     * [x] Ceiling / floor texture mapping
     * [x] Transparent textures
@@ -42,6 +47,7 @@ https://www.youtube.com/watch?v=NwTEDQsBduI
     * [x] Sprite rendering
     * [x] High resolution rendering
     * [x] Optimization
+        - Now the rendeing speed is comparble with other C-based ports even without unsafe code.
 
 - Gaming code
     * [ ] Player movement
