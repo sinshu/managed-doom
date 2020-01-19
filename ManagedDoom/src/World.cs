@@ -379,7 +379,7 @@ namespace ManagedDoom
                 mobj.ReactionTime = info.ReactionTime;
             }
 
-            mobj.LastLook = random.Next() % Player.MaxPlayers;
+            mobj.LastLook = random.Next() % Player.MaxPlayerCount;
 
             // do not set the state with P_SetMobjState,
             // because action routines can not be called yet
