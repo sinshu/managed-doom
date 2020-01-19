@@ -34,26 +34,26 @@ https://www.youtube.com/watch?v=NwTEDQsBduI
 
 ## Todo
 
-- Software renderer  
-    * [x] Front-to-back rendering using BSP
-        - Since all the special culling methods that the original version has are implemented, many cool tricks including 3D bridge, deep water and linguortal are correctly shown.
-    * [x] Wall texture mapping
-    * [x] Ceiling / floor texture mapping
-    * [x] Transparent textures
-    * [x] Diminishing lighting
-    * [x] Sky rendering
-    * [x] Sprite rendering
-    * [x] High resolution rendering
-    * [x] Optimization
-        - Now the rendeing speed is comparable with other C-based ports even without unsafe code.
+- __Software renderer__  
+    * [x] __Front-to-back rendering using BSP__  
+    Since all the special culling methods that the original version has are implemented, many cool tricks including 3D bridge, deep water and linguortal are correctly shown.
+    * [x] __Wall texture mapping__
+    * [x] __Ceiling / floor texture mapping__
+    * [x] __Transparent textures__
+    * [x] __Diminishing lighting__
+    * [x] __Sky rendering__
+    * [x] __Sprite rendering__
+    * [x] __High resolution rendering__
+    * [x] __Optimization__  
+    Now the rendeing speed is comparable with other C-based ports even without unsafe code.
 
-- Gaming code
+- __Gaming code__
     * [ ] Player movement
     * [ ] Monster movement
     * [ ] Doors and platforms
     * [ ] Lots of things
 
-- Audio
+- __Audio__
     * [ ] Lots of things
 
 
