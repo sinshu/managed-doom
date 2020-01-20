@@ -66,6 +66,16 @@ namespace ManagedDoom
                 lines);
         }
 
+        public int GetBlockX(Fixed x)
+        {
+            return (x - originX).Data >> MapBlockShift;
+        }
+
+        public int GetBlockY(Fixed y)
+        {
+            return (y - originY).Data >> MapBlockShift;
+        }
+
         public int GetIndex(int blockX, int blockY)
         {
             if (0 <= blockX && blockX < width && 0 <= blockY && blockY < height)
@@ -80,8 +90,8 @@ namespace ManagedDoom
 
         public int GetIndex(Fixed x, Fixed y)
         {
-            var blockX = (x - originX).Data >> MapBlockShift;
-            var blockY = (y - originY).Data >> MapBlockShift;
+            var blockX = GetBlockX(x);
+            var blockY = GetBlockY(y);
             return GetIndex(blockX, blockY);
         }
 
@@ -114,10 +124,58 @@ namespace ManagedDoom
             return true;
         }
 
+        public bool EnumBlockThings(int blockX, int blockY, Func<Mobj, bool> func)
+        {
+            var index = GetIndex(blockX, blockY);
+
+            if (index == -1)
+            {
+                return true;
+            }
+
+            for (var mobj = thingLists[index]; mobj != null; mobj = mobj.BNext)
+            {
+                if (!func(mobj))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public Fixed OriginX => originX;
         public Fixed OriginY => originY;
         public int Width => width;
         public int Height => height;
         public Mobj[] ThingLists => thingLists;
+
+
+
+        public void DumpMobjState()
+        {
+            var sb = new System.Text.StringBuilder();
+            for (var blockY = 0; blockY < Height; blockY++)
+            {
+                for (var blockX = 0; blockX < Width; blockX++)
+                {
+                    var index = GetIndex(blockX, blockY);
+                    var count = 0;
+                    EnumBlockThings(blockX, blockY, mobj => { count++; return true; });
+                    if (count > 0)
+                    {
+                        sb.Append(Info.SpriteNames[(int)thingLists[index].Sprite][0]);
+                        sb.Append(count);
+                    }
+                    else
+                    {
+                        sb.Append("  ");
+                    }
+                }
+                sb.AppendLine();
+            }
+            sb.AppendLine();
+            Console.WriteLine(sb);
+        }
     }
 }

@@ -152,7 +152,6 @@ namespace ManagedDoom
                 P_NightmareRespawn(mobj);
                 */
             }
-
         }
     }
 }
