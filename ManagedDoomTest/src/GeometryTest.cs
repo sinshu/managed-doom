@@ -384,5 +384,291 @@ namespace ManagedDoomTest
                 }
             }
         }
+
+        [TestMethod]
+        public void PointOnLineSide1()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 1000; i++)
+            {
+                var startX = -1 - 666 * random.NextDouble();
+                var endX = +1 + 666 * random.NextDouble();
+
+                var pointX = 666 * random.NextDouble() - 333;
+                var frontSideY = -1 - 666 * random.NextDouble();
+                var backSideY = -frontSideY;
+
+                var vertex1 = new Vertex(Fixed.FromDouble(startX), Fixed.Zero);
+                var vertex2 = new Vertex(Fixed.FromDouble(endX - startX), Fixed.Zero);
+
+                var line = new LineDef(
+                    vertex1,
+                    vertex2,
+                    0, 0, 0, null, null);
+
+                var x = Fixed.FromDouble(pointX);
+                {
+                    var y = Fixed.FromDouble(frontSideY);
+                    Assert.AreEqual(0, Geometry.PointOnLineSide(x, y, line));
+                }
+                {
+                    var y = Fixed.FromDouble(backSideY);
+                    Assert.AreEqual(1, Geometry.PointOnLineSide(x, y, line));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void PointOnLineSide2()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 1000; i++)
+            {
+                var startY = +1 + 666 * random.NextDouble();
+                var endY = -1 - 666 * random.NextDouble();
+
+                var pointY = 666 * random.NextDouble() - 333;
+                var frontSideX = -1 - 666 * random.NextDouble();
+                var backSideX = -frontSideX;
+
+                var vertex1 = new Vertex(Fixed.Zero, Fixed.FromDouble(startY));
+                var vertex2 = new Vertex(Fixed.Zero, Fixed.FromDouble(endY - startY));
+
+                var line = new LineDef(
+                    vertex1,
+                    vertex2,
+                    0, 0, 0, null, null);
+
+                var y = Fixed.FromDouble(pointY);
+                {
+                    var x = Fixed.FromDouble(frontSideX);
+                    Assert.AreEqual(0, Geometry.PointOnLineSide(x, y, line));
+                }
+                {
+                    var x = Fixed.FromDouble(backSideX);
+                    Assert.AreEqual(1, Geometry.PointOnLineSide(x, y, line));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void PointOnLineSide3()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 1000; i++)
+            {
+                var startX = -1 - 666 * random.NextDouble();
+                var endX = +1 + 666 * random.NextDouble();
+
+                var pointX = 666 * random.NextDouble() - 333;
+                var frontSideY = -1 - 666 * random.NextDouble();
+                var backSideY = -frontSideY;
+
+                for (var j = 0; j < 100; j++)
+                {
+                    var theta = 2 * Math.PI * random.NextDouble();
+                    var ox = 666 * random.NextDouble() - 333;
+                    var oy = 666 * random.NextDouble() - 333;
+
+                    var vertex1 = new Vertex(
+                        Fixed.FromDouble(ox + startX * Math.Cos(theta)),
+                        Fixed.FromDouble(oy + startX * Math.Sin(theta)));
+
+                    var vertex2 = new Vertex(
+                        vertex1.X + Fixed.FromDouble((endX - startX) * Math.Cos(theta)),
+                        vertex1.Y + Fixed.FromDouble((endX - startX) * Math.Sin(theta)));
+
+                    var line = new LineDef(
+                    vertex1,
+                    vertex2,
+                    0, 0, 0, null, null);
+
+                    {
+                        var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - frontSideY * Math.Sin(theta));
+                        var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + frontSideY * Math.Cos(theta));
+                        Assert.AreEqual(0, Geometry.PointOnLineSide(x, y, line));
+                    }
+                    {
+                        var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - backSideY * Math.Sin(theta));
+                        var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + backSideY * Math.Cos(theta));
+                        Assert.AreEqual(1, Geometry.PointOnLineSide(x, y, line));
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void BoxOnLineSide1()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 1000; i++)
+            {
+                var radius = 33 + 33 * random.NextDouble();
+
+                var startX = -1 - 666 * random.NextDouble();
+                var endX = +1 + 666 * random.NextDouble();
+
+                var pointX = 666 * random.NextDouble() - 333;
+                var frontSideY = -1 - radius - 666 * random.NextDouble();
+                var backSideY = -frontSideY;
+                var crossingY = radius * 1.9 * (random.NextDouble() - 0.5);
+
+                var frontBox = new Fixed[]
+                {
+                    Fixed.FromDouble(frontSideY + radius),
+                    Fixed.FromDouble(frontSideY - radius),
+                    Fixed.FromDouble(pointX - radius),
+                    Fixed.FromDouble(pointX + radius)
+                };
+
+                var backBox = new Fixed[]
+                {
+                    Fixed.FromDouble(backSideY + radius),
+                    Fixed.FromDouble(backSideY - radius),
+                    Fixed.FromDouble(pointX - radius),
+                    Fixed.FromDouble(pointX + radius)
+                };
+
+                var crossingBox = new Fixed[]
+                {
+                    Fixed.FromDouble(crossingY + radius),
+                    Fixed.FromDouble(crossingY - radius),
+                    Fixed.FromDouble(pointX - radius),
+                    Fixed.FromDouble(pointX + radius)
+                };
+
+                var vertex1 = new Vertex(Fixed.FromDouble(startX), Fixed.Zero);
+                var vertex2 = new Vertex(Fixed.FromDouble(endX - startX), Fixed.Zero);
+
+                var line = new LineDef(
+                    vertex1,
+                    vertex2,
+                    0, 0, 0, null, null);
+
+                Assert.AreEqual(0, Geometry.BoxOnLineSide(frontBox, line));
+                Assert.AreEqual(1, Geometry.BoxOnLineSide(backBox, line));
+                Assert.AreEqual(-1, Geometry.BoxOnLineSide(crossingBox, line));
+            }
+        }
+
+        [TestMethod]
+        public void BoxOnLineSide2()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 1000; i++)
+            {
+                var radius = 33 + 33 * random.NextDouble();
+
+                var startY = +1 + 666 * random.NextDouble();
+                var endY = -1 - 666 * random.NextDouble();
+
+                var pointY = 666 * random.NextDouble() - 333;
+                var frontSideX = -1 - radius - 666 * random.NextDouble();
+                var backSideX = -frontSideX;
+                var crossingX = radius * 1.9 * (random.NextDouble() - 0.5);
+
+                var frontBox = new Fixed[]
+                {
+                    Fixed.FromDouble(pointY + radius),
+                    Fixed.FromDouble(pointY - radius),
+                    Fixed.FromDouble(frontSideX - radius),
+                    Fixed.FromDouble(frontSideX + radius)
+                };
+
+                var backBox = new Fixed[]
+                {
+                    Fixed.FromDouble(pointY + radius),
+                    Fixed.FromDouble(pointY - radius),
+                    Fixed.FromDouble(backSideX - radius),
+                    Fixed.FromDouble(backSideX + radius)
+                };
+
+                var crossingBox = new Fixed[]
+                {
+                    Fixed.FromDouble(pointY + radius),
+                    Fixed.FromDouble(pointY - radius),
+                    Fixed.FromDouble(crossingX - radius),
+                    Fixed.FromDouble(crossingX + radius)
+                };
+
+                var vertex1 = new Vertex(Fixed.Zero, Fixed.FromDouble(startY));
+                var vertex2 = new Vertex(Fixed.Zero, Fixed.FromDouble(endY - startY));
+
+                var line = new LineDef(
+                    vertex1,
+                    vertex2,
+                    0, 0, 0, null, null);
+
+                Assert.AreEqual(0, Geometry.BoxOnLineSide(frontBox, line));
+                Assert.AreEqual(1, Geometry.BoxOnLineSide(backBox, line));
+                Assert.AreEqual(-1, Geometry.BoxOnLineSide(crossingBox, line));
+            }
+        }
+
+        [TestMethod]
+        public void BoxOnLineSide3()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 1000; i++)
+            {
+                var radius = 33 + 33 * random.NextDouble();
+
+                var startX = -1 - 666 * random.NextDouble();
+                var endX = +1 + 666 * random.NextDouble();
+
+                var pointX = 666 * random.NextDouble() - 333;
+                var frontSideY = -1 - 1.5 * radius - 666 * random.NextDouble();
+                var backSideY = -frontSideY;
+                var crossingY = radius * 1.9 * (random.NextDouble() - 0.5);
+
+                for (var j = 0; j < 100; j++)
+                {
+                    var theta = 2 * Math.PI * random.NextDouble();
+                    var ox = 666 * random.NextDouble() - 333;
+                    var oy = 666 * random.NextDouble() - 333;
+
+                    var frontBox = new Fixed[]
+                    {
+                        Fixed.FromDouble(oy + pointX * Math.Sin(theta) + frontSideY * Math.Cos(theta) + radius),
+                        Fixed.FromDouble(oy + pointX * Math.Sin(theta) + frontSideY * Math.Cos(theta) - radius),
+                        Fixed.FromDouble(ox + pointX * Math.Cos(theta) - frontSideY * Math.Sin(theta) - radius),
+                        Fixed.FromDouble(ox + pointX * Math.Cos(theta) - frontSideY * Math.Sin(theta) + radius)
+                    };
+
+                    var backBox = new Fixed[]
+                    {
+                        Fixed.FromDouble(oy + pointX * Math.Sin(theta) + backSideY * Math.Cos(theta) + radius),
+                        Fixed.FromDouble(oy + pointX * Math.Sin(theta) + backSideY * Math.Cos(theta) - radius),
+                        Fixed.FromDouble(ox + pointX * Math.Cos(theta) - backSideY * Math.Sin(theta) - radius),
+                        Fixed.FromDouble(ox + pointX * Math.Cos(theta) - backSideY * Math.Sin(theta) + radius)
+                    };
+
+                    var crossingBox = new Fixed[]
+                    {
+                        Fixed.FromDouble(oy + pointX * Math.Sin(theta) + crossingY * Math.Cos(theta) + radius),
+                        Fixed.FromDouble(oy + pointX * Math.Sin(theta) + crossingY * Math.Cos(theta) - radius),
+                        Fixed.FromDouble(ox + pointX * Math.Cos(theta) - crossingY * Math.Sin(theta) - radius),
+                        Fixed.FromDouble(ox + pointX * Math.Cos(theta) - crossingY * Math.Sin(theta) + radius)
+                    };
+
+                    var vertex1 = new Vertex(
+                        Fixed.FromDouble(ox + startX * Math.Cos(theta)),
+                        Fixed.FromDouble(oy + startX * Math.Sin(theta)));
+
+                    var vertex2 = new Vertex(
+                        vertex1.X + Fixed.FromDouble((endX - startX) * Math.Cos(theta)),
+                        vertex1.Y + Fixed.FromDouble((endX - startX) * Math.Sin(theta)));
+
+                    var line = new LineDef(
+                    vertex1,
+                    vertex2,
+                    0, 0, 0, null, null);
+
+                    Assert.AreEqual(0, Geometry.BoxOnLineSide(frontBox, line));
+                    Assert.AreEqual(1, Geometry.BoxOnLineSide(backBox, line));
+                    Assert.AreEqual(-1, Geometry.BoxOnLineSide(crossingBox, line));
+                }
+            }
+        }
     }
 }

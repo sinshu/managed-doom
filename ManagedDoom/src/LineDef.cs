@@ -78,7 +78,7 @@ namespace ManagedDoom
             BboxLeft = Fixed.Min(vertex1.X, vertex2.X);
             BboxRight = Fixed.Max(vertex1.X, vertex2.X);
 
-            FrontSector = side0.Sector;
+            FrontSector = side0?.Sector;
             BackSector = side1?.Sector;
         }
 

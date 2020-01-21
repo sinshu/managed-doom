@@ -263,5 +263,99 @@ namespace ManagedDoom
                 return 1;
             }
         }
+
+        public static int PointOnLineSide(Fixed x, Fixed y, LineDef line)
+        {
+            if (line.Dx == Fixed.Zero)
+            {
+                if (x <= line.Vertex1.X)
+                {
+                    return line.Dy > Fixed.Zero ? 1 : 0;
+                }
+                else
+                {
+                    return line.Dy < Fixed.Zero ? 1 : 0;
+                }
+            }
+
+            if (line.Dy == Fixed.Zero)
+            {
+                if (y <= line.Vertex1.Y)
+                {
+                    return line.Dx < Fixed.Zero ? 1 : 0;
+                }
+                else
+                {
+                    return line.Dx > Fixed.Zero ? 1 : 0;
+                }
+            }
+
+            var dx = (x - line.Vertex1.X);
+            var dy = (y - line.Vertex1.Y);
+
+            var left = new Fixed(line.Dy.Data >> Fixed.FracBits) * dx;
+            var right = dy * new Fixed(line.Dx.Data >> Fixed.FracBits);
+
+            if (right < left)
+            {
+                // front side
+                return 0;
+            }
+            else
+            {
+                // back side
+                return 1;
+            }
+        }
+
+        public static int BoxOnLineSide(Fixed[] tmbox, LineDef ld)
+        {
+            int p1;
+            int p2;
+
+            switch (ld.SlopeType)
+            {
+                case SlopeType.Horizontal:
+                    p1 = tmbox[Bbox.Top] > ld.Vertex1.Y ? 1 : 0;
+                    p2 = tmbox[Bbox.Bottom] > ld.Vertex1.Y ? 1 : 0;
+                    if (ld.Dx < Fixed.Zero)
+                    {
+                        p1 ^= 1;
+                        p2 ^= 1;
+                    }
+                    break;
+
+                case SlopeType.Vertical:
+                    p1 = tmbox[Bbox.Right] < ld.Vertex1.X ? 1 : 0;
+                    p2 = tmbox[Bbox.Left] < ld.Vertex1.X ? 1 : 0;
+                    if (ld.Dy < Fixed.Zero)
+                    {
+                        p1 ^= 1;
+                        p2 ^= 1;
+                    }
+                    break;
+
+                case SlopeType.Positive:
+                    p1 = PointOnLineSide(tmbox[Bbox.Left], tmbox[Bbox.Top], ld);
+                    p2 = PointOnLineSide(tmbox[Bbox.Right], tmbox[Bbox.Bottom], ld);
+                    break;
+
+                case SlopeType.Negative:
+                    p1 = PointOnLineSide(tmbox[Bbox.Right], tmbox[Bbox.Top], ld);
+                    p2 = PointOnLineSide(tmbox[Bbox.Left], tmbox[Bbox.Bottom], ld);
+                    break;
+                default:
+                    throw new Exception();
+            }
+
+            if (p1 == p2)
+            {
+                return p1;
+            }
+            else
+            {
+                return -1;
+            }
+        }
     }
 }
