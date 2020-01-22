@@ -357,5 +357,63 @@ namespace ManagedDoom
                 return -1;
             }
         }
+
+        public static int PointOnDivLineSide(Fixed x, Fixed y, DivLine line)
+        {
+            if (line.Dx == Fixed.Zero)
+            {
+                if (x <= line.X)
+                {
+                    return line.Dy > Fixed.Zero ? 1 : 0;
+                }
+                else
+                {
+                    return line.Dy < Fixed.Zero ? 1 : 0;
+                }
+            }
+
+            if (line.Dy == Fixed.Zero)
+            {
+                if (y <= line.Y)
+                {
+                    return line.Dx < Fixed.Zero ? 1 : 0;
+                }
+                else
+                {
+                    return line.Dx > Fixed.Zero ? 1 : 0;
+                }
+            }
+
+            var dx = (x - line.X);
+            var dy = (y - line.Y);
+
+            // try to quickly decide by looking at sign bits
+            if (((line.Dy.Data ^ line.Dx.Data ^ dx.Data ^ dy.Data) & 0x80000000) != 0)
+            {
+                if (((line.Dy.Data ^ dx.Data) & 0x80000000) != 0)
+                {
+                    // (left is negative)
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+            var left = new Fixed(line.Dy.Data >> 8) * new Fixed(dx.Data >> 8);
+            var right = new Fixed(dy.Data >> 8) * new Fixed(line.Dx.Data >> 8);
+
+            if (right < left)
+            {
+                // front side
+                return 0;
+            }
+            else
+            {
+                // back side
+                return 1;
+            }
+        }
     }
 }
