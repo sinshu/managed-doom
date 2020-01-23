@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public static class Bbox
+    public static class Box
     {
         public const int Top = 0;
         public const int Bottom = 1;

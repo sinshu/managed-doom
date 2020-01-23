@@ -316,8 +316,8 @@ namespace ManagedDoom
             switch (ld.SlopeType)
             {
                 case SlopeType.Horizontal:
-                    p1 = tmbox[Bbox.Top] > ld.Vertex1.Y ? 1 : 0;
-                    p2 = tmbox[Bbox.Bottom] > ld.Vertex1.Y ? 1 : 0;
+                    p1 = tmbox[Box.Top] > ld.Vertex1.Y ? 1 : 0;
+                    p2 = tmbox[Box.Bottom] > ld.Vertex1.Y ? 1 : 0;
                     if (ld.Dx < Fixed.Zero)
                     {
                         p1 ^= 1;
@@ -326,8 +326,8 @@ namespace ManagedDoom
                     break;
 
                 case SlopeType.Vertical:
-                    p1 = tmbox[Bbox.Right] < ld.Vertex1.X ? 1 : 0;
-                    p2 = tmbox[Bbox.Left] < ld.Vertex1.X ? 1 : 0;
+                    p1 = tmbox[Box.Right] < ld.Vertex1.X ? 1 : 0;
+                    p2 = tmbox[Box.Left] < ld.Vertex1.X ? 1 : 0;
                     if (ld.Dy < Fixed.Zero)
                     {
                         p1 ^= 1;
@@ -336,13 +336,13 @@ namespace ManagedDoom
                     break;
 
                 case SlopeType.Positive:
-                    p1 = PointOnLineSide(tmbox[Bbox.Left], tmbox[Bbox.Top], ld);
-                    p2 = PointOnLineSide(tmbox[Bbox.Right], tmbox[Bbox.Bottom], ld);
+                    p1 = PointOnLineSide(tmbox[Box.Left], tmbox[Box.Top], ld);
+                    p2 = PointOnLineSide(tmbox[Box.Right], tmbox[Box.Bottom], ld);
                     break;
 
                 case SlopeType.Negative:
-                    p1 = PointOnLineSide(tmbox[Bbox.Right], tmbox[Bbox.Top], ld);
-                    p2 = PointOnLineSide(tmbox[Bbox.Left], tmbox[Bbox.Bottom], ld);
+                    p1 = PointOnLineSide(tmbox[Box.Right], tmbox[Box.Top], ld);
+                    p2 = PointOnLineSide(tmbox[Box.Left], tmbox[Box.Bottom], ld);
                     break;
                 default:
                     throw new Exception();

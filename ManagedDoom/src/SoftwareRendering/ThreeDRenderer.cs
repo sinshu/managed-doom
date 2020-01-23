@@ -565,11 +565,11 @@ namespace ManagedDoom.SoftwareRendering
 
             // Find the corners of the box
             // that define the edges from current viewpoint.
-            if (viewX <= bbox[Bbox.Left])
+            if (viewX <= bbox[Box.Left])
             {
                 bx = 0;
             }
-            else if (viewX < bbox[Bbox.Right])
+            else if (viewX < bbox[Box.Right])
             {
                 bx = 1;
             }
@@ -578,11 +578,11 @@ namespace ManagedDoom.SoftwareRendering
                 bx = 2;
             }
 
-            if (viewY >= bbox[Bbox.Top])
+            if (viewY >= bbox[Box.Top])
             {
                 by = 0;
             }
-            else if (viewY > bbox[Bbox.Bottom])
+            else if (viewY > bbox[Box.Bottom])
             {
                 by = 1;
             }
