@@ -297,13 +297,13 @@ namespace ManagedDoom.SoftwareRendering
             // Calculate the light levels to use for each level / distance combination.
             for (var i = 0; i < LightLevelCount; i++)
             {
-                var startmap = ((LightLevelCount - 1 - i) * 2) * ColorMapCount / LightLevelCount;
+                var start = ((LightLevelCount - 1 - i) * 2) * ColorMapCount / LightLevelCount;
                 for (var j = 0; j < MaxZLight; j++)
                 {
-                    var scale = Fixed.FromInt(screenWidth / 2) / new Fixed((j + 1) << ZLightShift);
+                    var scale = Fixed.FromInt(320 / 2) / new Fixed((j + 1) << ZLightShift);
                     scale = new Fixed(scale.Data >> ScaleLightShift);
 
-                    var level = startmap - scale.Data / distMap;
+                    var level = start - scale.Data / distMap;
                     if (level < 0)
                     {
                         level = 0;
@@ -325,10 +325,10 @@ namespace ManagedDoom.SoftwareRendering
             // Calculate the light levels to use for each level / scale combination.
             for (var i = 0; i < LightLevelCount; i++)
             {
-                var startmap = ((LightLevelCount - 1 - i) * 2) * ColorMapCount / LightLevelCount;
+                var start = ((LightLevelCount - 1 - i) * 2) * ColorMapCount / LightLevelCount;
                 for (var j = 0; j < MaxScaleLight; j++)
                 {
-                    var level = startmap - j * screenWidth / windowWidth / distMap;
+                    var level = start - j * 320 / windowWidth / distMap;
                     if (level < 0)
                     {
                         level = 0;
