@@ -230,7 +230,7 @@ namespace ManagedDoom.SoftwareRendering
 
         public void ClearPlaneRendering()
         {
-            var angle = cameraAngle - Angle.Ang90;
+            var angle = viewAngle - Angle.Ang90;
             planeBaseXScale = Trig.Cos(angle) / centerXFrac;
             planeBaseYScale = -(Trig.Sin(angle) / centerXFrac);
 
@@ -250,12 +250,12 @@ namespace ManagedDoom.SoftwareRendering
         //
 
         private const int AngleToSkyShift = 22;
-        private Fixed skyTextureMid;
+        private Fixed skyTextureAlt;
         private Fixed skyInvScale;
 
         private void InitSkyRendering()
         {
-            skyTextureMid = Fixed.FromInt(100);
+            skyTextureAlt = Fixed.FromInt(100);
         }
 
         private void ResetSkyRendering()
@@ -459,10 +459,11 @@ namespace ManagedDoom.SoftwareRendering
         //
 
         private World world;
-        private Fixed cameraX;
-        private Fixed cameraY;
-        private Fixed cameraZ;
-        private Angle cameraAngle;
+
+        private Fixed viewX;
+        private Fixed viewY;
+        private Fixed viewZ;
+        private Angle viewAngle;
 
         private Fixed viewSin;
         private Fixed viewCos;
@@ -481,24 +482,23 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Render()
         {
-            cameraX = world.ViewX;
-            cameraY = world.ViewY;
-            cameraZ = world.ViewZ;
-            cameraAngle = world.ViewAngle;
+            viewX = world.ViewX;
+            viewY = world.ViewY;
+            viewZ = world.ViewZ;
+            viewAngle = world.ViewAngle;
+
+            viewSin = Trig.Sin(viewAngle);
+            viewCos = Trig.Cos(viewAngle);
+
+            validCount++;
 
             ClearPlaneRendering();
             ClearRenderingHistory();
             ClearSpriteRendering();
 
-            viewSin = Trig.Sin(cameraAngle);
-            viewCos = Trig.Cos(cameraAngle);
-            validCount++;
-
             RenderBspNode(world.Map.Nodes.Length - 1);
-
-            DrawSprites();
-
-            DrawMasked();
+            RenderSprites();
+            RenderMaskedTextures();
         }
 
         private void RenderBspNode(int node)
@@ -519,13 +519,13 @@ namespace ManagedDoom.SoftwareRendering
             var bsp = world.Map.Nodes[node];
 
             // Decide which side the view point is on.
-            var side = Geometry.PointOnSide(cameraX, cameraY, bsp);
+            var side = Geometry.PointOnSide(viewX, viewY, bsp);
 
             // Recursively divide front space.
             RenderBspNode(bsp.Children[side]);
 
             // Possibly divide back space.
-            if (CheckBbox(bsp.Bbox[side ^ 1]))
+            if (IsPotentiallyVisible(bsp.Bbox[side ^ 1]))
             {
                 RenderBspNode(bsp.Children[side ^ 1]);
             }
@@ -543,7 +543,7 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        private static readonly int[][] checkcoord =
+        private static readonly int[][] viewPosToFrustumTangent =
         {
             new[] { 3, 0, 2, 1 },
             new[] { 3, 0, 2, 0 },
@@ -558,53 +558,53 @@ namespace ManagedDoom.SoftwareRendering
             new[] { 2, 1, 3, 0 }
         };
 
-        public bool CheckBbox(Fixed[] bspcoord)
+        private bool IsPotentiallyVisible(Fixed[] bbox)
         {
-            int boxx;
-            int boxy;
+            int bx;
+            int by;
 
             // Find the corners of the box
             // that define the edges from current viewpoint.
-            if (cameraX <= bspcoord[Bbox.Left])
+            if (viewX <= bbox[Bbox.Left])
             {
-                boxx = 0;
+                bx = 0;
             }
-            else if (cameraX < bspcoord[Bbox.Right])
+            else if (viewX < bbox[Bbox.Right])
             {
-                boxx = 1;
-            }
-            else
-            {
-                boxx = 2;
-            }
-
-            if (cameraY >= bspcoord[Bbox.Top])
-            {
-                boxy = 0;
-            }
-            else if (cameraY > bspcoord[Bbox.Bottom])
-            {
-                boxy = 1;
+                bx = 1;
             }
             else
             {
-                boxy = 2;
+                bx = 2;
             }
 
-            var boxpos = (boxy << 2) + boxx;
-            if (boxpos == 5)
+            if (viewY >= bbox[Bbox.Top])
+            {
+                by = 0;
+            }
+            else if (viewY > bbox[Bbox.Bottom])
+            {
+                by = 1;
+            }
+            else
+            {
+                by = 2;
+            }
+
+            var viewPos = (by << 2) + bx;
+            if (viewPos == 5)
             {
                 return true;
             }
 
-            var x1 = bspcoord[checkcoord[boxpos][0]];
-            var y1 = bspcoord[checkcoord[boxpos][1]];
-            var x2 = bspcoord[checkcoord[boxpos][2]];
-            var y2 = bspcoord[checkcoord[boxpos][3]];
+            var x1 = bbox[viewPosToFrustumTangent[viewPos][0]];
+            var y1 = bbox[viewPosToFrustumTangent[viewPos][1]];
+            var x2 = bbox[viewPosToFrustumTangent[viewPos][2]];
+            var y2 = bbox[viewPosToFrustumTangent[viewPos][3]];
 
             // check clip list for an open space
-            var angle1 = Geometry.PointToAngle(cameraX, cameraY, x1, y1) - cameraAngle;
-            var angle2 = Geometry.PointToAngle(cameraX, cameraY, x2, y2) - cameraAngle;
+            var angle1 = Geometry.PointToAngle(viewX, viewY, x1, y1) - viewAngle;
+            var angle2 = Geometry.PointToAngle(viewX, viewY, x2, y2) - viewAngle;
 
             var span = angle1 - angle2;
 
@@ -614,14 +614,14 @@ namespace ManagedDoom.SoftwareRendering
                 return true;
             }
 
-            var tspan = angle1 + clipAngle;
+            var tSpan1 = angle1 + clipAngle;
 
-            if (tspan > clipAngle2)
+            if (tSpan1 > clipAngle2)
             {
-                tspan -= clipAngle2;
+                tSpan1 -= clipAngle2;
 
                 // Totally off the left edge?
-                if (tspan >= span)
+                if (tSpan1 >= span)
                 {
                     return false;
                 }
@@ -629,13 +629,13 @@ namespace ManagedDoom.SoftwareRendering
                 angle1 = clipAngle;
             }
 
-            tspan = clipAngle - angle2;
-            if (tspan > clipAngle2)
+            var tSpan2 = clipAngle - angle2;
+            if (tSpan2 > clipAngle2)
             {
-                tspan -= clipAngle2;
+                tSpan2 -= clipAngle2;
 
                 // Totally off the left edge?
-                if (tspan >= span)
+                if (tSpan2 >= span)
                 {
                     return false;
                 }
@@ -675,8 +675,8 @@ namespace ManagedDoom.SoftwareRendering
         private void DrawSeg(Seg seg)
         {
             // OPTIMIZE: quickly reject orthogonal back sides.
-            var angle1 = Geometry.PointToAngle(cameraX, cameraY, seg.Vertex1.X, seg.Vertex1.Y);
-            var angle2 = Geometry.PointToAngle(cameraX, cameraY, seg.Vertex2.X, seg.Vertex2.Y);
+            var angle1 = Geometry.PointToAngle(viewX, viewY, seg.Vertex1.X, seg.Vertex1.Y);
+            var angle2 = Geometry.PointToAngle(viewX, viewY, seg.Vertex2.X, seg.Vertex2.Y);
 
             // Clip to view edges.
             // OPTIMIZE: make constant out of 2*clipangle (FIELDOFVIEW).
@@ -691,8 +691,8 @@ namespace ManagedDoom.SoftwareRendering
             // Global angle needed by segcalc.
             var rwAngle1 = angle1;
 
-            angle1 -= cameraAngle;
-            angle2 -= cameraAngle;
+            angle1 -= viewAngle;
+            angle2 -= viewAngle;
 
             var tSpan1 = angle1 + clipAngle;
             if (tSpan1 > clipAngle2)
@@ -935,6 +935,8 @@ namespace ManagedDoom.SoftwareRendering
             return scale;
         }
 
+
+
         private const int HeightBits = 12;
         private const int HeightUnit = 1 << HeightBits;
 
@@ -955,44 +957,35 @@ namespace ManagedDoom.SoftwareRendering
             var frontSector = seg.FrontSector;
 
             // Calculate the relative plane heights of front and back sector.
-            // These values are later 4 bits right shifted to calculate the rendering area.
-            var worldFrontY1 = frontSector.CeilingHeight - cameraZ;
-            var worldFrontY2 = frontSector.FloorHeight - cameraZ;
+            var worldFrontZ1 = frontSector.CeilingHeight - viewZ;
+            var worldFrontZ2 = frontSector.FloorHeight - viewZ;
 
             // Check which parts must be rendered.
             var drawWall = side.MiddleTexture != 0;
-            var drawCeiling = worldFrontY1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
-            var drawFloor = worldFrontY2 < Fixed.Zero;
+            var drawCeiling = worldFrontZ1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
+            var drawFloor = worldFrontZ2 < Fixed.Zero;
 
-
-
-            //
             //
             // Determine how the wall textures are vertically aligned.
-            //
             //
 
             var wallTexture = textures[side.MiddleTexture];
             var wallWidthMask = wallTexture.Width - 1;
 
-            Fixed rwMiddleTextureMid;
+            Fixed middleTextureAlt;
             if ((line.Flags & LineFlags.DontPegBottom) != 0)
             {
                 var vTop = frontSector.FloorHeight + Fixed.FromInt(wallTexture.Height);
-                rwMiddleTextureMid = vTop - cameraZ;
+                middleTextureAlt = vTop - viewZ;
             }
             else
             {
-                rwMiddleTextureMid = worldFrontY1;
+                middleTextureAlt = worldFrontZ1;
             }
-            rwMiddleTextureMid += side.RowOffset;
+            middleTextureAlt += side.RowOffset;
 
-
-
-            //
             //
             // Calculate the scaling factors of the left and right edges of the wall range.
-            //
             //
 
             var rwNormalAngle = seg.Angle + Angle.Ang90;
@@ -1005,18 +998,18 @@ namespace ManagedDoom.SoftwareRendering
 
             var distAngle = Angle.Ang90 - offsetAngle;
 
-            var hypotenuse = Geometry.PointToDist(cameraX, cameraY, seg.Vertex1.X, seg.Vertex1.Y);
+            var hypotenuse = Geometry.PointToDist(viewX, viewY, seg.Vertex1.X, seg.Vertex1.Y);
 
             var rwDistance = hypotenuse * Trig.Sin(distAngle);
 
-            var rwScale = ScaleFromGlobalAngle(cameraAngle + xToAngle[x1], cameraAngle, rwNormalAngle, rwDistance);
+            var rwScale = ScaleFromGlobalAngle(viewAngle + xToAngle[x1], viewAngle, rwNormalAngle, rwDistance);
 
             Fixed scale1 = rwScale;
             Fixed scale2;
             Fixed rwScaleStep;
             if (x2 > x1)
             {
-                scale2 = ScaleFromGlobalAngle(cameraAngle + xToAngle[x2], cameraAngle, rwNormalAngle, rwDistance);
+                scale2 = ScaleFromGlobalAngle(viewAngle + xToAngle[x2], viewAngle, rwNormalAngle, rwDistance);
                 rwScaleStep = (scale2 - rwScale) / (x2 - x1);
             }
             else
@@ -1025,13 +1018,9 @@ namespace ManagedDoom.SoftwareRendering
                 rwScaleStep = Fixed.Zero;
             }
 
-
-
-            //
             //
             // Determine how the wall textures are horizontally aligned
             // and which color map is used according to the light level (if necessary).
-            //
             //
 
             var textureOffsetAngle = rwNormalAngle - rwAngle1;
@@ -1051,7 +1040,7 @@ namespace ManagedDoom.SoftwareRendering
             }
             rwOffset += seg.Offset + side.TextureOffset;
 
-            var rwCenterAngle = Angle.Ang90 + cameraAngle - rwNormalAngle;
+            var rwCenterAngle = Angle.Ang90 + viewAngle - rwNormalAngle;
 
             var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extraLight;
             if (seg.Vertex1.Y == seg.Vertex2.Y)
@@ -1065,30 +1054,22 @@ namespace ManagedDoom.SoftwareRendering
 
             var wallLights = scaleLight[Math.Clamp(wallLightLevel, 0, LightLevelCount - 1)];
 
-
-
-            //
             //
             // Determine where on the screen the wall is drawn.
             //
-            //
 
-            // Now these values are right shifted to adjust the scale to the screen coord calculation.
-            worldFrontY1 = new Fixed(worldFrontY1.Data >> 4);
-            worldFrontY2 = new Fixed(worldFrontY2.Data >> 4);
+            // These values are right shifted to avoid overflow in the following process (maybe).
+            worldFrontZ1 = new Fixed(worldFrontZ1.Data >> 4);
+            worldFrontZ2 = new Fixed(worldFrontZ2.Data >> 4);
 
-            // The Y positions of the top / bottom edges of the wall.
-            var wallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
-            var wallY1Step = -(rwScaleStep * worldFrontY1);
-            var wallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
-            var wallY2Step = -(rwScaleStep * worldFrontY2);
+            // The Y positions of the top / bottom edges of the wall on the screen.
+            var wallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontZ1 * rwScale;
+            var wallY1Step = -(rwScaleStep * worldFrontZ1);
+            var wallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontZ2 * rwScale;
+            var wallY2Step = -(rwScaleStep * worldFrontZ2);
 
-
-
-            //
             //
             // Determine which color map is used for the plane according to the light level.
-            //
             //
 
             var planeLightLevel = frontSector.LightLevel >> LightSegShift; // + extraLight;
@@ -1098,12 +1079,8 @@ namespace ManagedDoom.SoftwareRendering
             }
             var planeLights = zLight[planeLightLevel];
 
-
-
-            //
             //
             // Prepare to record the rendering history.
-            //
             //
 
             var visSeg = visWallRanges[visWallRangeCount];
@@ -1120,11 +1097,8 @@ namespace ManagedDoom.SoftwareRendering
             visSeg.UpperClip = windowHeightArray;
             visSeg.LowerClip = negOneArray;
 
-
-            //
             //
             // Now the rendering is carried out.
-            //
             //
 
             for (var x = x1; x <= x2; x++)
@@ -1150,14 +1124,14 @@ namespace ManagedDoom.SoftwareRendering
                     var textureColumn = (rwOffset - Trig.Tan(angle) * rwDistance).Data >> Fixed.FracBits;
                     var source = wallTexture.Composite.Columns[textureColumn & wallWidthMask][0];
 
-                    var lightScale = rwScale.Data >> ScaleLightShift;
-                    if (lightScale >= MaxScaleLight)
+                    var lightIndex = rwScale.Data >> ScaleLightShift;
+                    if (lightIndex >= MaxScaleLight)
                     {
-                        lightScale = MaxScaleLight - 1;
+                        lightIndex = MaxScaleLight - 1;
                     }
 
-                    var iScale = new Fixed((int)(0xffffffffu / (uint)rwScale.Data));
-                    DrawColumn(source, wallLights[lightScale], x, wy1, wy2, iScale, rwMiddleTextureMid);
+                    var invScale = new Fixed((int)(0xffffffffu / (uint)rwScale.Data));
+                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, invScale, middleTextureAlt);
                 }
 
                 if (drawFloor)
@@ -1187,21 +1161,18 @@ namespace ManagedDoom.SoftwareRendering
 
             // Calculate the relative plane heights of front and back sector.
             // These values are later 4 bits right shifted to calculate the rendering area.
-            var worldFrontY1 = frontSector.CeilingHeight - cameraZ;
-            var worldFrontY2 = frontSector.FloorHeight - cameraZ;
-            var worldBackY1 = backSector.CeilingHeight - cameraZ;
-            var worldBackY2 = backSector.FloorHeight - cameraZ;
+            var worldFrontZ1 = frontSector.CeilingHeight - viewZ;
+            var worldFrontZ2 = frontSector.FloorHeight - viewZ;
+            var worldBackZ1 = backSector.CeilingHeight - viewZ;
+            var worldBackZ2 = backSector.FloorHeight - viewZ;
 
             // The hack below enables ceiling height change in outdoor area without showing the upper wall.
             if (frontSector.CeilingFlat == flats.SkyFlatNumber
                 && backSector.CeilingFlat == flats.SkyFlatNumber)
             {
-                worldFrontY1 = worldBackY1;
+                worldFrontZ1 = worldBackZ1;
             }
 
-
-
-            //
             //
             // Check which parts must be rendered.
             //
@@ -1218,17 +1189,16 @@ namespace ManagedDoom.SoftwareRendering
             //     - The sky texture is shown where a wall should be (the chainsaw area in MAP01 for example).
             //     - Fake 3D bridges in REQUIEM.WAD.
             //
-            //
 
             bool drawUpperWall;
             bool drawCeiling;
             if (drawAsSolidWall
-                || worldFrontY1 != worldBackY1
+                || worldFrontZ1 != worldBackZ1
                 || frontSector.CeilingFlat != backSector.CeilingFlat
                 || frontSector.LightLevel != backSector.LightLevel)
             {
-                drawUpperWall = side.TopTexture != 0 && worldBackY1 < worldFrontY1;
-                drawCeiling = worldFrontY1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
+                drawUpperWall = side.TopTexture != 0 && worldBackZ1 < worldFrontZ1;
+                drawCeiling = worldFrontZ1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
             }
             else
             {
@@ -1239,12 +1209,12 @@ namespace ManagedDoom.SoftwareRendering
             bool drawLowerWall;
             bool drawFloor;
             if (drawAsSolidWall
-                || worldFrontY2 != worldBackY2
+                || worldFrontZ2 != worldBackZ2
                 || frontSector.FloorFlat != backSector.FloorFlat
                 || frontSector.LightLevel != backSector.LightLevel)
             {
-                drawLowerWall = side.BottomTexture != 0 && worldBackY2 > worldFrontY2;
-                drawFloor = worldFrontY2 < Fixed.Zero;
+                drawLowerWall = side.BottomTexture != 0 && worldBackZ2 > worldFrontZ2;
+                drawFloor = worldFrontZ2 < Fixed.Zero;
             }
             else
             {
@@ -1262,17 +1232,13 @@ namespace ManagedDoom.SoftwareRendering
 
             var segTextured = drawUpperWall || drawLowerWall || drawMaskedTexture;
 
-
-
-            //
             //
             // Determine how the wall textures are vertically aligned (if necessary).
-            //
             //
 
             var upperWallTexture = default(Texture);
             var upperWallWidthMask = default(int);
-            var rwUpperTextureMid = default(Fixed);
+            var uperTextureAlt = default(Fixed);
             if (drawUpperWall)
             {
                 upperWallTexture = textures[side.TopTexture];
@@ -1280,19 +1246,19 @@ namespace ManagedDoom.SoftwareRendering
 
                 if ((line.Flags & LineFlags.DontPegTop) != 0)
                 {
-                    rwUpperTextureMid = worldFrontY1;
+                    uperTextureAlt = worldFrontZ1;
                 }
                 else
                 {
                     var vTop = backSector.CeilingHeight + Fixed.FromInt(upperWallTexture.Height);
-                    rwUpperTextureMid = vTop - cameraZ;
+                    uperTextureAlt = vTop - viewZ;
                 }
-                rwUpperTextureMid += side.RowOffset;
+                uperTextureAlt += side.RowOffset;
             }
 
             var lowerWallTexture = default(Texture);
             var lowerWallWidthMask = default(int);
-            var rwLowerTextureMid = default(Fixed);
+            var lowerTextureAlt = default(Fixed);
             if (drawLowerWall)
             {
                 lowerWallTexture = textures[side.BottomTexture];
@@ -1300,21 +1266,17 @@ namespace ManagedDoom.SoftwareRendering
 
                 if ((line.Flags & LineFlags.DontPegBottom) != 0)
                 {
-                    rwLowerTextureMid = worldFrontY1;
+                    lowerTextureAlt = worldFrontZ1;
                 }
                 else
                 {
-                    rwLowerTextureMid = worldBackY2;
+                    lowerTextureAlt = worldBackZ2;
                 }
-                rwLowerTextureMid += side.RowOffset;
+                lowerTextureAlt += side.RowOffset;
             }
 
-
-
-            //
             //
             // Calculate the scaling factors of the left and right edges of the wall range.
-            //
             //
 
             var rwNormalAngle = seg.Angle + Angle.Ang90;
@@ -1327,18 +1289,18 @@ namespace ManagedDoom.SoftwareRendering
 
             var distAngle = Angle.Ang90 - offsetAngle;
 
-            var hypotenuse = Geometry.PointToDist(cameraX, cameraY, seg.Vertex1.X, seg.Vertex1.Y);
+            var hypotenuse = Geometry.PointToDist(viewX, viewY, seg.Vertex1.X, seg.Vertex1.Y);
 
             var rwDistance = hypotenuse * Trig.Sin(distAngle);
 
-            var rwScale = ScaleFromGlobalAngle(cameraAngle + xToAngle[x1], cameraAngle, rwNormalAngle, rwDistance);
+            var rwScale = ScaleFromGlobalAngle(viewAngle + xToAngle[x1], viewAngle, rwNormalAngle, rwDistance);
 
             Fixed scale1 = rwScale;
             Fixed scale2;
             Fixed rwScaleStep;
             if (x2 > x1)
             {
-                scale2 = ScaleFromGlobalAngle(cameraAngle + xToAngle[x2], cameraAngle, rwNormalAngle, rwDistance);
+                scale2 = ScaleFromGlobalAngle(viewAngle + xToAngle[x2], viewAngle, rwNormalAngle, rwDistance);
                 rwScaleStep = (scale2 - rwScale) / (x2 - x1);
             }
             else
@@ -1347,13 +1309,9 @@ namespace ManagedDoom.SoftwareRendering
                 rwScaleStep = Fixed.Zero;
             }
 
-
-
-            //
             //
             // Determine how the wall textures are horizontally aligned
             // and which color map is used according to the light level (if necessary).
-            //
             //
 
             var rwOffset = default(Fixed);
@@ -1378,7 +1336,7 @@ namespace ManagedDoom.SoftwareRendering
                 }
                 rwOffset += seg.Offset + side.TextureOffset;
 
-                rwCenterAngle = Angle.Ang90 + cameraAngle - rwNormalAngle;
+                rwCenterAngle = Angle.Ang90 + viewAngle - rwNormalAngle;
 
                 var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extraLight;
                 if (seg.Vertex1.Y == seg.Vertex2.Y)
@@ -1393,40 +1351,36 @@ namespace ManagedDoom.SoftwareRendering
                 wallLights = scaleLight[Math.Clamp(wallLightLevel, 0, LightLevelCount - 1)];
             }
 
-
-
-            //
             //
             // Determine where on the screen the wall is drawn.
             //
-            //
 
-            // Now these values are right shifted to adjust the scale to the screen coord calculation.
-            worldFrontY1 = new Fixed(worldFrontY1.Data >> 4);
-            worldFrontY2 = new Fixed(worldFrontY2.Data >> 4);
-            worldBackY1 = new Fixed(worldBackY1.Data >> 4);
-            worldBackY2 = new Fixed(worldBackY2.Data >> 4);
+            // These values are right shifted to avoid overflow in the following process.
+            worldFrontZ1 = new Fixed(worldFrontZ1.Data >> 4);
+            worldFrontZ2 = new Fixed(worldFrontZ2.Data >> 4);
+            worldBackZ1 = new Fixed(worldBackZ1.Data >> 4);
+            worldBackZ2 = new Fixed(worldBackZ2.Data >> 4);
 
-            // The Y positions of the top / bottom edges of the wall.
-            var wallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
-            var wallY1Step = -(rwScaleStep * worldFrontY1);
-            var wallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
-            var wallY2Step = -(rwScaleStep * worldFrontY2);
+            // The Y positions of the top / bottom edges of the wall on the screen..
+            var wallY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontZ1 * rwScale;
+            var wallY1Step = -(rwScaleStep * worldFrontZ1);
+            var wallY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontZ2 * rwScale;
+            var wallY2Step = -(rwScaleStep * worldFrontZ2);
 
             // The Y position of the top edge of the portal (if visible).
             var portalY1Frac = default(Fixed);
             var portalY1Step = default(Fixed);
             if (drawUpperWall)
             {
-                if (worldBackY1 > worldFrontY2)
+                if (worldBackZ1 > worldFrontZ2)
                 {
-                    portalY1Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY1 * rwScale;
-                    portalY1Step = -(rwScaleStep * worldBackY1);
+                    portalY1Frac = new Fixed(centerYFrac.Data >> 4) - worldBackZ1 * rwScale;
+                    portalY1Step = -(rwScaleStep * worldBackZ1);
                 }
                 else
                 {
-                    portalY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY2 * rwScale;
-                    portalY1Step = -(rwScaleStep * worldFrontY2);
+                    portalY1Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontZ2 * rwScale;
+                    portalY1Step = -(rwScaleStep * worldFrontZ2);
                 }
             }
 
@@ -1435,24 +1389,20 @@ namespace ManagedDoom.SoftwareRendering
             var portalY2Step = default(Fixed);
             if (drawLowerWall)
             {
-                if (worldBackY2 < worldFrontY1)
+                if (worldBackZ2 < worldFrontZ1)
                 {
-                    portalY2Frac = new Fixed(centerYFrac.Data >> 4) - worldBackY2 * rwScale;
-                    portalY2Step = -(rwScaleStep * worldBackY2);
+                    portalY2Frac = new Fixed(centerYFrac.Data >> 4) - worldBackZ2 * rwScale;
+                    portalY2Step = -(rwScaleStep * worldBackZ2);
                 }
                 else
                 {
-                    portalY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontY1 * rwScale;
-                    portalY2Step = -(rwScaleStep * worldFrontY1);
+                    portalY2Frac = new Fixed(centerYFrac.Data >> 4) - worldFrontZ1 * rwScale;
+                    portalY2Step = -(rwScaleStep * worldFrontZ1);
                 }
             }
 
-
-
-            //
             //
             // Determine which color map is used for the plane according to the light level.
-            //
             //
 
             var planeLightLevel = frontSector.LightLevel >> LightSegShift; // + extraLight;
@@ -1462,12 +1412,8 @@ namespace ManagedDoom.SoftwareRendering
             }
             var planeLights = zLight[planeLightLevel];
 
-
-
-            //
             //
             // Prepare to record the rendering history.
-            //
             //
 
             var visSeg = visWallRanges[visWallRangeCount];
@@ -1487,11 +1433,10 @@ namespace ManagedDoom.SoftwareRendering
                 visSeg.Silhouette = Silhouette.Lower;
                 visSeg.LowerSilHeight = frontSector.FloorHeight;
             }
-            else if (backSector.FloorHeight > cameraZ)
+            else if (backSector.FloorHeight > viewZ)
             {
                 visSeg.Silhouette = Silhouette.Lower;
                 visSeg.LowerSilHeight = Fixed.MaxValue;
-                // ds_p->sprbottomclip = negonearray;
             }
 
             if (frontSector.CeilingHeight < backSector.CeilingHeight)
@@ -1499,11 +1444,10 @@ namespace ManagedDoom.SoftwareRendering
                 visSeg.Silhouette |= Silhouette.Upper;
                 visSeg.UpperSilHeight = frontSector.CeilingHeight;
             }
-            else if (backSector.CeilingHeight < cameraZ)
+            else if (backSector.CeilingHeight < viewZ)
             {
                 visSeg.Silhouette |= Silhouette.Upper;
                 visSeg.UpperSilHeight = Fixed.MinValue;
-                // ds_p->sprtopclip = screenheightarray;
             }
 
             if (backSector.CeilingHeight <= frontSector.FloorHeight)
@@ -1534,12 +1478,8 @@ namespace ManagedDoom.SoftwareRendering
                 visSeg.MaskedTextureColumn = -1;
             }
 
-
-
-            //
             //
             // Now the rendering is carried out.
-            //
             //
 
             for (var x = x1; x <= x2; x++)
@@ -1578,7 +1518,7 @@ namespace ManagedDoom.SoftwareRendering
                     var wy2 = Math.Min(drawUpperWallY2, lowerClip[x] - 1);
                     var source = upperWallTexture.Composite.Columns[textureColumn & upperWallWidthMask][0];
                     var iScale = new Fixed((int)(0xffffffffu / (uint)rwScale.Data));
-                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, iScale, rwUpperTextureMid);
+                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, iScale, uperTextureAlt);
 
                     if (upperClip[x] < wy2)
                     {
@@ -1608,7 +1548,7 @@ namespace ManagedDoom.SoftwareRendering
                     var wy2 = Math.Min(drawLowerWallY2, lowerClip[x] - 1);
                     var source = lowerWallTexture.Composite.Columns[textureColumn & lowerWallWidthMask][0];
                     var iScale = new Fixed((int)(0xffffffffu / (uint)rwScale.Data));
-                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, iScale, rwLowerTextureMid);
+                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, iScale, lowerTextureAlt);
 
                     if (drawFloor)
                     {
@@ -1681,7 +1621,7 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        public void DrawMasked()
+        private void RenderMaskedTextures()
         {
             for (var i = visWallRangeCount - 1; i >= 0; i--)
             {
@@ -1714,47 +1654,42 @@ namespace ManagedDoom.SoftwareRendering
             var wallTexture = textures[seg.SideDef.MiddleTexture];
             var mask = wallTexture.Width - 1;
 
-            Fixed rwMidTextureMid;
+            Fixed midTextureAlt;
             if ((seg.LineDef.Flags & LineFlags.DontPegBottom) != 0)
             {
-                rwMidTextureMid = seg.FrontSector.FloorHeight > seg.BackSector.FloorHeight
+                midTextureAlt = seg.FrontSector.FloorHeight > seg.BackSector.FloorHeight
                     ? seg.FrontSector.FloorHeight : seg.BackSector.FloorHeight;
-                rwMidTextureMid = rwMidTextureMid + Fixed.FromInt(wallTexture.Height) - cameraZ;
+                midTextureAlt = midTextureAlt + Fixed.FromInt(wallTexture.Height) - viewZ;
             }
             else
             {
-                rwMidTextureMid = seg.FrontSector.CeilingHeight < seg.BackSector.CeilingHeight
+                midTextureAlt = seg.FrontSector.CeilingHeight < seg.BackSector.CeilingHeight
                     ? seg.FrontSector.CeilingHeight : seg.BackSector.CeilingHeight;
-                rwMidTextureMid = rwMidTextureMid - cameraZ;
+                midTextureAlt = midTextureAlt - viewZ;
             }
-            rwMidTextureMid += seg.SideDef.RowOffset;
+            midTextureAlt += seg.SideDef.RowOffset;
 
-            var rwScaleStep = drawSeg.ScaleStep;
-            var spryscale = drawSeg.Scale1 + (x1 - drawSeg.X1) * rwScaleStep;
-
+            var scaleStep = drawSeg.ScaleStep;
+            var scale = drawSeg.Scale1 + (x1 - drawSeg.X1) * scaleStep;
 
             for (var x = x1; x <= x2; x++)
             {
-                var index = spryscale.Data >> ScaleLightShift;
-                if (index >= MaxScaleLight)
-                {
-                    index = MaxScaleLight - 1;
-                }
+                var index = Math.Min(scale.Data >> ScaleLightShift, MaxScaleLight - 1);
 
                 var col = clipData[drawSeg.MaskedTextureColumn + x];
 
                 if (col != short.MaxValue)
                 {
-                    var sprtopscreen = centerYFrac - rwMidTextureMid * spryscale;
-                    var iScale = new Fixed((int)(0xffffffffu / (uint)spryscale.Data));
+                    var sprtopscreen = centerYFrac - midTextureAlt * scale;
+                    var invScale = new Fixed((int)(0xffffffffu / (uint)scale.Data));
                     var ceilClip = clipData[drawSeg.UpperClip + x];
                     var floorClip = clipData[drawSeg.LowerClip + x];
                     DrawMaskedColumn(
                         wallTexture.Composite.Columns[col & mask],
                         wallLights[index],
-                        x, iScale,
-                        rwMidTextureMid,
-                        spryscale,
+                        x, invScale,
+                        midTextureAlt,
+                        scale,
                         sprtopscreen,
                         ceilClip,
                         floorClip);
@@ -1762,27 +1697,11 @@ namespace ManagedDoom.SoftwareRendering
                     clipData[drawSeg.MaskedTextureColumn + x] = short.MaxValue;
                 }
 
-                spryscale += rwScaleStep;
+                scale += scaleStep;
             }
         }
 
-        public void DrawColumn(int color, int x, int y1, int y2)
-        {
-            if (y2 - y1 < 0)
-            {
-                return;
-            }
 
-            y1 = Math.Max(y1, 0);
-            y2 = Math.Min(y2, windowHeight - 1);
-
-            var pos = screenHeight * (windowX + x) + windowY + y1;
-            for (var y = y1; y <= y2; y++)
-            {
-                screenData[pos] = (byte)color;
-                pos++;
-            }
-        }
 
         public void DrawCeilingColumn(Sector sector, Flat flat, byte[][] planeLights, int x, int y1, int y2)
         {
@@ -1797,10 +1716,7 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            //y1 = Math.Max(y1, 0);
-            //y2 = Math.Min(y2, screenHeight - 1);
-
-            var height = Fixed.Abs(sector.CeilingHeight - cameraZ);
+            var height = Fixed.Abs(sector.CeilingHeight - viewZ);
 
             var data = flat.Data;
 
@@ -1818,9 +1734,9 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingYStep[y] = distance * planeBaseYScale;
 
                     var length = distance * planeDistScale[x];
-                    var angle = cameraAngle + xToAngle[x];
-                    var xFrac = cameraX + Trig.Cos(angle) * length;
-                    var yFrac = -cameraY - Trig.Sin(angle) * length;
+                    var angle = viewAngle + xToAngle[x];
+                    var xFrac = viewX + Trig.Cos(angle) * length;
+                    var yFrac = -viewY - Trig.Sin(angle) * length;
                     ceilingXFrac[y] = xFrac;
                     ceilingYFrac[y] = yFrac;
 
@@ -1852,9 +1768,9 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingYStep[y] = distance * planeBaseYScale;
 
                     var length = distance * planeDistScale[x];
-                    var angle = cameraAngle + xToAngle[x];
-                    var xFrac = cameraX + Trig.Cos(angle) * length;
-                    var yFrac = -cameraY - Trig.Sin(angle) * length;
+                    var angle = viewAngle + xToAngle[x];
+                    var xFrac = viewX + Trig.Cos(angle) * length;
+                    var yFrac = -viewY - Trig.Sin(angle) * length;
                     ceilingXFrac[y] = xFrac;
                     ceilingYFrac[y] = yFrac;
 
@@ -1877,9 +1793,9 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingYStep[y] = distance * planeBaseYScale;
 
                     var length = distance * planeDistScale[x];
-                    var angle = cameraAngle + xToAngle[x];
-                    var xFrac = cameraX + Trig.Cos(angle) * length;
-                    var yFrac = -cameraY - Trig.Sin(angle) * length;
+                    var angle = viewAngle + xToAngle[x];
+                    var xFrac = viewX + Trig.Cos(angle) * length;
+                    var yFrac = -viewY - Trig.Sin(angle) * length;
                     ceilingXFrac[y] = xFrac;
                     ceilingYFrac[y] = yFrac;
 
@@ -1911,10 +1827,7 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            //y1 = Math.Max(y1, 0);
-            //y2 = Math.Min(y2, screenHeight - 1);
-
-            var height = Fixed.Abs(sector.FloorHeight - cameraZ);
+            var height = Fixed.Abs(sector.FloorHeight - viewZ);
 
             var data = flat.Data;
 
@@ -1932,9 +1845,9 @@ namespace ManagedDoom.SoftwareRendering
                     floorYStep[y] = distance * planeBaseYScale;
 
                     var length = distance * planeDistScale[x];
-                    var angle = cameraAngle + xToAngle[x];
-                    var xFrac = cameraX + Trig.Cos(angle) * length;
-                    var yFrac = -cameraY - Trig.Sin(angle) * length;
+                    var angle = viewAngle + xToAngle[x];
+                    var xFrac = viewX + Trig.Cos(angle) * length;
+                    var yFrac = -viewY - Trig.Sin(angle) * length;
                     floorXFrac[y] = xFrac;
                     floorYFrac[y] = yFrac;
 
@@ -1966,9 +1879,9 @@ namespace ManagedDoom.SoftwareRendering
                     floorYStep[y] = distance * planeBaseYScale;
 
                     var length = distance * planeDistScale[x];
-                    var angle = cameraAngle + xToAngle[x];
-                    var xFrac = cameraX + Trig.Cos(angle) * length;
-                    var yFrac = -cameraY - Trig.Sin(angle) * length;
+                    var angle = viewAngle + xToAngle[x];
+                    var xFrac = viewX + Trig.Cos(angle) * length;
+                    var yFrac = -viewY - Trig.Sin(angle) * length;
                     floorXFrac[y] = xFrac;
                     floorYFrac[y] = yFrac;
 
@@ -1991,9 +1904,9 @@ namespace ManagedDoom.SoftwareRendering
                     floorYStep[y] = distance * planeBaseYScale;
 
                     var length = distance * planeDistScale[x];
-                    var angle = cameraAngle + xToAngle[x];
-                    var xFrac = cameraX + Trig.Cos(angle) * length;
-                    var yFrac = -cameraY - Trig.Sin(angle) * length;
+                    var angle = viewAngle + xToAngle[x];
+                    var xFrac = viewX + Trig.Cos(angle) * length;
+                    var yFrac = -viewY - Trig.Sin(angle) * length;
                     floorXFrac[y] = xFrac;
                     floorYFrac[y] = yFrac;
 
@@ -2012,7 +1925,14 @@ namespace ManagedDoom.SoftwareRendering
             floorPrevY2 = y2;
         }
 
-        private void DrawColumn(Column column, byte[] map, int x, int y1, int y2, Fixed iScale, Fixed textureMid)
+        private void DrawColumn(
+            Column column,
+            byte[] map,
+            int x,
+            int y1,
+            int y2,
+            Fixed invScale,
+            Fixed textureAlt)
         {
             if (y2 - y1 < 0)
             {
@@ -2030,8 +1950,8 @@ namespace ManagedDoom.SoftwareRendering
 
             // Determine scaling,
             //  which is the only mapping to be done.
-            var fracStep = iScale;
-            var frac = textureMid + (y1 - centerY) * fracStep;
+            var fracStep = invScale;
+            var frac = textureAlt + (y1 - centerY) * fracStep;
 
             // Inner loop that does the actual texture mapping,
             //  e.g. a DDA-lile scaling.
@@ -2051,18 +1971,27 @@ namespace ManagedDoom.SoftwareRendering
 
         public void DrawSkyColumn(int x, int y1, int y2)
         {
-            var angle = (cameraAngle + xToAngle[x]).Data >> AngleToSkyShift;
+            var angle = (viewAngle + xToAngle[x]).Data >> AngleToSkyShift;
             var mask = world.Map.SkyTexture.Width - 1;
             var source = world.Map.SkyTexture.Composite.Columns[angle & mask];
-            DrawColumn(source[0], colorMap[0], x, y1, y2, skyInvScale, skyTextureMid);
+            DrawColumn(source[0], colorMap[0], x, y1, y2, skyInvScale, skyTextureAlt);
         }
 
-        private void DrawMaskedColumn(Column[] columns, byte[] map, int x, Fixed iScale, Fixed textureMid, Fixed spryscale, Fixed sprtopscreen, int ceilClip, int floorClip)
+        private void DrawMaskedColumn(
+            Column[] columns,
+            byte[] map,
+            int x,
+            Fixed invScale,
+            Fixed textureAlt,
+            Fixed scale,
+            Fixed sprtopscreen,
+            int ceilClip,
+            int floorClip)
         {
             foreach (var column in columns)
             {
-                var topscreen = sprtopscreen + spryscale * column.TopDelta;
-                var bottomscreen = topscreen + spryscale * column.Length;
+                var topscreen = sprtopscreen + scale * column.TopDelta;
+                var bottomscreen = topscreen + scale * column.Length;
                 var y1 = (topscreen.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
                 var y2 = (bottomscreen.Data - 1) >> Fixed.FracBits;
 
@@ -2071,8 +2000,8 @@ namespace ManagedDoom.SoftwareRendering
 
                 if (y1 <= y2)
                 {
-                    var mid = new Fixed(textureMid.Data - (column.TopDelta << Fixed.FracBits));
-                    DrawColumn(column, map, x, y1, y2, iScale, mid);
+                    var alt = new Fixed(textureAlt.Data - (column.TopDelta << Fixed.FracBits));
+                    DrawColumn(column, map, x, y1, y2, invScale, alt);
                 }
             }
         }
@@ -2107,8 +2036,8 @@ namespace ManagedDoom.SoftwareRendering
         private void ProjectSprite(Mobj thing, byte[][] spritelights)
         {
             // transform the origin point
-            var tr_x = thing.X - cameraX;
-            var tr_y = thing.Y - cameraY;
+            var tr_x = thing.X - viewX;
+            var tr_y = thing.Y - viewY;
 
             var gxt = (tr_x * viewCos);
             var gyt = -(tr_y * viewSin);
@@ -2142,7 +2071,7 @@ namespace ManagedDoom.SoftwareRendering
             if (sprframe.Rotate)
             {
                 // choose a different rotation based on player view
-                var ang = Geometry.PointToAngle(cameraX, cameraY, thing.X, thing.Y);
+                var ang = Geometry.PointToAngle(viewX, viewY, thing.X, thing.Y);
                 var rot = (ang.Data - thing.Angle.Data + (uint)(Angle.Ang45.Data / 2) * 9) >> 29;
                 lump = sprframe.Patches[rot];
                 flip = sprframe.Flip[rot];
@@ -2181,7 +2110,7 @@ namespace ManagedDoom.SoftwareRendering
             vis.GlobalY = thing.Y;
             vis.GlobalBottomZ = thing.Z;
             vis.GlobalTopZ = thing.Z + Fixed.FromInt(lump.TopOffset);
-            vis.TextureMid = vis.GlobalTopZ - cameraZ;
+            vis.TextureMid = vis.GlobalTopZ - viewZ;
             vis.X1 = x1 < 0 ? 0 : x1;
             vis.X2 = x2 >= windowWidth ? windowWidth - 1 : x2;
             var iscale = Fixed.One / xscale;
@@ -2252,7 +2181,7 @@ namespace ManagedDoom.SoftwareRendering
             return visSprite;
         }
 
-        private void DrawSprites()
+        private void RenderSprites()
         {
             for (var i = 0; i < visSpriteCount - 1; i++)
             {
