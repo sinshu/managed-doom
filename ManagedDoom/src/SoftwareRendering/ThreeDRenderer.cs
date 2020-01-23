@@ -1083,19 +1083,19 @@ namespace ManagedDoom.SoftwareRendering
             // Prepare to record the rendering history.
             //
 
-            var visSeg = visWallRanges[visWallRangeCount];
-            visSeg.Seg = seg;
-            visSeg.X1 = x1;
-            visSeg.X2 = x2;
-            visSeg.Scale1 = scale1;
-            visSeg.Scale2 = scale2;
-            visSeg.ScaleStep = rwScaleStep;
-            visSeg.Silhouette = Silhouette.Both;
-            visSeg.LowerSilHeight = Fixed.MaxValue;
-            visSeg.UpperSilHeight = Fixed.MinValue;
-            visSeg.MaskedTextureColumn = -1;
-            visSeg.UpperClip = windowHeightArray;
-            visSeg.LowerClip = negOneArray;
+            var visWallRange = visWallRanges[visWallRangeCount];
+            visWallRange.Seg = seg;
+            visWallRange.X1 = x1;
+            visWallRange.X2 = x2;
+            visWallRange.Scale1 = scale1;
+            visWallRange.Scale2 = scale2;
+            visWallRange.ScaleStep = rwScaleStep;
+            visWallRange.Silhouette = Silhouette.Both;
+            visWallRange.LowerSilHeight = Fixed.MaxValue;
+            visWallRange.UpperSilHeight = Fixed.MinValue;
+            visWallRange.MaskedTextureColumn = -1;
+            visWallRange.UpperClip = windowHeightArray;
+            visWallRange.LowerClip = negOneArray;
 
             //
             // Now the rendering is carried out.
@@ -1416,52 +1416,52 @@ namespace ManagedDoom.SoftwareRendering
             // Prepare to record the rendering history.
             //
 
-            var visSeg = visWallRanges[visWallRangeCount];
-            visSeg.Seg = seg;
-            visSeg.X1 = x1;
-            visSeg.X2 = x2;
-            visSeg.Scale1 = scale1;
-            visSeg.Scale2 = scale2;
-            visSeg.ScaleStep = rwScaleStep;
+            var visWallRange = visWallRanges[visWallRangeCount];
+            visWallRange.Seg = seg;
+            visWallRange.X1 = x1;
+            visWallRange.X2 = x2;
+            visWallRange.Scale1 = scale1;
+            visWallRange.Scale2 = scale2;
+            visWallRange.ScaleStep = rwScaleStep;
 
-            visSeg.UpperClip = -1;
-            visSeg.LowerClip = -1;
-            visSeg.Silhouette = 0;
+            visWallRange.UpperClip = -1;
+            visWallRange.LowerClip = -1;
+            visWallRange.Silhouette = 0;
 
             if (frontSector.FloorHeight > backSector.FloorHeight)
             {
-                visSeg.Silhouette = Silhouette.Lower;
-                visSeg.LowerSilHeight = frontSector.FloorHeight;
+                visWallRange.Silhouette = Silhouette.Lower;
+                visWallRange.LowerSilHeight = frontSector.FloorHeight;
             }
             else if (backSector.FloorHeight > viewZ)
             {
-                visSeg.Silhouette = Silhouette.Lower;
-                visSeg.LowerSilHeight = Fixed.MaxValue;
+                visWallRange.Silhouette = Silhouette.Lower;
+                visWallRange.LowerSilHeight = Fixed.MaxValue;
             }
 
             if (frontSector.CeilingHeight < backSector.CeilingHeight)
             {
-                visSeg.Silhouette |= Silhouette.Upper;
-                visSeg.UpperSilHeight = frontSector.CeilingHeight;
+                visWallRange.Silhouette |= Silhouette.Upper;
+                visWallRange.UpperSilHeight = frontSector.CeilingHeight;
             }
             else if (backSector.CeilingHeight < viewZ)
             {
-                visSeg.Silhouette |= Silhouette.Upper;
-                visSeg.UpperSilHeight = Fixed.MinValue;
+                visWallRange.Silhouette |= Silhouette.Upper;
+                visWallRange.UpperSilHeight = Fixed.MinValue;
             }
 
             if (backSector.CeilingHeight <= frontSector.FloorHeight)
             {
-                visSeg.LowerClip = negOneArray;
-                visSeg.LowerSilHeight = Fixed.MaxValue;
-                visSeg.Silhouette |= Silhouette.Lower;
+                visWallRange.LowerClip = negOneArray;
+                visWallRange.LowerSilHeight = Fixed.MaxValue;
+                visWallRange.Silhouette |= Silhouette.Lower;
             }
 
             if (backSector.FloorHeight >= frontSector.CeilingHeight)
             {
-                visSeg.UpperClip = windowHeightArray;
-                visSeg.UpperSilHeight = Fixed.MinValue;
-                visSeg.Silhouette |= Silhouette.Upper;
+                visWallRange.UpperClip = windowHeightArray;
+                visWallRange.UpperSilHeight = Fixed.MinValue;
+                visWallRange.Silhouette |= Silhouette.Upper;
             }
 
             var range = x2 - x1 + 1;
@@ -1470,12 +1470,12 @@ namespace ManagedDoom.SoftwareRendering
             if (drawMaskedTexture)
             {
                 maskedTextureColumn = clipDataLength - x1;
-                visSeg.MaskedTextureColumn = maskedTextureColumn;
+                visWallRange.MaskedTextureColumn = maskedTextureColumn;
                 clipDataLength += range;
             }
             else
             {
-                visSeg.MaskedTextureColumn = -1;
+                visWallRange.MaskedTextureColumn = -1;
             }
 
             //
@@ -1489,6 +1489,7 @@ namespace ManagedDoom.SoftwareRendering
 
                 var textureColumn = default(int);
                 var lightIndex = default(int);
+                var invScale = default(Fixed);
                 if (segTextured)
                 {
                     var angle = rwCenterAngle + xToAngle[x];
@@ -1500,6 +1501,8 @@ namespace ManagedDoom.SoftwareRendering
                     {
                         lightIndex = MaxScaleLight - 1;
                     }
+
+                    invScale = new Fixed((int)(0xffffffffu / (uint)rwScale.Data));
                 }
 
                 if (drawUpperWall)
@@ -1517,8 +1520,7 @@ namespace ManagedDoom.SoftwareRendering
                     var wy1 = Math.Max(drawUpperWallY1, upperClip[x] + 1);
                     var wy2 = Math.Min(drawUpperWallY2, lowerClip[x] - 1);
                     var source = upperWallTexture.Composite.Columns[textureColumn & upperWallWidthMask][0];
-                    var iScale = new Fixed((int)(0xffffffffu / (uint)rwScale.Data));
-                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, iScale, uperTextureAlt);
+                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, invScale, uperTextureAlt);
 
                     if (upperClip[x] < wy2)
                     {
@@ -1547,8 +1549,7 @@ namespace ManagedDoom.SoftwareRendering
                     var wy1 = Math.Max(drawLowerWallY1, upperClip[x] + 1);
                     var wy2 = Math.Min(drawLowerWallY2, lowerClip[x] - 1);
                     var source = lowerWallTexture.Composite.Columns[textureColumn & lowerWallWidthMask][0];
-                    var iScale = new Fixed((int)(0xffffffffu / (uint)rwScale.Data));
-                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, iScale, lowerTextureAlt);
+                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, invScale, lowerTextureAlt);
 
                     if (drawFloor)
                     {
@@ -1590,30 +1591,32 @@ namespace ManagedDoom.SoftwareRendering
             // save sprite clipping info
             //
 
-            if (((visSeg.Silhouette & Silhouette.Upper) != 0 || drawMaskedTexture) && visSeg.UpperClip == -1)
+            if (((visWallRange.Silhouette & Silhouette.Upper) != 0
+                || drawMaskedTexture) && visWallRange.UpperClip == -1)
             {
                 Array.Copy(upperClip, x1, clipData, clipDataLength, range);
-                visSeg.UpperClip = clipDataLength - x1;
+                visWallRange.UpperClip = clipDataLength - x1;
                 clipDataLength += range;
             }
 
-            if (((visSeg.Silhouette & Silhouette.Lower) != 0 || drawMaskedTexture) && visSeg.LowerClip == -1)
+            if (((visWallRange.Silhouette & Silhouette.Lower) != 0
+                || drawMaskedTexture) && visWallRange.LowerClip == -1)
             {
                 Array.Copy(lowerClip, x1, clipData, clipDataLength, range);
-                visSeg.LowerClip = clipDataLength - x1;
+                visWallRange.LowerClip = clipDataLength - x1;
                 clipDataLength += range;
             }
 
-            if (drawMaskedTexture && (visSeg.Silhouette & Silhouette.Upper) == 0)
+            if (drawMaskedTexture && (visWallRange.Silhouette & Silhouette.Upper) == 0)
             {
-                visSeg.Silhouette |= Silhouette.Upper;
-                visSeg.UpperSilHeight = Fixed.MinValue;
+                visWallRange.Silhouette |= Silhouette.Upper;
+                visWallRange.UpperSilHeight = Fixed.MinValue;
             }
 
-            if (drawMaskedTexture && (visSeg.Silhouette & Silhouette.Lower) == 0)
+            if (drawMaskedTexture && (visWallRange.Silhouette & Silhouette.Lower) == 0)
             {
-                visSeg.Silhouette |= Silhouette.Lower;
-                visSeg.LowerSilHeight = Fixed.MaxValue;
+                visWallRange.Silhouette |= Silhouette.Lower;
+                visWallRange.LowerSilHeight = Fixed.MaxValue;
             }
 
             visWallRangeCount++;
@@ -1703,7 +1706,13 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        public void DrawCeilingColumn(Sector sector, Flat flat, byte[][] planeLights, int x, int y1, int y2)
+        private void DrawCeilingColumn(
+            Sector sector,
+            Flat flat,
+            byte[][] planeLights,
+            int x,
+            int y1,
+            int y2)
         {
             if (flat == flats.SkyFlat)
             {
@@ -1814,7 +1823,13 @@ namespace ManagedDoom.SoftwareRendering
             ceilingPrevY2 = y2;
         }
 
-        public void DrawFloorColumn(Sector sector, Flat flat, byte[][] planeLights, int x, int y1, int y2)
+        private void DrawFloorColumn(
+            Sector sector,
+            Flat flat,
+            byte[][] planeLights,
+            int x,
+            int y1,
+            int y2)
         {
             if (flat == flats.SkyFlat)
             {
@@ -1969,7 +1984,7 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        public void DrawSkyColumn(int x, int y1, int y2)
+        private void DrawSkyColumn(int x, int y1, int y2)
         {
             var angle = (viewAngle + xToAngle[x]).Data >> AngleToSkyShift;
             var mask = world.Map.SkyTexture.Width - 1;
@@ -1984,19 +1999,19 @@ namespace ManagedDoom.SoftwareRendering
             Fixed invScale,
             Fixed textureAlt,
             Fixed scale,
-            Fixed sprtopscreen,
-            int ceilClip,
-            int floorClip)
+            Fixed topY,
+            int upperClip,
+            int lowerClip)
         {
             foreach (var column in columns)
             {
-                var topscreen = sprtopscreen + scale * column.TopDelta;
-                var bottomscreen = topscreen + scale * column.Length;
-                var y1 = (topscreen.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
-                var y2 = (bottomscreen.Data - 1) >> Fixed.FracBits;
+                var y1Frac = topY + scale * column.TopDelta;
+                var y2Frac = y1Frac + scale * column.Length;
+                var y1 = (y1Frac.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
+                var y2 = (y2Frac.Data - 1) >> Fixed.FracBits;
 
-                y1 = Math.Max(y1, ceilClip + 1);
-                y2 = Math.Min(y2, floorClip - 1);
+                y1 = Math.Max(y1, upperClip + 1);
+                y2 = Math.Min(y2, lowerClip - 1);
 
                 if (y1 <= y2)
                 {
@@ -2110,7 +2125,7 @@ namespace ManagedDoom.SoftwareRendering
             vis.GlobalY = thing.Y;
             vis.GlobalBottomZ = thing.Z;
             vis.GlobalTopZ = thing.Z + Fixed.FromInt(lump.TopOffset);
-            vis.TextureMid = vis.GlobalTopZ - viewZ;
+            vis.TextureAlt = vis.GlobalTopZ - viewZ;
             vis.X1 = x1 < 0 ? 0 : x1;
             vis.X2 = x2 >= windowWidth ? windowWidth - 1 : x2;
             var iscale = Fixed.One / xscale;
@@ -2118,17 +2133,17 @@ namespace ManagedDoom.SoftwareRendering
             if (flip)
             {
                 vis.StartFrac = new Fixed(Fixed.FromInt(lump.Width).Data - 1);
-                vis.XInvScale = -iscale;
+                vis.InvScale = -iscale;
             }
             else
             {
                 vis.StartFrac = Fixed.Zero;
-                vis.XInvScale = iscale;
+                vis.InvScale = iscale;
             }
 
             if (vis.X1 > x1)
             {
-                vis.StartFrac += vis.XInvScale * (vis.X1 - x1);
+                vis.StartFrac += vis.InvScale * (vis.X1 - x1);
             }
 
             vis.Patch = lump;
@@ -2202,9 +2217,9 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        private void DrawSprite(VisSprite vis)
+        private void DrawSprite(VisSprite sprite)
         {
-            for (var x = vis.X1; x <= vis.X2; x++)
+            for (var x = sprite.X1; x <= sprite.X2; x++)
             {
                 lowerClip[x] = -2;
                 upperClip[x] = -2;
@@ -2213,41 +2228,42 @@ namespace ManagedDoom.SoftwareRendering
             // Scan drawsegs from end to start for obscuring segs.
             // The first drawseg that has a greater scale
             //  is the clip seg.
-            for (var ds_p = visWallRangeCount - 1; ds_p >= 0; ds_p--)
+            for (var i = visWallRangeCount - 1; i >= 0; i--)
             {
-                var ds = visWallRanges[ds_p];
+                var wall = visWallRanges[i];
 
                 // determine if the drawseg obscures the sprite
-                if (ds.X1 > vis.X2 || ds.X2 < vis.X1 || (ds.Silhouette == 0 && ds.MaskedTextureColumn == -1))
+                if (wall.X1 > sprite.X2 || wall.X2 < sprite.X1
+                    || (wall.Silhouette == 0 && wall.MaskedTextureColumn == -1))
                 {
                     // does not cover sprite
                     continue;
                 }
 
-                var r1 = ds.X1 < vis.X1 ? vis.X1 : ds.X1;
-                var r2 = ds.X2 > vis.X2 ? vis.X2 : ds.X2;
+                var r1 = wall.X1 < sprite.X1 ? sprite.X1 : wall.X1;
+                var r2 = wall.X2 > sprite.X2 ? sprite.X2 : wall.X2;
 
-                Fixed lowscale;
+                Fixed lowScale;
                 Fixed scale;
-                if (ds.Scale1 > ds.Scale2)
+                if (wall.Scale1 > wall.Scale2)
                 {
-                    lowscale = ds.Scale2;
-                    scale = ds.Scale1;
+                    lowScale = wall.Scale2;
+                    scale = wall.Scale1;
                 }
                 else
                 {
-                    lowscale = ds.Scale1;
-                    scale = ds.Scale2;
+                    lowScale = wall.Scale1;
+                    scale = wall.Scale2;
                 }
 
-                if (scale < vis.Scale
-                    || (lowscale < vis.Scale
-                     && Geometry.PointOnSegSide(vis.GlobalX, vis.GlobalY, ds.Seg) == 0))
+                if (scale < sprite.Scale
+                    || (lowScale < sprite.Scale
+                        && Geometry.PointOnSegSide(sprite.GlobalX, sprite.GlobalY, wall.Seg) == 0))
                 {
                     // masked mid texture?
-                    if (ds.MaskedTextureColumn != -1)
+                    if (wall.MaskedTextureColumn != -1)
                     {
-                        DrawMaskedRange(ds, r1, r2);
+                        DrawMaskedRange(wall, r1, r2);
                     }
                     // seg is behind sprite
                     continue;
@@ -2255,14 +2271,14 @@ namespace ManagedDoom.SoftwareRendering
 
 
                 // clip this piece of the sprite
-                var silhouette = ds.Silhouette;
+                var silhouette = wall.Silhouette;
 
-                if (vis.GlobalBottomZ >= ds.LowerSilHeight)
+                if (sprite.GlobalBottomZ >= wall.LowerSilHeight)
                 {
                     silhouette &= ~Silhouette.Lower;
                 }
 
-                if (vis.GlobalTopZ <= ds.UpperSilHeight)
+                if (sprite.GlobalTopZ <= wall.UpperSilHeight)
                 {
                     silhouette &= ~Silhouette.Upper;
                 }
@@ -2274,7 +2290,7 @@ namespace ManagedDoom.SoftwareRendering
                     {
                         if (lowerClip[x] == -2)
                         {
-                            lowerClip[x] = clipData[ds.LowerClip + x];
+                            lowerClip[x] = clipData[wall.LowerClip + x];
                         }
                     }
                 }
@@ -2285,7 +2301,7 @@ namespace ManagedDoom.SoftwareRendering
                     {
                         if (upperClip[x] == -2)
                         {
-                            upperClip[x] = clipData[ds.UpperClip + x];
+                            upperClip[x] = clipData[wall.UpperClip + x];
                         }
                     }
                 }
@@ -2296,11 +2312,11 @@ namespace ManagedDoom.SoftwareRendering
                     {
                         if (lowerClip[x] == -2)
                         {
-                            lowerClip[x] = clipData[ds.LowerClip + x];
+                            lowerClip[x] = clipData[wall.LowerClip + x];
                         }
                         if (upperClip[x] == -2)
                         {
-                            upperClip[x] = clipData[ds.UpperClip + x];
+                            upperClip[x] = clipData[wall.UpperClip + x];
                         }
                     }
                 }
@@ -2310,7 +2326,7 @@ namespace ManagedDoom.SoftwareRendering
             // all clipping has been performed, so draw the sprite
 
             // check for unclipped columns
-            for (var x = vis.X1; x <= vis.X2; x++)
+            for (var x = sprite.X1; x <= sprite.X2; x++)
             {
                 if (lowerClip[x] == -2)
                 {
@@ -2322,26 +2338,21 @@ namespace ManagedDoom.SoftwareRendering
                 }
             }
 
-            var dc_iscale = Fixed.Abs(vis.XInvScale);
-            var dc_texturemid = vis.TextureMid;
-            var frac = vis.StartFrac;
-            var spryscale = vis.Scale;
-            var sprtopscreen = centerYFrac - (dc_texturemid * spryscale);
-
-            for (var dc_x = vis.X1; dc_x <= vis.X2; dc_x++)
+            var frac = sprite.StartFrac;
+            for (var x = sprite.X1; x <= sprite.X2; x++)
             {
                 var texturecolumn = frac.Data >> Fixed.FracBits;
                 DrawMaskedColumn(
-                    vis.Patch.Columns[texturecolumn],
-                    vis.ColorMap,
-                    dc_x,
-                    dc_iscale,
-                    dc_texturemid,
-                    spryscale,
-                    sprtopscreen,
-                    upperClip[dc_x],
-                    lowerClip[dc_x]);
-                frac += vis.XInvScale;
+                    sprite.Patch.Columns[texturecolumn],
+                    sprite.ColorMap,
+                    x,
+                    Fixed.Abs(sprite.InvScale),
+                    sprite.TextureAlt,
+                    sprite.Scale,
+                    centerYFrac - (sprite.TextureAlt * sprite.Scale),
+                    upperClip[x],
+                    lowerClip[x]);
+                frac += sprite.InvScale;
             }
         }
 
@@ -2413,9 +2424,9 @@ namespace ManagedDoom.SoftwareRendering
             public Fixed Scale;
 
             // negative if flipped
-            public Fixed XInvScale;
+            public Fixed InvScale;
 
-            public Fixed TextureMid;
+            public Fixed TextureAlt;
             public Patch Patch;
 
             // for color translation and shadow draw,
