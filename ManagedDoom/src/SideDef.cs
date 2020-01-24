@@ -6,12 +6,12 @@ namespace ManagedDoom
     {
         public const int DataSize = 30;
 
-        private Fixed textureOffset;
-        private Fixed rowOffset;
-        private int topTexture;
-        private int bottomTexture;
-        private int middleTexture;
-        private Sector sector;
+        public Fixed TextureOffset;
+        public Fixed RowOffset;
+        public int TopTexture;
+        public int BottomTexture;
+        public int MiddleTexture;
+        public Sector Sector;
 
         public SideDef(
             Fixed textureOffset,
@@ -21,12 +21,12 @@ namespace ManagedDoom
             int middleTexture,
             Sector sector)
         {
-            this.textureOffset = textureOffset;
-            this.rowOffset = rowOffset;
-            this.topTexture = topTexture;
-            this.bottomTexture = bottomTexture;
-            this.middleTexture = middleTexture;
-            this.sector = sector;
+            TextureOffset = textureOffset;
+            RowOffset = rowOffset;
+            TopTexture = topTexture;
+            BottomTexture = bottomTexture;
+            MiddleTexture = middleTexture;
+            Sector = sector;
         }
 
         public static SideDef FromData(byte[] data, int offset, TextureLookup textures, Sector[] sectors)
@@ -67,12 +67,5 @@ namespace ManagedDoom
 
             return sides;
         }
-
-        public Fixed TextureOffset => textureOffset;
-        public Fixed RowOffset => rowOffset;
-        public int TopTexture => topTexture;
-        public int BottomTexture => bottomTexture;
-        public int MiddleTexture => middleTexture;
-        public Sector Sector => sector;
     }
 }
