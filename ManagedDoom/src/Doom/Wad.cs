@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
+using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
@@ -16,9 +15,16 @@ namespace ManagedDoom
             streams = new List<Stream>();
             lumpInfos = new List<LumpInfo>();
 
-            foreach (var fileName in fileNames)
+            try
             {
-                AddFile(fileName);
+                foreach (var fileName in fileNames)
+                {
+                    AddFile(fileName);
+                }
+            }
+            catch (Exception e)
+            {
+                ExceptionDispatchInfo.Capture(e).Throw();
             }
         }
 
@@ -119,6 +125,8 @@ namespace ManagedDoom
             {
                 stream.Dispose();
             }
+
+            streams.Clear();
         }
 
         public IReadOnlyList<LumpInfo> LumpInfos => lumpInfos;

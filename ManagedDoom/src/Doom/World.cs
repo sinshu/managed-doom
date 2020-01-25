@@ -6,29 +6,25 @@ namespace ManagedDoom
 {
     public class World
     {
-        private Skill GameSkill = Skill.Hard;
-        private GameMode GameMode = GameMode.Commercial;
-        private bool NetGame = false;
-        private bool Deathmatch = false;
-        private bool NoMonsters = false;
-
-        private int TotalKills = 0;
-        private int TotalItems = 0;
+        private GameOptions gameOptions;
 
         private Map map;
-
         private DoomRandom random;
-
         private Thinker thinkerCap;
+
+        private int totalKills = 0;
+        private int totalItems = 0;
 
         private Fixed playerX;
         private Fixed playerY;
         private Fixed playerZ;
         private Angle playerViewAngle;
 
-        public World(TextureLookup textures, FlatLookup flats, Wad wad, string mapName)
+        public World(Resources resorces, string mapName, GameOptions options)
         {
-            map = new Map(textures, flats, wad, mapName);
+            gameOptions = options;
+
+            map = new Map(resorces, mapName);
 
             random = new DoomRandom();
 
@@ -48,6 +44,9 @@ namespace ManagedDoom
 
         private void LoadThings()
         {
+            totalKills = 0;
+            totalItems = 0;
+
             for (var i = 0; i < map.Things.Length; i++)
             {
                 var mt = map.Things[i];
@@ -55,7 +54,7 @@ namespace ManagedDoom
                 var spawn = true;
 
                 // Do not spawn cool, new monsters if !commercial
-                if (GameMode != GameMode.Commercial)
+                if (gameOptions.GameMode != GameMode.Commercial)
                 {
                     switch (mt.Type)
                     {
@@ -119,23 +118,23 @@ namespace ManagedDoom
             }
 
             // check for apropriate skill level
-            if (!NetGame && ((int)mthing.Flags & 16) != 0)
+            if (!gameOptions.NetGame && ((int)mthing.Flags & 16) != 0)
             {
                 return;
             }
 
             int bit;
-            if (GameSkill == Skill.Baby)
+            if (gameOptions.GameSkill == Skill.Baby)
             {
                 bit = 1;
             }
-            else if (GameSkill == Skill.Nightmare)
+            else if (gameOptions.GameSkill == Skill.Nightmare)
             {
                 bit = 4;
             }
             else
             {
-                bit = 1 << ((int)GameSkill - 1);
+                bit = 1 << ((int)gameOptions.GameSkill - 1);
             }
 
             if (((int)mthing.Flags & bit) == 0)
@@ -159,14 +158,16 @@ namespace ManagedDoom
             }
 
             // don't spawn keycards and players in deathmatch
-            if (Deathmatch && (Info.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
+            if (gameOptions.Deathmatch
+                && (Info.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
             {
                 return;
             }
 
             // don't spawn any monsters if -nomonsters
-            if (NoMonsters && (i == (int)MobjType.Skull
-                || (Info.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
+            if (gameOptions.NoMonsters
+                && (i == (int)MobjType.Skull
+                    || (Info.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
             {
                 return;
             }
@@ -195,12 +196,12 @@ namespace ManagedDoom
 
             if ((mobj.Flags & MobjFlags.CountKill) != 0)
             {
-                TotalKills++;
+                totalKills++;
             }
 
             if ((mobj.Flags & MobjFlags.CountItem) != 0)
             {
-                TotalItems++;
+                totalItems++;
             }
 
             // mobj->angle = ANG45 * (mthing->angle/45);
@@ -402,7 +403,7 @@ namespace ManagedDoom
             mobj.Flags = info.Flags;
             mobj.Health = info.SpawnHealth;
 
-            if (GameSkill != Skill.Nightmare)
+            if (gameOptions.GameSkill != Skill.Nightmare)
             {
                 mobj.ReactionTime = info.ReactionTime;
             }

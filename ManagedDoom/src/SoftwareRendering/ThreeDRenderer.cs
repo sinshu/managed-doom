@@ -19,18 +19,15 @@ namespace ManagedDoom.SoftwareRendering
         private byte[] screenData;
 
         public ThreeDRenderer(
-            ColorMap colorMap,
-            TextureLookup textures,
-            FlatLookup flats,
-            SpriteLookup sprites,
+            Resources resources,
             int screenWidth,
             int screenHeight,
             byte[] screenData)
         {
-            this.colorMap = colorMap;
-            this.textures = textures;
-            this.flats = flats;
-            this.sprites = sprites;
+            colorMap = resources.ColorMap;
+            textures = resources.Textures;
+            flats = resources.Flats;
+            sprites = resources.Sprites;
 
             this.screenWidth = screenWidth;
             this.screenHeight = screenHeight;

@@ -19,7 +19,12 @@ namespace ManagedDoom
 
         private Texture skyTexture;
 
-        public Map(TextureLookup textures, FlatLookup flats, Wad wad, string name)
+        public Map(Resources resorces, string name)
+            : this(resorces.Wad, resorces.Textures, resorces.Flats, name)
+        {
+        }
+
+        public Map(Wad wad, TextureLookup textures, FlatLookup flats, string name)
         {
             this.textures = textures;
             this.flats = flats;

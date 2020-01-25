@@ -32,65 +32,54 @@ namespace ManagedDoom.SoftwareRendering
 
         private ThreeDRenderer threeD;
 
-        public Renderer(
-            RenderWindow window,
-            Palette palette,
-            ColorMap colorMap,
-            TextureLookup textures,
-            FlatLookup flats,
-            SpriteLookup sprites,
-            bool highResolution)
+        public Renderer(RenderWindow window, Resources resources, bool highResolution)
         {
+            sfmlWindow = window;
+            palette = resources.Palette;
+
+            colors = InitColors(palette);
+
+            sfmlWindowWidth = (int)window.Size.X;
+            sfmlWindowHeight = (int)window.Size.Y;
+
+            if (highResolution)
+            {
+                screenWidth = 640;
+                screenHeight = 400;
+                sfmlTextureWidth = 512;
+                sfmlTextureHeight = 1024;
+            }
+            else
+            {
+                screenWidth = 320;
+                screenHeight = 200;
+                sfmlTextureWidth = 256;
+                sfmlTextureHeight = 512;
+            }
+
+            screenData = new byte[screenWidth * screenHeight];
+            sfmlTextureData = new byte[4 * screenWidth * screenHeight];
+
             try
             {
-                this.sfmlWindow = window;
-                this.palette = palette;
-
-                colors = InitColors(palette);
-
-                sfmlWindowWidth = (int)window.Size.X;
-                sfmlWindowHeight = (int)window.Size.Y;
-
-                if (highResolution)
-                {
-                    screenWidth = 640;
-                    screenHeight = 400;
-                    sfmlTextureWidth = 512;
-                    sfmlTextureHeight = 1024;
-                }
-                else
-                {
-                    screenWidth = 320;
-                    screenHeight = 200;
-                    sfmlTextureWidth = 256;
-                    sfmlTextureHeight = 512;
-                }
-
-                screenData = new byte[screenWidth * screenHeight];
-                sfmlTextureData = new byte[4 * screenWidth * screenHeight];
                 sfmlTexture = new SFML.Graphics.Texture((uint)sfmlTextureWidth, (uint)sfmlTextureHeight);
                 sfmlSprite = new SFML.Graphics.Sprite(sfmlTexture);
-
-                sfmlSprite.Position = new Vector2f(0, 0);
-                sfmlSprite.Rotation = 90;
-                var scaleX = (float)sfmlWindowWidth / screenWidth;
-                var scaleY = (float)sfmlWindowHeight / screenHeight;
-                sfmlSprite.Scale = new Vector2f(scaleY, -scaleX);
-
-                sfmlStates = new RenderStates(BlendMode.None);
-
-                threeD = new ThreeDRenderer(
-                    colorMap,
-                    textures,
-                    flats,
-                    sprites,
-                    screenWidth, screenHeight, screenData);
             }
             catch (Exception e)
             {
                 Dispose();
                 ExceptionDispatchInfo.Capture(e).Throw();
             }
+
+            sfmlSprite.Position = new Vector2f(0, 0);
+            sfmlSprite.Rotation = 90;
+            var scaleX = (float)sfmlWindowWidth / screenWidth;
+            var scaleY = (float)sfmlWindowHeight / screenHeight;
+            sfmlSprite.Scale = new Vector2f(scaleY, -scaleX);
+
+            sfmlStates = new RenderStates(BlendMode.None);
+
+            threeD = new ThreeDRenderer(resources, screenWidth, screenHeight, screenData);
         }
 
         private static uint[] InitColors(Palette palette)
@@ -138,11 +127,19 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Dispose()
         {
+            if (sfmlSprite != null)
+            {
+                sfmlSprite.Dispose();
+                sfmlSprite = null;
+            }
+
             if (sfmlTexture != null)
             {
                 sfmlTexture.Dispose();
                 sfmlTexture = null;
             }
+
+            Console.WriteLine("SFML resources are disposed.");
         }
     }
 }

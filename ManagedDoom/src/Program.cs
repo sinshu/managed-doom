@@ -14,61 +14,41 @@ namespace ManagedDoom
         {
             var style = Styles.Close | Styles.Titlebar;
             using (var window = new RenderWindow(new VideoMode(640, 400), "Managed Doom", style))
+            using (var resources = new Resources("DOOM2.WAD"))
+            using (var renderer = new SoftwareRendering.Renderer(window, resources, true))
             {
-                window.Clear(new Color(128, 128, 128));
-                window.Display();
+                var world = new World(resources, "MAP01", new GameOptions());
 
-                using (var wad = new Wad("DOOM2.WAD"))
+                renderer.BindWorld(world);
+
+                window.Closed += (sender, e) => window.Close();
+                window.SetFramerateLimit(35);
+
+                var sw = new Stopwatch();
+                var count = 0;
+                sw.Start();
+                var prev = sw.Elapsed;
+                while (window.IsOpen)
                 {
-                    var palette = new Palette(wad);
-                    var colorMap = new ColorMap(wad);
+                    window.DispatchEvents();
 
-                    var textures = new TextureLookup(wad);
-                    var flats = new FlatLookup(wad);
-                    var sprites = new SpriteLookup(wad);
+                    var up = Keyboard.IsKeyPressed(Keyboard.Key.Up);
+                    var dowm = Keyboard.IsKeyPressed(Keyboard.Key.Down);
+                    var left = Keyboard.IsKeyPressed(Keyboard.Key.Left);
+                    var right = Keyboard.IsKeyPressed(Keyboard.Key.Right);
+                    world.Update(up, dowm, left, right);
 
-                    var renderer = new SoftwareRendering.Renderer(
-                        window,
-                        palette,
-                        colorMap,
-                        textures,
-                        flats,
-                        sprites,
-                        true);
+                    renderer.Render();
+                    count++;
 
-                    var world = new World(textures, flats, wad, "MAP01");
-
-                    renderer.BindWorld(world);
-
-                    window.Closed += (sender, e) => window.Close();
-                    window.SetFramerateLimit(35);
-
-                    var sw = new Stopwatch();
-                    var count = 0;
-                    sw.Start();
-                    var prev = sw.Elapsed;
-                    while (window.IsOpen)
+                    var curr = sw.Elapsed;
+                    var delta = curr - prev;
+                    if (delta.TotalSeconds >= 1 && count >= 1)
                     {
-                        window.DispatchEvents();
-
-                        var up = Keyboard.IsKeyPressed(Keyboard.Key.Up);
-                        var dowm = Keyboard.IsKeyPressed(Keyboard.Key.Down);
-                        var left = Keyboard.IsKeyPressed(Keyboard.Key.Left);
-                        var right = Keyboard.IsKeyPressed(Keyboard.Key.Right);
-                        world.Update(up, dowm, left, right);
-
-                        renderer.Render();
-                        count++;
-
-                        var curr = sw.Elapsed;
-                        var delta = curr - prev;
-                        if (delta.TotalSeconds >= 1 && count >= 1)
-                        {
-                            var fps = count / delta.TotalSeconds;
-                            Console.WriteLine("FPS: " + fps.ToString("0.0"));
-                            count = 0;
-                            prev = curr;
-                        }
+                        var fps = count / delta.TotalSeconds;
+                        Console.WriteLine("FPS: " + fps.ToString("0.0"));
+                        count = 0;
+                        prev = curr;
                     }
                 }
             }
