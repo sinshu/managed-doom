@@ -10,7 +10,7 @@ namespace ManagedDoom
         private Map map;
         private DoomRandom random;
         private Thinker thinkerCap;
-        private MobjPool mobjPool;
+        private ThinkerPool thinkerPool;
 
         private int totalKills = 0;
         private int totalItems = 0;
@@ -33,7 +33,7 @@ namespace ManagedDoom
             thinkerCap = new Thinker(this);
             thinkerCap.Prev = thinkerCap.Next = thinkerCap;
 
-            mobjPool = new MobjPool(this);
+            thinkerPool = new ThinkerPool(this);
 
             InitThingMovement();
             InitPathTraversal();
@@ -288,7 +288,7 @@ namespace ManagedDoom
 
         public Mobj SpawnMobj(Fixed x, Fixed y, Fixed z, MobjType type)
         {
-            var mobj = mobjPool.Rent();
+            var mobj = thinkerPool.RentMobj();
 
             var info = Info.MobjInfos[(int)type];
 
@@ -343,6 +343,31 @@ namespace ManagedDoom
             return mobj;
         }
 
+        public void RemoveMobj(Mobj mobj)
+        {
+            if ((mobj.Flags & MobjFlags.Special) != 0
+                && (mobj.Flags & MobjFlags.Dropped) == 0
+                && (mobj.Type != MobjType.Inv)
+                && (mobj.Type != MobjType.Ins))
+            {
+                //itemrespawnque[iquehead] = mobj->spawnpoint;
+                //itemrespawntime[iquehead] = leveltime;
+                //iquehead = (iquehead + 1) & (ITEMQUESIZE - 1);
+
+                // lose one off the end?
+                //if (iquehead == iquetail)
+                //    iquetail = (iquetail + 1) & (ITEMQUESIZE - 1);
+            }
+
+            // unlink from sector and block lists
+            UnsetThingPosition(mobj);
+
+            // stop any playing sound
+            //S_StopSound(mobj);
+
+            // free block
+            RemoveThinker(mobj);
+        }
 
         public void AddThinker(Thinker thinker)
         {
@@ -350,6 +375,11 @@ namespace ManagedDoom
             thinker.Next = thinkerCap;
             thinker.Prev = thinkerCap.Prev;
             thinkerCap.Prev = thinker;
+        }
+
+        public void RemoveThinker(Thinker thinker)
+        {
+            thinker.Removed = true;
         }
 
         public void RunThinkers()
@@ -364,7 +394,7 @@ namespace ManagedDoom
                     // time to remove it
                     currentthinker.Next.Prev = currentthinker.Prev;
                     currentthinker.Prev.Next = currentthinker.Next;
-                    //Z_Free(currentthinker);
+                    thinkerPool.Return(currentthinker);
                 }
                 else
                 {
@@ -389,7 +419,7 @@ namespace ManagedDoom
                 if (state == State.Null)
                 {
                     mobj.State = Info.States[(int)State.Null];
-                    //P_RemoveMobj(mobj);
+                    RemoveMobj(mobj);
                     return false;
                 }
 

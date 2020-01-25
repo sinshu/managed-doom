@@ -2,21 +2,21 @@
 
 namespace ManagedDoom
 {
-    public sealed class MobjPool
+    public sealed class ThinkerPool
     {
         private World world;
 
-        public MobjPool(World world)
+        public ThinkerPool(World world)
         {
             this.world = world;
         }
 
-        public Mobj Rent()
+        public Mobj RentMobj()
         {
             return new Mobj(world);
         }
 
-        public void Return(Mobj mobj)
+        public void Return(Thinker thinker)
         {
         }
     }
