@@ -444,6 +444,8 @@ namespace ManagedDoom
         }
 
         public Map Map => map;
+        public DoomRandom Random => random;
+
         public Fixed ViewX => playerX;
         public Fixed ViewY => playerY;
         public Fixed ViewZ => playerZ + Fixed.FromInt(41);
