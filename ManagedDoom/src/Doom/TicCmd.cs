@@ -10,5 +10,15 @@ namespace ManagedDoom
         public short Consistancy;  // checks for net game
         public byte ChatChar;
         public byte Buttons;
+
+        public void Clear()
+        {
+            ForwardMove = 0;
+            SideMove = 0;
+            AngleTurn = 0;
+            Consistancy = 0;
+            ChatChar = 0;
+            Buttons = 0;
+        }
     }
 }
