@@ -95,7 +95,7 @@ namespace ManagedDoom
             return GetIndex(blockX, blockY);
         }
 
-        public bool EnumBlockLines(int blockX, int blockY, Func<LineDef, bool> func, int validCount)
+        public bool IterateLines(int blockX, int blockY, Func<LineDef, bool> func, int validCount)
         {
             var index = GetIndex(blockX, blockY);
 
@@ -124,7 +124,7 @@ namespace ManagedDoom
             return true;
         }
 
-        public bool EnumBlockThings(int blockX, int blockY, Func<Mobj, bool> func)
+        public bool IterateThings(int blockX, int blockY, Func<Mobj, bool> func)
         {
             var index = GetIndex(blockX, blockY);
 
@@ -161,7 +161,7 @@ namespace ManagedDoom
                 {
                     var index = GetIndex(blockX, blockY);
                     var count = 0;
-                    EnumBlockThings(blockX, blockY, mobj => { count++; return true; });
+                    IterateThings(blockX, blockY, mobj => { count++; return true; });
                     if (count > 0)
                     {
                         sb.Append(Info.SpriteNames[(int)thingLists[index].Sprite][0]);

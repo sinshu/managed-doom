@@ -63,7 +63,7 @@ namespace ManagedDoomTest
                         var maxY = double.MinValue;
                         var count = 0;
 
-                        blockMap.EnumBlockLines(
+                        blockMap.IterateLines(
                             blockX,
                             blockY,
                             line =>
@@ -150,7 +150,7 @@ namespace ManagedDoomTest
                         var maxY = double.MinValue;
                         var count = 0;
 
-                        blockMap.EnumBlockLines(
+                        blockMap.IterateLines(
                             blockX,
                             blockY,
                             line =>

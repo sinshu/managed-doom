@@ -10,6 +10,7 @@ namespace ManagedDoom
         private Map map;
         private DoomRandom random;
         private Thinker thinkerCap;
+        private MobjPool mobjPool;
 
         private int totalKills = 0;
         private int totalItems = 0;
@@ -18,6 +19,8 @@ namespace ManagedDoom
         private Fixed playerY;
         private Fixed playerZ;
         private Angle playerViewAngle;
+
+        private Func<Intercept, bool> interceptTest;
 
         public World(Resources resorces, string mapName, GameOptions options)
         {
@@ -30,6 +33,8 @@ namespace ManagedDoom
             thinkerCap = new Thinker(this);
             thinkerCap.Prev = thinkerCap.Next = thinkerCap;
 
+            mobjPool = new MobjPool(this);
+
             InitThingMovement();
             InitPathTraversal();
 
@@ -40,6 +45,8 @@ namespace ManagedDoom
             playerY = playerThing.Y;
             playerZ = Geometry.PointInSubsector(playerX, playerY, map).Sector.FloorHeight;
             playerViewAngle = Angle.FromDegree(playerThing.Angle);
+
+            interceptTest = InterceptTest;
         }
 
         public void Update(bool up, bool down, bool left, bool right)
@@ -84,29 +91,28 @@ namespace ManagedDoom
 
 
 
-            /*
             var distance = Fixed.FromInt(1024);
             var x1 = playerX;
             var y1 = playerY;
             var x2 = x1 + distance * Trig.Cos(playerViewAngle);
             var y2 = y1 + distance * Trig.Sin(playerViewAngle);
             var flags = PathTraverseFlags.AddLines | PathTraverseFlags.AddThings;
+            //PathTraverse(x1, y1, x2, y2, flags, interceptTest);
+        }
 
-            PathTraverse(x1, y1, x2, y2, flags, ic =>
-                {
-                    if (ic.Line != null)
-                    {
-                        ic.Line.Side0.RowOffset += Fixed.One;
-                    }
+        private bool InterceptTest(Intercept ic)
+        {
+            if (ic.Line != null)
+            {
+                ic.Line.Side0.RowOffset += Fixed.One;
+            }
 
-                    if (ic.Thing != null)
-                    {
-                        SetMobjState(ic.Thing, ic.Thing.Info.PainState);
-                    }
+            if (ic.Thing != null)
+            {
+                SetMobjState(ic.Thing, ic.Thing.Info.PainState);
+            }
 
-                    return true;
-                });
-            */
+            return true;
         }
 
         private void LoadThings()
@@ -282,7 +288,7 @@ namespace ManagedDoom
 
         public Mobj SpawnMobj(Fixed x, Fixed y, Fixed z, MobjType type)
         {
-            var mobj = new Mobj(this);
+            var mobj = mobjPool.Rent();
 
             var info = Info.MobjInfos[(int)type];
 

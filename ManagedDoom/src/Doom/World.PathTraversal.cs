@@ -5,12 +5,16 @@ namespace ManagedDoom
     public sealed partial class World
     {
         private Intercept[] intercepts;
-        private int intercept_p;
+        private int interceptCount;
+        private DivLine tempDiv;
         private DivLine trace;
         private bool earlyOut;
-        private PathTraverseFlags ptflags;
+        //private PathTraverseFlags ptflags;
 
         private int validCount;
+
+        private Func<LineDef, bool> addLineIntercepts;
+        private Func<Mobj, bool> addThingIntercepts;
 
         private void InitPathTraversal()
         {
@@ -21,8 +25,12 @@ namespace ManagedDoom
             }
 
             trace = new DivLine();
+            tempDiv = new DivLine();
 
             validCount = 0;
+
+            addLineIntercepts = PIT_AddLineIntercepts;
+            addThingIntercepts = PIT_AddThingIntercepts;
         }
 
         private bool PIT_AddLineIntercepts(LineDef ld)
@@ -52,9 +60,8 @@ namespace ManagedDoom
             }
 
             // hit the line
-            var dl = new DivLine();
-            dl.MakeFrom(ld);
-            var frac = P_InterceptVector(trace, dl);
+            tempDiv.MakeFrom(ld);
+            var frac = P_InterceptVector(trace, tempDiv);
 
             if (frac < Fixed.Zero)
             {
@@ -65,15 +72,17 @@ namespace ManagedDoom
             // try to early out the check
             if (earlyOut && frac < Fixed.One && ld.BackSector == null)
             {
-                return false;   // stop checking
+                // stop checking
+                return false;
             }
 
-            intercepts[intercept_p].Frac = frac;
-            intercepts[intercept_p].Line = ld;
-            intercepts[intercept_p].Thing = null;
-            intercept_p++;
+            intercepts[interceptCount].Frac = frac;
+            intercepts[interceptCount].Line = ld;
+            intercepts[interceptCount].Thing = null;
+            interceptCount++;
 
-            return true;	// continue
+            // continue
+            return true;
         }
 
         private bool PIT_AddThingIntercepts(Mobj thing)
@@ -112,13 +121,12 @@ namespace ManagedDoom
                 return true;
             }
 
-            var dl = new DivLine();
-            dl.X = x1;
-            dl.Y = y1;
-            dl.Dx = x2 - x1;
-            dl.Dy = y2 - y1;
+            tempDiv.X = x1;
+            tempDiv.Y = y1;
+            tempDiv.Dx = x2 - x1;
+            tempDiv.Dy = y2 - y1;
 
-            var frac = P_InterceptVector(trace, dl);
+            var frac = P_InterceptVector(trace, tempDiv);
 
             if (frac < Fixed.Zero)
             {
@@ -126,12 +134,13 @@ namespace ManagedDoom
                 return true;
             }
 
-            intercepts[intercept_p].Frac = frac;
-            intercepts[intercept_p].Line = null;
-            intercepts[intercept_p].Thing = thing;
-            intercept_p++;
+            intercepts[interceptCount].Frac = frac;
+            intercepts[interceptCount].Line = null;
+            intercepts[interceptCount].Thing = thing;
+            interceptCount++;
 
-            return true;		// keep going
+            // keep going
+            return true;
         }
 
         private Fixed P_InterceptVector(DivLine v2, DivLine v1)
@@ -154,14 +163,14 @@ namespace ManagedDoom
 
         private bool P_TraverseIntercepts(Func<Intercept, bool> func, Fixed maxfrac)
         {
-            var count = intercept_p;
+            var count = interceptCount;
 
             Intercept ic = null;
 
             while (count-- > 0)
             {
                 var dist = Fixed.MaxValue;
-                for (var scan = 0; scan < intercept_p; scan++)
+                for (var scan = 0; scan < interceptCount; scan++)
                 {
                     if (intercepts[scan].Frac < dist)
                     {
@@ -195,16 +204,18 @@ namespace ManagedDoom
 
             validCount++;
 
-            intercept_p = 0;
+            interceptCount = 0;
 
             if (((x1 - map.BlockMap.OriginX).Data & (BlockMap.MapBlockSize.Data - 1)) == 0)
             {
-                x1 += Fixed.One; // don't side exactly on a line
+                // don't side exactly on a line
+                x1 += Fixed.One;
             }
 
             if (((y1 - map.BlockMap.OriginY).Data & (BlockMap.MapBlockSize.Data - 1)) == 0)
             {
-                y1 += Fixed.One; // don't side exactly on a line
+                // don't side exactly on a line
+                y1 += Fixed.One;
             }
 
             trace.X = x1;
@@ -285,17 +296,19 @@ namespace ManagedDoom
             {
                 if ((flags & PathTraverseFlags.AddLines) != 0)
                 {
-                    if (!map.BlockMap.EnumBlockLines(mapx, mapy, PIT_AddLineIntercepts, validCount))
+                    if (!map.BlockMap.IterateLines(mapx, mapy, addLineIntercepts, validCount))
                     {
-                        return false;   // early out
+                        // early out
+                        return false;
                     }
                 }
 
                 if ((flags & PathTraverseFlags.AddThings) != 0)
                 {
-                    if (!map.BlockMap.EnumBlockThings(mapx, mapy, PIT_AddThingIntercepts))
+                    if (!map.BlockMap.IterateThings(mapx, mapy, addThingIntercepts))
                     {
-                        return false;   // early out
+                        // early out
+                        return false;
                     }
                 }
 
