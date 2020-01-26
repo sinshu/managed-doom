@@ -56,21 +56,6 @@ namespace ManagedDoom
 
             var speed = 8.0;
 
-            var dx = Fixed.Zero;
-            var dy = Fixed.Zero;
-
-            if (up)
-            {
-                dx += Fixed.FromDouble(speed) * Trig.Cos(playerViewAngle);
-                dy += Fixed.FromDouble(speed) * Trig.Sin(playerViewAngle);
-            }
-
-            if (down)
-            {
-                dx -= Fixed.FromDouble(speed) * Trig.Cos(playerViewAngle);
-                dy -= Fixed.FromDouble(speed) * Trig.Sin(playerViewAngle);
-            }
-
             if (left)
             {
                 playerViewAngle += Angle.FromDegree(speed / 2);
@@ -81,30 +66,95 @@ namespace ManagedDoom
                 playerViewAngle -= Angle.FromDegree(speed / 2);
             }
 
-            //var floor = Geometry.PointInSubsector(newX, newY, map).Sector.FloorHeight;
-
-            var result = CheckPosition(player, playerX + dx, playerY + dy);
-
-            if (result)
+            for (var deg = 0; deg < 90; deg++)
             {
-                playerX += dx;
-                playerY += dy;
-                playerZ = tmfloorz;
+                {
+                    var dx = Fixed.Zero;
+                    var dy = Fixed.Zero;
+
+                    var direction = playerViewAngle + Angle.FromDegree(deg);
+
+                    if (up)
+                    {
+                        dx += Fixed.FromDouble(speed) * Trig.Cos(direction);
+                        dy += Fixed.FromDouble(speed) * Trig.Sin(direction);
+                    }
+
+                    if (CheckPosition(player, playerX + dx, playerY + dy))
+                    {
+                        playerX += dx;
+                        playerY += dy;
+                        playerZ = tmfloorz;
+                        break;
+                    }
+                }
+
+                {
+                    var dx = Fixed.Zero;
+                    var dy = Fixed.Zero;
+
+                    var direction = playerViewAngle - Angle.FromDegree(deg);
+
+                    if (up)
+                    {
+                        dx += Fixed.FromDouble(speed) * Trig.Cos(direction);
+                        dy += Fixed.FromDouble(speed) * Trig.Sin(direction);
+                    }
+
+                    if (CheckPosition(player, playerX + dx, playerY + dy))
+                    {
+                        playerX += dx;
+                        playerY += dy;
+                        playerZ = tmfloorz;
+                        break;
+                    }
+                }
             }
 
-            /*
-            var dz = floor - playerZ;
-            if (dz < Fixed.Zero)
+            for (var deg = 0; deg < 90; deg++)
             {
-                dz = new Fixed(8192) * dz;
-            }
-            else
-            {
-                dz = new Fixed(32768) * dz;
-            }
-            playerZ += dz;
-            */
+                {
+                    var dx = Fixed.Zero;
+                    var dy = Fixed.Zero;
 
+                    var direction = playerViewAngle + Angle.FromDegree(deg) + Angle.Ang180;
+
+                    if (down)
+                    {
+                        dx += Fixed.FromDouble(speed) * Trig.Cos(direction);
+                        dy += Fixed.FromDouble(speed) * Trig.Sin(direction);
+                    }
+
+                    if (CheckPosition(player, playerX + dx, playerY + dy))
+                    {
+                        playerX += dx;
+                        playerY += dy;
+                        playerZ = tmfloorz;
+                        break;
+                    }
+                }
+
+                {
+                    var dx = Fixed.Zero;
+                    var dy = Fixed.Zero;
+
+                    var direction = playerViewAngle - Angle.FromDegree(deg) + Angle.Ang180;
+
+                    if (down)
+                    {
+                        dx += Fixed.FromDouble(speed) * Trig.Cos(direction);
+                        dy += Fixed.FromDouble(speed) * Trig.Sin(direction);
+                    }
+
+                    if (CheckPosition(player, playerX + dx, playerY + dy))
+                    {
+                        playerX += dx;
+                        playerY += dy;
+                        playerZ = tmfloorz;
+                        break;
+                    }
+                }
+            }
 
             var distance = Fixed.FromInt(1024);
             var x1 = playerX;
