@@ -4,6 +4,8 @@ namespace ManagedDoom
 {
     public sealed partial class World
     {
+        private static readonly Fixed MaxRadius = Fixed.FromInt(32);
+
         private Fixed[] tmbbox;
         private Mobj tmthing;
         private MobjFlags tmflags;
@@ -21,11 +23,17 @@ namespace ManagedDoom
         private LineDef[] spechit;
         private int numspechit;
 
+        private Func<LineDef, bool> checkLine;
+        private Func<Mobj, bool> checkThing;
+
         private void InitThingMovement()
         {
             tmbbox = new Fixed[4];
 
             spechit = new LineDef[16];
+
+            checkLine = PIT_CheckLine;
+            checkThing = PIT_CheckThing;
         }
 
         public void SetThingPosition(Mobj thing)
@@ -363,6 +371,102 @@ namespace ManagedDoom
             }
 
             return (thing.Flags & MobjFlags.Solid) == 0;
+        }
+
+        //
+        // P_CheckPosition
+        // This is purely informative, nothing is modified
+        // (except things picked up).
+        // 
+        // in:
+        //  a mobj_t (can be valid or invalid)
+        //  a position to be checked
+        //   (doesn't need to be related to the mobj_t->x,y)
+        //
+        // during:
+        //  special things are touched if MF_PICKUP
+        //  early out on solid lines?
+        //
+        // out:
+        //  newsubsec
+        //  floorz
+        //  ceilingz
+        //  tmdropoffz
+        //   the lowest point contacted
+        //   (monsters won't move to a dropoff)
+        //  speciallines[]
+        //  numspeciallines
+        //
+        private bool CheckPosition(Mobj thing, Fixed x, Fixed y)
+        {
+            tmthing = thing;
+            tmflags = thing.Flags;
+
+            tmx = x;
+            tmy = y;
+
+            tmbbox[Box.Top] = y + tmthing.Radius;
+            tmbbox[Box.Bottom] = y - tmthing.Radius;
+            tmbbox[Box.Right] = x + tmthing.Radius;
+            tmbbox[Box.Left] = x - tmthing.Radius;
+
+            var newsubsec = Geometry.PointInSubsector(x, y, map);
+            ceilingline = null;
+
+            // The base floor / ceiling is from the subsector
+            // that contains the point.
+            // Any contacted lines the step closer together
+            // will adjust them.
+            tmfloorz = tmdropoffz = newsubsec.Sector.FloorHeight;
+            tmceilingz = newsubsec.Sector.CeilingHeight;
+
+            validCount++;
+            numspechit = 0;
+
+            if ((tmflags & MobjFlags.NoClip) != 0)
+            {
+                return true;
+            }
+
+            // Check things first, possibly picking things up.
+            // The bounding box is extended by MAXRADIUS
+            // because mobj_ts are grouped into mapblocks
+            // based on their origin point, and can overlap
+            // into adjacent blocks by up to MAXRADIUS units.
+            var xl = (tmbbox[Box.Left] - map.BlockMap.OriginX - MaxRadius).Data >> BlockMap.MapBlockShift;
+            var xh = (tmbbox[Box.Right] - map.BlockMap.OriginX + MaxRadius).Data >> BlockMap.MapBlockShift;
+            var yl = (tmbbox[Box.Bottom] - map.BlockMap.OriginY - MaxRadius).Data >> BlockMap.MapBlockShift;
+            var yh = (tmbbox[Box.Top] - map.BlockMap.OriginY + MaxRadius).Data >> BlockMap.MapBlockShift;
+
+            for (var bx = xl; bx <= xh; bx++)
+            {
+                for (var by = yl; by <= yh; by++)
+                {
+                    if (!map.BlockMap.IterateThings(bx, by, checkThing))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            // check lines
+            xl = (tmbbox[Box.Left] - map.BlockMap.OriginX).Data >> BlockMap.MapBlockShift;
+            xh = (tmbbox[Box.Right] - map.BlockMap.OriginX).Data >> BlockMap.MapBlockShift;
+            yl = (tmbbox[Box.Bottom] - map.BlockMap.OriginY).Data >> BlockMap.MapBlockShift;
+            yh = (tmbbox[Box.Top] - map.BlockMap.OriginY).Data >> BlockMap.MapBlockShift;
+
+            for (var bx = xl; bx <= xh; bx++)
+            {
+                for (var by = yl; by <= yh; by++)
+                {
+                    if (!map.BlockMap.IterateLines(bx, by, checkLine, validCount))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

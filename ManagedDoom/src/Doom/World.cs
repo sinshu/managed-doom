@@ -15,6 +15,7 @@ namespace ManagedDoom
         private int totalKills = 0;
         private int totalItems = 0;
 
+        private Mobj player;
         private Fixed playerX;
         private Fixed playerY;
         private Fixed playerZ;
@@ -55,16 +56,19 @@ namespace ManagedDoom
 
             var speed = 8.0;
 
+            var dx = Fixed.Zero;
+            var dy = Fixed.Zero;
+
             if (up)
             {
-                playerX += Fixed.FromDouble(speed) * Trig.Cos(playerViewAngle);
-                playerY += Fixed.FromDouble(speed) * Trig.Sin(playerViewAngle);
+                dx += Fixed.FromDouble(speed) * Trig.Cos(playerViewAngle);
+                dy += Fixed.FromDouble(speed) * Trig.Sin(playerViewAngle);
             }
 
             if (down)
             {
-                playerX -= Fixed.FromDouble(speed) * Trig.Cos(playerViewAngle);
-                playerY -= Fixed.FromDouble(speed) * Trig.Sin(playerViewAngle);
+                dx -= Fixed.FromDouble(speed) * Trig.Cos(playerViewAngle);
+                dy -= Fixed.FromDouble(speed) * Trig.Sin(playerViewAngle);
             }
 
             if (left)
@@ -77,7 +81,18 @@ namespace ManagedDoom
                 playerViewAngle -= Angle.FromDegree(speed / 2);
             }
 
-            var floor = Geometry.PointInSubsector(playerX, playerY, map).Sector.FloorHeight;
+            //var floor = Geometry.PointInSubsector(newX, newY, map).Sector.FloorHeight;
+
+            var result = CheckPosition(player, playerX + dx, playerY + dy);
+
+            if (result)
+            {
+                playerX += dx;
+                playerY += dy;
+                playerZ = tmfloorz;
+            }
+
+            /*
             var dz = floor - playerZ;
             if (dz < Fixed.Zero)
             {
@@ -88,7 +103,7 @@ namespace ManagedDoom
                 dz = new Fixed(32768) * dz;
             }
             playerZ += dz;
-
+            */
 
 
             var distance = Fixed.FromInt(1024);
@@ -182,6 +197,13 @@ namespace ManagedDoom
                 return;
             }
             */
+
+            // TEST
+            if (mthing.Type == 1)
+            {
+                player = SpawnMobj(mthing.X, mthing.Y, Mobj.OnFloorZ, MobjType.Player);
+                player.Player = new Player();
+            }
 
             // The code below must be removed later
             // when the player related code above is correctly implemented.
