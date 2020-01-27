@@ -9,8 +9,6 @@ namespace ManagedDoom
 
         private Map map;
         private DoomRandom random;
-        private Thinker thinkerCap;
-        private ThinkerPool thinkerPool;
 
         private int totalKills = 0;
         private int totalItems = 0;
@@ -31,11 +29,7 @@ namespace ManagedDoom
 
             random = new DoomRandom();
 
-            thinkerCap = new Thinker(this);
-            thinkerCap.Prev = thinkerCap.Next = thinkerCap;
-
-            thinkerPool = new ThinkerPool(this);
-
+            InitThinker();
             InitThingMovement();
             InitPathTraversal();
 
@@ -439,47 +433,6 @@ namespace ManagedDoom
 
             // free block
             RemoveThinker(mobj);
-        }
-
-        public void AddThinker(Thinker thinker)
-        {
-            thinkerCap.Prev.Next = thinker;
-            thinker.Next = thinkerCap;
-            thinker.Prev = thinkerCap.Prev;
-            thinkerCap.Prev = thinker;
-        }
-
-        public void RemoveThinker(Thinker thinker)
-        {
-            thinker.Removed = true;
-        }
-
-        public void RunThinkers()
-        {
-            Thinker currentthinker;
-
-            currentthinker = thinkerCap.Next;
-            while (currentthinker != thinkerCap)
-            {
-                if (currentthinker.Removed)
-                {
-                    // time to remove it
-                    currentthinker.Next.Prev = currentthinker.Prev;
-                    currentthinker.Prev.Next = currentthinker.Next;
-                    thinkerPool.Return(currentthinker);
-                }
-                else
-                {
-                    /*
-                    if (currentthinker->function.acp1)
-                    {
-                        currentthinker->function.acp1(currentthinker);
-                    }
-                    */
-                    currentthinker.Run();
-                }
-                currentthinker = currentthinker.Next;
-            }
         }
 
         public bool SetMobjState(Mobj mobj, State state)
