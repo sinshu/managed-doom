@@ -202,7 +202,7 @@ namespace ManagedDoom
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ToIntCeiling(Fixed a)
         {
-            return (a + OneMinusEpsilon).data >> FracBits;
+            return (a.data + FracUnit - 1) >> FracBits;
         }
 
         public override bool Equals(object obj)
