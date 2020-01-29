@@ -326,5 +326,41 @@ namespace ManagedDoomTest
                 Assert.AreEqual(max, fmax.ToDouble(), 1.0E-9);
             }
         }
+
+        [TestMethod]
+        public void ToInt1()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 100; i++)
+            {
+                var a = random.Next(666);
+
+                var fa = Fixed.FromDouble(a);
+                var ffloor = Fixed.ToIntFloor(fa);
+                var fceiling = Fixed.ToIntCeiling(fa);
+
+                Assert.AreEqual(a, ffloor, 1.0E-9);
+                Assert.AreEqual(a, fceiling, 1.0E-9);
+            }
+        }
+
+        [TestMethod]
+        public void ToInt2()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 100; i++)
+            {
+                var a = (double)random.Next(666666) / 1000;
+                var floor = Math.Floor(a);
+                var ceiling = Math.Ceiling(a);
+
+                var fa = Fixed.FromDouble(a);
+                var ffloor = Fixed.ToIntFloor(fa);
+                var fceiling = Fixed.ToIntCeiling(fa);
+
+                Assert.AreEqual(floor, ffloor, 1.0E-9);
+                Assert.AreEqual(ceiling, fceiling, 1.0E-9);
+            }
+        }
     }
 }

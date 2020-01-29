@@ -14,6 +14,9 @@ namespace ManagedDoom
         public static readonly Fixed MaxValue = new Fixed(int.MaxValue);
         public static readonly Fixed MinValue = new Fixed(int.MinValue);
 
+        public static readonly Fixed Epsilon = new Fixed(1);
+        public static readonly Fixed OneMinusEpsilon = new Fixed(FracUnit - 1);
+
         private int data;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -188,6 +191,18 @@ namespace ManagedDoom
             {
                 return a;
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ToIntFloor(Fixed a)
+        {
+            return a.data >> FracBits;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ToIntCeiling(Fixed a)
+        {
+            return (a + OneMinusEpsilon).data >> FracBits;
         }
 
         public override bool Equals(object obj)
