@@ -4,7 +4,7 @@
 
 The goal of this project is to make a fully functional Doom source port written in C# with no unsafe code.
 
-The rendering engine is almost complete and capable of showing 3D view like the screenshots below at pratical speed.
+The rendering engine is almost complete and capable of showing 3D view like the screenshots below at practical speed.
 
 Now I'm working on the game physics, including thing movement, interaction and so on.
 
