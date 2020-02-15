@@ -791,5 +791,24 @@ namespace ManagedDoomTest
                 }
             }
         }
+
+        [TestMethod]
+        public void AproxDistance()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 1000; i++)
+            {
+                var dx = 666 * random.NextDouble() - 333;
+                var dy = 666 * random.NextDouble() - 333;
+
+                var adx = Math.Abs(dx);
+                var ady = Math.Abs(dy);
+                var expected = adx + ady - Math.Min(adx, ady) / 2;
+
+                var actual = Geometry.AproxDistance(Fixed.FromDouble(dx), Fixed.FromDouble(dy));
+
+                Assert.AreEqual(expected, actual.ToDouble(), 1.0E-3);
+            }
+        }
     }
 }

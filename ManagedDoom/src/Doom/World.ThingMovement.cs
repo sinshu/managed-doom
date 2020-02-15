@@ -468,5 +468,340 @@ namespace ManagedDoom
 
             return true;
         }
+
+
+
+
+        //
+        // P_TryMove
+        // Attempt to move to a new position,
+        // crossing special lines unless MF_TELEPORT is set.
+        //
+        private bool P_TryMove(Mobj thing, Fixed x, Fixed y)
+        {
+            floatok = false;
+
+            if (!CheckPosition(thing, x, y))
+            {
+                // solid wall or thing
+                return false;
+            }
+
+            if ((thing.Flags & MobjFlags.NoClip) == 0)
+            {
+                if (tmceilingz - tmfloorz < thing.Height)
+                {
+                    // doesn't fit
+                    return false;
+                }
+
+                floatok = true;
+
+                if ((thing.Flags & MobjFlags.Teleport) == 0
+                    && tmceilingz - thing.Z < thing.Height)
+                {
+                    // mobj must lower itself to fit
+                    return false;
+                }
+
+                if ((thing.Flags & MobjFlags.Teleport) == 0
+                     && tmfloorz - thing.Z > Fixed.FromInt(24))
+                {
+                    // too big a step up
+                    return false;
+                }
+
+                if ((thing.Flags & (MobjFlags.DropOff | MobjFlags.Float)) == 0
+                     && tmfloorz - tmdropoffz > Fixed.FromInt(24))
+                {
+                    // don't stand over a dropoff
+                    return false;
+                }
+            }
+
+            // the move is ok,
+            // so link the thing into its new position
+            UnsetThingPosition(thing);
+
+            var oldx = thing.X;
+            var oldy = thing.Y;
+            thing.FloorZ = tmfloorz;
+            thing.CeilingZ = tmceilingz;
+            thing.X = x;
+            thing.Y = y;
+
+            SetThingPosition(thing);
+
+            // if any special lines were hit, do the effect
+            if ((thing.Flags & (MobjFlags.Teleport | MobjFlags.NoClip)) == 0)
+            {
+                while (numspechit-- != 0)
+                {
+                    // see if the line was crossed
+                    var ld = spechit[numspechit];
+                    var side = Geometry.PointOnLineSide(thing.X, thing.Y, ld);
+                    var oldside = Geometry.PointOnLineSide(oldx, oldy, ld);
+                    if (side != oldside)
+                    {
+                        if (ld.Special != 0)
+                        {
+                            //P_CrossSpecialLine(ld - lines, oldside, thing);
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+
+
+
+
+        //
+        // SLIDE MOVE
+        // Allows the player to slide along any angled walls.
+        //
+        private Fixed bestslidefrac;
+        private Fixed secondslidefrac;
+
+        private LineDef bestslideline;
+        private LineDef secondslideline;
+
+        private Mobj slidemo;
+
+        private Fixed tmxmove;
+        private Fixed tmymove;
+
+        //
+        // P_HitSlideLine
+        // Adjusts the xmove / ymove
+        // so that the next move will slide along the wall.
+        //
+        private void P_HitSlideLine(LineDef ld)
+        {
+            if (ld.SlopeType == SlopeType.Horizontal)
+            {
+                tmymove = Fixed.Zero;
+                return;
+            }
+
+            if (ld.SlopeType == SlopeType.Vertical)
+            {
+                tmxmove = Fixed.Zero;
+                return;
+            }
+
+            var side = Geometry.PointOnLineSide(slidemo.X, slidemo.Y, ld);
+
+            var lineangle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, ld.Dx, ld.Dy);
+
+            if (side == 1)
+            {
+                lineangle += Angle.Ang180;
+            }
+
+            var moveangle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, tmxmove, tmymove);
+            var deltaangle = moveangle - lineangle;
+
+            if (deltaangle > Angle.Ang180)
+            {
+                deltaangle += Angle.Ang180;
+            }
+            //	I_Error ("SlideLine: ang>ANG180");
+
+            var movelen = Geometry.AproxDistance(tmxmove, tmymove);
+            var newlen = movelen * Trig.Cos(deltaangle);
+
+            tmxmove = newlen * Trig.Cos(lineangle);
+            tmymove = newlen * Trig.Sin(lineangle);
+        }
+
+
+        //
+        // PTR_SlideTraverse
+        //
+        private bool PTR_SlideTraverse(Intercept ic)
+        {
+            if (ic.Line == null)
+            {
+                throw new Exception("PTR_SlideTraverse: not a line?");
+            }
+
+            LineDef li = ic.Line;
+
+            if ((li.Flags & LineFlags.TwoSided) == 0)
+            {
+                if (Geometry.PointOnLineSide(slidemo.X, slidemo.Y, li) != 0)
+                {
+                    // don't hit the back side
+                    return true;
+                }
+
+                goto isblocking;
+            }
+
+            // set openrange, opentop, openbottom
+            LineOpening(li);
+
+            if (openRange < slidemo.Height)
+            {
+                // doesn't fit
+                goto isblocking;
+            }
+
+            if (openTop - slidemo.Z < slidemo.Height)
+            {
+                // mobj is too high
+                goto isblocking;
+            }
+
+            if (openBottom - slidemo.Z > Fixed.FromInt(24))
+            {
+                // too big a step up
+                goto isblocking;
+            }
+
+            // this line doesn't block movement
+            return true;
+
+        // the line does block movement,
+        // see if it is closer than best so far
+        isblocking:
+            if (ic.Frac < bestslidefrac)
+            {
+                secondslidefrac = bestslidefrac;
+                secondslideline = bestslideline;
+                bestslidefrac = ic.Frac;
+                bestslideline = li;
+            }
+
+            return false;   // stop
+        }
+
+
+        //
+        // P_SlideMove
+        // The momx / momy move is bad, so try to slide
+        // along a wall.
+        // Find the first line hit, move flush to it,
+        // and slide along it
+        //
+        // This is a kludgy mess.
+        //
+        private void P_SlideMove(Mobj mo)
+        {
+            slidemo = mo;
+            var hitcount = 0;
+
+        retry:
+            if (++hitcount == 3)
+            {
+                // don't loop forever
+
+                // the move most have hit the middle, so stairstep
+                if (!P_TryMove(mo, mo.X, mo.Y + mo.MomY))
+                {
+                    P_TryMove(mo, mo.X + mo.MomX, mo.Y);
+                }
+                return;
+            }
+
+            Fixed leadx;
+            Fixed leady;
+            Fixed trailx;
+            Fixed traily;
+
+            // trace along the three leading corners
+            if (mo.MomX > Fixed.Zero)
+            {
+                leadx = mo.X + mo.Radius;
+                trailx = mo.X - mo.Radius;
+            }
+            else
+            {
+                leadx = mo.X - mo.Radius;
+                trailx = mo.X + mo.Radius;
+            }
+
+            if (mo.MomY > Fixed.Zero)
+            {
+                leady = mo.Y + mo.Radius;
+                traily = mo.Y - mo.Radius;
+            }
+            else
+            {
+                leady = mo.Y - mo.Radius;
+                traily = mo.Y + mo.Radius;
+            }
+
+            bestslidefrac = new Fixed(Fixed.FracUnit + 1);
+
+            PathTraverse(leadx, leady, leadx + mo.MomX, leady + mo.MomY,
+                PathTraverseFlags.AddLines, ic => PTR_SlideTraverse(ic));
+
+            PathTraverse(trailx, leady, trailx + mo.MomX, leady + mo.MomY,
+                PathTraverseFlags.AddLines, ic => PTR_SlideTraverse(ic));
+
+            PathTraverse(leadx, traily, leadx + mo.MomX, traily + mo.MomY,
+                PathTraverseFlags.AddLines, ic => PTR_SlideTraverse(ic));
+
+            // move up to the wall
+            if (bestslidefrac == new Fixed(Fixed.FracUnit + 1))
+            {
+                // the move most have hit the middle, so stairstep
+                if (!P_TryMove(mo, mo.X, mo.Y + mo.MomY))
+                {
+                    P_TryMove(mo, mo.X + mo.MomX, mo.Y);
+                }
+                return;
+            }
+
+            // fudge a bit to make sure it doesn't hit
+            bestslidefrac = new Fixed(bestslidefrac.Data - 0x800);
+            if (bestslidefrac > Fixed.Zero)
+            {
+                var newx = mo.MomX * bestslidefrac;
+                var newy = mo.MomY * bestslidefrac;
+
+                if (!P_TryMove(mo, mo.X + newx, mo.Y + newy))
+                {
+                    // the move most have hit the middle, so stairstep
+                    if (!P_TryMove(mo, mo.X, mo.Y + mo.MomY))
+                    {
+                        P_TryMove(mo, mo.X + mo.MomX, mo.Y);
+                    }
+                    return;
+                }
+            }
+
+            // Now continue along the wall.
+            // First calculate remainder.
+            bestslidefrac = new Fixed(Fixed.FracUnit - (bestslidefrac.Data + 0x800));
+
+            if (bestslidefrac > Fixed.One)
+            {
+                bestslidefrac = Fixed.One;
+            }
+
+            if (bestslidefrac <= Fixed.Zero)
+            {
+                return;
+            }
+
+            tmxmove = mo.MomX * bestslidefrac;
+            tmymove = mo.MomY * bestslidefrac;
+
+            // clip the moves
+            P_HitSlideLine(bestslideline);
+
+            mo.MomX = tmxmove;
+            mo.MomY = tmymove;
+
+            if (!P_TryMove(mo, mo.X + tmxmove, mo.Y + tmymove))
+            {
+                goto retry;
+            }
+        }
     }
 }

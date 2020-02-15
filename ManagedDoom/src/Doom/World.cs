@@ -10,6 +10,8 @@ namespace ManagedDoom
         private Map map;
         private DoomRandom random;
 
+        private int validCount;
+
         private int totalKills = 0;
         private int totalItems = 0;
 
@@ -28,6 +30,8 @@ namespace ManagedDoom
             map = new Map(resorces, mapName);
 
             random = new DoomRandom();
+
+            validCount = 0;
 
             InitThinker();
             InitThingMovement();

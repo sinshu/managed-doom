@@ -415,5 +415,20 @@ namespace ManagedDoom
                 return 1;
             }
         }
+
+        public static Fixed AproxDistance(Fixed dx, Fixed dy)
+        {
+            dx = Fixed.Abs(dx);
+            dy = Fixed.Abs(dy);
+
+            if (dx < dy)
+            {
+                return new Fixed(dx.Data + dy.Data - (dx.Data >> 1));
+            }
+            else
+            {
+                return new Fixed(dx.Data + dy.Data - (dy.Data >> 1));
+            }
+        }
     }
 }

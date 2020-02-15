@@ -11,8 +11,6 @@ namespace ManagedDoom
         private bool earlyOut;
         //private PathTraverseFlags ptflags;
 
-        private int validCount;
-
         private Func<LineDef, bool> addLineIntercepts;
         private Func<Mobj, bool> addThingIntercepts;
 
@@ -26,8 +24,6 @@ namespace ManagedDoom
 
             trace = new DivLine();
             tempDiv = new DivLine();
-
-            validCount = 0;
 
             addLineIntercepts = PIT_AddLineIntercepts;
             addThingIntercepts = PIT_AddThingIntercepts;
