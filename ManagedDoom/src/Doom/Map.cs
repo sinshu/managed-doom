@@ -77,5 +77,6 @@ namespace ManagedDoom
         public Thing[] Things => things;
         public BlockMap BlockMap => blockMap;
         public Texture SkyTexture => skyTexture;
+        public int SkyFlatNumber => flats.SkyFlatNumber;
     }
 }

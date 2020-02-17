@@ -54,7 +54,7 @@ namespace ManagedDoom
 
         // Bit flags, for cheats and debug.
         // See cheat_t, above.
-        public int Cheats;
+        public CheatFlags Cheats;
 
         // Refired shots are less accurate.
         public int Refire;

@@ -5,6 +5,8 @@ namespace ManagedDoom
     public sealed partial class World
     {
         private static readonly Fixed MaxRadius = Fixed.FromInt(32);
+        private static readonly Fixed Gravity = Fixed.One;
+        private static readonly Fixed MaxMove = Fixed.FromInt(30);
 
         private Fixed[] tmbbox;
         private Mobj tmthing;
@@ -801,6 +803,164 @@ namespace ManagedDoom
             if (!P_TryMove(mo, mo.X + tmxmove, mo.Y + tmymove))
             {
                 goto retry;
+            }
+        }
+
+
+
+
+
+        //
+        // P_XYMovement  
+        //
+        private static readonly Fixed StopSpeed = new Fixed(0x1000);
+        private static readonly Fixed Friction = new Fixed(0xe800);
+
+        private void P_XYMovement(Mobj mo)
+        {
+            if (mo.MomX == Fixed.Zero && mo.MomY == Fixed.Zero)
+            {
+                if ((mo.Flags & MobjFlags.SkullFly) != 0)
+                {
+                    // the skull slammed into something
+                    mo.Flags &= ~MobjFlags.SkullFly;
+                    mo.MomX = mo.MomY = mo.MomZ = Fixed.Zero;
+
+                    SetMobjState(mo, mo.Info.SpawnState);
+                }
+
+                return;
+            }
+
+            var player = mo.Player;
+
+            if (mo.MomX > MaxMove)
+            {
+                mo.MomX = MaxMove;
+            }
+            else if (mo.MomX < -MaxMove)
+            {
+                mo.MomX = -MaxMove;
+            }
+
+            if (mo.MomY > MaxMove)
+            {
+                mo.MomY = MaxMove;
+            }
+            else if (mo.MomY < -MaxMove)
+            {
+                mo.MomY = -MaxMove;
+            }
+
+            var xmove = mo.MomX;
+            var ymove = mo.MomY;
+
+            do
+            {
+                Fixed ptryx;
+                Fixed ptryy;
+
+                if (xmove > MaxMove / 2 || ymove > MaxMove / 2)
+                {
+                    ptryx = mo.X + xmove / 2;
+                    ptryy = mo.Y + ymove / 2;
+                    xmove = new Fixed(xmove.Data >> 1);
+                    ymove = new Fixed(ymove.Data >> 1);
+                }
+                else
+                {
+                    ptryx = mo.X + xmove;
+                    ptryy = mo.Y + ymove;
+                    xmove = ymove = Fixed.Zero;
+                }
+
+                if (!P_TryMove(mo, ptryx, ptryy))
+                {
+                    // blocked move
+                    if (mo.Player != null)
+                    {   // try to slide along it
+                        P_SlideMove(mo);
+                    }
+                    else if ((mo.Flags & MobjFlags.Missile) != 0)
+                    {
+                        // explode a missile
+                        if (ceilingline != null &&
+                            ceilingline.BackSector != null &&
+                            ceilingline.BackSector.CeilingFlat == map.SkyFlatNumber)
+                        {
+                            // Hack to prevent missiles exploding
+                            // against the sky.
+                            // Does not handle sky floors.
+                            RemoveMobj(mo);
+                            return;
+                        }
+                        //P_ExplodeMissile(mo);
+                    }
+                    else
+                    {
+                        mo.MomX = mo.MomY = Fixed.Zero;
+                    }
+                }
+            }
+            while (xmove != Fixed.Zero || ymove != Fixed.Zero);
+
+            // slow down
+            if (player != null && (player.Cheats & CheatFlags.NoMomentum) != 0)
+            {
+                // debug option for no sliding at all
+                mo.MomX = mo.MomY = Fixed.Zero;
+                return;
+            }
+
+            if ((mo.Flags & (MobjFlags.Missile | MobjFlags.SkullFly)) != 0)
+            {
+                // no friction for missiles ever
+                return;
+            }
+
+            if (mo.Z > mo.FloorZ)
+            {
+                // no friction when airborne
+                return;
+            }
+
+            if ((mo.Flags & MobjFlags.Corpse) != 0)
+            {
+                // do not stop sliding
+                //  if halfway off a step with some momentum
+                if (mo.MomX > Fixed.One / 4
+                    || mo.MomX < -Fixed.One / 4
+                    || mo.MomY > Fixed.One / 4
+                    || mo.MomY < -Fixed.One / 4)
+                {
+                    if (mo.FloorZ != mo.Subsector.Sector.FloorHeight)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            if (mo.MomX > -StopSpeed
+                && mo.MomX < StopSpeed
+                && mo.MomY > -StopSpeed
+                && mo.MomY < StopSpeed
+                && (player == null
+                    || (player.Cmd.ForwardMove == 0
+                        && player.Cmd.SideMove == 0)))
+            {
+                // if in a walking frame, stop moving
+                if (player != null && player.Mobj.State.Frame < 4)
+                {
+                    SetMobjState(player.Mobj, State.Play);
+                }
+
+                mo.MomX = Fixed.Zero;
+                mo.MomY = Fixed.Zero;
+            }
+            else
+            {
+                mo.MomX = mo.MomX * Friction;
+                mo.MomY = mo.MomY * Friction;
             }
         }
     }
