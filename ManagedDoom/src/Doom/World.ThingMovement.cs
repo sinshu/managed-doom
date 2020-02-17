@@ -678,7 +678,8 @@ namespace ManagedDoom
                 bestslideline = li;
             }
 
-            return false;   // stop
+            // stop
+            return false;
         }
 
 
@@ -894,7 +895,7 @@ namespace ManagedDoom
                             RemoveMobj(mo);
                             return;
                         }
-                        //P_ExplodeMissile(mo);
+                        P_ExplodeMissile(mo);
                     }
                     else
                     {
@@ -1042,7 +1043,7 @@ namespace ManagedDoom
                 if ((mo.Flags & MobjFlags.Missile) != 0
                      && (mo.Flags & MobjFlags.NoClip) == 0)
                 {
-                    //P_ExplodeMissile(mo);
+                    P_ExplodeMissile(mo);
                     return;
                 }
             }
@@ -1078,9 +1079,36 @@ namespace ManagedDoom
                 if ((mo.Flags & MobjFlags.Missile) != 0
                      && (mo.Flags & MobjFlags.NoClip) == 0)
                 {
-                    //P_ExplodeMissile(mo);
+                    P_ExplodeMissile(mo);
                     return;
                 }
+            }
+        }
+
+
+
+
+        //
+        // P_ExplodeMissile  
+        //
+        private void P_ExplodeMissile(Mobj mo)
+        {
+            mo.MomX = mo.MomY = mo.MomZ = Fixed.Zero;
+
+            SetMobjState(mo, Info.MobjInfos[(int)mo.Type].DeathState);
+
+            mo.Tics -= Random.Next() & 3;
+
+            if (mo.Tics < 1)
+            {
+                mo.Tics = 1;
+            }
+
+            mo.Flags &= ~MobjFlags.Missile;
+
+            if (mo.Info.DeathSound != 0)
+            {
+                StartSound(mo, mo.Info.DeathSound);
             }
         }
     }

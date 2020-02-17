@@ -46,7 +46,7 @@ namespace ManagedDoom
                     if (delta.TotalSeconds >= 1 && count >= 1)
                     {
                         var fps = count / delta.TotalSeconds;
-                        Console.WriteLine("FPS: " + fps.ToString("0.0"));
+                        //Console.WriteLine("FPS: " + fps.ToString("0.0"));
                         count = 0;
                         prev = curr;
                     }
