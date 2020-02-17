@@ -354,7 +354,7 @@ namespace ManagedDoom
 
                 // damage / explode
                 var damage = ((random.Next() % 8) + 1) * tmthing.Info.Damage;
-                //P_DamageMobj(thing, tmthing, tmthing->target, damage);
+                DamageMobj(thing, tmthing, tmthing.Target, damage);
 
                 // don't traverse any more
                 return false;
