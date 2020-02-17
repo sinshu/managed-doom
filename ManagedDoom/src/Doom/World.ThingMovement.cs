@@ -963,5 +963,125 @@ namespace ManagedDoom
                 mo.MomY = mo.MomY * Friction;
             }
         }
+
+
+
+        private static readonly Fixed FLOATSPEED = Fixed.FromInt(4);
+
+        //
+        // P_ZMovement
+        //
+        private void P_ZMovement(Mobj mo)
+        {
+            // check for smooth step up
+            if (mo.Player != null && mo.Z < mo.FloorZ)
+            {
+                mo.Player.ViewHeight -= mo.FloorZ - mo.Z;
+
+                mo.Player.DeltaViewHeight
+                    = new Fixed((Player.VIEWHEIGHT - mo.Player.ViewHeight).Data >> 3);
+            }
+
+            // adjust height
+            mo.Z += mo.MomZ;
+
+            if ((mo.Flags & MobjFlags.Float) != 0
+                && mo.Target != null)
+            {
+                // float down towards target if too close
+                if ((mo.Flags & MobjFlags.SkullFly) == 0
+                     && (mo.Flags & MobjFlags.InFloat) == 0)
+                {
+                    var dist = Geometry.AproxDistance(
+                        mo.X - mo.Target.X, mo.Y - mo.Target.Y);
+
+                    var delta = (mo.Target.Z + new Fixed(mo.Height.Data >> 1)) - mo.Z;
+
+                    if (delta < Fixed.Zero && dist < -(delta * 3))
+                    {
+                        mo.Z -= FLOATSPEED;
+                    }
+                    else if (delta > Fixed.Zero && dist < (delta * 3))
+                    {
+                        mo.Z += FLOATSPEED;
+                    }
+                }
+
+            }
+
+            // clip movement
+            if (mo.Z <= mo.FloorZ)
+            {
+                // hit the floor
+
+                // Note (id):
+                //  somebody left this after the setting momz to 0,
+                //  kinda useless there.
+                if ((mo.Flags & MobjFlags.SkullFly) != 0)
+                {
+                    // the skull slammed into something
+                    mo.MomZ = -mo.MomZ;
+                }
+
+                if (mo.MomZ < Fixed.Zero)
+                {
+                    if (mo.Player != null
+                        && mo.MomZ < -Gravity * 8)
+                    {
+                        // Squat down.
+                        // Decrease viewheight for a moment
+                        // after hitting the ground (hard),
+                        // and utter appropriate sound.
+                        mo.Player.DeltaViewHeight = new Fixed(mo.MomZ.Data >> 3);
+                        //S_StartSound(mo, sfx_oof);
+                    }
+                    mo.MomZ = Fixed.Zero;
+                }
+                mo.Z = mo.FloorZ;
+
+                if ((mo.Flags & MobjFlags.Missile) != 0
+                     && (mo.Flags & MobjFlags.NoClip) == 0)
+                {
+                    //P_ExplodeMissile(mo);
+                    return;
+                }
+            }
+            else if ((mo.Flags & MobjFlags.NoGravity) == 0)
+            {
+                if (mo.MomZ == Fixed.Zero)
+                {
+                    mo.MomZ = -Gravity * 2;
+                }
+                else
+                {
+                    mo.MomZ -= Gravity;
+                }
+            }
+
+            if (mo.Z + mo.Height > mo.CeilingZ)
+            {
+                // hit the ceiling
+                if (mo.MomZ > Fixed.Zero)
+                {
+                    mo.MomZ = Fixed.Zero;
+                }
+
+                {
+                    mo.Z = mo.CeilingZ - mo.Height;
+                }
+
+                if ((mo.Flags & MobjFlags.SkullFly) != 0)
+                {   // the skull slammed into something
+                    mo.MomZ = -mo.MomZ;
+                }
+
+                if ((mo.Flags & MobjFlags.Missile) != 0
+                     && (mo.Flags & MobjFlags.NoClip) == 0)
+                {
+                    //P_ExplodeMissile(mo);
+                    return;
+                }
+            }
+        }
     }
 }

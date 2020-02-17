@@ -6,6 +6,9 @@ namespace ManagedDoom
     {
         public const int MaxPlayerCount = 4;
 
+        public const int MAXHEALTH = 100;
+        public static readonly Fixed VIEWHEIGHT = Fixed.FromInt(41);
+
         public Mobj Mobj;
         public PlayerState playerState;
         public TicCmd Cmd;
