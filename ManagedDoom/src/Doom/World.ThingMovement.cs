@@ -816,7 +816,7 @@ namespace ManagedDoom
         private static readonly Fixed StopSpeed = new Fixed(0x1000);
         private static readonly Fixed Friction = new Fixed(0xe800);
 
-        private void P_XYMovement(Mobj mo)
+        public void P_XYMovement(Mobj mo)
         {
             if (mo.MomX == Fixed.Zero && mo.MomY == Fixed.Zero)
             {
@@ -971,7 +971,7 @@ namespace ManagedDoom
         //
         // P_ZMovement
         //
-        private void P_ZMovement(Mobj mo)
+        public void P_ZMovement(Mobj mo)
         {
             // check for smooth step up
             if (mo.Player != null && mo.Z < mo.FloorZ)

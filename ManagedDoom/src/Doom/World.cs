@@ -39,6 +39,21 @@ namespace ManagedDoom
 
             LoadThings();
 
+            /*
+            var curr = thinkerCap.Next;
+            while (curr != thinkerCap)
+            {
+                var mobj = curr as Mobj;
+                if (mobj != null)
+                {
+                    mobj.MomX = Fixed.FromInt(2);
+                    mobj.MomY = Fixed.FromInt(8);
+                    mobj.MomZ = Fixed.FromInt(8);
+                }
+                curr = curr.Next;
+            }
+            */
+
             var playerThing = map.Things.First(t => (int)t.Type == 1);
             playerX = playerThing.X;
             playerY = playerThing.Y;
@@ -251,6 +266,7 @@ namespace ManagedDoom
             {
                 player = SpawnMobj(mthing.X, mthing.Y, Mobj.OnFloorZ, MobjType.Player);
                 player.Player = new Player();
+                player.Player.Mobj = player;
             }
 
             // The code below must be removed later

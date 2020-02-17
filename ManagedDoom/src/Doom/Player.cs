@@ -96,6 +96,7 @@ namespace ManagedDoom
 
         public Player()
         {
+            Cmd = new TicCmd();
         }
     }
 }

@@ -90,28 +90,33 @@ namespace ManagedDoom
 
         public override void Run()
         {
-            /*
             // momentum movement
-            if (mobj->momx
-            || mobj->momy
-            || (mobj->flags & MF_SKULLFLY))
+            if (MomX != Fixed.Zero
+                || MomY != Fixed.Zero
+                || (Flags & MobjFlags.SkullFly) != 0)
             {
-                P_XYMovement(mobj);
+                World.P_XYMovement(this);
 
                 // FIXME: decent NOP/NULL/Nil function pointer please.
-                if (mobj->thinker.function.acv == (actionf_v)(-1))
-                    return;     // mobj was removed
+                if (Removed)
+                {
+                    // mobj was removed
+                    return;
+                }
             }
-            if ((mobj->z != mobj->floorz)
-             || mobj->momz)
+
+            if ((Z != FloorZ) || MomZ != Fixed.Zero)
             {
-                P_ZMovement(mobj);
+                World.P_ZMovement(this);
 
                 // FIXME: decent NOP/NULL/Nil function pointer please.
-                if (mobj->thinker.function.acv == (actionf_v)(-1))
-                    return;     // mobj was removed
+                if (Removed)
+                {
+                    // mobj was removed
+                    return;
+                }
             }
-            */
+
 
             // cycle through states,
             // calling action functions at transitions
