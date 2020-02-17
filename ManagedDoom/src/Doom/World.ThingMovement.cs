@@ -1033,7 +1033,7 @@ namespace ManagedDoom
                         // after hitting the ground (hard),
                         // and utter appropriate sound.
                         mo.Player.DeltaViewHeight = new Fixed(mo.MomZ.Data >> 3);
-                        //S_StartSound(mo, sfx_oof);
+                        StartSound(mo, Sfx.OOF);
                     }
                     mo.MomZ = Fixed.Zero;
                 }

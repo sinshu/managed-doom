@@ -488,6 +488,11 @@ namespace ManagedDoom
             return true;
         }
 
+        public void StartSound(Mobj mobj, Sfx sfx)
+        {
+            Console.WriteLine("StartSound: " + sfx);
+        }
+
         public Map Map => map;
         public DoomRandom Random => random;
 
