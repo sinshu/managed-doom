@@ -5,6 +5,120 @@ namespace ManagedDoom
 	public sealed partial class World
 	{
 		//
+		// KillMobj
+		//
+		public void KillMobj(Mobj source, Mobj target)
+		{
+			target.Flags &= ~(MobjFlags.Shootable | MobjFlags.Float | MobjFlags.SkullFly);
+
+			if (target.Type != MobjType.Skull)
+			{
+				target.Flags &= ~MobjFlags.NoGravity;
+			}
+
+			target.Flags |= MobjFlags.Corpse | MobjFlags.DropOff;
+			target.Height = new Fixed(target.Height.Data >> 2);
+
+			if (source != null && source.Player != null)
+			{
+				// count for intermission
+				if ((target.Flags & MobjFlags.CountKill) != 0)
+				{
+					source.Player.KillCount++;
+				}
+
+				if (target.Player != null)
+				{
+					//source.Player.Frags[target->player - players]++;
+				}
+			}
+			else if (!gameOptions.NetGame && (target.Flags & MobjFlags.CountKill) != 0)
+			{
+				// count all monster deaths,
+				// even those caused by other monsters
+				//players[0].killcount++;
+			}
+
+			if (target.Player != null)
+			{
+				// count environment kills against you
+				if (source == null)
+				{
+					//target->player->frags[target->player - players]++;
+				}
+
+				target.Flags &= ~MobjFlags.Solid;
+				target.Player.playerState = PlayerState.Dead;
+				//P_DropWeapon(target->player);
+
+				/*
+				if (target->player == &players[consoleplayer]
+					&& automapactive)
+				{
+					// don't die in auto map,
+					// switch view prior to dying
+					AM_Stop();
+				}
+				*/
+			}
+
+			if (target.Health < -target.Info.SpawnHealth
+				&& target.Info.XdeathState != 0)
+			{
+				SetMobjState(target, target.Info.XdeathState);
+			}
+			else
+			{
+				SetMobjState(target, target.Info.DeathState);
+			}
+
+			target.Tics -= random.Next() & 3;
+			if (target.Tics < 1)
+			{
+				target.Tics = 1;
+			}
+
+			//	I_StartSound (&actor->r, actor->info->deathsound);
+
+
+			// Drop stuff.
+			// This determines the kind of object spawned
+			// during the death frame of a thing.
+			MobjType item;
+			switch (target.Type)
+			{
+				case MobjType.Wolfss:
+				case MobjType.Possessed:
+					item = MobjType.Clip;
+					break;
+
+				case MobjType.Shotguy:
+					item = MobjType.Shotgun;
+					break;
+
+				case MobjType.Chainguy:
+					item = MobjType.Chaingun;
+					break;
+
+				default:
+					return;
+			}
+
+			var mo = SpawnMobj(target.X, target.Y, Mobj.OnFloorZ, item);
+			mo.Flags |= MobjFlags.Dropped; // special versions of items
+		}
+
+
+
+
+
+
+
+
+
+
+
+		//
 		// P_DamageMobj
 		// Damages both enemies and players
 		// "inflictor" is the thing that caused the damage
