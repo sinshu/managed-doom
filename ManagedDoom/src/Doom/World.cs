@@ -33,7 +33,7 @@ namespace ManagedDoom
 
             validCount = 0;
 
-            InitThinker();
+            InitThinkers();
             InitThingMovement();
             InitPathTraversal();
 

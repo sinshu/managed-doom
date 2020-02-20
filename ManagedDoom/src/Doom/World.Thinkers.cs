@@ -7,7 +7,7 @@ namespace ManagedDoom
         private Thinker thinkerCap;
         private ThinkerPool thinkerPool;
 
-        public void InitThinker()
+        public void InitThinkers()
         {
             thinkerCap = new Thinker(this);
             thinkerCap.Prev = thinkerCap.Next = thinkerCap;
