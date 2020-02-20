@@ -449,7 +449,7 @@ namespace ManagedDoom
             UnsetThingPosition(mobj);
 
             // stop any playing sound
-            //S_StopSound(mobj);
+            StopSound(mobj);
 
             // free block
             RemoveThinker(mobj);
@@ -491,6 +491,10 @@ namespace ManagedDoom
         public void StartSound(Mobj mobj, Sfx sfx)
         {
             Console.WriteLine("StartSound: " + sfx);
+        }
+
+        public void StopSound(Mobj mobj)
+        {
         }
 
         public Map Map => map;
