@@ -40,16 +40,11 @@ namespace ManagedDoom
                 {
                     window.DispatchEvents();
 
-                    var up = Keyboard.IsKeyPressed(Keyboard.Key.Up);
-                    var dowm = Keyboard.IsKeyPressed(Keyboard.Key.Down);
-                    var left = Keyboard.IsKeyPressed(Keyboard.Key.Left);
-                    var right = Keyboard.IsKeyPressed(Keyboard.Key.Right);
                     UserInput.BuildTicCmd(world.Players[0].Cmd);
-                    world.Update(up, dowm, left, right);
-
+                    world.Update();
                     renderer.Render();
-                    count++;
 
+                    count++;
                     var curr = sw.Elapsed;
                     var delta = curr - prev;
                     if (delta.TotalSeconds >= 1 && count >= 1)

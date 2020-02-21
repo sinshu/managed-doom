@@ -18,11 +18,6 @@ namespace ManagedDoom
 
         private int levelTime = 0;
 
-        private Fixed playerX;
-        private Fixed playerY;
-        private Fixed playerZ;
-        private Angle playerViewAngle;
-
         private Func<Intercept, bool> interceptTest;
 
         public World(Resources resorces, string mapName, GameOptions options, Player[] players)
@@ -41,32 +36,9 @@ namespace ManagedDoom
             InitPathTraversal();
 
             LoadThings();
-
-            /*
-            var curr = thinkerCap.Next;
-            while (curr != thinkerCap)
-            {
-                var mobj = curr as Mobj;
-                if (mobj != null)
-                {
-                    mobj.MomX = Fixed.FromInt(2);
-                    mobj.MomY = Fixed.FromInt(8);
-                    mobj.MomZ = Fixed.FromInt(8);
-                }
-                curr = curr.Next;
-            }
-            */
-
-            var playerThing = map.Things.First(t => (int)t.Type == 1);
-            playerX = playerThing.X;
-            playerY = playerThing.Y;
-            playerZ = Geometry.PointInSubsector(playerX, playerY, map).Sector.FloorHeight;
-            playerViewAngle = Angle.FromDegree(playerThing.Angle);
-
-            interceptTest = InterceptTest;
         }
 
-        public void Update(bool up, bool down, bool left, bool right)
+        public void Update()
         {
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
@@ -79,21 +51,6 @@ namespace ManagedDoom
             RunThinkers();
 
             levelTime++;
-        }
-
-        private bool InterceptTest(Intercept ic)
-        {
-            if (ic.Line != null)
-            {
-                ic.Line.Side0.RowOffset += Fixed.One;
-            }
-
-            if (ic.Thing != null)
-            {
-                SetMobjState(ic.Thing, ic.Thing.Info.PainState);
-            }
-
-            return true;
         }
 
         private void LoadThings()
@@ -464,10 +421,5 @@ namespace ManagedDoom
 
         public Map Map => map;
         public DoomRandom Random => random;
-
-        public Fixed ViewX => playerX;
-        public Fixed ViewY => playerY;
-        public Fixed ViewZ => playerZ + Fixed.FromInt(41);
-        public Angle ViewAngle => playerViewAngle;
     }
 }
