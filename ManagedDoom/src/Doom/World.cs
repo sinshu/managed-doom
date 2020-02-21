@@ -16,6 +16,8 @@ namespace ManagedDoom
         private int totalKills = 0;
         private int totalItems = 0;
 
+        private int levelTime = 0;
+
         private Fixed playerX;
         private Fixed playerY;
         private Fixed playerZ;
