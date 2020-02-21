@@ -12,12 +12,20 @@ namespace ManagedDoom
     {
         static void Main(string[] args)
         {
+            var players = new Player[Player.MaxPlayerCount];
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                players[i] = new Player();
+                players[i].PlayerState = PlayerState.Reborn;
+            }
+            players[0].InGame = true;
+
             var style = Styles.Close | Styles.Titlebar;
             using (var window = new RenderWindow(new VideoMode(640, 400), "Managed Doom", style))
             using (var resources = new Resources("DOOM2.WAD"))
             using (var renderer = new SoftwareRendering.Renderer(window, resources, true))
             {
-                var world = new World(resources, "MAP01", new GameOptions());
+                var world = new World(resources, "MAP01", new GameOptions(), players);
 
                 renderer.BindWorld(world);
 

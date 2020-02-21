@@ -5,7 +5,8 @@ namespace ManagedDoom
 {
     public sealed partial class World
     {
-        private GameOptions gameOptions;
+        private GameOptions options;
+        private Player[] players;
 
         private Map map;
         private DoomRandom random;
@@ -15,7 +16,6 @@ namespace ManagedDoom
         private int totalKills = 0;
         private int totalItems = 0;
 
-        private Mobj player;
         private Fixed playerX;
         private Fixed playerY;
         private Fixed playerZ;
@@ -23,9 +23,10 @@ namespace ManagedDoom
 
         private Func<Intercept, bool> interceptTest;
 
-        public World(Resources resorces, string mapName, GameOptions options)
+        public World(Resources resorces, string mapName, GameOptions options, Player[] players)
         {
-            gameOptions = options;
+            this.options = options;
+            this.players = players;
 
             map = new Map(resorces, mapName);
 
@@ -66,6 +67,8 @@ namespace ManagedDoom
         public void Update(bool up, bool down, bool left, bool right)
         {
             RunThinkers();
+
+            var player = players[0].Mobj;
 
             var speed = 8.0;
 
@@ -205,7 +208,7 @@ namespace ManagedDoom
                 var spawn = true;
 
                 // Do not spawn cool, new monsters if !commercial
-                if (gameOptions.GameMode != GameMode.Commercial)
+                if (options.GameMode != GameMode.Commercial)
                 {
                     switch (mt.Type)
                     {
@@ -248,25 +251,17 @@ namespace ManagedDoom
             }
             */
 
-            /*
             // check for players specially
-            if (mthing->type <= 4)
+            if ((int)mthing.Type <= 4)
             {
                 // save spots for respawning in network games
-                playerstarts[mthing->type - 1] = *mthing;
-                if (!deathmatch)
-                    P_SpawnPlayer(mthing);
+                //playerstarts[mthing->type - 1] = *mthing;
+                if (!options.Deathmatch)
+                {
+                    SpawnPlayer(mthing);
+                }
 
                 return;
-            }
-            */
-
-            // TEST
-            if (mthing.Type == 1)
-            {
-                player = SpawnMobj(mthing.X, mthing.Y, Mobj.OnFloorZ, MobjType.Player);
-                player.Player = new Player();
-                player.Player.Mobj = player;
             }
 
             // The code below must be removed later
@@ -277,23 +272,23 @@ namespace ManagedDoom
             }
 
             // check for apropriate skill level
-            if (!gameOptions.NetGame && ((int)mthing.Flags & 16) != 0)
+            if (!options.NetGame && ((int)mthing.Flags & 16) != 0)
             {
                 return;
             }
 
             int bit;
-            if (gameOptions.GameSkill == Skill.Baby)
+            if (options.GameSkill == Skill.Baby)
             {
                 bit = 1;
             }
-            else if (gameOptions.GameSkill == Skill.Nightmare)
+            else if (options.GameSkill == Skill.Nightmare)
             {
                 bit = 4;
             }
             else
             {
-                bit = 1 << ((int)gameOptions.GameSkill - 1);
+                bit = 1 << ((int)options.GameSkill - 1);
             }
 
             if (((int)mthing.Flags & bit) == 0)
@@ -317,14 +312,14 @@ namespace ManagedDoom
             }
 
             // don't spawn keycards and players in deathmatch
-            if (gameOptions.Deathmatch
+            if (options.Deathmatch
                 && (Info.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
             {
                 return;
             }
 
             // don't spawn any monsters if -nomonsters
-            if (gameOptions.NoMonsters
+            if (options.NoMonsters
                 && (i == (int)MobjType.Skull
                     || (Info.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
             {
@@ -372,6 +367,76 @@ namespace ManagedDoom
             }
         }
 
+
+
+        //
+        // P_SpawnPlayer
+        // Called when a player is spawned on the level.
+        // Most of the player structure stays unchanged
+        //  between levels.
+        //
+        private void SpawnPlayer(Thing mthing)
+        {
+            // not playing?
+            if (!players[(int)mthing.Type - 1].InGame)
+            {
+                return;
+            }
+
+            var p = players[(int)mthing.Type - 1];
+
+            if (p.PlayerState == PlayerState.Reborn)
+            {
+                players[(int)mthing.Type - 1].Reborn();
+            }
+
+            var x = mthing.X;
+            var y = mthing.Y;
+            var z = Mobj.OnFloorZ;
+            var mobj = SpawnMobj(x, y, z, MobjType.Player);
+
+            // set color translations for player sprites
+            if ((int)mthing.Type > 1)
+            {
+                //mobj->flags |= (mthing->type - 1) << MF_TRANSSHIFT;
+            }
+            mobj.Angle = new Angle(Angle.Ang45.Data * (uint)(mthing.Angle / 45));
+            mobj.Player = p;
+            mobj.Health = p.Health;
+
+            p.Mobj = mobj;
+            p.PlayerState = PlayerState.Live;
+            p.Refire = false;
+            p.Message = null;
+            p.DamageCount = 0;
+            p.BonusCount = 0;
+            p.ExtraLight = 0;
+            p.FixedColorMap = 0;
+            p.ViewHeight = Player.VIEWHEIGHT;
+
+            // setup gun psprite
+            //P_SetupPsprites(p);
+
+            // give all cards in death match mode
+            if (options.Deathmatch)
+            {
+                for (var i = 0; i < (int)CardType.Count; i++)
+                {
+                    p.Cards[i] = true;
+                }
+            }
+
+            /*
+            if (mthing->type - 1 == consoleplayer)
+            {
+                // wake up the status bar
+                ST_Start();
+                // wake up the heads up text
+                HU_Start();
+            }
+            */
+        }
+
         public Mobj SpawnMobj(Fixed x, Fixed y, Fixed z, MobjType type)
         {
             var mobj = thinkerPool.RentMobj();
@@ -387,7 +452,7 @@ namespace ManagedDoom
             mobj.Flags = info.Flags;
             mobj.Health = info.SpawnHealth;
 
-            if (gameOptions.GameSkill != Skill.Nightmare)
+            if (options.GameSkill != Skill.Nightmare)
             {
                 mobj.ReactionTime = info.ReactionTime;
             }

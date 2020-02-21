@@ -32,7 +32,7 @@ namespace ManagedDoom
 					//source.Player.Frags[target->player - players]++;
 				}
 			}
-			else if (!gameOptions.NetGame && (target.Flags & MobjFlags.CountKill) != 0)
+			else if (!options.NetGame && (target.Flags & MobjFlags.CountKill) != 0)
 			{
 				// count all monster deaths,
 				// even those caused by other monsters
@@ -48,7 +48,7 @@ namespace ManagedDoom
 				}
 
 				target.Flags &= ~MobjFlags.Solid;
-				target.Player.playerState = PlayerState.Dead;
+				target.Player.PlayerState = PlayerState.Dead;
 				//P_DropWeapon(target->player);
 
 				/*

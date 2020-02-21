@@ -35,7 +35,7 @@ namespace ManagedDoom
         public Mobj ThingList;
 
         // thinker_t for reversable actions
-        public object SpecialData;
+        public Thinker SpecialData;
 
         public LineDef[] Lines;
 

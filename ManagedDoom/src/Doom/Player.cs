@@ -9,8 +9,10 @@ namespace ManagedDoom
         public const int MAXHEALTH = 100;
         public static readonly Fixed VIEWHEIGHT = Fixed.FromInt(41);
 
+        public bool InGame;
+
         public Mobj Mobj;
-        public PlayerState playerState;
+        public PlayerState PlayerState;
         public TicCmd Cmd;
 
         // Determine POV,
@@ -42,6 +44,7 @@ namespace ManagedDoom
 
         // Frags, kills of other players.
         public int[] Frags;
+
         public WeaponType ReadyWeapon;
 
         // Is wp_nochange if not changing.
@@ -52,15 +55,15 @@ namespace ManagedDoom
         public int[] MaxAmmo;
 
         // True if button down last tic.
-        public int AttackDown;
-        public int UseDown;
+        public bool AttackDown;
+        public bool UseDown;
 
         // Bit flags, for cheats and debug.
         // See cheat_t, above.
         public CheatFlags Cheats;
 
         // Refired shots are less accurate.
-        public int Refire;
+        public bool Refire;
 
         // For intermission stats.
         public int KillCount;
@@ -68,7 +71,7 @@ namespace ManagedDoom
         public int SecretCount;
 
         // Hint messages.
-        string Message;
+        public string Message;
 
         // For screen flashing (red or bright).
         public int DamageCount;
@@ -97,6 +100,79 @@ namespace ManagedDoom
         public Player()
         {
             Cmd = new TicCmd();
+
+            Powers = new int[(int)PowerType.Count];
+            Cards = new bool[(int)CardType.Count];
+
+            Frags = new int[MaxPlayerCount];
+
+            WeaponOwned = new bool[(int)WeaponType.Count];
+            Ammo = new int[(int)WeaponType.Count];
+            MaxAmmo = new int[(int)WeaponType.Count];
+
+            PSprites = new PlayerSprite[0];
+        }
+
+        public void Reborn()
+        {
+            Mobj = null;
+            PlayerState = PlayerState.Live;
+            Cmd.Clear();
+
+            ViewZ = Fixed.Zero;
+            ViewHeight = Fixed.Zero;
+            DeltaViewHeight = Fixed.Zero;
+            Bob = Fixed.Zero;
+
+            Health = MAXHEALTH;
+            ArmorPoints = 0;
+            ArmorType = 0;
+
+            Array.Clear(Powers, 0, Powers.Length);
+            Array.Clear(Cards, 0, Cards.Length);
+            Backpack = false;
+
+            Array.Clear(Frags, 0, Frags.Length);
+
+            ReadyWeapon = WeaponType.Pistol;
+            PendingWeapon = WeaponType.Pistol;
+
+            Array.Clear(WeaponOwned, 0, WeaponOwned.Length);
+            Array.Clear(Ammo, 0, Ammo.Length);
+            Array.Clear(MaxAmmo, 0, MaxAmmo.Length);
+
+            WeaponOwned[(int)WeaponType.Fist] = true;
+            WeaponOwned[(int)WeaponType.Pistol] = true;
+            Ammo[(int)AmmoType.Clip] = 50;
+            for (var i = 0; i < (int)AmmoType.Count; i++)
+            {
+                MaxAmmo[i] = AmmoInfo.Max[i];
+            }
+
+            // don't do anything immediately
+            UseDown = true;
+            AttackDown = true;
+
+            Cheats = 0;
+
+            Refire = false;
+
+            Message = null;
+
+            DamageCount = 0;
+            BonusCount = 0;
+
+            Attacker = null;
+
+            ExtraLight = 0;
+
+            FixedColorMap = 0;
+
+            ColorMap = 0;
+
+            Array.Clear(PSprites, 0, PSprites.Length);
+
+            DidSecret = false;
         }
     }
 }
