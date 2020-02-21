@@ -32,6 +32,8 @@ namespace ManagedDoom.SoftwareRendering
 
         private ThreeDRenderer threeD;
 
+        private World world;
+
         public Renderer(RenderWindow window, Resources resources, bool highResolution)
         {
             sfmlWindow = window;
@@ -100,6 +102,8 @@ namespace ManagedDoom.SoftwareRendering
 
         public void BindWorld(World world)
         {
+            this.world = world;
+
             threeD.BindWorld(world);
         }
 
@@ -110,7 +114,7 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Render()
         {
-            threeD.Render();
+            threeD.Render(world.Players[0]);
 
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
             for (var i = 0; i < p.Length; i++)

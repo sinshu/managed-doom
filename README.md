@@ -46,8 +46,9 @@ https://www.youtube.com/watch?v=NwTEDQsBduI
     * [x] Optimization
 
 - __Gaming code__
-    * [ ] Player movement
-    * [ ] Monster movement
+    * [x] Player movement
+    * [ ] Player Attack
+    * [ ] Monster AI
     * [ ] Doors and platforms
     * [ ] Lots of things
 

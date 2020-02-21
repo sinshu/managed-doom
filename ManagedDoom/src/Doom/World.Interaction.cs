@@ -32,7 +32,7 @@ namespace ManagedDoom
 					//source.Player.Frags[target->player - players]++;
 				}
 			}
-			else if (!options.NetGame && (target.Flags & MobjFlags.CountKill) != 0)
+			else if (!Options.NetGame && (target.Flags & MobjFlags.CountKill) != 0)
 			{
 				// count all monster deaths,
 				// even those caused by other monsters

@@ -4,7 +4,7 @@ using SFML.Window;
 
 namespace ManagedDoom
 {
-    public sealed class UserInput
+    public static class UserInput
     {
         private const int slowTurnTics = 6;
 
@@ -25,14 +25,14 @@ namespace ManagedDoom
 
         private static readonly Fixed maxplmove = forwardmove[1];
 
-        private int turnheld;
+        private static int turnheld;
 
-        public UserInput()
+        static UserInput()
         {
             turnheld = 0;
         }
 
-        public void BuildTicCmd(TicCmd cmd, int maketic)
+        public static void BuildTicCmd(TicCmd cmd)
         {
             var keyLeft = Keyboard.IsKeyPressed(Keyboard.Key.Left);
             var keyRight = Keyboard.IsKeyPressed(Keyboard.Key.Right);
@@ -130,8 +130,8 @@ namespace ManagedDoom
                 side = -maxplmove;
             }
 
-            cmd.ForwardMove += (byte)forward.Data;
-            cmd.SideMove += (byte)side.Data;
+            cmd.ForwardMove += (sbyte)forward.Data;
+            cmd.SideMove += (sbyte)side.Data;
         }
     }
 }

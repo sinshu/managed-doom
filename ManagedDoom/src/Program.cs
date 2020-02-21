@@ -44,6 +44,7 @@ namespace ManagedDoom
                     var dowm = Keyboard.IsKeyPressed(Keyboard.Key.Down);
                     var left = Keyboard.IsKeyPressed(Keyboard.Key.Left);
                     var right = Keyboard.IsKeyPressed(Keyboard.Key.Right);
+                    UserInput.BuildTicCmd(world.Players[0].Cmd);
                     world.Update(up, dowm, left, right);
 
                     renderer.Render();

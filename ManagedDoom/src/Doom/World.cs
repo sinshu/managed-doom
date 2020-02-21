@@ -5,8 +5,8 @@ namespace ManagedDoom
 {
     public sealed partial class World
     {
-        private GameOptions options;
-        private Player[] players;
+        public GameOptions Options;
+        public Player[] Players;
 
         private Map map;
         private DoomRandom random;
@@ -27,8 +27,8 @@ namespace ManagedDoom
 
         public World(Resources resorces, string mapName, GameOptions options, Player[] players)
         {
-            this.options = options;
-            this.players = players;
+            Options = options;
+            Players = players;
 
             map = new Map(resorces, mapName);
 
@@ -68,119 +68,17 @@ namespace ManagedDoom
 
         public void Update(bool up, bool down, bool left, bool right)
         {
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                if (Players[i].InGame)
+                {
+                    PlayerThink(Players[i]);
+                }
+            }
+
             RunThinkers();
 
-            var player = players[0].Mobj;
-
-            var speed = 8.0;
-
-            if (left)
-            {
-                playerViewAngle += Angle.FromDegree(speed / 2);
-            }
-
-            if (right)
-            {
-                playerViewAngle -= Angle.FromDegree(speed / 2);
-            }
-
-            for (var deg = 0; deg < 90; deg++)
-            {
-                {
-                    var dx = Fixed.Zero;
-                    var dy = Fixed.Zero;
-
-                    var direction = playerViewAngle + Angle.FromDegree(deg);
-
-                    if (up)
-                    {
-                        dx += Fixed.FromDouble(speed) * Trig.Cos(direction);
-                        dy += Fixed.FromDouble(speed) * Trig.Sin(direction);
-                    }
-
-                    if (CheckPosition(player, playerX + dx, playerY + dy))
-                    {
-                        playerX += dx;
-                        playerY += dy;
-                        playerZ = tmfloorz;
-                        break;
-                    }
-                }
-
-                {
-                    var dx = Fixed.Zero;
-                    var dy = Fixed.Zero;
-
-                    var direction = playerViewAngle - Angle.FromDegree(deg);
-
-                    if (up)
-                    {
-                        dx += Fixed.FromDouble(speed) * Trig.Cos(direction);
-                        dy += Fixed.FromDouble(speed) * Trig.Sin(direction);
-                    }
-
-                    if (CheckPosition(player, playerX + dx, playerY + dy))
-                    {
-                        playerX += dx;
-                        playerY += dy;
-                        playerZ = tmfloorz;
-                        break;
-                    }
-                }
-            }
-
-            for (var deg = 0; deg < 90; deg++)
-            {
-                {
-                    var dx = Fixed.Zero;
-                    var dy = Fixed.Zero;
-
-                    var direction = playerViewAngle + Angle.FromDegree(deg) + Angle.Ang180;
-
-                    if (down)
-                    {
-                        dx += Fixed.FromDouble(speed) * Trig.Cos(direction);
-                        dy += Fixed.FromDouble(speed) * Trig.Sin(direction);
-                    }
-
-                    if (CheckPosition(player, playerX + dx, playerY + dy))
-                    {
-                        playerX += dx;
-                        playerY += dy;
-                        playerZ = tmfloorz;
-                        break;
-                    }
-                }
-
-                {
-                    var dx = Fixed.Zero;
-                    var dy = Fixed.Zero;
-
-                    var direction = playerViewAngle - Angle.FromDegree(deg) + Angle.Ang180;
-
-                    if (down)
-                    {
-                        dx += Fixed.FromDouble(speed) * Trig.Cos(direction);
-                        dy += Fixed.FromDouble(speed) * Trig.Sin(direction);
-                    }
-
-                    if (CheckPosition(player, playerX + dx, playerY + dy))
-                    {
-                        playerX += dx;
-                        playerY += dy;
-                        playerZ = tmfloorz;
-                        break;
-                    }
-                }
-            }
-
-            var distance = Fixed.FromInt(1024);
-            var x1 = playerX;
-            var y1 = playerY;
-            var x2 = x1 + distance * Trig.Cos(playerViewAngle);
-            var y2 = y1 + distance * Trig.Sin(playerViewAngle);
-            var flags = PathTraverseFlags.AddLines | PathTraverseFlags.AddThings;
-            //PathTraverse(x1, y1, x2, y2, flags, interceptTest);
+            levelTime++;
         }
 
         private bool InterceptTest(Intercept ic)
@@ -210,7 +108,7 @@ namespace ManagedDoom
                 var spawn = true;
 
                 // Do not spawn cool, new monsters if !commercial
-                if (options.GameMode != GameMode.Commercial)
+                if (Options.GameMode != GameMode.Commercial)
                 {
                     switch (mt.Type)
                     {
@@ -258,7 +156,7 @@ namespace ManagedDoom
             {
                 // save spots for respawning in network games
                 //playerstarts[mthing->type - 1] = *mthing;
-                if (!options.Deathmatch)
+                if (!Options.Deathmatch)
                 {
                     SpawnPlayer(mthing);
                 }
@@ -274,23 +172,23 @@ namespace ManagedDoom
             }
 
             // check for apropriate skill level
-            if (!options.NetGame && ((int)mthing.Flags & 16) != 0)
+            if (!Options.NetGame && ((int)mthing.Flags & 16) != 0)
             {
                 return;
             }
 
             int bit;
-            if (options.GameSkill == Skill.Baby)
+            if (Options.GameSkill == Skill.Baby)
             {
                 bit = 1;
             }
-            else if (options.GameSkill == Skill.Nightmare)
+            else if (Options.GameSkill == Skill.Nightmare)
             {
                 bit = 4;
             }
             else
             {
-                bit = 1 << ((int)options.GameSkill - 1);
+                bit = 1 << ((int)Options.GameSkill - 1);
             }
 
             if (((int)mthing.Flags & bit) == 0)
@@ -314,14 +212,14 @@ namespace ManagedDoom
             }
 
             // don't spawn keycards and players in deathmatch
-            if (options.Deathmatch
+            if (Options.Deathmatch
                 && (Info.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
             {
                 return;
             }
 
             // don't spawn any monsters if -nomonsters
-            if (options.NoMonsters
+            if (Options.NoMonsters
                 && (i == (int)MobjType.Skull
                     || (Info.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
             {
@@ -380,16 +278,16 @@ namespace ManagedDoom
         private void SpawnPlayer(Thing mthing)
         {
             // not playing?
-            if (!players[(int)mthing.Type - 1].InGame)
+            if (!Players[(int)mthing.Type - 1].InGame)
             {
                 return;
             }
 
-            var p = players[(int)mthing.Type - 1];
+            var p = Players[(int)mthing.Type - 1];
 
             if (p.PlayerState == PlayerState.Reborn)
             {
-                players[(int)mthing.Type - 1].Reborn();
+                Players[(int)mthing.Type - 1].Reborn();
             }
 
             var x = mthing.X;
@@ -420,7 +318,7 @@ namespace ManagedDoom
             //P_SetupPsprites(p);
 
             // give all cards in death match mode
-            if (options.Deathmatch)
+            if (Options.Deathmatch)
             {
                 for (var i = 0; i < (int)CardType.Count; i++)
                 {
@@ -454,7 +352,7 @@ namespace ManagedDoom
             mobj.Flags = info.Flags;
             mobj.Health = info.SpawnHealth;
 
-            if (options.GameSkill != Skill.Nightmare)
+            if (Options.GameSkill != Skill.Nightmare)
             {
                 mobj.ReactionTime = info.ReactionTime;
             }

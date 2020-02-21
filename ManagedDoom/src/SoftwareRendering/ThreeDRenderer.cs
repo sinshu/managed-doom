@@ -477,12 +477,12 @@ namespace ManagedDoom.SoftwareRendering
             world = null;
         }
 
-        public void Render()
+        public void Render(Player player)
         {
-            viewX = world.ViewX;
-            viewY = world.ViewY;
-            viewZ = world.ViewZ;
-            viewAngle = world.ViewAngle;
+            viewX = player.Mobj.X;
+            viewY = player.Mobj.Y;
+            viewZ = player.ViewZ;
+            viewAngle = player.Mobj.Angle;
 
             viewSin = Trig.Sin(viewAngle);
             viewCos = Trig.Cos(viewAngle);
