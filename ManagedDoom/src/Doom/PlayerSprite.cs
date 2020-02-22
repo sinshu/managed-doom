@@ -2,7 +2,10 @@
 
 namespace ManagedDoom
 {
-    public sealed class PlayerSprite
+    public enum PlayerSprite
     {
+        Weapon,
+        Flash,
+        Count
     }
 }

@@ -7,7 +7,7 @@ namespace ManagedDoom
         public Sprite Sprite;
         public int Frame;
         public int Tics;
-        public Action<Player, PlayerSprite> PlayerAction;
+        public Action<Player, PlayerSpriteDef> PlayerAction;
         public Action<Mobj> MobjAction;
         public State Next;
         public int Misc1;
@@ -17,7 +17,7 @@ namespace ManagedDoom
             Sprite sprite,
             int frame,
             int tics,
-            Action<Player, PlayerSprite> playerAction,
+            Action<Player, PlayerSpriteDef> playerAction,
             Action<Mobj> mobjAction,
             State next,
             int misc1,

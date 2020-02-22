@@ -286,7 +286,7 @@ namespace ManagedDoom
             p.ViewHeight = Player.VIEWHEIGHT;
 
             // setup gun psprite
-            //P_SetupPsprites(p);
+            SetupPsprites(p);
 
             // give all cards in death match mode
             if (Options.Deathmatch)

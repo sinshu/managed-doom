@@ -316,5 +316,101 @@ namespace ManagedDoom
                 player->fixedcolormap = 0;
             */
         }
+
+
+        //
+        // P_SetupPsprites
+        // Called at start of level for each player.
+        //
+        public void SetupPsprites(Player player)
+        {
+            // remove all psprites
+            for (var i = 0; i < (int)PlayerSprite.Count; i++)
+            {
+                player.PSprites[i].State = null;
+            }
+
+            // spawn the gun
+            player.PendingWeapon = player.ReadyWeapon;
+            P_BringUpWeapon(player);
+        }
+
+
+        private static readonly Fixed LOWERSPEED = Fixed.FromInt(6);
+        private static readonly Fixed RAISESPEED = Fixed.FromInt(6);
+
+        private static readonly Fixed WEAPONBOTTOM = Fixed.FromInt(128);
+        private static readonly Fixed WEAPONTOP = Fixed.FromInt(32);
+
+
+        //
+        // P_BringUpWeapon
+        // Starts bringing the pending weapon up
+        // from the bottom of the screen.
+        // Uses player
+        //
+        private void P_BringUpWeapon(Player player)
+        {
+            if (player.PendingWeapon == WeaponType.NoChange)
+            {
+                player.PendingWeapon = player.ReadyWeapon;
+            }
+
+            if (player.PendingWeapon == WeaponType.Chainsaw)
+            {
+                StartSound(player.Mobj, Sfx.SAWUP);
+            }
+
+            var newstate = Info.WeaponInfos[(int)player.PendingWeapon].UpState;
+
+            player.PendingWeapon = WeaponType.NoChange;
+            player.PSprites[(int)PlayerSprite.Weapon].Sy = WEAPONBOTTOM;
+
+            P_SetPsprite(player, PlayerSprite.Weapon, newstate);
+        }
+
+        //
+        // P_SetPsprite
+        //
+        private void P_SetPsprite(Player player, PlayerSprite position, State stnum)
+        {
+            var psp = player.PSprites[(int)position];
+
+            do
+            {
+                if (stnum == State.Null)
+                {
+                    // object removed itself
+                    psp.State = null;
+                    break;
+                }
+
+                var state = Info.States[(int)stnum];
+                psp.State = state;
+                psp.Tics = state.Tics;    // could be 0
+
+                if (state.Misc1 != 0)
+                {
+                    // coordinate set
+                    psp.Sx = Fixed.FromInt(state.Misc1);
+                    psp.Sy = Fixed.FromInt(state.Misc2);
+                }
+
+                // Call action routine.
+                // Modified handling.
+                if (state.PlayerAction != null)
+                {
+                    state.PlayerAction(player, psp);
+                    if (psp.State == null)
+                    {
+                        break;
+                    }
+                }
+
+                stnum = psp.State.Next;
+
+            } while (psp.Tics == 0);
+            // an initial state of 0 could cycle through
+        }
     }
 }
