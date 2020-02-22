@@ -46,14 +46,16 @@ https://www.youtube.com/watch?v=NwTEDQsBduI
     * [x] Optimization
 
 - __Gaming code__
+    * [x] Collision detection
     * [x] Player movement
     * [ ] Player Attack
     * [ ] Monster AI
     * [ ] Doors and platforms
-    * [ ] Lots of things
+    * [ ] Animated textures
 
 - __Audio__
-    * [ ] Lots of things
+    * [ ] Sounds
+    * [ ] Music
 
 
 
