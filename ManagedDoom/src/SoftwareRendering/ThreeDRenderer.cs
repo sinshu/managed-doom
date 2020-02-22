@@ -2477,7 +2477,7 @@ namespace ManagedDoom.SoftwareRendering
                     vis.TextureAlt,
                     vis.Scale,
                     centerYFrac - (vis.TextureAlt * vis.Scale),
-                    centerY,
+                    -1,
                     windowHeight);
                 frac += vis.InvScale;
             }

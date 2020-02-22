@@ -40,6 +40,9 @@ namespace ManagedDoom
                 {
                     window.DispatchEvents();
 
+                    if (Keyboard.IsKeyPressed(Keyboard.Key.O)) world.Players[0].Cheats |= CheatFlags.NoClip;
+                    if (Keyboard.IsKeyPressed(Keyboard.Key.P)) world.Players[0].Cheats &= ~CheatFlags.NoClip;
+
                     UserInput.BuildTicCmd(world.Players[0].Cmd);
                     world.Update();
                     renderer.Render();
