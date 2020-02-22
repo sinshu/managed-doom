@@ -10,6 +10,11 @@ namespace ManagedDoom
 
         public static void WeaponReady(Player player, PlayerSpriteDef psp)
         {
+            // bob the weapon based on movement speed
+            var angle = (128 * player.Mobj.World.levelTime) & Trig.FineMask;
+            psp.Sx = Fixed.One + player.Bob * Trig.Cos(angle);
+            angle &= Trig.FineAngleCount / 2 - 1;
+            psp.Sy = World.WEAPONTOP + player.Bob * Trig.Sin(angle);
         }
 
         public static void Lower(Player player, PlayerSpriteDef psp)
@@ -18,6 +23,20 @@ namespace ManagedDoom
 
         public static void Raise(Player player, PlayerSpriteDef psp)
         {
+            psp.Sy -= World.RAISESPEED;
+
+            if (psp.Sy > World.WEAPONTOP)
+            {
+                return;
+            }
+
+            psp.Sy = World.WEAPONTOP;
+
+            // The weapon has been raised all the way,
+            //  so change to the ready state.
+            var newstate = Info.WeaponInfos[(int)player.ReadyWeapon].ReadyState;
+
+            player.Mobj.World.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
         }
 
         public static void Punch(Player player, PlayerSpriteDef psp)

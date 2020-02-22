@@ -187,8 +187,6 @@ namespace ManagedDoom
                 //P_PlayerInSpecialSector(player);
             }
 
-            /*
-
             // Check for weapon change.
 
             // A special event has no other buttons.
@@ -212,7 +210,8 @@ namespace ManagedDoom
                     newweapon = (int)WeaponType.Chainsaw;
                 }
 
-                if ((gamemode == commercial)
+                //if ((gamemode == commercial)
+                if (true
                     && newweapon == (int)WeaponType.Shotgun
                     && player.WeaponOwned[(int)WeaponType.SuperShotgun]
                     && player.ReadyWeapon != WeaponType.SuperShotgun)
@@ -227,7 +226,8 @@ namespace ManagedDoom
                     //  even if cheated.
                     if ((newweapon != (int)WeaponType.Plasma
                         && newweapon != (int)WeaponType.Bfg)
-                            || (gamemode != shareware))
+                            //|| (gamemode != shareware))
+                            || false)
                     {
                         player.PendingWeapon = (WeaponType)newweapon;
                     }
@@ -239,7 +239,7 @@ namespace ManagedDoom
             {
                 if (!player.UseDown)
                 {
-                    P_UseLines(player);
+                    //P_UseLines(player);
                     player.UseDown = true;
                 }
             }
@@ -250,6 +250,8 @@ namespace ManagedDoom
 
             // cycle psprites
             P_MovePsprites(player);
+
+            /*
 
             // Counters, time dependend power ups.
 
@@ -336,11 +338,11 @@ namespace ManagedDoom
         }
 
 
-        private static readonly Fixed LOWERSPEED = Fixed.FromInt(6);
-        private static readonly Fixed RAISESPEED = Fixed.FromInt(6);
+        public static readonly Fixed LOWERSPEED = Fixed.FromInt(6);
+        public static readonly Fixed RAISESPEED = Fixed.FromInt(6);
 
-        private static readonly Fixed WEAPONBOTTOM = Fixed.FromInt(128);
-        private static readonly Fixed WEAPONTOP = Fixed.FromInt(32);
+        public static readonly Fixed WEAPONBOTTOM = Fixed.FromInt(128);
+        public static readonly Fixed WEAPONTOP = Fixed.FromInt(32);
 
 
         //
@@ -372,7 +374,7 @@ namespace ManagedDoom
         //
         // P_SetPsprite
         //
-        private void P_SetPsprite(Player player, PlayerSprite position, State stnum)
+        public void P_SetPsprite(Player player, PlayerSprite position, State stnum)
         {
             var psp = player.PSprites[(int)position];
 
@@ -411,6 +413,39 @@ namespace ManagedDoom
 
             } while (psp.Tics == 0);
             // an initial state of 0 could cycle through
+        }
+
+
+        //
+        // P_MovePsprites
+        // Called every tic by player thinking routine.
+        //
+        private void P_MovePsprites(Player player)
+        {
+            for (var i = 0; i < (int)PlayerSprite.Count; i++)
+            {
+                var psp = player.PSprites[i];
+
+                StateDef state;
+                // a null state means not active
+                if ((state = psp.State) != null)
+                {
+                    // drop tic count and possibly change state
+
+                    // a -1 tic count never changes
+                    if (psp.Tics != -1)
+                    {
+                        psp.Tics--;
+                        if (psp.Tics == 0)
+                        {
+                            P_SetPsprite(player, (PlayerSprite)i, psp.State.Next);
+                        }
+                    }
+                }
+            }
+
+            player.PSprites[(int)PlayerSprite.Flash].Sx = player.PSprites[(int)PlayerSprite.Weapon].Sx;
+            player.PSprites[(int)PlayerSprite.Flash].Sy = player.PSprites[(int)PlayerSprite.Weapon].Sy;
         }
     }
 }

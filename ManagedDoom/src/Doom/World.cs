@@ -16,7 +16,7 @@ namespace ManagedDoom
         private int totalKills = 0;
         private int totalItems = 0;
 
-        private int levelTime = 0;
+        public int levelTime = 0;
 
         public World(Resources resorces, string mapName, GameOptions options, Player[] players)
         {

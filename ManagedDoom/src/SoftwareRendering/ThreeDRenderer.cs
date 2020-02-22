@@ -39,6 +39,7 @@ namespace ManagedDoom.SoftwareRendering
             InitLighting();
             InitRenderingHistory();
             InitSpriteRendering();
+            InitWeaponRendering();
 
             ResetWindow(0, 0, screenWidth, screenHeight);
             ResetWallRendering();
@@ -46,6 +47,7 @@ namespace ManagedDoom.SoftwareRendering
             ResetSkyRendering();
             ResetLighting();
             ResetRenderingHistory();
+            ResetWeaponRendering();
         }
 
 
@@ -451,6 +453,29 @@ namespace ManagedDoom.SoftwareRendering
 
         //
         //
+        // Weapon rendering
+        //
+        //
+
+        private VisSprite weaponSprite;
+        private Fixed pspritescale;
+        private Fixed pspriteiscale;
+
+        private void InitWeaponRendering()
+        {
+            weaponSprite = new VisSprite();
+        }
+
+        private void ResetWeaponRendering()
+        {
+            pspritescale = new Fixed(Fixed.FracUnit * windowWidth / 320);
+            pspriteiscale = new Fixed(Fixed.FracUnit * 320 / windowWidth);
+        }
+
+
+
+        //
+        //
         // ???
         //
         //
@@ -496,6 +521,7 @@ namespace ManagedDoom.SoftwareRendering
             RenderBspNode(world.Map.Nodes.Length - 1);
             RenderSprites();
             RenderMaskedTextures();
+            R_DrawPlayerSprites(player);
         }
 
         private void RenderBspNode(int node)
@@ -2352,6 +2378,146 @@ namespace ManagedDoom.SoftwareRendering
                 frac += sprite.InvScale;
             }
         }
+
+        //
+        // R_DrawPSprite
+        //
+        private void R_DrawPSprite(PlayerSpriteDef psp, byte[][] spritelights)
+        {
+            // decide which patch to use
+
+            var sprdef = sprites[psp.State.Sprite];
+
+            var sprframe = sprdef.Frames[psp.State.Frame & 0x7fff];
+
+            var lump = sprframe.Patches[0];
+            var flip = sprframe.Flip[0];
+
+            // calculate edges of the shape
+            var tx = psp.Sx - Fixed.FromInt(160);
+            tx -= Fixed.FromInt(lump.LeftOffset);
+            var x1 = (centerXFrac + tx * pspritescale).Data >> Fixed.FracBits;
+
+            // off the right side
+            if (x1 > windowWidth)
+            {
+                return;
+            }
+
+            tx += Fixed.FromInt(lump.Width);
+            var x2 = ((centerXFrac + tx * pspritescale).Data >> Fixed.FracBits) - 1;
+
+            // off the left side
+            if (x2 < 0)
+            {
+                return;
+            }
+
+            // store information in a vissprite
+            var vis = weaponSprite;
+            vis.MobjFlags = 0;
+            vis.TextureAlt = Fixed.FromInt(100) + Fixed.One / 2 - (psp.Sy - Fixed.FromInt(lump.TopOffset));
+            vis.X1 = x1 < 0 ? 0 : x1;
+            vis.X2 = x2 >= windowWidth ? windowWidth - 1 : x2;
+            vis.Scale = pspritescale;
+
+            if (flip)
+            {
+                vis.InvScale = -pspriteiscale;
+                vis.StartFrac = Fixed.FromInt(lump.Width) - new Fixed(1);
+            }
+            else
+            {
+                vis.InvScale = pspriteiscale;
+                vis.StartFrac = Fixed.Zero;
+            }
+
+            if (vis.X1 > x1)
+            {
+                vis.StartFrac += vis.InvScale * (vis.X1 - x1);
+            }
+
+            vis.Patch = lump;
+
+            /*
+            if (viewplayer->powers[pw_invisibility] > 4 * 32
+            || viewplayer->powers[pw_invisibility] & 8)
+            {
+                // shadow draw
+                vis->colormap = NULL;
+            }
+            else if (fixedcolormap)
+            {
+                // fixed color
+                vis->colormap = fixedcolormap;
+            }
+            else if (psp->state->frame & FF_FULLBRIGHT)
+            {
+                // full bright
+                vis->colormap = colormaps;
+            }
+            else
+            {
+                // local light
+                vis->colormap = spritelights[MAXLIGHTSCALE - 1];
+            }
+            */
+
+            vis.ColorMap = spritelights[MaxScaleLight - 1];
+
+            var frac = vis.StartFrac;
+            for (var x = vis.X1; x <= vis.X2; x++)
+            {
+                var texturecolumn = frac.Data >> Fixed.FracBits;
+                DrawMaskedColumn(
+                    vis.Patch.Columns[texturecolumn],
+                    vis.ColorMap,
+                    x,
+                    Fixed.Abs(vis.InvScale),
+                    vis.TextureAlt,
+                    vis.Scale,
+                    centerYFrac - (vis.TextureAlt * vis.Scale),
+                    centerY,
+                    windowHeight);
+                frac += vis.InvScale;
+            }
+        }
+
+
+        //
+        // R_DrawPlayerSprites
+        //
+        private void R_DrawPlayerSprites(Player player)
+        {
+            // get light level
+            var lightnum =
+            (player.Mobj.Subsector.Sector.LightLevel >> LightSegShift); // + extraLight;
+
+            byte[][] spritelights;
+            if (lightnum < 0)
+            {
+                spritelights = scaleLight[0];
+            }
+            else if (lightnum >= LightLevelCount)
+            {
+                spritelights = scaleLight[LightLevelCount - 1];
+            }
+            else
+            {
+                spritelights = scaleLight[lightnum];
+            }
+
+            // add all active psprites
+            for (var i = 0; i < (int)PlayerSprite.Count; i++)
+            {
+                var psp = player.PSprites[i];
+                if (psp.State != null)
+                {
+                    R_DrawPSprite(psp, spritelights);
+                }
+            }
+        }
+
 
 
 
