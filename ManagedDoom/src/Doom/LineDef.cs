@@ -31,7 +31,7 @@ namespace ManagedDoom
 
         public int ValidCount;
 
-        public object SpecialData;
+        public Thinker SpecialData;
 
         public LineDef(
             Vertex vertex1,

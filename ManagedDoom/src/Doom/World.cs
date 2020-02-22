@@ -18,8 +18,6 @@ namespace ManagedDoom
 
         private int levelTime = 0;
 
-        private Func<Intercept, bool> interceptTest;
-
         public World(Resources resorces, string mapName, GameOptions options, Player[] players)
         {
             Options = options;
@@ -36,6 +34,8 @@ namespace ManagedDoom
             InitPathTraversal();
 
             LoadThings();
+
+            DebugOpenDoors();
         }
 
         public void Update()
@@ -51,6 +51,20 @@ namespace ManagedDoom
             RunThinkers();
 
             levelTime++;
+        }
+
+        private void DebugOpenDoors()
+        {
+            foreach (var line in map.Lines)
+            {
+                if (line.Special != 0
+                    && line.Tag == 0
+                    && line.BackSector != null
+                    && line.BackSector.CeilingHeight == line.BackSector.FloorHeight)
+                {
+                    line.BackSector.CeilingHeight = line.BackSector.FloorHeight + Fixed.FromInt(64);
+                }
+            }
         }
 
         private void LoadThings()
