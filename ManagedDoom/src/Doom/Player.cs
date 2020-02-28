@@ -63,7 +63,7 @@ namespace ManagedDoom
         public CheatFlags Cheats;
 
         // Refired shots are less accurate.
-        public bool Refire;
+        public int Refire;
 
         // For intermission stats.
         public int KillCount;
@@ -159,7 +159,7 @@ namespace ManagedDoom
 
             Cheats = 0;
 
-            Refire = false;
+            Refire = 0;
 
             Message = null;
 

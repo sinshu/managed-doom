@@ -20,8 +20,13 @@ namespace ManagedDoom
         {
         }
 
-        public static void Fall(this Mobj mobj)
+        public static void Fall(this Mobj actor)
         {
+            // actor is on ground, it can be walked over
+            actor.Flags &= ~MobjFlags.Solid;
+
+            // So change this if corpse objects
+            // are meant to be obstacles.
         }
 
         public static void XScream(this Mobj mobj)

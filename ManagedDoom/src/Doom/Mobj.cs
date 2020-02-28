@@ -129,7 +129,8 @@ namespace ManagedDoom
                 {
                     if (!World.SetMobjState(this, State.Next))
                     {
-                        return;     // freed itself
+                        // freed itself
+                        return;
                     }
                 }
             }

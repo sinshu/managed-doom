@@ -277,7 +277,7 @@ namespace ManagedDoom
 
             p.Mobj = mobj;
             p.PlayerState = PlayerState.Live;
-            p.Refire = false;
+            p.Refire = 0;
             p.Message = null;
             p.DamageCount = 0;
             p.BonusCount = 0;

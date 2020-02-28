@@ -28,7 +28,7 @@ namespace ManagedDoom
             Tics = tics;
             PlayerAction = playerAction;
             MobjAction = mobjAction;
-            MobjAction = null;
+
             Next = next;
             Misc1 = misc1;
             Misc2 = misc2;

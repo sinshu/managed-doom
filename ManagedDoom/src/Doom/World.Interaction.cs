@@ -115,7 +115,7 @@ namespace ManagedDoom
 
 
 
-
+		private int BASETHRESHOLD = 100;
 
 
 		//
@@ -135,143 +135,164 @@ namespace ManagedDoom
 			Mobj source,
 			int damage)
 		{
-			/*
-			unsigned ang;
-			int saved;
-			player_t* player;
-			fixed_t thrust;
 			int temp;
 
-			if (!(target->flags & MF_SHOOTABLE))
-				return; // shouldn't happen...
-
-			if (target->health <= 0)
-				return;
-
-			if (target->flags & MF_SKULLFLY)
+			if ((target.Flags & MobjFlags.Shootable) == 0)
 			{
-				target->momx = target->momy = target->momz = 0;
+				// shouldn't happen...
+				return;
 			}
 
-			player = target->player;
-			if (player && gameskill == sk_baby)
-				damage >>= 1;   // take half damage in trainer mode
+			if (target.Health <= 0)
+			{
+				return;
+			}
 
+			if ((target.Flags & MobjFlags.SkullFly) != 0)
+			{
+				target.MomX = target.MomY = target.MomZ = Fixed.Zero;
+			}
+
+			var player = target.Player;
+			if (player != null && Options.GameSkill == Skill.Baby)
+			{
+				// take half damage in trainer mode
+				damage >>= 1;
+			}
 
 			// Some close combat weapons should not
 			// inflict thrust and push the victim out of reach,
 			// thus kick away unless using the chainsaw.
-			if (inflictor
-			&& !(target->flags & MF_NOCLIP)
-			&& (!source
-				|| !source->player
-				|| source->player->readyweapon != wp_chainsaw))
+			if (inflictor != null
+				&& (target.Flags & MobjFlags.NoClip) == 0
+				&& (source == null
+					|| source.Player == null
+					|| source.Player.ReadyWeapon != WeaponType.Chainsaw))
 			{
-				ang = R_PointToAngle2(inflictor->x,
-							inflictor->y,
-							target->x,
-							target->y);
+				var ang = Geometry.PointToAngle(
+					inflictor.X,
+					inflictor.Y,
+					target.X,
+					target.Y);
 
-				thrust = damage * (FRACUNIT >> 3) * 100 / target->info->mass;
+				var thrust = new Fixed(damage * (Fixed.FracUnit >> 3) * 100 / target.Info.Mass);
 
 				// make fall forwards sometimes
 				if (damage < 40
-					 && damage > target->health
-					 && target->z - inflictor->z > 64 * FRACUNIT
-					 && (P_Random() & 1))
+					&& damage > target.Health
+					&& target.Z - inflictor.Z > Fixed.FromInt(64)
+					&& (random.Next() & 1) != 0)
 				{
-					ang += ANG180;
+					ang += Angle.Ang180;
 					thrust *= 4;
 				}
 
-				ang >>= ANGLETOFINESHIFT;
-				target->momx += FixedMul(thrust, finecosine[ang]);
-				target->momy += FixedMul(thrust, finesine[ang]);
+				//ang >>= ANGLETOFINESHIFT;
+				target.MomX += thrust * Trig.Cos(ang); // finecosine[ang]);
+				target.MomY += thrust * Trig.Sin(ang); // finesine[ang]);
 			}
 
 			// player specific
-			if (player)
+			if (player != null)
 			{
 				// end of game hell hack
-				if (target->subsector->sector->special == 11
-					&& damage >= target->health)
+				if (target.Subsector.Sector.Special == (SectorSpecial)11
+					&& damage >= target.Health)
 				{
-					damage = target->health - 1;
+					damage = target.Health - 1;
 				}
-
 
 				// Below certain threshold,
 				// ignore damage in GOD mode, or with INVUL power.
-				if (damage < 1000
-					 && ((player->cheats & CF_GODMODE)
-					  || player->powers[pw_invulnerability]))
+				if (damage < 1000 && ((player.Cheats & CheatFlags.GodMode) != 0
+					|| player.Powers[(int)PowerType.Invulnerability] > 0))
 				{
 					return;
 				}
 
-				if (player->armortype)
+				int saved;
+				if (player.ArmorType != 0)
 				{
-					if (player->armortype == 1)
+					if (player.ArmorType == 1)
+					{
 						saved = damage / 3;
+					}
 					else
 						saved = damage / 2;
 
-					if (player->armorpoints <= saved)
+					if (player.ArmorPoints <= saved)
 					{
 						// armor is used up
-						saved = player->armorpoints;
-						player->armortype = 0;
+						saved = player.ArmorPoints;
+						player.ArmorType = 0;
 					}
-					player->armorpoints -= saved;
+					player.ArmorPoints -= saved;
 					damage -= saved;
 				}
-				player->health -= damage;   // mirror mobj health here for Dave
-				if (player->health < 0)
-					player->health = 0;
 
-				player->attacker = source;
-				player->damagecount += damage;  // add damage after armor / invuln
+				// mirror mobj health here for Dave
+				player.Health -= damage;
+				if (player.Health < 0)
+				{
+					player.Health = 0;
+				}
 
-				if (player->damagecount > 100)
-					player->damagecount = 100;  // teleport stomp does 10k points...
+				player.Attacker = source;
+
+				// add damage after armor / invuln
+				player.DamageCount += damage;
+
+				if (player.DamageCount > 100)
+				{
+					// teleport stomp does 10k points...
+					player.DamageCount = 100;
+				}
 
 				temp = damage < 100 ? damage : 100;
 
+				/*
 				if (player == &players[consoleplayer])
+				{
 					I_Tactile(40, 10, 40 + temp * 2);
+				}
+				*/
 			}
 
 			// do the damage	
-			target->health -= damage;
-			if (target->health <= 0)
+			target.Health -= damage;
+			if (target.Health <= 0)
 			{
-				P_KillMobj(source, target);
+				KillMobj(source, target);
 				return;
 			}
 
-			if ((P_Random() < target->info->painchance)
-			 && !(target->flags & MF_SKULLFLY))
+			if ((random.Next() < target.Info.PainChance)
+				&& (target.Flags & MobjFlags.SkullFly) == 0)
 			{
-				target->flags |= MF_JUSTHIT;    // fight back!
+				// fight back!
+				target.Flags |= MobjFlags.JustHit;
 
-				P_SetMobjState(target, target->info->painstate);
+				SetMobjState(target, target.Info.PainState);
 			}
 
-			target->reactiontime = 0;       // we're awake now...	
+			// we're awake now...
+			target.ReactionTime = 0;
 
-			if ((!target->threshold || target->type == MT_VILE)
-			 && source && source != target
-			 && source->type != MT_VILE)
+			if ((target.Threshold == 0 || target.Type == MobjType.Vile)
+				&& source != null && source != target
+				&& source.Type != MobjType.Vile)
 			{
 				// if not intent on another player,
 				// chase after this one
-				target->target = source;
-				target->threshold = BASETHRESHOLD;
-				if (target->state == &states[target->info->spawnstate]
-					&& target->info->seestate != S_NULL)
-					P_SetMobjState(target, target->info->seestate);
+				target.Target = source;
+				target.Threshold = BASETHRESHOLD;
+				if (target.State == Info.States[(int)target.Info.SpawnState]
+					&& target.Info.SeeState != State.Null)
+				{
+					SetMobjState(target, target.Info.SeeState);
+				}
 			}
-			*/
+
 		}
 	}
 }

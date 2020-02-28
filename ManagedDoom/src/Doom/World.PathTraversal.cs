@@ -4,9 +4,9 @@ namespace ManagedDoom
 {
     public sealed partial class World
     {
-        private static readonly Fixed USERANGE = Fixed.FromInt(64);
-        private static readonly Fixed MELEERANGE = Fixed.FromInt(64);
-        private static readonly Fixed MISSILERANGE = Fixed.FromInt(32 * 64);
+        public static readonly Fixed USERANGE = Fixed.FromInt(64);
+        public static readonly Fixed MELEERANGE = Fixed.FromInt(64);
+        public static readonly Fixed MISSILERANGE = Fixed.FromInt(32 * 64);
 
         private Intercept[] intercepts;
         private int interceptCount;
@@ -346,7 +346,7 @@ namespace ManagedDoom
         //
 
         // who got hit (or NULL)
-        private Mobj linetarget;
+        public Mobj linetarget;
 
         private Mobj shootthing;
 
@@ -724,5 +724,8 @@ namespace ManagedDoom
                 SetMobjState(th, State.Blood3);
             }
         }
+
+
+        public Fixed bulletslope;
     }
 }
