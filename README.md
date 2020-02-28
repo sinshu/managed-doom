@@ -30,6 +30,10 @@ https://youtu.be/k1ovWOaQAvk
 
 [![YouTube video of Managed Doom](https://img.youtube.com/vi/k1ovWOaQAvk/0.jpg)](https://youtu.be/k1ovWOaQAvk)
 
+https://youtu.be/Tsw7yTrKYQE  
+
+[![YouTube video of Managed Doom](https://img.youtube.com/vi/Tsw7yTrKYQE/0.jpg)](https://youtu.be/Tsw7yTrKYQE)
+
 
 
 ## Todo
