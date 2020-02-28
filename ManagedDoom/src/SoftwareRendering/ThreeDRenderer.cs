@@ -281,14 +281,21 @@ namespace ManagedDoom.SoftwareRendering
         private byte[][][] scaleLight;
         private byte[][][] zLight;
 
+        private byte[][][] fixedLight;
+
         private void InitLighting()
         {
             scaleLight = new byte[LightLevelCount][][];
             zLight = new byte[LightLevelCount][][];
+
+            fixedLight = new byte[LightLevelCount][][];
+
             for (var i = 0; i < LightLevelCount; i++)
             {
                 scaleLight[i] = new byte[MaxScaleLight][];
                 zLight[i] = new byte[MaxZLight][];
+
+                fixedLight[i] = new byte[MaxScaleLight][];
             }
 
             var distMap = 2;
@@ -313,6 +320,16 @@ namespace ManagedDoom.SoftwareRendering
                     }
 
                     zLight[i][j] = colorMap[level];
+                }
+            }
+
+
+
+            for (var i = 0; i < LightLevelCount; i++)
+            {
+                for (var j = 0; j < MaxScaleLight; j++)
+                {
+                    fixedLight[i][j] = colorMap[0];
                 }
             }
         }
@@ -2513,7 +2530,14 @@ namespace ManagedDoom.SoftwareRendering
                 var psp = player.PSprites[i];
                 if (psp.State != null)
                 {
-                    R_DrawPSprite(psp, spritelights);
+                    if ((psp.State.Frame & 0x8000) == 0)
+                    {
+                        R_DrawPSprite(psp, spritelights);
+                    }
+                    else
+                    {
+                        R_DrawPSprite(psp, fixedLight[0]);
+                    }
                 }
             }
         }
