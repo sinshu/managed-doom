@@ -6,6 +6,7 @@ namespace ManagedDoom
     {
         public static void Light0(Player player, PlayerSpriteDef psp)
         {
+            player.ExtraLight = 0;
         }
 
         public static void WeaponReady(Player player, PlayerSpriteDef psp)
@@ -249,10 +250,12 @@ namespace ManagedDoom
 
         public static void Light1(Player player, PlayerSpriteDef psp)
         {
+            player.ExtraLight = 1;
         }
 
         public static void FireShotgun(Player player, PlayerSpriteDef psp)
         {
+            player.ExtraLight = 2;
         }
 
         public static void Light2(Player player, PlayerSpriteDef psp)

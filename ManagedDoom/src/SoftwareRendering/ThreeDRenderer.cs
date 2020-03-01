@@ -280,21 +280,20 @@ namespace ManagedDoom.SoftwareRendering
 
         private byte[][][] scaleLight;
         private byte[][][] zLight;
-
         private byte[][][] fixedLight;
+
+        private int extraLight;
 
         private void InitLighting()
         {
             scaleLight = new byte[LightLevelCount][][];
             zLight = new byte[LightLevelCount][][];
-
             fixedLight = new byte[LightLevelCount][][];
 
             for (var i = 0; i < LightLevelCount; i++)
             {
                 scaleLight[i] = new byte[MaxScaleLight][];
                 zLight[i] = new byte[MaxZLight][];
-
                 fixedLight[i] = new byte[MaxScaleLight][];
             }
 
@@ -530,6 +529,8 @@ namespace ManagedDoom.SoftwareRendering
             viewCos = Trig.Cos(viewAngle);
 
             validCount++;
+
+            extraLight = player.ExtraLight;
 
             ClearPlaneRendering();
             ClearRenderingHistory();
@@ -1082,7 +1083,7 @@ namespace ManagedDoom.SoftwareRendering
 
             var rwCenterAngle = Angle.Ang90 + viewAngle - rwNormalAngle;
 
-            var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extraLight;
+            var wallLightLevel = (frontSector.LightLevel >> LightSegShift) + extraLight;
             if (seg.Vertex1.Y == seg.Vertex2.Y)
             {
                 wallLightLevel--;
@@ -1112,7 +1113,7 @@ namespace ManagedDoom.SoftwareRendering
             // Determine which color map is used for the plane according to the light level.
             //
 
-            var planeLightLevel = frontSector.LightLevel >> LightSegShift; // + extraLight;
+            var planeLightLevel = (frontSector.LightLevel >> LightSegShift) + extraLight;
             if (planeLightLevel >= LightLevelCount)
             {
                 planeLightLevel = LightLevelCount - 1;
@@ -1378,7 +1379,7 @@ namespace ManagedDoom.SoftwareRendering
 
                 rwCenterAngle = Angle.Ang90 + viewAngle - rwNormalAngle;
 
-                var wallLightLevel = (frontSector.LightLevel >> LightSegShift); // + extraLight;
+                var wallLightLevel = (frontSector.LightLevel >> LightSegShift) + extraLight;
                 if (seg.Vertex1.Y == seg.Vertex2.Y)
                 {
                     wallLightLevel--;
@@ -1445,7 +1446,7 @@ namespace ManagedDoom.SoftwareRendering
             // Determine which color map is used for the plane according to the light level.
             //
 
-            var planeLightLevel = frontSector.LightLevel >> LightSegShift; // + extraLight;
+            var planeLightLevel = (frontSector.LightLevel >> LightSegShift) + extraLight;
             if (planeLightLevel >= LightLevelCount)
             {
                 planeLightLevel = LightLevelCount - 1;
@@ -1682,7 +1683,7 @@ namespace ManagedDoom.SoftwareRendering
         {
             var seg = drawSeg.Seg;
 
-            var wallLightLevel = (seg.FrontSector.LightLevel >> LightSegShift); // + extraLight;
+            var wallLightLevel = (seg.FrontSector.LightLevel >> LightSegShift) + extraLight;
             if (seg.Vertex1.Y == seg.Vertex2.Y)
             {
                 wallLightLevel--;
@@ -2077,7 +2078,7 @@ namespace ManagedDoom.SoftwareRendering
             // Well, now it will be done.
             sector.ValidCount = validCount;
 
-            var lightnum = (sector.LightLevel >> LightSegShift); // + extralight;
+            var lightnum = (sector.LightLevel >> LightSegShift) + extraLight;
 
             var spritelights = scaleLight[Math.Clamp(lightnum, 0, LightLevelCount - 1)];
 
@@ -2508,7 +2509,7 @@ namespace ManagedDoom.SoftwareRendering
         {
             // get light level
             var lightnum =
-            (player.Mobj.Subsector.Sector.LightLevel >> LightSegShift); // + extraLight;
+            (player.Mobj.Subsector.Sector.LightLevel >> LightSegShift) + extraLight;
 
             byte[][] spritelights;
             if (lightnum < 0)
