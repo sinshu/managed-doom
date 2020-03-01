@@ -94,6 +94,37 @@ namespace ManagedDoom
 
         public static void Lower(Player player, PlayerSpriteDef psp)
         {
+            var world = player.Mobj.World;
+
+            psp.Sy += World.LOWERSPEED;
+
+            // Is already down.
+            if (psp.Sy < World.WEAPONBOTTOM)
+            {
+                return;
+            }
+
+            // Player is dead.
+            if (player.PlayerState == PlayerState.Dead)
+            {
+                psp.Sy = World.WEAPONBOTTOM;
+
+                // don't bring weapon back up
+                return;
+            }
+
+            // The old weapon has been lowered off the screen,
+            // so change the weapon and start raising it
+            if (player.Health == 0)
+            {
+                // Player is dead, so keep the weapon off screen.
+                world.P_SetPsprite(player, PlayerSprite.Weapon, State.Null);
+                return;
+            }
+
+            player.ReadyWeapon = player.PendingWeapon;
+
+            world.P_BringUpWeapon(player);
         }
 
         public static void Raise(Player player, PlayerSpriteDef psp)
@@ -116,6 +147,30 @@ namespace ManagedDoom
 
         public static void Punch(Player player, PlayerSpriteDef psp)
         {
+            var world = player.Mobj.World;
+
+            var damage = (world.Random.Next() % 10 + 1) << 1;
+
+            if (player.Powers[(int)PowerType.Strength] != 0)
+            {
+                damage *= 10;
+            }
+
+            var angle = player.Mobj.Angle;
+            angle += new Angle((world.Random.Next() - world.Random.Next()) << 18);
+            var slope = world.AimLineAttack(player.Mobj, angle, World.MELEERANGE);
+            world.LineAttack(player.Mobj, angle, World.MELEERANGE, slope, damage);
+
+            // turn to face target
+            if (world.linetarget != null)
+            {
+                world.StartSound(player.Mobj, Sfx.PUNCH);
+                player.Mobj.Angle = Geometry.PointToAngle(
+                    player.Mobj.X,
+                    player.Mobj.Y,
+                    world.linetarget.X,
+                    world.linetarget.Y);
+            }
         }
 
         public static void ReFire(Player player, PlayerSpriteDef psp)

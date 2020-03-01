@@ -351,7 +351,7 @@ namespace ManagedDoom
         // from the bottom of the screen.
         // Uses player
         //
-        private void P_BringUpWeapon(Player player)
+        public void P_BringUpWeapon(Player player)
         {
             if (player.PendingWeapon == WeaponType.NoChange)
             {
