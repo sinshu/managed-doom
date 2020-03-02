@@ -4,7 +4,8 @@ namespace ManagedDoom
 {
     public sealed partial class World
     {
-        private static readonly Fixed MaxRadius = Fixed.FromInt(32);
+        public static readonly Fixed MaxRadius = Fixed.FromInt(32);
+
         private static readonly Fixed Gravity = Fixed.One;
         private static readonly Fixed MaxMove = Fixed.FromInt(30);
 

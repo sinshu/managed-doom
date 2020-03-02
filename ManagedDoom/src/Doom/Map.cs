@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ManagedDoom
 {
@@ -40,7 +42,58 @@ namespace ManagedDoom
             things = Thing.FromWad(wad, map + 1);
             blockMap = BlockMap.FromWad(wad, map + 10, lines);
 
+            GroupLines();
+
             skyTexture = GetSkyTextureByMapName(name);
+        }
+
+        private void GroupLines()
+        {
+            var sectorLines = new List<LineDef>();
+            var bbox = new Fixed[4];
+
+            foreach (var sector in sectors)
+            {
+                sectorLines.Clear();
+                Box.Clear(bbox);
+
+                foreach (var line in lines)
+                {
+                    if (line.FrontSector == sector || line.BackSector == sector)
+                    {
+                        sectorLines.Add(line);
+                        Box.AddPoint(bbox, line.Vertex1.X, line.Vertex1.Y);
+                        Box.AddPoint(bbox, line.Vertex2.X, line.Vertex2.Y);
+                    }
+                }
+
+                sector.Lines = sectorLines.ToArray();
+
+                // set the degenmobj_t to the middle of the bounding box
+                sector.SoundOrigin = new DegenMobj(null);
+                sector.SoundOrigin.X = (bbox[Box.Right] + bbox[Box.Left]) / 2;
+                sector.SoundOrigin.Y = (bbox[Box.Top] + bbox[Box.Bottom]) / 2;
+
+                sector.BlockBox = new int[4];
+                int block;
+
+                // adjust bounding box to map blocks
+                block = (bbox[Box.Top] - blockMap.OriginY + World.MaxRadius).Data >> BlockMap.MapBlockShift;
+                block = block >= blockMap.Height ? blockMap.Height - 1 : block;
+                sector.BlockBox[Box.Top] = block;
+
+                block = (bbox[Box.Bottom] - blockMap.OriginY - World.MaxRadius).Data >> BlockMap.MapBlockShift;
+                block = block < 0 ? 0 : block;
+                sector.BlockBox[Box.Bottom] = block;
+
+                block = (bbox[Box.Right] - blockMap.OriginX + World.MaxRadius).Data >> BlockMap.MapBlockShift;
+                block = block >= blockMap.Width ? blockMap.Width - 1 : block;
+                sector.BlockBox[Box.Right] = block;
+
+                block = (bbox[Box.Left] - blockMap.OriginX - World.MaxRadius).Data >> BlockMap.MapBlockShift;
+                block = block < 0 ? 0 : block;
+                sector.BlockBox[Box.Left] = block;
+            }
         }
 
         private Texture GetSkyTextureByMapName(string name)

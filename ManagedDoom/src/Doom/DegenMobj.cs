@@ -2,7 +2,10 @@
 
 namespace ManagedDoom
 {
-    public sealed class DegenMobj
+    public sealed class DegenMobj : Mobj
     {
+        public DegenMobj(World world) : base(world)
+        {
+        }
     }
 }

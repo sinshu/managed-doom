@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public sealed class Mobj : Thinker
+    public class Mobj : Thinker
     {
         public static readonly Fixed OnFloorZ = Fixed.MinValue;
         public static readonly Fixed OnCeilingZ = Fixed.MaxValue;
