@@ -51,10 +51,10 @@ namespace ManagedDoomTest
                     Assert.IsTrue(bboxTop >= maxY);
                     Assert.IsTrue(bboxBottom <= minY);
 
-                    Assert.IsTrue(Math.Abs(bboxLeft - minX) < 160);
-                    Assert.IsTrue(Math.Abs(bboxRight - maxX) < 160);
-                    Assert.IsTrue(Math.Abs(bboxTop - maxY) < 160);
-                    Assert.IsTrue(Math.Abs(bboxBottom - minY) < 160);
+                    Assert.IsTrue(Math.Abs(bboxLeft - minX) <= 128);
+                    Assert.IsTrue(Math.Abs(bboxRight - maxX) <= 128);
+                    Assert.IsTrue(Math.Abs(bboxTop - maxY) <= 128);
+                    Assert.IsTrue(Math.Abs(bboxBottom - minY) <= 128);
                 }
             }
         }
@@ -99,10 +99,10 @@ namespace ManagedDoomTest
                     Assert.IsTrue(bboxTop >= maxY);
                     Assert.IsTrue(bboxBottom <= minY);
 
-                    Assert.IsTrue(Math.Abs(bboxLeft - minX) < 160);
-                    Assert.IsTrue(Math.Abs(bboxRight - maxX) < 160);
-                    Assert.IsTrue(Math.Abs(bboxTop - maxY) < 160);
-                    Assert.IsTrue(Math.Abs(bboxBottom - minY) < 160);
+                    Assert.IsTrue(Math.Abs(bboxLeft - minX) <= 128);
+                    Assert.IsTrue(Math.Abs(bboxRight - maxX) <= 128);
+                    Assert.IsTrue(Math.Abs(bboxTop - maxY) <= 128);
+                    Assert.IsTrue(Math.Abs(bboxBottom - minY) <= 128);
                 }
             }
         }
