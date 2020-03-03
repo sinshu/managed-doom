@@ -302,5 +302,135 @@ namespace ManagedDoom
 			}
 			return SectorActionResult.OK;
 		}
+
+
+
+
+		//
+		// getNextSector()
+		// Return sector_t * of sector next to current.
+		// NULL if not two-sided line
+		//
+		private Sector GetNextSector(LineDef line, Sector sec)
+		{
+			if ((line.Flags & LineFlags.TwoSided) == 0)
+			{
+				return null;
+			}
+
+			if (line.FrontSector == sec)
+			{
+				return line.BackSector;
+			}
+
+			return line.FrontSector;
+		}
+
+
+
+		//
+		// P_FindLowestFloorSurrounding()
+		// FIND LOWEST FLOOR HEIGHT IN SURROUNDING SECTORS
+		//
+		public Fixed FindLowestFloorSurrounding(Sector sec)
+		{
+			var floor = sec.FloorHeight;
+
+			for (var i = 0; i < sec.Lines.Length; i++)
+			{
+				var check = sec.Lines[i];
+				var other = GetNextSector(check, sec);
+
+				if (other == null)
+				{
+					continue;
+				}
+
+				if (other.FloorHeight < floor)
+				{
+					floor = other.FloorHeight;
+				}
+			}
+			return floor;
+		}
+
+		//
+		// P_FindHighestFloorSurrounding()
+		// FIND HIGHEST FLOOR HEIGHT IN SURROUNDING SECTORS
+		//
+		public Fixed FindHighestFloorSurrounding(Sector sec)
+		{
+			var floor = Fixed.FromInt(-500);
+
+			for (var i = 0; i < sec.Lines.Length; i++)
+			{
+				var check = sec.Lines[i];
+				var other = GetNextSector(check, sec);
+
+				if (other == null)
+				{
+					continue;
+				}
+
+				if (other.FloorHeight > floor)
+				{
+					floor = other.FloorHeight;
+				}
+			}
+			return floor;
+		}
+
+
+
+		//
+		// FIND LOWEST CEILING IN THE SURROUNDING SECTORS
+		//
+		public Fixed FindLowestCeilingSurrounding(Sector sec)
+		{
+			var height = Fixed.MaxValue;
+
+			for (var i = 0; i < sec.Lines.Length; i++)
+			{
+				var check = sec.Lines[i];
+				var other = GetNextSector(check, sec);
+
+				if (other == null)
+				{
+					continue;
+				}
+
+				if (other.CeilingHeight < height)
+				{
+					height = other.CeilingHeight;
+				}
+			}
+			return height;
+		}
+
+
+		//
+		// FIND HIGHEST CEILING IN THE SURROUNDING SECTORS
+		//
+		public Fixed FindHighestCeilingSurrounding(Sector sec)
+		{
+			var height = Fixed.Zero;
+
+			for (var i = 0; i < sec.Lines.Length; i++)
+			{
+				var check = sec.Lines[i];
+				var other = GetNextSector(check, sec);
+
+				if (other == null)
+				{
+					continue;
+				}
+
+				if (other.CeilingHeight > height)
+				{
+					height = other.CeilingHeight;
+				}
+			}
+			return height;
+		}
 	}
 }

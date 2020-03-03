@@ -16,6 +16,11 @@ namespace ManagedDoom
             return new Mobj(world);
         }
 
+        public VlDoor RentVlDoor()
+        {
+            return new VlDoor(world);
+        }
+
         public void Return(Thinker thinker)
         {
         }
