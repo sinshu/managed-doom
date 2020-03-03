@@ -432,5 +432,168 @@ namespace ManagedDoom
 			}
 			return height;
 		}
+
+		private static readonly Fixed VDOORSPEED = Fixed.FromInt(2);
+		private static readonly int VDOORWAIT = 150;
+
+		//
+		// EV_VerticalDoor : open a door manually, no tag value
+		//
+		public void EV_VerticalDoor(LineDef line, Mobj thing)
+		{
+			VlDoor door;
+
+			// only front sides can be used
+			var side = 0;
+
+			//	Check for locks
+			var player = thing.Player;
+
+			switch ((int)line.Special)
+			{
+				case 26: // Blue Lock
+				case 32:
+					if (player == null)
+					{
+						return;
+					}
+
+					if (!player.Cards[(int)CardType.BlueCard]
+						&& !player.Cards[(int)CardType.BlueSkull])
+					{
+						//player.Message = PD_BLUEK;
+						StartSound(null, Sfx.OOF);
+						return;
+					}
+					break;
+
+				case 27: // Yellow Lock
+				case 34:
+					if (player == null)
+					{
+						return;
+					}
+
+					if (!player.Cards[(int)CardType.YellowCard]
+						&& !player.Cards[(int)CardType.YellowSkull])
+					{
+						//player.Message = PD_YELLOWK;
+						StartSound(null, Sfx.OOF);
+						return;
+					}
+					break;
+
+				case 28: // Red Lock
+				case 33:
+					if (player == null)
+					{
+						return;
+					}
+
+					if (!player.Cards[(int)CardType.RedCard]
+						&& !player.Cards[(int)CardType.RedSkull])
+					{
+						//player.Message = PD_REDK;
+						StartSound(null, Sfx.OOF);
+						return;
+					}
+					break;
+			}
+
+			// if the sector has an active thinker, use it
+			//var sec = sides[line->sidenum[side ^ 1]].sector;
+			var sec = line.Side1.Sector;
+			//secnum = sec - sectors;
+
+			if (sec.SpecialData != null)
+			{
+				door = (VlDoor)sec.SpecialData;
+				switch ((int)line.Special)
+				{
+					case 1: // ONLY FOR "RAISE" DOORS, NOT "OPEN"s
+					case 26:
+					case 27:
+					case 28:
+					case 117:
+						if (door.Direction == -1)
+						{
+							// go back up
+							door.Direction = 1;
+						}
+						else
+						{
+							if (thing.Player == null)
+							{
+								// JDC: bad guys never close doors
+								return;
+							}
+
+							// start going down immediately
+							door.Direction = -1;
+						}
+						return;
+				}
+			}
+
+			// for proper sound
+			switch ((int)line.Special)
+			{
+				case 117: // BLAZING DOOR RAISE
+				case 118: // BLAZING DOOR OPEN
+					StartSound(sec.SoundOrigin, Sfx.BDOPN);
+					break;
+
+				case 1: // NORMAL DOOR SOUND
+				case 31:
+					StartSound(sec.SoundOrigin, Sfx.DOROPN);
+					break;
+
+				default:    // LOCKED DOOR SOUND
+					StartSound(sec.SoundOrigin, Sfx.DOROPN);
+					break;
+			}
+
+
+			// new door thinker
+			door = thinkerPool.RentVlDoor();
+			AddThinker(door);
+			sec.SpecialData = door;
+			door.Sector = sec;
+			door.Direction = 1;
+			door.Speed = VDOORSPEED;
+			door.TopWait = VDOORWAIT;
+
+			switch ((int)line.Special)
+			{
+				case 1:
+				case 26:
+				case 27:
+				case 28:
+					door.Type = VlDoorType.Normal;
+					break;
+
+				case 31:
+				case 32:
+				case 33:
+				case 34:
+					door.Type = VlDoorType.Open;
+					line.Special = 0;
+					break;
+
+				case 117:   // blazing door raise
+					door.Type = VlDoorType.BlazeRaise;
+					door.Speed = VDOORSPEED * 4;
+					break;
+				case 118:   // blazing door open
+					door.Type = VlDoorType.BlazeOpen;
+					line.Special = 0;
+					door.Speed = VDOORSPEED * 4;
+					break;
+			}
+
+			// find the top and bottom of the movement range
+			door.TopHeight = FindLowestCeilingSurrounding(sec);
+			door.TopHeight -= Fixed.FromInt(4);
+		}
 	}
 }
