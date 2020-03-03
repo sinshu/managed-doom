@@ -146,5 +146,161 @@ namespace ManagedDoom
 
 			return nofit;
 		}
+
+
+
+
+
+
+		//
+		// Move a plane (floor or ceiling) and check for crushing
+		//
+		public SectorActionResult MovePlane(
+			Sector sector,
+			Fixed speed,
+			Fixed dest,
+			bool crush,
+			int floorOrCeiling,
+			int direction)
+		{
+			switch (floorOrCeiling)
+			{
+				case 0:
+					// FLOOR
+					switch (direction)
+					{
+						case -1:
+							// DOWN
+							if (sector.FloorHeight - speed < dest)
+							{
+								var lastpos = sector.FloorHeight;
+								sector.FloorHeight = dest;
+								var flag = ChangeSector(sector, crush);
+								if (flag)
+								{
+									sector.FloorHeight = lastpos;
+									ChangeSector(sector, crush);
+									//return crushed;
+								}
+								return SectorActionResult.PastDestination;
+							}
+							else
+							{
+								var lastpos = sector.FloorHeight;
+								sector.FloorHeight -= speed;
+								var flag = ChangeSector(sector, crush);
+								if (flag)
+								{
+									sector.FloorHeight = lastpos;
+									ChangeSector(sector, crush);
+									return SectorActionResult.Crushed;
+								}
+							}
+							break;
+
+						case 1:
+							// UP
+							if (sector.FloorHeight + speed > dest)
+							{
+								var lastpos = sector.FloorHeight;
+								sector.FloorHeight = dest;
+								var flag = ChangeSector(sector, crush);
+								if (flag)
+								{
+									sector.FloorHeight = lastpos;
+									ChangeSector(sector, crush);
+									//return crushed;
+								}
+								return SectorActionResult.PastDestination;
+							}
+							else
+							{
+								// COULD GET CRUSHED
+								var lastpos = sector.FloorHeight;
+								sector.FloorHeight += speed;
+								var flag = ChangeSector(sector, crush);
+								if (flag)
+								{
+									if (crush)
+									{
+										return SectorActionResult.Crushed;
+									}
+									sector.FloorHeight = lastpos;
+									ChangeSector(sector, crush);
+									return SectorActionResult.Crushed;
+								}
+							}
+							break;
+					}
+					break;
+
+				case 1:
+					// CEILING
+					switch (direction)
+					{
+						case -1:
+							// DOWN
+							if (sector.CeilingHeight - speed < dest)
+							{
+								var lastpos = sector.CeilingHeight;
+								sector.CeilingHeight = dest;
+								var flag = ChangeSector(sector, crush);
+
+								if (flag)
+								{
+									sector.CeilingHeight = lastpos;
+									ChangeSector(sector, crush);
+									//return crushed;
+								}
+								return SectorActionResult.PastDestination;
+							}
+							else
+							{
+								// COULD GET CRUSHED
+								var lastpos = sector.CeilingHeight;
+								sector.CeilingHeight -= speed;
+								var flag = ChangeSector(sector, crush);
+
+								if (flag)
+								{
+									if (crush)
+									{
+										return SectorActionResult.Crushed;
+									}
+									sector.CeilingHeight = lastpos;
+									ChangeSector(sector, crush);
+									return SectorActionResult.Crushed;
+								}
+							}
+							break;
+
+						case 1:
+							// UP
+							if (sector.CeilingHeight + speed > dest)
+							{
+								var lastpos = sector.CeilingHeight;
+								sector.CeilingHeight = dest;
+								var flag = ChangeSector(sector, crush);
+								if (flag)
+								{
+									sector.CeilingHeight = lastpos;
+									ChangeSector(sector, crush);
+									//return crushed;
+								}
+								return SectorActionResult.PastDestination;
+							}
+							else
+							{
+								var lastpos = sector.CeilingHeight;
+								sector.CeilingHeight += speed;
+								var flag = ChangeSector(sector, crush);
+							}
+							break;
+					}
+					break;
+
+			}
+			return SectorActionResult.OK;
+		}
 	}
 }
