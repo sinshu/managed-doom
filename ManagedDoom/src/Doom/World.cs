@@ -36,8 +36,6 @@ namespace ManagedDoom
             InitPathTraversal();
 
             LoadThings();
-
-            DebugOpenDoors();
         }
 
         public void Update()
