@@ -300,7 +300,7 @@ namespace ManagedDoom
             {
                 var damage = ((random.Next() % 8) + 1) * tmthing.Info.Damage;
 
-                //P_DamageMobj(thing, tmthing, tmthing, damage);
+                DamageMobj(thing, tmthing, tmthing, damage);
 
                 tmthing.Flags &= ~MobjFlags.SkullFly;
                 tmthing.MomX = tmthing.MomY = tmthing.MomZ = Fixed.Zero;
@@ -368,7 +368,7 @@ namespace ManagedDoom
                 if ((tmflags & MobjFlags.PickUp) != 0)
                 {
                     // can remove thing
-                    //P_TouchSpecialThing(thing, tmthing);
+                    TouchSpecialThing(thing, tmthing);
                 }
                 return !solid;
             }

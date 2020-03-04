@@ -11,6 +11,8 @@ namespace ManagedDoom
         private Map map;
         private DoomRandom random;
 
+        private int consoleplayer = 0;
+
         private int validCount;
 
         private int totalKills = 0;
@@ -127,7 +129,7 @@ namespace ManagedDoom
             {
                 // save spots for respawning in network games
                 //playerstarts[mthing->type - 1] = *mthing;
-                if (!Options.Deathmatch)
+                if (Options.Deathmatch == 0)
                 {
                     SpawnPlayer(mthing);
                 }
@@ -183,7 +185,7 @@ namespace ManagedDoom
             }
 
             // don't spawn keycards and players in deathmatch
-            if (Options.Deathmatch
+            if (Options.Deathmatch != 0
                 && (Info.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
             {
                 return;
@@ -289,7 +291,7 @@ namespace ManagedDoom
             SetupPsprites(p);
 
             // give all cards in death match mode
-            if (Options.Deathmatch)
+            if (Options.Deathmatch != 0)
             {
                 for (var i = 0; i < (int)CardType.Count; i++)
                 {

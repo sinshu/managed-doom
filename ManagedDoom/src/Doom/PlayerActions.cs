@@ -62,8 +62,104 @@ namespace ManagedDoom
             psp.Sy = World.WEAPONTOP + player.Bob * Trig.Sin(angle);
         }
 
+        private static readonly int BFGCELLS = 40;
 
+        //
+        // P_CheckAmmo
+        // Returns true if there is enough ammo to shoot.
+        // If not, selects the next weapon to use.
+        //
+        private static bool CheckAmmo(Player player)
+        {
+            var world = player.Mobj.World;
 
+            var ammo = Info.WeaponInfos[(int)player.ReadyWeapon].Ammo;
+
+            // Minimal amount for one shot varies.
+            int count;
+            if (player.ReadyWeapon == WeaponType.Bfg)
+            {
+                count = BFGCELLS;
+            }
+            else if (player.ReadyWeapon == WeaponType.SuperShotgun)
+            {
+                // Double barrel.
+                count = 2;
+            }
+            else
+            {
+                // Regular.
+                count = 1;
+            }
+
+            // Some do not need ammunition anyway.
+            // Return if current ammunition sufficient.
+            if (ammo == AmmoType.NoAmmo || player.Ammo[(int)ammo] >= count)
+            {
+                return true;
+            }
+
+            // Out of ammo, pick a weapon to change to.
+            // Preferences are set here.
+            do
+            {
+                if (player.WeaponOwned[(int)WeaponType.Plasma]
+                    && player.Ammo[(int)AmmoType.Cell] > 0
+                    && (world.Options.GameMode != GameMode.Shareware))
+                {
+                    player.PendingWeapon = WeaponType.Plasma;
+                }
+                else if (player.WeaponOwned[(int)WeaponType.SuperShotgun]
+                    && player.Ammo[(int)AmmoType.Shell] > 2
+                    && (world.Options.GameMode == GameMode.Commercial))
+                {
+                    player.PendingWeapon = WeaponType.SuperShotgun;
+                }
+                else if (player.WeaponOwned[(int)WeaponType.Chaingun]
+                    && player.Ammo[(int)AmmoType.Clip] > 0)
+                {
+                    player.PendingWeapon = WeaponType.Chaingun;
+                }
+                else if (player.WeaponOwned[(int)WeaponType.Shotgun]
+                    && player.Ammo[(int)AmmoType.Shell] > 0)
+                {
+                    player.PendingWeapon = WeaponType.Shotgun;
+                }
+                else if (player.Ammo[(int)AmmoType.Clip] > 0)
+                {
+                    player.PendingWeapon = WeaponType.Pistol;
+                }
+                else if (player.WeaponOwned[(int)WeaponType.Chainsaw])
+                {
+                    player.PendingWeapon = WeaponType.Chainsaw;
+                }
+                else if (player.WeaponOwned[(int)WeaponType.Missile]
+                    && player.Ammo[(int)AmmoType.Missile] > 0)
+                {
+                    player.PendingWeapon = WeaponType.Missile;
+                }
+                else if (player.WeaponOwned[(int)WeaponType.Bfg]
+                    && player.Ammo[(int)AmmoType.Cell] > 40
+                    && (world.Options.GameMode != GameMode.Shareware))
+                {
+                    player.PendingWeapon = WeaponType.Bfg;
+                }
+                else
+                {
+                    // If everything fails.
+                    player.PendingWeapon = WeaponType.Fist;
+                }
+
+            } while (player.PendingWeapon == WeaponType.NoChange);
+
+            // Now set appropriate weapon overlay.
+            world.P_SetPsprite(
+                player,
+                PlayerSprite.Weapon,
+                Info.WeaponInfos[(int)player.ReadyWeapon].DownState);
+
+            return false;
+        }
 
 
         //
@@ -73,12 +169,10 @@ namespace ManagedDoom
         {
             var world = player.Mobj.World;
 
-            /*
-            if (!P_CheckAmmo(player))
+            if (!CheckAmmo(player))
             {
                 return;
             }
-            */
 
             world.SetMobjState(player.Mobj, State.PlayAtk1);
             var newstate = Info.WeaponInfos[(int)player.ReadyWeapon].AttackState;

@@ -7,7 +7,7 @@ namespace ManagedDoom
         public Skill GameSkill = Skill.Hard;
         public GameMode GameMode = GameMode.Commercial;
         public bool NetGame = false;
-        public bool Deathmatch = false;
+        public int Deathmatch = 0;
         public bool NoMonsters = false;
     }
 }
