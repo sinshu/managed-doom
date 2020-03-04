@@ -37,7 +37,7 @@ namespace ManagedDoom
 
             LoadThings();
 
-            //DebugOpenDoors();
+            DebugOpenDoors();
         }
 
         public void Update()

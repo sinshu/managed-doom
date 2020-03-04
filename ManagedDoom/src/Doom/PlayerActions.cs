@@ -349,11 +349,29 @@ namespace ManagedDoom
 
         public static void FireShotgun(Player player, PlayerSpriteDef psp)
         {
-            player.ExtraLight = 2;
+            var world = player.Mobj.World;
+
+            world.StartSound(player.Mobj, Sfx.SHOTGN);
+            world.SetMobjState(player.Mobj, State.PlayAtk2);
+
+            player.Ammo[(int)Info.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
+
+            world.P_SetPsprite(
+                player,
+                PlayerSprite.Flash,
+                Info.WeaponInfos[(int)player.ReadyWeapon].FlashState);
+
+            P_BulletSlope(player.Mobj);
+
+            for (var i = 0; i < 7; i++)
+            {
+                P_GunShot(player.Mobj, false);
+            }
         }
 
         public static void Light2(Player player, PlayerSpriteDef psp)
         {
+            player.ExtraLight = 2;
         }
 
         public static void FireShotgun2(Player player, PlayerSpriteDef psp)
