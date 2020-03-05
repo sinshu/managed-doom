@@ -26,13 +26,9 @@ Now I'm working on the game physics, including thing movement, interaction and s
 
 ## Video sample
 
-https://youtu.be/k1ovWOaQAvk  
+https://www.youtube.com/watch?v=JjSNhx9gzqo  
 
-[![YouTube video of Managed Doom](https://img.youtube.com/vi/k1ovWOaQAvk/0.jpg)](https://youtu.be/k1ovWOaQAvk)
-
-https://youtu.be/Tsw7yTrKYQE  
-
-[![YouTube video of Managed Doom](https://img.youtube.com/vi/Tsw7yTrKYQE/0.jpg)](https://youtu.be/Tsw7yTrKYQE)
+[![YouTube video of Managed Doom](https://img.youtube.com/vi/JjSNhx9gzqo/0.jpg)](https://youtu.be/JjSNhx9gzqo)
 
 
 
