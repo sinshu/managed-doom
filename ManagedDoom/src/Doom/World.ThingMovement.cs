@@ -149,12 +149,12 @@ namespace ManagedDoom
         // through a two sided line.
         // OPTIMIZE: keep this precalculated
         //
-        private Fixed openTop;
-        private Fixed openBottom;
-        private Fixed openRange;
-        private Fixed lowFloor;
+        public Fixed openTop;
+        public Fixed openBottom;
+        public Fixed openRange;
+        public Fixed lowFloor;
 
-        private void LineOpening(LineDef linedef)
+        public void LineOpening(LineDef linedef)
         {
             if (linedef.Side1 == null)
             {

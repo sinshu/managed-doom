@@ -33,8 +33,142 @@ namespace ManagedDoom
         {
         }
 
-        public static void Look(this Mobj mobj)
+        //
+        // P_LookForPlayers
+        // If allaround is false, only look 180 degrees in front.
+        // Returns true if a player is targeted.
+        //
+        private static bool P_LookForPlayers(Mobj actor, bool allaround)
         {
+            var world = actor.World;
+
+            var sector = actor.Subsector.Sector;
+
+            var c = 0;
+            var stop = (actor.LastLook - 1) & 3;
+
+            for (; ; actor.LastLook = (actor.LastLook + 1) & 3)
+            {
+                if (!world.Players[actor.LastLook].InGame)
+                {
+                    continue;
+                }
+
+                if (c++ == 2 || actor.LastLook == stop)
+                {
+                    // done looking
+                    return false;
+                }
+
+                var player = world.Players[actor.LastLook];
+
+                if (player.Health <= 0)
+                {
+                    // dead
+                    continue;
+                }
+
+                if (!world.CheckSight(actor, player.Mobj))
+                {
+                    // out of sight
+                    continue;
+                }
+
+                if (!allaround)
+                {
+                    var an = Geometry.PointToAngle(
+                        actor.X,
+                        actor.Y,
+                        player.Mobj.X,
+                        player.Mobj.Y) - actor.Angle;
+
+                    if (an > Angle.Ang90 && an < Angle.Ang270)
+                    {
+                        var dist = Geometry.AproxDistance(
+                            player.Mobj.X - actor.X,
+                            player.Mobj.Y - actor.Y);
+
+                        // if real close, react anyway
+                        if (dist > World.MELEERANGE)
+                        {
+                            // behind back
+                            continue;
+                        }
+                    }
+                }
+
+                actor.Target = player.Mobj;
+
+                return true;
+            }
+        }
+
+        public static void Look(this Mobj actor)
+        {
+            var world = actor.World;
+
+            // any shot will wake up
+            actor.Threshold = 0;
+            var targ = actor.Subsector.Sector.SoundTarget;
+
+            if (targ != null && (targ.Flags & MobjFlags.Shootable) != 0)
+            {
+                actor.Target = targ;
+
+                if ((actor.Flags & MobjFlags.Ambush) != 0)
+                {
+                    if (world.CheckSight(actor, actor.Target))
+                    {
+                        goto seeyou;
+                    }
+                }
+                else
+                {
+                    goto seeyou;
+                }
+            }
+
+            if (!P_LookForPlayers(actor, false))
+            {
+                return;
+            }
+
+            // go into chase state
+            seeyou:
+            if (actor.Info.SeeSound != 0)
+            {
+                int sound;
+
+                switch (actor.Info.SeeSound)
+                {
+                    case Sfx.POSIT1:
+                    case Sfx.POSIT2:
+                    case Sfx.POSIT3:
+                        sound = (int)Sfx.POSIT1 + world.Random.Next() % 3;
+                        break;
+
+                    case Sfx.BGSIT1:
+                    case Sfx.BGSIT2:
+                        sound = (int)Sfx.BGSIT1 + world.Random.Next() % 2;
+                        break;
+
+                    default:
+                        sound = (int)actor.Info.SeeSound;
+                        break;
+                }
+
+                if (actor.Type == MobjType.Spider || actor.Type == MobjType.Cyborg)
+                {
+                    // full volume
+                    world.StartSound(null, (Sfx)sound);
+                }
+                else
+                {
+                    world.StartSound(actor, (Sfx)sound);
+                }
+            }
+
+            world.SetMobjState(actor, actor.Info.SeeState);
         }
 
         public static void Chase(this Mobj mobj)

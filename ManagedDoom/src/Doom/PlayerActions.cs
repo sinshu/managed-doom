@@ -162,6 +162,79 @@ namespace ManagedDoom
         }
 
 
+
+        private static void P_RecursiveSound(World world, Sector sec, int soundblocks, Mobj soundtarget, int validcount)
+        {
+            // wake up all monsters in this sector
+            if (sec.ValidCount == validcount
+                && sec.SoundTraversed <= soundblocks + 1)
+            {
+                // already flooded
+                return;
+            }
+
+            sec.ValidCount = validcount;
+            sec.SoundTraversed = soundblocks + 1;
+            sec.SoundTarget = soundtarget;
+
+            for (var i = 0; i < sec.Lines.Length; i++)
+            {
+                var check = sec.Lines[i];
+                if ((check.Flags & LineFlags.TwoSided) == 0)
+                {
+                    continue;
+                }
+
+                world.LineOpening(check);
+
+                if (world.openRange <= Fixed.Zero)
+                {
+                    // closed door
+                    continue;
+                }
+
+                Sector other;
+                if (check.Side0.Sector == sec)
+                {
+                    other = check.Side1.Sector;
+                }
+                else
+                {
+                    other = check.Side0.Sector;
+                }
+
+                if ((check.Flags & LineFlags.SoundBlock) != 0)
+                {
+                    if (soundblocks == 0)
+                    {
+                        P_RecursiveSound(world, other, 1, soundtarget, validcount);
+                    }
+                }
+                else
+                {
+                    P_RecursiveSound(world, other, soundblocks, soundtarget, validcount);
+                }
+            }
+        }
+
+
+        //
+        // P_NoiseAlert
+        // If a monster yells at a player,
+        // it will alert other monsters to the player.
+        //
+        private static void P_NoiseAlert(World world, Mobj target, Mobj emmiter)
+        {
+            P_RecursiveSound(
+                world,
+                emmiter.Subsector.Sector,
+                0,
+                target,
+                world.GetNewValidCount());
+        }
+
+
+
         //
         // P_FireWeapon.
         //
@@ -177,7 +250,7 @@ namespace ManagedDoom
             world.SetMobjState(player.Mobj, State.PlayAtk1);
             var newstate = Info.WeaponInfos[(int)player.ReadyWeapon].AttackState;
             world.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
-            //P_NoiseAlert(player->mo, player->mo);
+            P_NoiseAlert(world, player.Mobj, player.Mobj);
         }
 
 
