@@ -18,6 +18,7 @@ namespace ManagedDoom
         private Node[] nodes;
         private Thing[] things;
         private BlockMap blockMap;
+        private Reject reject;
 
         private Texture skyTexture;
 
@@ -41,6 +42,7 @@ namespace ManagedDoom
             nodes = Node.FromWad(wad, map + 7, subsectors);
             things = Thing.FromWad(wad, map + 1);
             blockMap = BlockMap.FromWad(wad, map + 10, lines);
+            reject = Reject.FromWad(wad, map + 9, sectors);
 
             GroupLines();
 
@@ -129,6 +131,7 @@ namespace ManagedDoom
         public Node[] Nodes => nodes;
         public Thing[] Things => things;
         public BlockMap BlockMap => blockMap;
+        public Reject Reject => reject;
         public Texture SkyTexture => skyTexture;
         public int SkyFlatNumber => flats.SkyFlatNumber;
     }

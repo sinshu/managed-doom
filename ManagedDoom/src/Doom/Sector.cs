@@ -8,6 +8,7 @@ namespace ManagedDoom
     {
         public const int DataSize = 26;
 
+        public int Number;
         public Fixed FloorHeight;
         public Fixed CeilingHeight;
         public int FloorFlat;
@@ -40,6 +41,7 @@ namespace ManagedDoom
         public LineDef[] Lines;
 
         public Sector(
+            int number,
             Fixed floorHeight,
             Fixed ceilingHeight,
             int floorFlat,
@@ -48,6 +50,7 @@ namespace ManagedDoom
             SectorSpecial special,
             int tag)
         {
+            Number = number;
             FloorHeight = floorHeight;
             CeilingHeight = ceilingHeight;
             FloorFlat = floorFlat;
@@ -57,7 +60,7 @@ namespace ManagedDoom
             Tag = tag;
         }
 
-        public static Sector FromData(byte[] data, int offset, FlatLookup flats)
+        public static Sector FromData(byte[] data, int offset, int number, FlatLookup flats)
         {
             var floorHeight = BitConverter.ToInt16(data, offset);
             var ceilingHeight = BitConverter.ToInt16(data, offset + 2);
@@ -68,6 +71,7 @@ namespace ManagedDoom
             var tag = BitConverter.ToInt16(data, offset + 24);
 
             return new Sector(
+                number,
                 Fixed.FromInt(floorHeight),
                 Fixed.FromInt(ceilingHeight),
                 flats.GetNumber(floorFlatName),
@@ -92,7 +96,7 @@ namespace ManagedDoom
             for (var i = 0; i < count; i++)
             {
                 var offset = DataSize * i;
-                sectors[i] = FromData(data, offset, flats);
+                sectors[i] = FromData(data, offset, i, flats);
             }
 
             return sectors;
