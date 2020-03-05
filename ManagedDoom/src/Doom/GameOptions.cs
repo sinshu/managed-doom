@@ -9,5 +9,6 @@ namespace ManagedDoom
         public bool NetGame = false;
         public int Deathmatch = 0;
         public bool NoMonsters = false;
+        public bool FastMonsters = false;
     }
 }

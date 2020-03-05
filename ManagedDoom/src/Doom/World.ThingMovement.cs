@@ -15,25 +15,27 @@ namespace ManagedDoom
         private Fixed tmx;
         private Fixed tmy;
 
-        private bool floatok;
+        public bool floatok;
 
-        private Fixed tmfloorz;
-        private Fixed tmceilingz;
-        private Fixed tmdropoffz;
+        public Fixed tmfloorz;
+        public Fixed tmceilingz;
+        public Fixed tmdropoffz;
 
         private LineDef ceilingline;
 
-        private LineDef[] spechit;
-        private int numspechit;
+        public LineDef[] spechit;
+        public int numspechit;
 
         private Func<LineDef, bool> checkLine;
         private Func<Mobj, bool> checkThing;
+
+        public static readonly int MAXSPECIALCROSS = 16;
 
         private void InitThingMovement()
         {
             tmbbox = new Fixed[4];
 
-            spechit = new LineDef[16];
+            spechit = new LineDef[MAXSPECIALCROSS];
 
             checkLine = PIT_CheckLine;
             checkThing = PIT_CheckThing;
@@ -481,7 +483,7 @@ namespace ManagedDoom
         // Attempt to move to a new position,
         // crossing special lines unless MF_TELEPORT is set.
         //
-        private bool P_TryMove(Mobj thing, Fixed x, Fixed y)
+        public bool P_TryMove(Mobj thing, Fixed x, Fixed y)
         {
             floatok = false;
 
@@ -969,7 +971,7 @@ namespace ManagedDoom
 
 
 
-        private static readonly Fixed FLOATSPEED = Fixed.FromInt(4);
+        public static readonly Fixed FLOATSPEED = Fixed.FromInt(4);
 
         //
         // P_ZMovement

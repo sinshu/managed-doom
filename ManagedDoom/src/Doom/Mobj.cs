@@ -53,7 +53,7 @@ namespace ManagedDoom
         public int Health;
 
         // Movement direction, movement generation (zig-zagging).
-        public int MoveDir; // 0-7
+        public Direction MoveDir; // 0-7
         public int MoveCount; // when 0, select a new dir
 
         // Thing being chased/attacked (or NULL),
