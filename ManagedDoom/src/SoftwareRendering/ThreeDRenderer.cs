@@ -506,6 +506,8 @@ namespace ManagedDoom.SoftwareRendering
         private Fixed viewSin;
         private Fixed viewCos;
 
+        private int validCount;
+
         public void BindWorld(World world)
         {
             this.world = world;
@@ -525,6 +527,8 @@ namespace ManagedDoom.SoftwareRendering
 
             viewSin = Trig.Sin(viewAngle);
             viewCos = Trig.Cos(viewAngle);
+
+            validCount = world.GetNewValidCount();
 
             extraLight = player.ExtraLight;
 
@@ -572,7 +576,7 @@ namespace ManagedDoom.SoftwareRendering
         {
             var target = world.Map.Subsectors[subsector];
 
-            AddSprites(target.Sector, world.GetNewValidCount());
+            AddSprites(target.Sector, validCount);
 
             for (var i = 0; i < target.SegCount; i++)
             {
