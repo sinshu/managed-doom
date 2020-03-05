@@ -506,8 +506,6 @@ namespace ManagedDoom.SoftwareRendering
         private Fixed viewSin;
         private Fixed viewCos;
 
-        private int validCount;
-
         public void BindWorld(World world)
         {
             this.world = world;
@@ -527,8 +525,6 @@ namespace ManagedDoom.SoftwareRendering
 
             viewSin = Trig.Sin(viewAngle);
             viewCos = Trig.Cos(viewAngle);
-
-            validCount++;
 
             extraLight = player.ExtraLight;
 
@@ -576,7 +572,7 @@ namespace ManagedDoom.SoftwareRendering
         {
             var target = world.Map.Subsectors[subsector];
 
-            AddSprites(target.Sector, validCount);
+            AddSprites(target.Sector, world.GetNewValidCount());
 
             for (var i = 0; i < target.SegCount; i++)
             {
@@ -2434,7 +2430,7 @@ namespace ManagedDoom.SoftwareRendering
             // store information in a vissprite
             var vis = weaponSprite;
             vis.MobjFlags = 0;
-            vis.TextureAlt = Fixed.FromInt(100) + Fixed.One / 2 - (psp.Sy - Fixed.FromInt(lump.TopOffset));
+            vis.TextureAlt = Fixed.FromInt(100) + Fixed.One / 4 - (psp.Sy - Fixed.FromInt(lump.TopOffset));
             vis.X1 = x1 < 0 ? 0 : x1;
             vis.X2 = x2 >= windowWidth ? windowWidth - 1 : x2;
             vis.Scale = pspritescale;

@@ -202,7 +202,7 @@ namespace ManagedDoom
         {
             earlyOut = (flags & PathTraverseFlags.EarlyOut) != 0;
 
-            validCount++;
+            var validCount = GetNewValidCount();
 
             interceptCount = 0;
 

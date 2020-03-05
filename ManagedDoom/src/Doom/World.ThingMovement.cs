@@ -423,7 +423,8 @@ namespace ManagedDoom
             tmfloorz = tmdropoffz = newsubsec.Sector.FloorHeight;
             tmceilingz = newsubsec.Sector.CeilingHeight;
 
-            validCount++;
+            var validCount = GetNewValidCount();
+
             numspechit = 0;
 
             if ((tmflags & MobjFlags.NoClip) != 0)

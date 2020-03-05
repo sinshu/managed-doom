@@ -53,20 +53,6 @@ namespace ManagedDoom
             levelTime++;
         }
 
-        private void DebugOpenDoors()
-        {
-            foreach (var line in map.Lines)
-            {
-                if (line.Special != 0
-                    && line.Tag == 0
-                    && line.BackSector != null
-                    && line.BackSector.CeilingHeight == line.BackSector.FloorHeight)
-                {
-                    line.BackSector.CeilingHeight = line.BackSector.FloorHeight + Fixed.FromInt(64);
-                }
-            }
-        }
-
         private void LoadThings()
         {
             totalKills = 0;
@@ -431,6 +417,12 @@ namespace ManagedDoom
 
         public void StopSound(Mobj mobj)
         {
+        }
+
+        public int GetNewValidCount()
+        {
+            validCount++;
+            return validCount;
         }
 
         public Map Map => map;
