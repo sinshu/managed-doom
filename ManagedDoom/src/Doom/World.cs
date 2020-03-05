@@ -411,6 +411,84 @@ namespace ManagedDoom
             return true;
         }
 
+
+
+        //
+        // P_CheckMissileSpawn
+        // Moves the missile forward a bit
+        //  and possibly explodes it right there.
+        //
+        public void P_CheckMissileSpawn(Mobj th)
+        {
+            th.Tics -= random.Next() & 3;
+            if (th.Tics < 1)
+            {
+                th.Tics = 1;
+            }
+
+            // move a little forward so an angle can
+            // be computed if it immediately explodes
+            th.X += new Fixed(th.MomX.Data >> 1);
+            th.Y += new Fixed(th.MomY.Data >> 1);
+            th.Z += new Fixed(th.MomZ.Data >> 1);
+
+            if (!P_TryMove(th, th.X, th.Y))
+            {
+                P_ExplodeMissile(th);
+            }
+        }
+
+
+        //
+        // P_SpawnMissile
+        //
+        public Mobj SpawnMissile(Mobj source, Mobj dest, MobjType type)
+        {
+            var th = SpawnMobj(
+                source.X,
+                source.Y,
+                source.Z + new Fixed(4 * 8 * Fixed.FracUnit), type);
+
+            if (th.Info.SeeSound != 0)
+            {
+                StartSound(th, th.Info.SeeSound);
+            }
+
+            // where it came from
+            th.Target = source;
+
+            var an = Geometry.PointToAngle(
+                source.X,
+                source.Y,
+                dest.X,
+                dest.Y);
+
+            // fuzzy player
+            if ((dest.Flags & MobjFlags.Shadow) != 0)
+            {
+                an += new Angle((random.Next() - random.Next()) << 20);
+            }
+
+            th.Angle = an;
+            //an >>= ANGLETOFINESHIFT;
+            th.MomX = new Fixed(th.Info.Speed) * Trig.Cos(an); // finecosine[an]);
+            th.MomY = new Fixed(th.Info.Speed) * Trig.Sin(an); // finesine[an]);
+
+            var dist = Geometry.AproxDistance(dest.X - source.X, dest.Y - source.Y);
+            dist = dist / new Fixed(th.Info.Speed);
+
+            if (dist.Data < 1)
+            {
+                dist = new Fixed(1);
+            }
+
+            th.MomZ = (dest.Z - source.Z) / dist;
+
+            P_CheckMissileSpawn(th);
+
+            return th;
+        }
+
         public void StartSound(Mobj mobj, Sfx sfx)
         {
             Console.WriteLine("StartSound: " + sfx);

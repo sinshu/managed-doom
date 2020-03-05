@@ -836,8 +836,26 @@ namespace ManagedDoom
         {
         }
 
-        public static void TroopAttack(this Mobj mobj)
+        public static void TroopAttack(this Mobj actor)
         {
+            var world = actor.World;
+
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            FaceTarget(actor);
+            if (P_CheckMeleeRange(actor))
+            {
+                world.StartSound(actor, Sfx.CLAW);
+                var damage = (world.Random.Next() % 8 + 1) * 3;
+                world.DamageMobj(actor.Target, actor, actor, damage);
+                return;
+            }
+
+            // launch a missile
+            world.SpawnMissile(actor, actor.Target, MobjType.Troopshot);
         }
 
         public static void SargAttack(this Mobj mobj)
