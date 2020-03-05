@@ -34,6 +34,7 @@ namespace ManagedDoom
             InitThinkers();
             InitThingMovement();
             InitPathTraversal();
+            InitSight();
 
             LoadThings();
         }

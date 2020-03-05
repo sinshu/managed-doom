@@ -430,5 +430,60 @@ namespace ManagedDoom
                 return new Fixed(dx.Data + dy.Data - (dy.Data >> 1));
             }
         }
+
+        public static int DivLineSide(Fixed x, Fixed y, DivLine node)
+        {
+            if (node.Dx == Fixed.Zero)
+            {
+                if (x == node.X)
+                {
+                    return 2;
+                }
+
+                if (x <= node.X)
+                {
+                    return node.Dy > Fixed.Zero ? 1 : 0;
+                }
+
+                return node.Dy < Fixed.Zero ? 1 : 0;
+            }
+
+            if (node.Dy == Fixed.Zero)
+            {
+                if (x == node.Y)
+                {
+                    return 2;
+                }
+
+                if (y <= node.Y)
+                {
+                    return node.Dx < Fixed.Zero ? 1 : 0;
+                }
+
+                return node.Dx > Fixed.Zero ? 1 : 0;
+            }
+
+            var dx = (x - node.X);
+            var dy = (y - node.Y);
+
+            var left = new Fixed((node.Dy.Data >> Fixed.FracBits) * (dx.Data >> Fixed.FracBits));
+            var right = new Fixed((dy.Data >> Fixed.FracBits) * (node.Dx.Data >> Fixed.FracBits));
+
+            if (right < left)
+            {
+                // front side
+                return 0;
+            }
+
+            if (left == right)
+            {
+                return 2;
+            }
+            else
+            {
+                // back side
+                return 1;
+            }
+        }
     }
 }

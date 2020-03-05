@@ -810,5 +810,126 @@ namespace ManagedDoomTest
                 Assert.AreEqual(expected, actual.ToDouble(), 1.0E-3);
             }
         }
+
+        [TestMethod]
+        public void DivLineSide1()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 1000; i++)
+            {
+                var startX = -1 - 666 * random.NextDouble();
+                var endX = +1 + 666 * random.NextDouble();
+
+                var pointX = 666 * random.NextDouble() - 333;
+                var frontSideY = -1 - 666 * random.NextDouble();
+                var backSideY = -frontSideY;
+
+                var vertex1 = new Vertex(Fixed.FromDouble(startX), Fixed.Zero);
+                var vertex2 = new Vertex(Fixed.FromDouble(endX - startX), Fixed.Zero);
+
+                var line = new LineDef(
+                    vertex1,
+                    vertex2,
+                    0, 0, 0, null, null);
+
+                var divLine = new DivLine();
+                divLine.MakeFrom(line);
+
+                var x = Fixed.FromDouble(pointX);
+                {
+                    var y = Fixed.FromDouble(frontSideY);
+                    Assert.AreEqual(0, Geometry.DivLineSide(x, y, divLine));
+                }
+                {
+                    var y = Fixed.FromDouble(backSideY);
+                    Assert.AreEqual(1, Geometry.DivLineSide(x, y, divLine));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void DivLineSide2()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 1000; i++)
+            {
+                var startY = +1 + 666 * random.NextDouble();
+                var endY = -1 - 666 * random.NextDouble();
+
+                var pointY = 666 * random.NextDouble() - 333;
+                var frontSideX = -1 - 666 * random.NextDouble();
+                var backSideX = -frontSideX;
+
+                var vertex1 = new Vertex(Fixed.Zero, Fixed.FromDouble(startY));
+                var vertex2 = new Vertex(Fixed.Zero, Fixed.FromDouble(endY - startY));
+
+                var line = new LineDef(
+                    vertex1,
+                    vertex2,
+                    0, 0, 0, null, null);
+
+                var divLine = new DivLine();
+                divLine.MakeFrom(line);
+
+                var y = Fixed.FromDouble(pointY);
+                {
+                    var x = Fixed.FromDouble(frontSideX);
+                    Assert.AreEqual(0, Geometry.DivLineSide(x, y, divLine));
+                }
+                {
+                    var x = Fixed.FromDouble(backSideX);
+                    Assert.AreEqual(1, Geometry.DivLineSide(x, y, divLine));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void DivLineSide3()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 1000; i++)
+            {
+                var startX = -1 - 666 * random.NextDouble();
+                var endX = +1 + 666 * random.NextDouble();
+
+                var pointX = 666 * random.NextDouble() - 333;
+                var frontSideY = -1 - 666 * random.NextDouble();
+                var backSideY = -frontSideY;
+
+                for (var j = 0; j < 100; j++)
+                {
+                    var theta = 2 * Math.PI * random.NextDouble();
+                    var ox = 666 * random.NextDouble() - 333;
+                    var oy = 666 * random.NextDouble() - 333;
+
+                    var vertex1 = new Vertex(
+                        Fixed.FromDouble(ox + startX * Math.Cos(theta)),
+                        Fixed.FromDouble(oy + startX * Math.Sin(theta)));
+
+                    var vertex2 = new Vertex(
+                        vertex1.X + Fixed.FromDouble((endX - startX) * Math.Cos(theta)),
+                        vertex1.Y + Fixed.FromDouble((endX - startX) * Math.Sin(theta)));
+
+                    var line = new LineDef(
+                        vertex1,
+                        vertex2,
+                        0, 0, 0, null, null);
+
+                    var divLine = new DivLine();
+                    divLine.MakeFrom(line);
+
+                    {
+                        var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - frontSideY * Math.Sin(theta));
+                        var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + frontSideY * Math.Cos(theta));
+                        Assert.AreEqual(0, Geometry.DivLineSide(x, y, divLine));
+                    }
+                    {
+                        var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - backSideY * Math.Sin(theta));
+                        var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + backSideY * Math.Cos(theta));
+                        Assert.AreEqual(1, Geometry.DivLineSide(x, y, divLine));
+                    }
+                }
+            }
+        }
     }
 }
