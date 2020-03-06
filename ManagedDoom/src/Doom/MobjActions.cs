@@ -616,13 +616,13 @@ namespace ManagedDoom
             if ((int)actor.MoveDir < 8)
             {
                 actor.Angle = new Angle((int)actor.Angle.Data & (7 << 29));
-                var delta = actor.Angle - new Angle((int)actor.MoveDir << 29);
+                var delta = (int)(actor.Angle - new Angle((int)actor.MoveDir << 29)).Data;
 
-                if (delta > Angle.Ang0)
+                if (delta > 0)
                 {
                     actor.Angle -= new Angle(Angle.Ang90.Data / 2);
                 }
-                else if (delta < Angle.Ang0)
+                else if (delta < 0)
                 {
                     actor.Angle += new Angle(Angle.Ang90.Data / 2);
                 }
