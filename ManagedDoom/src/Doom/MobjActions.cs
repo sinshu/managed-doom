@@ -756,8 +756,43 @@ namespace ManagedDoom
             world.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
         }
 
-        public static void Scream(this Mobj mobj)
+        public static void Scream(this Mobj actor)
         {
+            var world = actor.World;
+
+            int sound;
+
+            switch (actor.Info.DeathSound)
+            {
+                case 0:
+                    return;
+
+                case Sfx.PODTH1:
+                case Sfx.PODTH2:
+                case Sfx.PODTH3:
+                    sound = (int)Sfx.PODTH1 + world.Random.Next() % 3;
+                    break;
+
+                case Sfx.BGDTH1:
+                case Sfx.BGDTH2:
+                    sound = (int)Sfx.BGDTH1 + world.Random.Next() % 2;
+                    break;
+
+                default:
+                    sound = (int)actor.Info.DeathSound;
+                    break;
+            }
+
+            // Check for bosses.
+            if (actor.Type == MobjType.Spider || actor.Type == MobjType.Cyborg)
+            {
+                // full volume
+                world.StartSound(null, (Sfx)sound);
+            }
+            else
+            {
+                world.StartSound(actor, (Sfx)sound);
+            }
         }
 
         public static void SPosAttack(this Mobj mobj)
