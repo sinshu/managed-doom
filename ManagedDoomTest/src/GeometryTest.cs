@@ -835,14 +835,25 @@ namespace ManagedDoomTest
                 var divLine = new DivLine();
                 divLine.MakeFrom(line);
 
+                var node = new Node(
+                    Fixed.FromDouble(startX),
+                    Fixed.Zero,
+                    Fixed.FromDouble(endX - startX),
+                    Fixed.Zero,
+                    Fixed.Zero, Fixed.Zero, Fixed.Zero, Fixed.Zero,
+                    Fixed.Zero, Fixed.Zero, Fixed.Zero, Fixed.Zero,
+                    0, 0);
+
                 var x = Fixed.FromDouble(pointX);
                 {
                     var y = Fixed.FromDouble(frontSideY);
                     Assert.AreEqual(0, Geometry.DivLineSide(x, y, divLine));
+                    Assert.AreEqual(0, Geometry.DivLineSide(x, y, node));
                 }
                 {
                     var y = Fixed.FromDouble(backSideY);
                     Assert.AreEqual(1, Geometry.DivLineSide(x, y, divLine));
+                    Assert.AreEqual(1, Geometry.DivLineSide(x, y, node));
                 }
             }
         }
@@ -871,14 +882,25 @@ namespace ManagedDoomTest
                 var divLine = new DivLine();
                 divLine.MakeFrom(line);
 
+                var node = new Node(
+                    Fixed.Zero,
+                    Fixed.FromDouble(startY),
+                    Fixed.Zero,
+                    Fixed.FromDouble(endY - startY),
+                    Fixed.Zero, Fixed.Zero, Fixed.Zero, Fixed.Zero,
+                    Fixed.Zero, Fixed.Zero, Fixed.Zero, Fixed.Zero,
+                    0, 0);
+
                 var y = Fixed.FromDouble(pointY);
                 {
                     var x = Fixed.FromDouble(frontSideX);
                     Assert.AreEqual(0, Geometry.DivLineSide(x, y, divLine));
+                    Assert.AreEqual(0, Geometry.DivLineSide(x, y, node));
                 }
                 {
                     var x = Fixed.FromDouble(backSideX);
                     Assert.AreEqual(1, Geometry.DivLineSide(x, y, divLine));
+                    Assert.AreEqual(1, Geometry.DivLineSide(x, y, node));
                 }
             }
         }
@@ -918,15 +940,26 @@ namespace ManagedDoomTest
                     var divLine = new DivLine();
                     divLine.MakeFrom(line);
 
+                    var node = new Node(
+                        Fixed.FromDouble(ox + startX * Math.Cos(theta)),
+                        Fixed.FromDouble(oy + startX * Math.Sin(theta)),
+                        Fixed.FromDouble((endX - startX) * Math.Cos(theta)),
+                        Fixed.FromDouble((endX - startX) * Math.Sin(theta)),
+                        Fixed.Zero, Fixed.Zero, Fixed.Zero, Fixed.Zero,
+                        Fixed.Zero, Fixed.Zero, Fixed.Zero, Fixed.Zero,
+                        0, 0);
+
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - frontSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + frontSideY * Math.Cos(theta));
                         Assert.AreEqual(0, Geometry.DivLineSide(x, y, divLine));
+                        Assert.AreEqual(0, Geometry.DivLineSide(x, y, node));
                     }
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - backSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + backSideY * Math.Cos(theta));
                         Assert.AreEqual(1, Geometry.DivLineSide(x, y, divLine));
+                        Assert.AreEqual(1, Geometry.DivLineSide(x, y, node));
                     }
                 }
             }
