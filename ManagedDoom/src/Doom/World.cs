@@ -504,6 +504,25 @@ namespace ManagedDoom
             return validCount;
         }
 
+        public int GetMobjHash()
+        {
+            var hash = 0;
+            var current = thinkerCap.Next;
+            while (current != thinkerCap)
+            {
+                if (!current.Removed)
+                {
+                    var mobj = current as Mobj;
+                    if (mobj != null)
+                    {
+                        hash = DoomDebug.CombineHash(hash, mobj.GetHashCode());
+                    }
+                }
+                current = current.Next;
+            }
+            return hash;
+        }
+
         public Map Map => map;
         public DoomRandom Random => random;
     }

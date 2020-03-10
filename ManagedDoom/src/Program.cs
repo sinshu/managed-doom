@@ -45,6 +45,9 @@ namespace ManagedDoom
 
                     UserInput.BuildTicCmd(world.Players[0].Cmd);
                     world.Update();
+
+                    //Console.WriteLine(world.levelTime + ": " + world.GetMobjHash().ToString("x8"));
+
                     renderer.Render();
 
                     count++;

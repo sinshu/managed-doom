@@ -159,5 +159,40 @@ namespace ManagedDoom
                 */
             }
         }
+
+        public override int GetHashCode()
+        {
+            var hash = 0;
+
+            hash = DoomDebug.CombineHash(hash, X.Data);
+            hash = DoomDebug.CombineHash(hash, Y.Data);
+            hash = DoomDebug.CombineHash(hash, Z.Data);
+
+            hash = DoomDebug.CombineHash(hash, (int)Angle.Data);
+            hash = DoomDebug.CombineHash(hash, (int)Sprite);
+            hash = DoomDebug.CombineHash(hash, Frame);
+
+            hash = DoomDebug.CombineHash(hash, FloorZ.Data);
+            hash = DoomDebug.CombineHash(hash, CeilingZ.Data);
+
+            hash = DoomDebug.CombineHash(hash, Radius.Data);
+            hash = DoomDebug.CombineHash(hash, Height.Data);
+
+            hash = DoomDebug.CombineHash(hash, MomX.Data);
+            hash = DoomDebug.CombineHash(hash, MomY.Data);
+            hash = DoomDebug.CombineHash(hash, MomZ.Data);
+
+            hash = DoomDebug.CombineHash(hash, (int)Tics);
+            hash = DoomDebug.CombineHash(hash, (int)Flags);
+            hash = DoomDebug.CombineHash(hash, Health);
+
+            hash = DoomDebug.CombineHash(hash, (int)MoveDir);
+            hash = DoomDebug.CombineHash(hash, MoveCount);
+
+            hash = DoomDebug.CombineHash(hash, ReactionTime);
+            hash = DoomDebug.CombineHash(hash, Threshold);
+
+            return hash;
+        }
     }
 }
