@@ -7,7 +7,7 @@ using ManagedDoom;
 namespace ManagedDoomTest
 {
     [TestClass]
-    public class DoNothing
+    public class FireOnce
     {
         [TestMethod]
         public void Map01()
@@ -33,13 +33,23 @@ namespace ManagedDoomTest
                 var world = new World(resources, "MAP01", options, players);
 
                 var tics = 350;
+                var pressFireUntil = 20;
 
                 for (var i = 0; i < tics; i++)
                 {
+                    if (i < pressFireUntil)
+                    {
+                        players[0].Cmd.Buttons = Buttons.Attack;
+                    }
+                    else
+                    {
+                        players[0].Cmd.Buttons = 0;
+                    }
+
                     world.Update();
                 }
 
-                Assert.AreEqual(0xc108ff16u, (uint)world.GetMobjHash());
+                Assert.AreEqual(0x3000f816u, (uint)world.GetMobjHash());
             }
         }
     }
