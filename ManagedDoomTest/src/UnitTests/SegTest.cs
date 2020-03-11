@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ManagedDoom;
 
-namespace ManagedDoomTest
+namespace ManagedDoomTest.UnitTests
 {
     [TestClass]
     public class SegTest
