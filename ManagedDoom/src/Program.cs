@@ -26,8 +26,10 @@ namespace ManagedDoom
             using (var renderer = new SoftwareRendering.Renderer(window, resources, true))
             {
                 var world = new World(resources, "MAP01", new GameOptions(), players);
+                //var demo = new Demo(resources, resources.Wad.ReadLump("DEMO1"));
 
                 renderer.BindWorld(world);
+                //renderer.BindWorld(demo.World);
 
                 window.Closed += (sender, e) => window.Close();
                 window.SetFramerateLimit(35);
@@ -45,6 +47,7 @@ namespace ManagedDoom
 
                     UserInput.BuildTicCmd(world.Players[0].Cmd);
                     world.Update();
+                    //demo.Update();
 
                     //Console.WriteLine(world.levelTime + ": " + world.GetMobjHash().ToString("x8"));
 
