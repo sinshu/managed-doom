@@ -17,4 +17,17 @@
     <ProjectReference Include="..\ManagedDoom\ManagedDoom.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="data\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="data\player_movement_test.lmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="data\player_movement_test.wad">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

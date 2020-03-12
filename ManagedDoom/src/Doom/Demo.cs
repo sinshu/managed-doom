@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace ManagedDoom
 {
@@ -41,6 +42,11 @@ namespace ManagedDoom
             players[1].InGame = data[p++] != 0;
             players[2].InGame = data[p++] != 0;
             players[3].InGame = data[p++] != 0;
+        }
+
+        public Demo(Resources resources, string fileName)
+            : this(resources, File.ReadAllBytes(fileName))
+        {
         }
 
         public bool ReadCmd()
