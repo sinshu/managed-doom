@@ -7,11 +7,13 @@ namespace ManagedDoom
 {
     public sealed class Wad : IDisposable
     {
+        private List<string> names;
         private List<Stream> streams;
         private List<LumpInfo> lumpInfos;
 
         public Wad(params string[] fileNames)
         {
+            names = new List<string>();
             streams = new List<Stream>();
             lumpInfos = new List<LumpInfo>();
 
@@ -30,6 +32,8 @@ namespace ManagedDoom
 
         private void AddFile(string fileName)
         {
+            names.Add(Path.GetFileNameWithoutExtension(fileName).ToLower());
+
             var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             streams.Add(stream);
 
@@ -129,6 +133,7 @@ namespace ManagedDoom
             streams.Clear();
         }
 
+        public IReadOnlyList<string> Names => names;
         public IReadOnlyList<LumpInfo> LumpInfos => lumpInfos;
     }
 }

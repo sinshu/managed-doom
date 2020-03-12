@@ -176,7 +176,7 @@ namespace ManagedDoomTest.UnitTests
             {
                 var flats = new FlatLookup(wad);
                 var textures = new TextureLookup(wad);
-                var map = new Map(wad, textures, flats, "E1M1");
+                var map = new Map(wad, textures, flats, new GameOptions());
 
                 var ok = 0;
                 var count = 0;
@@ -228,7 +228,7 @@ namespace ManagedDoomTest.UnitTests
             {
                 var flats = new FlatLookup(wad);
                 var textures = new TextureLookup(wad);
-                var map = new Map(wad, textures, flats, "MAP01");
+                var map = new Map(wad, textures, flats, new GameOptions());
 
                 var ok = 0;
                 var count = 0;

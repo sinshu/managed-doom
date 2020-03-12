@@ -4,7 +4,7 @@ namespace ManagedDoom
 {
     public sealed class GameOptions
     {
-        public Skill GameSkill = Skill.Hard;
+        public Skill GameSkill = Skill.Medium;
         public GameMode GameMode = GameMode.Commercial;
         public bool NetGame = false;
         public int Episode = 1;

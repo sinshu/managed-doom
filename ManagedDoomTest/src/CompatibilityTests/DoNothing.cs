@@ -15,12 +15,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resources = new Resources(WadPath.Doom2))
             {
                 var options = new GameOptions();
-                options.GameMode = GameMode.Commercial;
-                options.NetGame = false;
-                options.Deathmatch = 0;
                 options.GameSkill = Skill.Hard;
-                options.NoMonsters = false;
-                options.FastMonsters = false;
 
                 var players = new Player[Player.MaxPlayerCount];
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -30,7 +25,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 }
                 players[0].InGame = true;
 
-                var world = new World(resources, "MAP01", options, players);
+                var world = new World(resources, options, players);
 
                 var tics = 350;
 

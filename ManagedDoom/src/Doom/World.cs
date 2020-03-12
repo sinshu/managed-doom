@@ -20,12 +20,12 @@ namespace ManagedDoom
 
         public int levelTime = 0;
 
-        public World(Resources resorces, string mapName, GameOptions options, Player[] players)
+        public World(Resources resorces, GameOptions options, Player[] players)
         {
             Options = options;
             Players = players;
 
-            map = new Map(resorces, mapName);
+            map = new Map(resorces, options);
 
             random = new DoomRandom();
 

@@ -9,7 +9,6 @@ namespace ManagedDoom
 
         private GameOptions options;
         private Player[] players;
-        private World world;
 
         public Demo(Resources resources, byte[] data)
         {
@@ -42,13 +41,9 @@ namespace ManagedDoom
             players[1].InGame = data[p++] != 0;
             players[2].InGame = data[p++] != 0;
             players[3].InGame = data[p++] != 0;
-
-            var mapName = "MAP" + options.Map.ToString("00");
-
-            world = new World(resources, mapName, options, players);
         }
 
-        public bool Update()
+        public bool ReadCmd()
         {
             if (data[p] == 0x80)
             {
@@ -67,13 +62,10 @@ namespace ManagedDoom
                 }
             }
 
-            world.Update();
-
             return true;
         }
 
         public GameOptions Options => options;
         public Player[] Players => players;
-        public World World => world;
     }
 }

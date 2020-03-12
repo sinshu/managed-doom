@@ -25,11 +25,18 @@ namespace ManagedDoom
             using (var resources = new Resources("DOOM2.WAD"))
             using (var renderer = new SoftwareRendering.Renderer(window, resources, true))
             {
-                var world = new World(resources, "MAP01", new GameOptions(), players);
                 //var demo = new Demo(resources, resources.Wad.ReadLump("DEMO1"));
 
+                var options = new GameOptions();
+                options.GameSkill = Skill.Hard;
+                options.GameMode = GameMode.Commercial;
+                options.Episode = 1;
+                options.Map = 1;
+
+                var world = new World(resources, options, players);
+                //var world = new World(resources, demo.Options, demo.Players);
+
                 renderer.BindWorld(world);
-                //renderer.BindWorld(demo.World);
 
                 window.Closed += (sender, e) => window.Close();
                 window.SetFramerateLimit(35);
@@ -46,8 +53,8 @@ namespace ManagedDoom
                     if (Keyboard.IsKeyPressed(Keyboard.Key.P)) world.Players[0].Cheats &= ~CheatFlags.NoClip;
 
                     UserInput.BuildTicCmd(world.Players[0].Cmd);
+                    //demo.ReadCmd();
                     world.Update();
-                    //demo.Update();
 
                     //Console.WriteLine(world.levelTime + ": " + world.GetMobjHash().ToString("x8"));
 

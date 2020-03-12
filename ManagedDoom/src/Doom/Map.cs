@@ -22,15 +22,25 @@ namespace ManagedDoom
 
         private Texture skyTexture;
 
-        public Map(Resources resorces, string name)
-            : this(resorces.Wad, resorces.Textures, resorces.Flats, name)
+        public Map(Resources resorces, GameOptions options)
+            : this(resorces.Wad, resorces.Textures, resorces.Flats, options)
         {
         }
 
-        public Map(Wad wad, TextureLookup textures, FlatLookup flats, string name)
+        public Map(Wad wad, TextureLookup textures, FlatLookup flats, GameOptions options)
         {
             this.textures = textures;
             this.flats = flats;
+
+            string name;
+            if (wad.Names.Contains("doom") || wad.Names.Contains("doom1"))
+            {
+                name = "E" + options.Episode + "M" + options.Map;
+            }
+            else
+            {
+                name = "MAP" + options.Map.ToString("00");
+            }
 
             var map = wad.GetLumpNumber(name);
             vertices = Vertex.FromWad(wad, map + 4);

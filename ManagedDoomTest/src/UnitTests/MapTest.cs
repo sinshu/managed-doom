@@ -18,7 +18,7 @@ namespace ManagedDoomTest.UnitTests
             {
                 var flats = new FlatLookup(wad);
                 var textures = new TextureLookup(wad);
-                var map = new Map(wad, textures, flats, "E1M1");
+                var map = new Map(wad, textures, flats, new GameOptions());
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());
                 var mapMaxX = map.Lines.Max(line => Fixed.Max(line.Vertex1.X, line.Vertex2.X).ToDouble());
@@ -66,7 +66,7 @@ namespace ManagedDoomTest.UnitTests
             {
                 var flats = new FlatLookup(wad);
                 var textures = new TextureLookup(wad);
-                var map = new Map(wad, textures, flats, "MAP01");
+                var map = new Map(wad, textures, flats, new GameOptions());
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());
                 var mapMaxX = map.Lines.Max(line => Fixed.Max(line.Vertex1.X, line.Vertex2.X).ToDouble());
