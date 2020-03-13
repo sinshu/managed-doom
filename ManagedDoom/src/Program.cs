@@ -25,7 +25,7 @@ namespace ManagedDoom
             using (var resource = new CommonResource("DOOM2.WAD"))
             using (var renderer = new SoftwareRendering.Renderer(window, resource, true))
             {
-                //var demo = new Demo(resource, resource.Wad.ReadLump("DEMO1"));
+                //var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
 
                 var options = new GameOptions();
                 options.GameSkill = Skill.Hard;
