@@ -29,12 +29,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var tics = 350;
 
+                var aggHash = 0;
                 for (var i = 0; i < tics; i++)
                 {
                     world.Update();
+                    aggHash = DoomDebug.CombineHash(aggHash, world.GetMobjHash());
                 }
 
                 Assert.AreEqual(0xc108ff16u, (uint)world.GetMobjHash());
+                Assert.AreEqual(0x3bd5113cu, (uint)aggHash);
             }
         }
     }

@@ -27,9 +27,10 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var world = new World(resources, options, players);
 
-                var tics = 350;
+                var tics = 700;
                 var pressFireUntil = 20;
 
+                var aggHash = 0;
                 for (var i = 0; i < tics; i++)
                 {
                     if (i < pressFireUntil)
@@ -42,9 +43,11 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
+                    aggHash = DoomDebug.CombineHash(aggHash, world.GetMobjHash());
                 }
 
-                Assert.AreEqual(0x3000f816u, (uint)world.GetMobjHash());
+                Assert.AreEqual(0xef1aa1d8u, (uint)world.GetMobjHash());
+                Assert.AreEqual(0xe6edcf39u, (uint)aggHash);
             }
         }
     }
