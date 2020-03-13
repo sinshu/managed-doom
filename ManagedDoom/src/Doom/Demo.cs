@@ -11,7 +11,7 @@ namespace ManagedDoom
         private GameOptions options;
         private Player[] players;
 
-        public Demo(Resources resources, byte[] data)
+        public Demo(byte[] data)
         {
             p = 0;
 
@@ -44,8 +44,8 @@ namespace ManagedDoom
             players[3].InGame = data[p++] != 0;
         }
 
-        public Demo(Resources resources, string fileName)
-            : this(resources, File.ReadAllBytes(fileName))
+        public Demo(string fileName)
+            : this(File.ReadAllBytes(fileName))
         {
         }
 

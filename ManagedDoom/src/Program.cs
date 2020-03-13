@@ -22,10 +22,10 @@ namespace ManagedDoom
 
             var style = Styles.Close | Styles.Titlebar;
             using (var window = new RenderWindow(new VideoMode(640, 400), "Managed Doom", style))
-            using (var resources = new Resources("DOOM2.WAD"))
-            using (var renderer = new SoftwareRendering.Renderer(window, resources, true))
+            using (var resource = new CommonResource("DOOM2.WAD"))
+            using (var renderer = new SoftwareRendering.Renderer(window, resource, true))
             {
-                //var demo = new Demo(resources, resources.Wad.ReadLump("DEMO1"));
+                //var demo = new Demo(resource, resource.Wad.ReadLump("DEMO1"));
 
                 var options = new GameOptions();
                 options.GameSkill = Skill.Hard;
@@ -33,8 +33,8 @@ namespace ManagedDoom
                 options.Episode = 1;
                 options.Map = 1;
 
-                var world = new World(resources, options, players);
-                //var world = new World(resources, demo.Options, demo.Players);
+                var world = new World(resource, options, players);
+                //var world = new World(resource, demo.Options, demo.Players);
 
                 renderer.BindWorld(world);
 

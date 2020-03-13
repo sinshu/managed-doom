@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Map01()
         {
-            using (var resources = new Resources(WadPath.Doom2))
+            using (var resource = new CommonResource(WadPath.Doom2))
             {
                 var options = new GameOptions();
                 options.GameSkill = Skill.Hard;
@@ -25,7 +25,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 }
                 players[0].InGame = true;
 
-                var world = new World(resources, options, players);
+                var world = new World(resource, options, players);
 
                 var tics = 700;
                 var pressFireUntil = 20;

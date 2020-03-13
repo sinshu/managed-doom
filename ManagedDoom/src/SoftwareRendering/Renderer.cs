@@ -34,10 +34,10 @@ namespace ManagedDoom.SoftwareRendering
 
         private World world;
 
-        public Renderer(RenderWindow window, Resources resources, bool highResolution)
+        public Renderer(RenderWindow window, CommonResource resource, bool highResolution)
         {
             sfmlWindow = window;
-            palette = resources.Palette;
+            palette = resource.Palette;
 
             colors = InitColors(palette);
 
@@ -81,7 +81,7 @@ namespace ManagedDoom.SoftwareRendering
 
             sfmlStates = new RenderStates(BlendMode.None);
 
-            threeD = new ThreeDRenderer(resources, screenWidth, screenHeight, screenData);
+            threeD = new ThreeDRenderer(resource, screenWidth, screenHeight, screenData);
         }
 
         private static uint[] InitColors(Palette palette)

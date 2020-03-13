@@ -22,7 +22,7 @@ namespace ManagedDoom
 
         private Texture skyTexture;
 
-        public Map(Resources resorces, GameOptions options)
+        public Map(CommonResource resorces, GameOptions options)
             : this(resorces.Wad, resorces.Textures, resorces.Flats, options)
         {
         }

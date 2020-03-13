@@ -3,7 +3,7 @@ using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
-    public sealed class Resources : IDisposable
+    public sealed class CommonResource : IDisposable
     {
         private Wad wad;
         private Palette palette;
@@ -12,7 +12,7 @@ namespace ManagedDoom
         private FlatLookup flats;
         private SpriteLookup sprites;
 
-        public Resources(params string[] wadPaths)
+        public CommonResource(params string[] wadPaths)
         {
             try
             {

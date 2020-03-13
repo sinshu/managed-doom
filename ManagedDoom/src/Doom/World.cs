@@ -20,7 +20,7 @@ namespace ManagedDoom
 
         public int levelTime = 0;
 
-        public World(Resources resorces, GameOptions options, Player[] players)
+        public World(CommonResource resorces, GameOptions options, Player[] players)
         {
             Options = options;
             Players = players;

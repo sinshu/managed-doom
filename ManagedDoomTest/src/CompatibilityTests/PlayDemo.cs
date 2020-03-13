@@ -12,10 +12,10 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void PlayerMovementTest()
         {
-            using (var resources = new Resources(WadPath.Doom2, @"data\player_movement_test.wad"))
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\player_movement_test.wad"))
             {
-                var demo = new Demo(resources, @"data\player_movement_test.lmp");
-                var world = new World(resources, demo.Options, demo.Players);
+                var demo = new Demo(@"data\player_movement_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
 
                 var aggHash = 0;
                 while (true)
