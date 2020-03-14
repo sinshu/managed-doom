@@ -475,14 +475,14 @@ namespace ManagedDoom
             th.MomY = new Fixed(th.Info.Speed) * Trig.Sin(an); // finesine[an]);
 
             var dist = Geometry.AproxDistance(dest.X - source.X, dest.Y - source.Y);
-            dist = dist / new Fixed(th.Info.Speed);
+            dist = dist / th.Info.Speed;
 
             if (dist.Data < 1)
             {
                 dist = new Fixed(1);
             }
 
-            th.MomZ = (dest.Z - source.Z) / dist;
+            th.MomZ = new Fixed((dest.Z - source.Z).Data / dist.Data);
 
             P_CheckMissileSpawn(th);
 
