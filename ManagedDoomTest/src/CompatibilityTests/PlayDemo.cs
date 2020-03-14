@@ -126,6 +126,35 @@ namespace ManagedDoomTest.CompatibilityTests
         }
 
         [TestMethod]
+        public void ZombiemanTest2()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\zombieman_test2.wad"))
+            {
+                var demo = new Demo(@"data\zombieman_test2.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x97af3257u, (uint)lastHash);
+                Assert.AreEqual(0x994fe30au, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
         public void ImpTest()
         {
             using (var resource = new CommonResource(WadPath.Doom2, @"data\imp_test.wad"))
