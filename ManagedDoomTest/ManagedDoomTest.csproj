@@ -22,6 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="data\autoaim_test.lmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="data\autoaim_test.wad">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="data\player_movement_test.lmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
