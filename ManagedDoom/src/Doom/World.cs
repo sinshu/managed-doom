@@ -20,6 +20,9 @@ namespace ManagedDoom
 
         public int levelTime = 0;
 
+
+        public Thinkers thinkers;
+
         public World(CommonResource resorces, GameOptions options, Player[] players)
         {
             Options = options;
@@ -31,7 +34,7 @@ namespace ManagedDoom
 
             validCount = 0;
 
-            InitThinkers();
+            thinkers = new Thinkers(this);
             InitThingMovement();
             InitPathTraversal();
             InitSight();
@@ -49,7 +52,7 @@ namespace ManagedDoom
                 }
             }
 
-            RunThinkers();
+            thinkers.Run();
 
             levelTime++;
         }
@@ -297,7 +300,7 @@ namespace ManagedDoom
 
         public Mobj SpawnMobj(Fixed x, Fixed y, Fixed z, MobjType type)
         {
-            var mobj = thinkerPool.RentMobj();
+            var mobj = ThinkerPool.RentMobj(this);
 
             var info = Info.MobjInfos[(int)type];
 
@@ -347,7 +350,7 @@ namespace ManagedDoom
 
             //mobj->thinker.function.acp1 = (actionf_p1)P_MobjThinker;
 
-            AddThinker(mobj);
+            thinkers.Add(mobj);
 
             return mobj;
         }
@@ -375,7 +378,7 @@ namespace ManagedDoom
             StopSound(mobj);
 
             // free block
-            RemoveThinker(mobj);
+            thinkers.Remove(mobj);
         }
 
         public bool SetMobjState(Mobj mobj, State state)
@@ -507,23 +510,20 @@ namespace ManagedDoom
         public int GetMobjHash()
         {
             var hash = 0;
-            var current = thinkerCap.Next;
-            while (current != thinkerCap)
+            foreach (var thinker in thinkers)
             {
-                if (!current.Removed)
+                var mobj = thinker as Mobj;
+                if (mobj != null)
                 {
-                    var mobj = current as Mobj;
-                    if (mobj != null)
-                    {
-                        hash = DoomDebug.CombineHash(hash, mobj.GetHashCode());
-                    }
+                    hash = DoomDebug.CombineHash(hash, mobj.GetHashCode());
                 }
-                current = current.Next;
             }
             return hash;
         }
 
         public Map Map => map;
         public DoomRandom Random => random;
+
+        public Thinkers Thinkers => thinkers;
     }
 }

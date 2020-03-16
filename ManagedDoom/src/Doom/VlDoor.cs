@@ -91,7 +91,7 @@ namespace ManagedDoom
 							case VlDoorType.BlazeClose:
 								Sector.SpecialData = null;
 								// unlink and free
-								World.RemoveThinker(this);
+								World.thinkers.Remove(this);
 								World.StartSound(Sector.SoundOrigin, Sfx.BDCLS);
 								break;
 
@@ -99,7 +99,7 @@ namespace ManagedDoom
 							case VlDoorType.Close:
 								Sector.SpecialData = null;
 								// unlink and free
-								World.RemoveThinker(this);
+								World.thinkers.Remove(this);
 								break;
 
 							case VlDoorType.Close30ThenOpen:
@@ -149,7 +149,7 @@ namespace ManagedDoom
 							case VlDoorType.BlazeOpen:
 							case VlDoorType.Open:
 								Sector.SpecialData = null;
-								World.RemoveThinker(this); // unlink and free
+								World.thinkers.Remove(this); // unlink and free
 								break;
 
 							default:

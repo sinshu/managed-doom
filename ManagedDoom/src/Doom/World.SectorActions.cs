@@ -555,8 +555,8 @@ namespace ManagedDoom
 
 
 			// new door thinker
-			door = thinkerPool.RentVlDoor();
-			AddThinker(door);
+			door = ThinkerPool.RentVlDoor(this);
+			thinkers.Add(door);
 			sec.SpecialData = door;
 			door.Sector = sec;
 			door.Direction = 1;

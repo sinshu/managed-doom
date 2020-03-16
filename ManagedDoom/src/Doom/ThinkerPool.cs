@@ -2,26 +2,23 @@
 
 namespace ManagedDoom
 {
-    public sealed class ThinkerPool
+    public static class ThinkerPool
     {
-        private World world;
-
-        public ThinkerPool(World world)
+        static ThinkerPool()
         {
-            this.world = world;
         }
 
-        public Mobj RentMobj()
+        public static Mobj RentMobj(World world)
         {
             return new Mobj(world);
         }
 
-        public VlDoor RentVlDoor()
+        public static VlDoor RentVlDoor(World world)
         {
             return new VlDoor(world);
         }
 
-        public void Return(Thinker thinker)
+        public static void Return(Thinker thinker)
         {
         }
     }
