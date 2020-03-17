@@ -2,15 +2,13 @@
 
 namespace ManagedDoom
 {
-    public sealed partial class World
+    public sealed class PathTraversal
     {
-        public static readonly Fixed USERANGE = Fixed.FromInt(64);
-        public static readonly Fixed MELEERANGE = Fixed.FromInt(64);
-        public static readonly Fixed MISSILERANGE = Fixed.FromInt(32 * 64);
+        private World world;
 
         private Intercept[] intercepts;
         private int interceptCount;
-        private DivLine tempDiv;
+        public DivLine tempDiv;
         private DivLine trace;
         private bool earlyOut;
         //private PathTraverseFlags ptflags;
@@ -18,8 +16,10 @@ namespace ManagedDoom
         private Func<LineDef, bool> addLineIntercepts;
         private Func<Mobj, bool> addThingIntercepts;
 
-        private void InitPathTraversal()
+        public PathTraversal(World world)
         {
+            this.world = world;
+
             intercepts = new Intercept[256];
             for (var i = 0; i < intercepts.Length; i++)
             {
@@ -200,19 +200,21 @@ namespace ManagedDoom
 
         public bool PathTraverse(Fixed x1, Fixed y1, Fixed x2, Fixed y2, PathTraverseFlags flags, Func<Intercept, bool> trav)
         {
+            var bm = world.Map.BlockMap;
+
             earlyOut = (flags & PathTraverseFlags.EarlyOut) != 0;
 
-            var validCount = GetNewValidCount();
+            var validCount = world.GetNewValidCount();
 
             interceptCount = 0;
 
-            if (((x1 - map.BlockMap.OriginX).Data & (BlockMap.MapBlockSize.Data - 1)) == 0)
+            if (((x1 - bm.OriginX).Data & (BlockMap.MapBlockSize.Data - 1)) == 0)
             {
                 // don't side exactly on a line
                 x1 += Fixed.One;
             }
 
-            if (((y1 - map.BlockMap.OriginY).Data & (BlockMap.MapBlockSize.Data - 1)) == 0)
+            if (((y1 - bm.OriginY).Data & (BlockMap.MapBlockSize.Data - 1)) == 0)
             {
                 // don't side exactly on a line
                 y1 += Fixed.One;
@@ -223,14 +225,14 @@ namespace ManagedDoom
             trace.Dx = x2 - x1;
             trace.Dy = y2 - y1;
 
-            x1 -= map.BlockMap.OriginX;
-            y1 -= map.BlockMap.OriginY;
+            x1 -= bm.OriginX;
+            y1 -= bm.OriginY;
 
             var xt1 = x1.Data >> BlockMap.MapBlockShift;
             var yt1 = y1.Data >> BlockMap.MapBlockShift;
 
-            x2 -= map.BlockMap.OriginX;
-            y2 -= map.BlockMap.OriginY;
+            x2 -= bm.OriginX;
+            y2 -= bm.OriginY;
 
             var xt2 = x2.Data >> BlockMap.MapBlockShift;
             var yt2 = y2.Data >> BlockMap.MapBlockShift;
@@ -296,7 +298,7 @@ namespace ManagedDoom
             {
                 if ((flags & PathTraverseFlags.AddLines) != 0)
                 {
-                    if (!map.BlockMap.IterateLines(mapx, mapy, addLineIntercepts, validCount))
+                    if (!bm.IterateLines(mapx, mapy, addLineIntercepts, validCount))
                     {
                         // early out
                         return false;
@@ -305,7 +307,7 @@ namespace ManagedDoom
 
                 if ((flags & PathTraverseFlags.AddThings) != 0)
                 {
-                    if (!map.BlockMap.IterateThings(mapx, mapy, addThingIntercepts))
+                    if (!bm.IterateThings(mapx, mapy, addThingIntercepts))
                     {
                         // early out
                         return false;
@@ -360,8 +362,8 @@ namespace ManagedDoom
         private Fixed aimslope;
 
         // slopes to top and bottom of target
-        private Fixed topslope;
-        private Fixed bottomslope;
+        public Fixed topslope;
+        public Fixed bottomslope;
 
 
 
@@ -385,9 +387,9 @@ namespace ManagedDoom
                 // Crosses a two sided line.
                 // A two sided line will restrict
                 // the possible target ranges.
-                LineOpening(li);
+                world.LineOpening(li);
 
-                if (openBottom >= openTop)
+                if (world.openBottom >= world.openTop)
                 {
                     // stop
                     return false;
@@ -397,7 +399,7 @@ namespace ManagedDoom
 
                 if (li.FrontSector.FloorHeight != li.BackSector.FloorHeight)
                 {
-                    var slope = (openBottom - shootz) / dist;
+                    var slope = (world.openBottom - shootz) / dist;
                     if (slope > bottomslope)
                     {
                         bottomslope = slope;
@@ -406,7 +408,7 @@ namespace ManagedDoom
 
                 if (li.FrontSector.CeilingHeight != li.BackSector.CeilingHeight)
                 {
-                    var slope = (openTop - shootz) / dist;
+                    var slope = (world.openTop - shootz) / dist;
                     if (slope < topslope)
                     {
                         topslope = slope;
@@ -498,13 +500,13 @@ namespace ManagedDoom
                 }
 
                 // crosses a two sided line
-                LineOpening(li);
+                world.LineOpening(li);
 
                 var dist = attackrange * ic.Frac;
 
                 if (li.FrontSector.FloorHeight != li.BackSector.FloorHeight)
                 {
-                    var slope = (openBottom - shootz) / dist;
+                    var slope = (world.openBottom - shootz) / dist;
                     if (slope > aimslope)
                     {
                         goto hitline;
@@ -513,7 +515,7 @@ namespace ManagedDoom
 
                 if (li.FrontSector.CeilingHeight != li.BackSector.CeilingHeight)
                 {
-                    var slope = (openTop - shootz) / dist;
+                    var slope = (world.openTop - shootz) / dist;
                     if (slope < aimslope)
                     {
                         goto hitline;
@@ -531,7 +533,7 @@ namespace ManagedDoom
                 var y = trace.Y + trace.Dy * frac;
                 var z = shootz + aimslope * (frac * attackrange);
 
-                if (li.FrontSector.CeilingFlat == map.SkyFlatNumber)
+                if (li.FrontSector.CeilingFlat == world.Map.SkyFlatNumber)
                 {
                     // don't shoot the sky!
                     if (z > li.FrontSector.CeilingHeight)
@@ -540,7 +542,7 @@ namespace ManagedDoom
                     }
 
                     // it's a sky hack wall
-                    if (li.BackSector != null && li.BackSector.CeilingFlat == map.SkyFlatNumber)
+                    if (li.BackSector != null && li.BackSector.CeilingFlat == world.Map.SkyFlatNumber)
                     {
                         return false;
                     }
@@ -607,7 +609,7 @@ namespace ManagedDoom
 
                 if (la_damage != 0)
                 {
-                    DamageMobj(th, shootthing, shootthing, la_damage);
+                    world.DamageMobj(th, shootthing, shootthing, la_damage);
                 }
 
                 // don't go any farther
@@ -680,11 +682,11 @@ namespace ManagedDoom
 
         private void SpawnPuff(Fixed x, Fixed y, Fixed z)
         {
-            z += new Fixed((random.Next() - random.Next()) << 10);
+            z += new Fixed((world.Random.Next() - world.Random.Next()) << 10);
 
-            var th = SpawnMobj(x, y, z, MobjType.Puff);
+            var th = world.SpawnMobj(x, y, z, MobjType.Puff);
             th.MomZ = Fixed.One;
-            th.Tics -= random.Next() & 3;
+            th.Tics -= world.Random.Next() & 3;
 
             if (th.Tics < 1)
             {
@@ -692,9 +694,9 @@ namespace ManagedDoom
             }
 
             // don't make punches spark on the wall
-            if (attackrange == MELEERANGE)
+            if (attackrange == World.MELEERANGE)
             {
-                SetMobjState(th, State.Puff3);
+                world.SetMobjState(th, State.Puff3);
             }
         }
 
@@ -705,10 +707,10 @@ namespace ManagedDoom
         // 
         private void SpawnBlood(Fixed x, Fixed y, Fixed z, int damage)
         {
-            z += new Fixed((random.Next() - random.Next()) << 10);
-            var th = SpawnMobj(x, y, z, MobjType.Blood);
+            z += new Fixed((world.Random.Next() - world.Random.Next()) << 10);
+            var th = world.SpawnMobj(x, y, z, MobjType.Blood);
             th.MomZ = Fixed.FromInt(2);
-            th.Tics -= random.Next() & 3;
+            th.Tics -= world.Random.Next() & 3;
 
             if (th.Tics < 1)
             {
@@ -717,11 +719,11 @@ namespace ManagedDoom
 
             if (damage <= 12 && damage >= 9)
             {
-                SetMobjState(th, State.Blood2);
+                world.SetMobjState(th, State.Blood2);
             }
             else if (damage < 9)
             {
-                SetMobjState(th, State.Blood3);
+                world.SetMobjState(th, State.Blood3);
             }
         }
 

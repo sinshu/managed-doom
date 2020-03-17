@@ -316,6 +316,7 @@ namespace ManagedDoom
         public static void Punch(Player player, PlayerSpriteDef psp)
         {
             var world = player.Mobj.World;
+            var pt = world.PathTraversal;
 
             var damage = (world.Random.Next() % 10 + 1) << 1;
 
@@ -326,18 +327,18 @@ namespace ManagedDoom
 
             var angle = player.Mobj.Angle;
             angle += new Angle((world.Random.Next() - world.Random.Next()) << 18);
-            var slope = world.AimLineAttack(player.Mobj, angle, World.MELEERANGE);
-            world.LineAttack(player.Mobj, angle, World.MELEERANGE, slope, damage);
+            var slope = world.PathTraversal.AimLineAttack(player.Mobj, angle, World.MELEERANGE);
+            world.PathTraversal.LineAttack(player.Mobj, angle, World.MELEERANGE, slope, damage);
 
             // turn to face target
-            if (world.linetarget != null)
+            if (pt.linetarget != null)
             {
                 world.StartSound(player.Mobj, Sfx.PUNCH);
                 player.Mobj.Angle = Geometry.PointToAngle(
                     player.Mobj.X,
                     player.Mobj.Y,
-                    world.linetarget.X,
-                    world.linetarget.Y);
+                    pt.linetarget.X,
+                    pt.linetarget.Y);
             }
         }
 
@@ -362,19 +363,20 @@ namespace ManagedDoom
         private static void P_BulletSlope(Mobj mo)
         {
             var world = mo.World;
+            var pt = world.PathTraversal;
 
             // see which target is to be aimed at
             var an = mo.Angle;
-            world.bulletslope = world.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
+            pt.bulletslope = pt.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
 
-            if (world.linetarget == null)
+            if (world.PathTraversal.linetarget == null)
             {
                 an += new Angle(1 << 26);
-                world.bulletslope = world.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
-                if (world.linetarget == null)
+                pt.bulletslope = pt.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
+                if (pt.linetarget == null)
                 {
                     an -= new Angle(2 << 26);
-                    world.bulletslope = world.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
+                    pt.bulletslope = pt.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
                 }
             }
         }
@@ -385,6 +387,7 @@ namespace ManagedDoom
         private static void P_GunShot(Mobj mo, bool accurate)
         {
             var world = mo.World;
+            var pt = world.PathTraversal;
 
             var damage = 5 * (world.Random.Next() % 3 + 1);
             var angle = mo.Angle;
@@ -394,7 +397,7 @@ namespace ManagedDoom
                 angle += new Angle((world.Random.Next() - world.Random.Next()) << 18);
             }
 
-            world.LineAttack(mo, angle, World.MISSILERANGE, world.bulletslope, damage);
+            pt.LineAttack(mo, angle, World.MISSILERANGE, pt.bulletslope, damage);
         }
 
 

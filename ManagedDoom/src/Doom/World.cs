@@ -21,7 +21,8 @@ namespace ManagedDoom
         public int levelTime = 0;
 
 
-        public Thinkers thinkers;
+        private Thinkers thinkers;
+        private PathTraversal pathTraversal;
 
         public World(CommonResource resorces, GameOptions options, Player[] players)
         {
@@ -35,8 +36,8 @@ namespace ManagedDoom
             validCount = 0;
 
             thinkers = new Thinkers(this);
+            pathTraversal = new PathTraversal(this);
             InitThingMovement();
-            InitPathTraversal();
             InitSight();
 
             LoadThings();
@@ -525,5 +526,13 @@ namespace ManagedDoom
         public DoomRandom Random => random;
 
         public Thinkers Thinkers => thinkers;
+        public PathTraversal PathTraversal => pathTraversal;
+
+
+
+
+        public static readonly Fixed USERANGE = Fixed.FromInt(64);
+        public static readonly Fixed MELEERANGE = Fixed.FromInt(64);
+        public static readonly Fixed MISSILERANGE = Fixed.FromInt(32 * 64);
     }
 }

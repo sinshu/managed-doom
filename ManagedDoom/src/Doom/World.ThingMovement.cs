@@ -698,6 +698,8 @@ namespace ManagedDoom
         //
         private void P_SlideMove(Mobj mo)
         {
+            var pt = PathTraversal;
+
             slidemo = mo;
             var hitcount = 0;
 
@@ -744,13 +746,13 @@ namespace ManagedDoom
 
             bestslidefrac = new Fixed(Fixed.FracUnit + 1);
 
-            PathTraverse(leadx, leady, leadx + mo.MomX, leady + mo.MomY,
+            pt.PathTraverse(leadx, leady, leadx + mo.MomX, leady + mo.MomY,
                 PathTraverseFlags.AddLines, ic => PTR_SlideTraverse(ic));
 
-            PathTraverse(trailx, leady, trailx + mo.MomX, leady + mo.MomY,
+            pt.PathTraverse(trailx, leady, trailx + mo.MomX, leady + mo.MomY,
                 PathTraverseFlags.AddLines, ic => PTR_SlideTraverse(ic));
 
-            PathTraverse(leadx, traily, leadx + mo.MomX, traily + mo.MomY,
+            pt.PathTraverse(leadx, traily, leadx + mo.MomX, traily + mo.MomY,
                 PathTraverseFlags.AddLines, ic => PTR_SlideTraverse(ic));
 
             // move up to the wall

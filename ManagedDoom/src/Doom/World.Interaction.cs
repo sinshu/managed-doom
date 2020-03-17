@@ -729,6 +729,8 @@ namespace ManagedDoom
 		//
 		public void UseLines(Player player)
 		{
+			var pt = PathTraversal;
+
 			usething = player.Mobj;
 
 			var angle = player.Mobj.Angle; // >> ANGLETOFINESHIFT;
@@ -738,7 +740,7 @@ namespace ManagedDoom
 			var x2 = x1 + (USERANGE.Data >> Fixed.FracBits) * Trig.Cos(angle); // finecosine[angle];
 			var y2 = y1 + (USERANGE.Data >> Fixed.FracBits) * Trig.Sin(angle); // finesine[angle];
 
-			PathTraverse(x1, y1, x2, y2, PathTraverseFlags.AddLines, ic => PTR_UseTraverse(ic));
+			pt.PathTraverse(x1, y1, x2, y2, PathTraverseFlags.AddLines, ic => PTR_UseTraverse(ic));
 		}
 
 	}

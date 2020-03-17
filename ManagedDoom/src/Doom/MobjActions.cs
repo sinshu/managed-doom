@@ -748,12 +748,12 @@ namespace ManagedDoom
 
             FaceTarget(actor);
             var angle = actor.Angle;
-            var slope = world.AimLineAttack(actor, angle, World.MISSILERANGE);
+            var slope = world.PathTraversal.AimLineAttack(actor, angle, World.MISSILERANGE);
 
             world.StartSound(actor, Sfx.PISTOL);
             angle += new Angle((world.Random.Next() - world.Random.Next()) << 20);
             var damage = ((world.Random.Next() % 5) + 1) * 3;
-            world.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
+            world.PathTraversal.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
         }
 
         public static void Scream(this Mobj actor)

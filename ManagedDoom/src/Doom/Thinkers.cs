@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ManagedDoom
 {
-    public class Thinkers
+    public sealed class Thinkers
     {
         private World world;
 

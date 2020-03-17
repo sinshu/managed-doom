@@ -52,6 +52,8 @@ namespace ManagedDoom
 		//
 		public bool CrossSubsector(int num, int validcount)
 		{
+			var pt = PathTraversal;
+
 			var sub = map.Subsectors[num];
 
 			// check lines
@@ -82,12 +84,12 @@ namespace ManagedDoom
 				}
 
 
-				tempDiv.X = v1.X;
-				tempDiv.Y = v1.Y;
-				tempDiv.Dx = v2.X - v1.X;
-				tempDiv.Dy = v2.Y - v1.Y;
-				s1 = Geometry.DivLineSide(strace.X, strace.Y, tempDiv);
-				s2 = Geometry.DivLineSide(t2x, t2y, tempDiv);
+				pt.tempDiv.X = v1.X;
+				pt.tempDiv.Y = v1.Y;
+				pt.tempDiv.Dx = v2.X - v1.X;
+				pt.tempDiv.Dy = v2.Y - v1.Y;
+				s1 = Geometry.DivLineSide(strace.X, strace.Y, pt.tempDiv);
+				s2 = Geometry.DivLineSide(t2x, t2y, pt.tempDiv);
 
 				// line isn't crossed?
 				if (s1 == s2)
@@ -141,27 +143,27 @@ namespace ManagedDoom
 					return false;
 				}
 
-				var frac = P_InterceptVector2(strace, tempDiv);
+				var frac = P_InterceptVector2(strace, pt.tempDiv);
 
 				if (front.FloorHeight != back.FloorHeight)
 				{
 					var slope = (openBottom - sightzstart) / frac;
-					if (slope > bottomslope)
+					if (slope > pt.bottomslope)
 					{
-						bottomslope = slope;
+						pt.bottomslope = slope;
 					}
 				}
 
 				if (front.CeilingHeight != back.CeilingHeight)
 				{
 					var slope = (openTop - sightzstart) / frac;
-					if (slope < topslope)
+					if (slope < pt.topslope)
 					{
-						topslope = slope;
+						pt.topslope = slope;
 					}
 				}
 
-				if (topslope <= bottomslope)
+				if (pt.topslope <= pt.bottomslope)
 				{
 					// stop
 					return false;
@@ -228,6 +230,8 @@ namespace ManagedDoom
 		//
 		public bool CheckSight(Mobj t1, Mobj t2)
 		{
+			var pt = PathTraversal;
+
 			// First check for trivial rejection.
 			// Check in REJECT table.
 			if (map.Reject.Check(t1.Subsector.Sector, t2.Subsector.Sector))
@@ -243,8 +247,8 @@ namespace ManagedDoom
 			sightcounts[1]++;
 
 			sightzstart = t1.Z + t1.Height - new Fixed(t1.Height.Data >> 2);
-			topslope = (t2.Z + t2.Height) - sightzstart;
-			bottomslope = (t2.Z) - sightzstart;
+			pt.topslope = (t2.Z + t2.Height) - sightzstart;
+			pt.bottomslope = (t2.Z) - sightzstart;
 
 			strace.X = t1.X;
 			strace.Y = t1.Y;
