@@ -23,6 +23,8 @@ namespace ManagedDoom
 
         private Thinkers thinkers;
         private PathTraversal pathTraversal;
+        private Hitscan hitscan;
+        private VisibilityCheck visibilityCheck;
 
         public World(CommonResource resorces, GameOptions options, Player[] players)
         {
@@ -37,8 +39,9 @@ namespace ManagedDoom
 
             thinkers = new Thinkers(this);
             pathTraversal = new PathTraversal(this);
+            hitscan = new Hitscan(this);
+            visibilityCheck = new VisibilityCheck(this);
             InitThingMovement();
-            InitSight();
 
             LoadThings();
         }
@@ -527,8 +530,8 @@ namespace ManagedDoom
 
         public Thinkers Thinkers => thinkers;
         public PathTraversal PathTraversal => pathTraversal;
-
-
+        public Hitscan Hitscan => hitscan;
+        public VisibilityCheck VisibilityCheck => visibilityCheck;
 
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);

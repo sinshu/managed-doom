@@ -2,8 +2,10 @@
 
 namespace ManagedDoom
 {
-	public sealed partial class World
+	public sealed class VisibilityCheck
 	{
+		private World world;
+
 		// eye z of looker
 		private Fixed sightzstart;
 
@@ -14,10 +16,20 @@ namespace ManagedDoom
 
 		private int[] sightcounts;
 
-		private void InitSight()
+		private Fixed bottomslope;
+		private Fixed topslope;
+
+		private DivLine tempDiv;
+
+		public VisibilityCheck(World world)
 		{
+			this.world = world;
+
+
 			strace = new DivLine();
 			sightcounts = new int[2];
+
+			tempDiv = new DivLine();
 		}
 
 		//
@@ -52,7 +64,8 @@ namespace ManagedDoom
 		//
 		public bool CrossSubsector(int num, int validcount)
 		{
-			var pt = PathTraversal;
+			var pt = world.PathTraversal;
+			var map = world.Map;
 
 			var sub = map.Subsectors[num];
 
@@ -84,12 +97,12 @@ namespace ManagedDoom
 				}
 
 
-				pt.tempDiv.X = v1.X;
-				pt.tempDiv.Y = v1.Y;
-				pt.tempDiv.Dx = v2.X - v1.X;
-				pt.tempDiv.Dy = v2.Y - v1.Y;
-				s1 = Geometry.DivLineSide(strace.X, strace.Y, pt.tempDiv);
-				s2 = Geometry.DivLineSide(t2x, t2y, pt.tempDiv);
+				tempDiv.X = v1.X;
+				tempDiv.Y = v1.Y;
+				tempDiv.Dx = v2.X - v1.X;
+				tempDiv.Dy = v2.Y - v1.Y;
+				s1 = Geometry.DivLineSide(strace.X, strace.Y, tempDiv);
+				s2 = Geometry.DivLineSide(t2x, t2y, tempDiv);
 
 				// line isn't crossed?
 				if (s1 == s2)
@@ -119,51 +132,51 @@ namespace ManagedDoom
 				// because of ceiling height differences
 				if (front.CeilingHeight < back.CeilingHeight)
 				{
-					openTop = front.CeilingHeight;
+					world.openTop = front.CeilingHeight;
 				}
 				else
 				{
-					openTop = back.CeilingHeight;
+					world.openTop = back.CeilingHeight;
 				}
 
 				// because of ceiling height differences
 				if (front.FloorHeight > back.FloorHeight)
 				{
-					openBottom = front.FloorHeight;
+					world.openBottom = front.FloorHeight;
 				}
 				else
 				{
-					openBottom = back.FloorHeight;
+					world.openBottom = back.FloorHeight;
 				}
 
 				// quick test for totally closed doors
-				if (openBottom >= openTop)
+				if (world.openBottom >= world.openTop)
 				{
 					// stop
 					return false;
 				}
 
-				var frac = P_InterceptVector2(strace, pt.tempDiv);
+				var frac = P_InterceptVector2(strace, tempDiv);
 
 				if (front.FloorHeight != back.FloorHeight)
 				{
-					var slope = (openBottom - sightzstart) / frac;
-					if (slope > pt.bottomslope)
+					var slope = (world.openBottom - sightzstart) / frac;
+					if (slope > bottomslope)
 					{
-						pt.bottomslope = slope;
+						bottomslope = slope;
 					}
 				}
 
 				if (front.CeilingHeight != back.CeilingHeight)
 				{
-					var slope = (openTop - sightzstart) / frac;
-					if (slope < pt.topslope)
+					var slope = (world.openTop - sightzstart) / frac;
+					if (slope < topslope)
 					{
-						pt.topslope = slope;
+						topslope = slope;
 					}
 				}
 
-				if (pt.topslope <= pt.bottomslope)
+				if (topslope <= bottomslope)
 				{
 					// stop
 					return false;
@@ -194,7 +207,7 @@ namespace ManagedDoom
 				}
 			}
 
-			var bsp = map.Nodes[bspnum];
+			var bsp = world.Map.Nodes[bspnum];
 
 			// decide which side the start point is on
 			var side = Geometry.DivLineSide(strace.X, strace.Y, bsp);
@@ -230,7 +243,8 @@ namespace ManagedDoom
 		//
 		public bool CheckSight(Mobj t1, Mobj t2)
 		{
-			var pt = PathTraversal;
+			var pt = world.PathTraversal;
+			var map = world.Map;
 
 			// First check for trivial rejection.
 			// Check in REJECT table.
@@ -247,8 +261,8 @@ namespace ManagedDoom
 			sightcounts[1]++;
 
 			sightzstart = t1.Z + t1.Height - new Fixed(t1.Height.Data >> 2);
-			pt.topslope = (t2.Z + t2.Height) - sightzstart;
-			pt.bottomslope = (t2.Z) - sightzstart;
+			topslope = (t2.Z + t2.Height) - sightzstart;
+			bottomslope = (t2.Z) - sightzstart;
 
 			strace.X = t1.X;
 			strace.Y = t1.Y;
@@ -258,7 +272,7 @@ namespace ManagedDoom
 			strace.Dy = t2.Y - t1.Y;
 
 			// the head node is the last node output
-			return CrossBSPNode(map.Nodes.Length - 1, GetNewValidCount());
+			return CrossBSPNode(map.Nodes.Length - 1, world.GetNewValidCount());
 		}
 	}
 }

@@ -68,7 +68,7 @@ namespace ManagedDoom
                     continue;
                 }
 
-                if (!world.CheckSight(actor, player.Mobj))
+                if (!world.VisibilityCheck.CheckSight(actor, player.Mobj))
                 {
                     // out of sight
                     continue;
@@ -117,7 +117,7 @@ namespace ManagedDoom
 
                 if ((actor.Flags & MobjFlags.Ambush) != 0)
                 {
-                    if (world.CheckSight(actor, actor.Target))
+                    if (world.VisibilityCheck.CheckSight(actor, actor.Target))
                     {
                         goto seeyou;
                     }
@@ -494,7 +494,7 @@ namespace ManagedDoom
                 return false;
             }
 
-            if (!world.CheckSight(actor, actor.Target))
+            if (!world.VisibilityCheck.CheckSight(actor, actor.Target))
             {
                 return false;
             }
@@ -509,7 +509,7 @@ namespace ManagedDoom
         {
             var world = actor.World;
 
-            if (!world.CheckSight(actor, actor.Target))
+            if (!world.VisibilityCheck.CheckSight(actor, actor.Target))
             {
                 return false;
             }
@@ -695,7 +695,7 @@ namespace ManagedDoom
             // possibly choose another target
             if (world.Options.NetGame
                 && actor.Threshold == 0
-                && !world.CheckSight(actor, actor.Target))
+                && !world.VisibilityCheck.CheckSight(actor, actor.Target))
             {
                 if (P_LookForPlayers(actor, true))
                     return; // got a new target
@@ -748,12 +748,12 @@ namespace ManagedDoom
 
             FaceTarget(actor);
             var angle = actor.Angle;
-            var slope = world.PathTraversal.AimLineAttack(actor, angle, World.MISSILERANGE);
+            var slope = world.Hitscan.AimLineAttack(actor, angle, World.MISSILERANGE);
 
             world.StartSound(actor, Sfx.PISTOL);
             angle += new Angle((world.Random.Next() - world.Random.Next()) << 20);
             var damage = ((world.Random.Next() % 5) + 1) * 3;
-            world.PathTraversal.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
+            world.Hitscan.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
         }
 
         public static void Scream(this Mobj actor)
