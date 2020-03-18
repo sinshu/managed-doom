@@ -2,12 +2,14 @@
 
 namespace ManagedDoom
 {
-    public sealed partial class World
+    public sealed class ThingMovement
     {
         public static readonly Fixed MaxRadius = Fixed.FromInt(32);
 
         private static readonly Fixed Gravity = Fixed.One;
         private static readonly Fixed MaxMove = Fixed.FromInt(30);
+
+        private World world;
 
         private Fixed[] tmbbox;
         private Mobj tmthing;
@@ -31,8 +33,10 @@ namespace ManagedDoom
 
         public static readonly int MAXSPECIALCROSS = 16;
 
-        private void InitThingMovement()
+        public ThingMovement(World world)
         {
+            this.world = world;
+
             tmbbox = new Fixed[4];
 
             spechit = new LineDef[MAXSPECIALCROSS];
@@ -43,6 +47,8 @@ namespace ManagedDoom
 
         public void SetThingPosition(Mobj thing)
         {
+            var map = world.Map;
+
             var ss = Geometry.PointInSubsector(thing.X, thing.Y, map);
 
             thing.Subsector = ss;
@@ -97,6 +103,8 @@ namespace ManagedDoom
 
         public void UnsetThingPosition(Mobj thing)
         {
+            var map = world.Map;
+
             // invisible things don't go into the sector links
             if ((thing.Flags & MobjFlags.NoSector) == 0)
             {
@@ -145,51 +153,7 @@ namespace ManagedDoom
 
 
 
-        //
-        // P_LineOpening
-        // Sets opentop and openbottom to the window
-        // through a two sided line.
-        // OPTIMIZE: keep this precalculated
-        //
-        public Fixed openTop;
-        public Fixed openBottom;
-        public Fixed openRange;
-        public Fixed lowFloor;
 
-        public void LineOpening(LineDef linedef)
-        {
-            if (linedef.Side1 == null)
-            {
-                // single sided line
-                openRange = Fixed.Zero;
-                return;
-            }
-
-            var front = linedef.FrontSector;
-            var back = linedef.BackSector;
-
-            if (front.CeilingHeight < back.CeilingHeight)
-            {
-                openTop = front.CeilingHeight;
-            }
-            else
-            {
-                openTop = back.CeilingHeight;
-            }
-
-            if (front.FloorHeight > back.FloorHeight)
-            {
-                openBottom = front.FloorHeight;
-                lowFloor = back.FloorHeight;
-            }
-            else
-            {
-                openBottom = back.FloorHeight;
-                lowFloor = front.FloorHeight;
-            }
-
-            openRange = openTop - openBottom;
-        }
 
         //
         // PIT_CheckLine
@@ -197,6 +161,8 @@ namespace ManagedDoom
         //
         private bool PIT_CheckLine(LineDef ld)
         {
+            var mc = world.MapCollision;
+
             if (tmbbox[Box.Right] <= ld.BboxLeft
                 || tmbbox[Box.Left] >= ld.BboxRight
                 || tmbbox[Box.Top] <= ld.BboxBottom
@@ -243,23 +209,23 @@ namespace ManagedDoom
             }
 
             // set openrange, opentop, openbottom
-            LineOpening(ld);
+            mc.LineOpening(ld);
 
             // adjust floor / ceiling heights
-            if (openTop < tmceilingz)
+            if (mc.openTop < tmceilingz)
             {
-                tmceilingz = openTop;
+                tmceilingz = mc.openTop;
                 ceilingline = ld;
             }
 
-            if (openBottom > tmfloorz)
+            if (mc.openBottom > tmfloorz)
             {
-                tmfloorz = openBottom;
+                tmfloorz = mc.openBottom;
             }
 
-            if (lowFloor < tmdropoffz)
+            if (mc.lowFloor < tmdropoffz)
             {
-                tmdropoffz = lowFloor;
+                tmdropoffz = mc.lowFloor;
             }
 
             // if contacted a special line, add it to the list
@@ -300,14 +266,14 @@ namespace ManagedDoom
             // check for skulls slamming into things
             if ((tmthing.Flags & MobjFlags.SkullFly) != 0)
             {
-                var damage = ((random.Next() % 8) + 1) * tmthing.Info.Damage;
+                var damage = ((world.Random.Next() % 8) + 1) * tmthing.Info.Damage;
 
-                DamageMobj(thing, tmthing, tmthing, damage);
+                world.DamageMobj(thing, tmthing, tmthing, damage);
 
                 tmthing.Flags &= ~MobjFlags.SkullFly;
                 tmthing.MomX = tmthing.MomY = tmthing.MomZ = Fixed.Zero;
 
-                SetMobjState(tmthing, tmthing.Info.SpawnState);
+                world.SetMobjState(tmthing, tmthing.Info.SpawnState);
 
                 // stop moving
                 return false;
@@ -356,8 +322,8 @@ namespace ManagedDoom
                 }
 
                 // damage / explode
-                var damage = ((random.Next() % 8) + 1) * tmthing.Info.Damage;
-                DamageMobj(thing, tmthing, tmthing.Target, damage);
+                var damage = ((world.Random.Next() % 8) + 1) * tmthing.Info.Damage;
+                world.DamageMobj(thing, tmthing, tmthing.Target, damage);
 
                 // don't traverse any more
                 return false;
@@ -370,7 +336,7 @@ namespace ManagedDoom
                 if ((tmflags & MobjFlags.PickUp) != 0)
                 {
                     // can remove thing
-                    TouchSpecialThing(thing, tmthing);
+                    world.TouchSpecialThing(thing, tmthing);
                 }
                 return !solid;
             }
@@ -402,8 +368,10 @@ namespace ManagedDoom
         //  speciallines[]
         //  numspeciallines
         //
-        private bool CheckPosition(Mobj thing, Fixed x, Fixed y)
+        public bool CheckPosition(Mobj thing, Fixed x, Fixed y)
         {
+            var map = world.Map;
+
             tmthing = thing;
             tmflags = thing.Flags;
 
@@ -425,7 +393,7 @@ namespace ManagedDoom
             tmfloorz = tmdropoffz = newsubsec.Sector.FloorHeight;
             tmceilingz = newsubsec.Sector.CeilingHeight;
 
-            var validCount = GetNewValidCount();
+            var validCount = world.GetNewValidCount();
 
             numspechit = 0;
 
@@ -629,6 +597,8 @@ namespace ManagedDoom
         //
         private bool PTR_SlideTraverse(Intercept ic)
         {
+            var mc = world.MapCollision;
+
             if (ic.Line == null)
             {
                 throw new Exception("PTR_SlideTraverse: not a line?");
@@ -648,21 +618,21 @@ namespace ManagedDoom
             }
 
             // set openrange, opentop, openbottom
-            LineOpening(li);
+            mc.LineOpening(li);
 
-            if (openRange < slidemo.Height)
+            if (mc.openRange < slidemo.Height)
             {
                 // doesn't fit
                 goto isblocking;
             }
 
-            if (openTop - slidemo.Z < slidemo.Height)
+            if (mc.openTop - slidemo.Z < slidemo.Height)
             {
                 // mobj is too high
                 goto isblocking;
             }
 
-            if (openBottom - slidemo.Z > Fixed.FromInt(24))
+            if (mc.openBottom - slidemo.Z > Fixed.FromInt(24))
             {
                 // too big a step up
                 goto isblocking;
@@ -698,7 +668,7 @@ namespace ManagedDoom
         //
         private void P_SlideMove(Mobj mo)
         {
-            var pt = PathTraversal;
+            var pt = world.PathTraversal;
 
             slidemo = mo;
             var hitcount = 0;
@@ -833,7 +803,7 @@ namespace ManagedDoom
                     mo.Flags &= ~MobjFlags.SkullFly;
                     mo.MomX = mo.MomY = mo.MomZ = Fixed.Zero;
 
-                    SetMobjState(mo, mo.Info.SpawnState);
+                    world.SetMobjState(mo, mo.Info.SpawnState);
                 }
 
                 return;
@@ -893,12 +863,12 @@ namespace ManagedDoom
                         // explode a missile
                         if (ceilingline != null &&
                             ceilingline.BackSector != null &&
-                            ceilingline.BackSector.CeilingFlat == map.SkyFlatNumber)
+                            ceilingline.BackSector.CeilingFlat == world.Map.SkyFlatNumber)
                         {
                             // Hack to prevent missiles exploding
                             // against the sky.
                             // Does not handle sky floors.
-                            RemoveMobj(mo);
+                            world.RemoveMobj(mo);
                             return;
                         }
                         P_ExplodeMissile(mo);
@@ -958,7 +928,7 @@ namespace ManagedDoom
                 // if in a walking frame, stop moving
                 if (player != null && player.Mobj.State.Frame < 4)
                 {
-                    SetMobjState(player.Mobj, State.Play);
+                    world.SetMobjState(player.Mobj, State.Play);
                 }
 
                 mo.MomX = Fixed.Zero;
@@ -1040,7 +1010,7 @@ namespace ManagedDoom
                         // after hitting the ground (hard),
                         // and utter appropriate sound.
                         mo.Player.DeltaViewHeight = new Fixed(mo.MomZ.Data >> 3);
-                        StartSound(mo, Sfx.OOF);
+                        world.StartSound(mo, Sfx.OOF);
                     }
                     mo.MomZ = Fixed.Zero;
                 }
@@ -1097,13 +1067,13 @@ namespace ManagedDoom
         //
         // P_ExplodeMissile  
         //
-        private void P_ExplodeMissile(Mobj mo)
+        public void P_ExplodeMissile(Mobj mo)
         {
             mo.MomX = mo.MomY = mo.MomZ = Fixed.Zero;
 
-            SetMobjState(mo, Info.MobjInfos[(int)mo.Type].DeathState);
+            world.SetMobjState(mo, Info.MobjInfos[(int)mo.Type].DeathState);
 
-            mo.Tics -= Random.Next() & 3;
+            mo.Tics -= world.Random.Next() & 3;
 
             if (mo.Tics < 1)
             {
@@ -1114,7 +1084,7 @@ namespace ManagedDoom
 
             if (mo.Info.DeathSound != 0)
             {
-                StartSound(mo, mo.Info.DeathSound);
+                world.StartSound(mo, mo.Info.DeathSound);
             }
         }
     }

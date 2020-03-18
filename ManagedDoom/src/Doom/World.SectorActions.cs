@@ -16,13 +16,15 @@ namespace ManagedDoom
 		//
 		private bool P_ThingHeightClip(Mobj thing)
 		{
+			var tm = ThingMovement;
+
 			var onfloor = (thing.Z == thing.FloorZ);
 
-			CheckPosition(thing, thing.X, thing.Y);
+			tm.CheckPosition(thing, thing.X, thing.Y);
 			// what about stranding a monster partially off an edge?
 
-			thing.FloorZ = tmfloorz;
-			thing.CeilingZ = tmceilingz;
+			thing.FloorZ = tm.tmfloorz;
+			thing.CeilingZ = tm.tmceilingz;
 
 			if (onfloor)
 			{

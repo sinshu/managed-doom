@@ -225,6 +225,8 @@ namespace ManagedDoom
         {
             var world = actor.World;
 
+            var tm = world.ThingMovement;
+
             if (actor.MoveDir == Direction.None)
             {
                 return false;
@@ -238,21 +240,21 @@ namespace ManagedDoom
             var tryx = actor.X + actor.Info.Speed * xspeed[(int)actor.MoveDir];
             var tryy = actor.Y + actor.Info.Speed * yspeed[(int)actor.MoveDir];
 
-            var try_ok = world.P_TryMove(actor, tryx, tryy);
+            var try_ok = tm.P_TryMove(actor, tryx, tryy);
 
             if (!try_ok)
             {
                 // open any specials
-                if ((actor.Flags & MobjFlags.Float) != 0 && world.floatok)
+                if ((actor.Flags & MobjFlags.Float) != 0 && tm.floatok)
                 {
                     // must adjust height
-                    if (actor.Z < world.tmfloorz)
+                    if (actor.Z < tm.tmfloorz)
                     {
-                        actor.Z += World.FLOATSPEED;
+                        actor.Z += ThingMovement.FLOATSPEED;
                     }
                     else
                     {
-                        actor.Z -= World.FLOATSPEED;
+                        actor.Z -= ThingMovement.FLOATSPEED;
                     }
 
                     actor.Flags |= MobjFlags.InFloat;
@@ -260,16 +262,16 @@ namespace ManagedDoom
                     return true;
                 }
 
-                if (world.numspechit == 0)
+                if (tm.numspechit == 0)
                 {
                     return false;
                 }
 
                 actor.MoveDir = Direction.None;
                 var good = false;
-                while (world.numspechit-- > 0)
+                while (tm.numspechit-- > 0)
                 {
-                    var ld = world.spechit[world.numspechit];
+                    var ld = tm.spechit[tm.numspechit];
                     // if the special is not a door
                     // that can be opened,
                     // return false

@@ -165,6 +165,8 @@ namespace ManagedDoom
 
         private static void P_RecursiveSound(World world, Sector sec, int soundblocks, Mobj soundtarget, int validcount)
         {
+            var mc = world.MapCollision;
+
             // wake up all monsters in this sector
             if (sec.ValidCount == validcount
                 && sec.SoundTraversed <= soundblocks + 1)
@@ -185,9 +187,9 @@ namespace ManagedDoom
                     continue;
                 }
 
-                world.LineOpening(check);
+                mc.LineOpening(check);
 
-                if (world.openRange <= Fixed.Zero)
+                if (mc.openRange <= Fixed.Zero)
                 {
                     // closed door
                     continue;

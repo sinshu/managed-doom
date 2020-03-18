@@ -95,7 +95,7 @@ namespace ManagedDoom
                 || MomY != Fixed.Zero
                 || (Flags & MobjFlags.SkullFly) != 0)
             {
-                World.P_XYMovement(this);
+                World.ThingMovement.P_XYMovement(this);
 
                 // FIXME: decent NOP/NULL/Nil function pointer please.
                 if (Removed)
@@ -107,7 +107,7 @@ namespace ManagedDoom
 
             if ((Z != FloorZ) || MomZ != Fixed.Zero)
             {
-                World.P_ZMovement(this);
+                World.ThingMovement.P_ZMovement(this);
 
                 // FIXME: decent NOP/NULL/Nil function pointer please.
                 if (Removed)

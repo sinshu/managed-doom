@@ -23,6 +23,8 @@ namespace ManagedDoom
 
         private Thinkers thinkers;
         private PathTraversal pathTraversal;
+        private MapCollision mapCollision;
+        private ThingMovement thingMovement;
         private Hitscan hitscan;
         private VisibilityCheck visibilityCheck;
 
@@ -39,9 +41,10 @@ namespace ManagedDoom
 
             thinkers = new Thinkers(this);
             pathTraversal = new PathTraversal(this);
+            mapCollision = new MapCollision(this);
+            thingMovement = new ThingMovement(this);
             hitscan = new Hitscan(this);
             visibilityCheck = new VisibilityCheck(this);
-            InitThingMovement();
 
             LoadThings();
         }
@@ -334,7 +337,7 @@ namespace ManagedDoom
             mobj.Frame = st.Frame;
 
             // set subsector and/or block links
-            SetThingPosition(mobj);
+            ThingMovement.SetThingPosition(mobj);
 
             mobj.FloorZ = mobj.Subsector.Sector.FloorHeight;
             mobj.CeilingZ = mobj.Subsector.Sector.CeilingHeight;
@@ -361,6 +364,8 @@ namespace ManagedDoom
 
         public void RemoveMobj(Mobj mobj)
         {
+            var tm = ThingMovement;
+
             if ((mobj.Flags & MobjFlags.Special) != 0
                 && (mobj.Flags & MobjFlags.Dropped) == 0
                 && (mobj.Type != MobjType.Inv)
@@ -376,7 +381,7 @@ namespace ManagedDoom
             }
 
             // unlink from sector and block lists
-            UnsetThingPosition(mobj);
+            tm.UnsetThingPosition(mobj);
 
             // stop any playing sound
             StopSound(mobj);
@@ -427,6 +432,8 @@ namespace ManagedDoom
         //
         public void P_CheckMissileSpawn(Mobj th)
         {
+            var tm = ThingMovement;
+
             th.Tics -= random.Next() & 3;
             if (th.Tics < 1)
             {
@@ -439,9 +446,9 @@ namespace ManagedDoom
             th.Y += new Fixed(th.MomY.Data >> 1);
             th.Z += new Fixed(th.MomZ.Data >> 1);
 
-            if (!P_TryMove(th, th.X, th.Y))
+            if (!tm.P_TryMove(th, th.X, th.Y))
             {
-                P_ExplodeMissile(th);
+                tm.P_ExplodeMissile(th);
             }
         }
 
@@ -530,6 +537,8 @@ namespace ManagedDoom
 
         public Thinkers Thinkers => thinkers;
         public PathTraversal PathTraversal => pathTraversal;
+        public MapCollision MapCollision => mapCollision;
+        public ThingMovement ThingMovement => thingMovement;
         public Hitscan Hitscan => hitscan;
         public VisibilityCheck VisibilityCheck => visibilityCheck;
 

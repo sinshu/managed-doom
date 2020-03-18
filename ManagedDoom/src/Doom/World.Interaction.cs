@@ -693,10 +693,12 @@ namespace ManagedDoom
 
 		private bool PTR_UseTraverse(Intercept ic)
 		{
+			var mc = MapCollision;
+
 			if (ic.Line.Special == 0)
 			{
-				LineOpening(ic.Line);
-				if (openRange <= Fixed.Zero)
+				mc.LineOpening(ic.Line);
+				if (mc.openRange <= Fixed.Zero)
 				{
 					StartSound(usething, Sfx.NOWAY);
 

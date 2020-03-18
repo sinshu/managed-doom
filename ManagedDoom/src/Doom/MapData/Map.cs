@@ -90,19 +90,19 @@ namespace ManagedDoom
                 int block;
 
                 // adjust bounding box to map blocks
-                block = (bbox[Box.Top] - blockMap.OriginY + World.MaxRadius).Data >> BlockMap.MapBlockShift;
+                block = (bbox[Box.Top] - blockMap.OriginY + ThingMovement.MaxRadius).Data >> BlockMap.MapBlockShift;
                 block = block >= blockMap.Height ? blockMap.Height - 1 : block;
                 sector.BlockBox[Box.Top] = block;
 
-                block = (bbox[Box.Bottom] - blockMap.OriginY - World.MaxRadius).Data >> BlockMap.MapBlockShift;
+                block = (bbox[Box.Bottom] - blockMap.OriginY - ThingMovement.MaxRadius).Data >> BlockMap.MapBlockShift;
                 block = block < 0 ? 0 : block;
                 sector.BlockBox[Box.Bottom] = block;
 
-                block = (bbox[Box.Right] - blockMap.OriginX + World.MaxRadius).Data >> BlockMap.MapBlockShift;
+                block = (bbox[Box.Right] - blockMap.OriginX + ThingMovement.MaxRadius).Data >> BlockMap.MapBlockShift;
                 block = block >= blockMap.Width ? blockMap.Width - 1 : block;
                 sector.BlockBox[Box.Right] = block;
 
-                block = (bbox[Box.Left] - blockMap.OriginX - World.MaxRadius).Data >> BlockMap.MapBlockShift;
+                block = (bbox[Box.Left] - blockMap.OriginX - ThingMovement.MaxRadius).Data >> BlockMap.MapBlockShift;
                 block = block < 0 ? 0 : block;
                 sector.BlockBox[Box.Left] = block;
             }

@@ -44,6 +44,8 @@ namespace ManagedDoom
         //
         private bool PTR_AimTraverse(Intercept ic)
         {
+            var mc = world.MapCollision;
+
             if (ic.Line != null)
             {
                 var li = ic.Line;
@@ -57,9 +59,9 @@ namespace ManagedDoom
                 // Crosses a two sided line.
                 // A two sided line will restrict
                 // the possible target ranges.
-                world.LineOpening(li);
+                mc.LineOpening(li);
 
-                if (world.openBottom >= world.openTop)
+                if (mc.openBottom >= mc.openTop)
                 {
                     // stop
                     return false;
@@ -69,7 +71,7 @@ namespace ManagedDoom
 
                 if (li.FrontSector.FloorHeight != li.BackSector.FloorHeight)
                 {
-                    var slope = (world.openBottom - shootz) / dist;
+                    var slope = (mc.openBottom - shootz) / dist;
                     if (slope > bottomslope)
                     {
                         bottomslope = slope;
@@ -78,7 +80,7 @@ namespace ManagedDoom
 
                 if (li.FrontSector.CeilingHeight != li.BackSector.CeilingHeight)
                 {
-                    var slope = (world.openTop - shootz) / dist;
+                    var slope = (mc.openTop - shootz) / dist;
                     if (slope < topslope)
                     {
                         topslope = slope;
@@ -156,6 +158,7 @@ namespace ManagedDoom
         private bool PTR_ShootTraverse(Intercept ic)
         {
             var pt = world.PathTraversal;
+            var mc = world.MapCollision;
 
             if (ic.Line != null)
             {
@@ -172,13 +175,13 @@ namespace ManagedDoom
                 }
 
                 // crosses a two sided line
-                world.LineOpening(li);
+                mc.LineOpening(li);
 
                 var dist = attackrange * ic.Frac;
 
                 if (li.FrontSector.FloorHeight != li.BackSector.FloorHeight)
                 {
-                    var slope = (world.openBottom - shootz) / dist;
+                    var slope = (mc.openBottom - shootz) / dist;
                     if (slope > aimslope)
                     {
                         goto hitline;
@@ -187,7 +190,7 @@ namespace ManagedDoom
 
                 if (li.FrontSector.CeilingHeight != li.BackSector.CeilingHeight)
                 {
-                    var slope = (world.openTop - shootz) / dist;
+                    var slope = (mc.openTop - shootz) / dist;
                     if (slope < aimslope)
                     {
                         goto hitline;
