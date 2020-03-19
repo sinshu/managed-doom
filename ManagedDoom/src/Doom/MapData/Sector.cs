@@ -102,6 +102,17 @@ namespace ManagedDoom
             return sectors;
         }
 
+        public override int GetHashCode()
+        {
+            var hash = 0;
+
+            hash = DoomDebug.CombineHash(hash, FloorHeight.Data);
+            hash = DoomDebug.CombineHash(hash, CeilingHeight.Data);
+            hash = DoomDebug.CombineHash(hash, LightLevel);
+
+            return hash;
+        }
+
         public ThingEnumerator GetEnumerator()
         {
             return new ThingEnumerator(this);

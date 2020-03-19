@@ -57,6 +57,7 @@ namespace ManagedDoom
                     world.Update();
 
                     //Console.WriteLine(world.levelTime + ": " + world.GetMobjHash().ToString("x8"));
+                    //Console.WriteLine(world.levelTime + ": " + world.GetSectorHash().ToString("x8"));
 
                     renderer.Render();
 

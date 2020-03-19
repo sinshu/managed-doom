@@ -189,6 +189,16 @@ namespace ManagedDoom
             return hash;
         }
 
+        public int GetSectorHash()
+        {
+            var hash = 0;
+            foreach (var sector in map.Sectors)
+            {
+                hash = DoomDebug.CombineHash(hash, sector.GetHashCode());
+            }
+            return hash;
+        }
+
         public Map Map => map;
         public DoomRandom Random => random;
 
