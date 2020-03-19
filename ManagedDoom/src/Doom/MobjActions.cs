@@ -892,7 +892,7 @@ namespace ManagedDoom
             }
 
             // launch a missile
-            world.SpawnMissile(actor, actor.Target, MobjType.Troopshot);
+            world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Troopshot);
         }
 
         public static void SargAttack(this Mobj mobj)

@@ -95,7 +95,7 @@ namespace ManagedDoom
 			// crunch dropped items
 			if ((thing.Flags & MobjFlags.Dropped) != 0)
 			{
-				RemoveMobj(thing);
+				ThingAllocation.RemoveMobj(thing);
 
 				// keep checking
 				return true;
@@ -114,7 +114,7 @@ namespace ManagedDoom
 				DamageMobj(thing, null, null, 10);
 
 				// spray blood in a random direction
-				var mo = SpawnMobj(
+				var mo = ThingAllocation.SpawnMobj(
 					thing.X,
 					thing.Y,
 					thing.Z + thing.Height / 2, MobjType.Blood);

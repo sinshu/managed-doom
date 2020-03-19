@@ -1175,7 +1175,7 @@ namespace ManagedDoom
                 player.ItemCount++;
             }
 
-            RemoveMobj(special);
+            ThingAllocation.RemoveMobj(special);
 
             player.BonusCount += BONUSADD;
 

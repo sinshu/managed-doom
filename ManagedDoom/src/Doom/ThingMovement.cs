@@ -868,7 +868,7 @@ namespace ManagedDoom
                             // Hack to prevent missiles exploding
                             // against the sky.
                             // Does not handle sky floors.
-                            world.RemoveMobj(mo);
+                            world.ThingAllocation.RemoveMobj(mo);
                             return;
                         }
                         P_ExplodeMissile(mo);

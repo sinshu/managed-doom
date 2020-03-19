@@ -104,7 +104,7 @@ namespace ManagedDoom
 					return;
 			}
 
-			var mo = SpawnMobj(target.X, target.Y, Mobj.OnFloorZ, item);
+			var mo = ThingAllocation.SpawnMobj(target.X, target.Y, Mobj.OnFloorZ, item);
 			mo.Flags |= MobjFlags.Dropped; // special versions of items
 		}
 
