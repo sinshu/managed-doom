@@ -24,10 +24,13 @@ namespace ManagedDoom
         private Thinkers thinkers;
         private ThingAllocation thingAllocation;
         private ThingMovement thingMovement;
+        private ThingInteraction thingInteraction;
         private MapCollision mapCollision;
+        private MapInteraction mapInteraction;
         private PathTraversal pathTraversal;
         private Hitscan hitscan;
         private VisibilityCheck visibilityCheck;
+        private SectorAction sectorAction;
 
         public World(CommonResource resorces, GameOptions options, Player[] players)
         {
@@ -43,11 +46,13 @@ namespace ManagedDoom
             thinkers = new Thinkers(this);
             thingAllocation = new ThingAllocation(this);
             thingMovement = new ThingMovement(this);
+            thingInteraction = new ThingInteraction(this);
             mapCollision = new MapCollision(this);
+            mapInteraction = new MapInteraction(this);
             pathTraversal = new PathTraversal(this);
             hitscan = new Hitscan(this);
             visibilityCheck = new VisibilityCheck(this);
-
+            sectorAction = new SectorAction(this);
 
 
             LoadThings();
@@ -190,10 +195,13 @@ namespace ManagedDoom
         public Thinkers Thinkers => thinkers;
         public ThingAllocation ThingAllocation => thingAllocation;
         public ThingMovement ThingMovement => thingMovement;
+        public ThingInteraction ThingInteraction => thingInteraction;
         public MapCollision MapCollision => mapCollision;
+        public MapInteraction MapInteraction => mapInteraction;
         public PathTraversal PathTraversal => pathTraversal;
         public Hitscan Hitscan => hitscan;
         public VisibilityCheck VisibilityCheck => visibilityCheck;
+        public SectorAction SectorAction => sectorAction;
 
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);

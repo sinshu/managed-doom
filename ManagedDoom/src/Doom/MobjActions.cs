@@ -275,7 +275,7 @@ namespace ManagedDoom
                     // if the special is not a door
                     // that can be opened,
                     // return false
-                    if (world.UseSpecialLine(actor, ld, 0))
+                    if (world.MapInteraction.UseSpecialLine(actor, ld, 0))
                     {
                         good = true;
                     }
@@ -887,7 +887,7 @@ namespace ManagedDoom
             {
                 world.StartSound(actor, Sfx.CLAW);
                 var damage = (world.Random.Next() % 8 + 1) * 3;
-                world.DamageMobj(actor.Target, actor, actor, damage);
+                world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
                 return;
             }
 

@@ -284,7 +284,7 @@ namespace ManagedDoom
 
                 if (la_damage != 0)
                 {
-                    world.DamageMobj(th, shootthing, shootthing, la_damage);
+                    world.ThingInteraction.DamageMobj(th, shootthing, shootthing, la_damage);
                 }
 
                 // don't go any farther

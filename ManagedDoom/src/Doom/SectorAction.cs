@@ -2,8 +2,15 @@
 
 namespace ManagedDoom
 {
-	public sealed partial class World
+	public sealed class SectorAction
 	{
+		private World world;
+
+		public SectorAction(World world)
+		{
+			this.world = world;
+		}
+
 		//
 		// P_ThingHeightClip
 		// Takes a valid thing and adjusts the thing->floorz,
@@ -16,7 +23,7 @@ namespace ManagedDoom
 		//
 		private bool P_ThingHeightClip(Mobj thing)
 		{
-			var tm = ThingMovement;
+			var tm = world.ThingMovement;
 
 			var onfloor = (thing.Z == thing.FloorZ);
 
@@ -82,7 +89,7 @@ namespace ManagedDoom
 			// crunch bodies to giblets
 			if (thing.Health <= 0)
 			{
-				SetMobjState(thing, State.Gibs);
+				world.SetMobjState(thing, State.Gibs);
 
 				thing.Flags &= ~MobjFlags.Solid;
 				thing.Height = Fixed.Zero;
@@ -95,7 +102,7 @@ namespace ManagedDoom
 			// crunch dropped items
 			if ((thing.Flags & MobjFlags.Dropped) != 0)
 			{
-				ThingAllocation.RemoveMobj(thing);
+				world.ThingAllocation.RemoveMobj(thing);
 
 				// keep checking
 				return true;
@@ -109,18 +116,18 @@ namespace ManagedDoom
 
 			nofit = true;
 
-			if (crushchange && (levelTime & 3) == 0)
+			if (crushchange && (world.levelTime & 3) == 0)
 			{
-				DamageMobj(thing, null, null, 10);
+				world.ThingInteraction.DamageMobj(thing, null, null, 10);
 
 				// spray blood in a random direction
-				var mo = ThingAllocation.SpawnMobj(
+				var mo = world.ThingAllocation.SpawnMobj(
 					thing.X,
 					thing.Y,
 					thing.Z + thing.Height / 2, MobjType.Blood);
 
-				mo.MomX = new Fixed((random.Next() - random.Next()) << 12);
-				mo.MomY = new Fixed((random.Next() - random.Next()) << 12);
+				mo.MomX = new Fixed((world.Random.Next() - world.Random.Next()) << 12);
+				mo.MomY = new Fixed((world.Random.Next() - world.Random.Next()) << 12);
 			}
 
 			// keep checking (crush other things)	
@@ -142,7 +149,7 @@ namespace ManagedDoom
 			{
 				for (var y = sector.BlockBox[Box.Bottom]; y <= sector.BlockBox[Box.Top]; y++)
 				{
-					map.BlockMap.IterateThings(x, y, mo => PIT_ChangeSector(mo));
+					world.Map.BlockMap.IterateThings(x, y, mo => PIT_ChangeSector(mo));
 				}
 			}
 
@@ -464,7 +471,7 @@ namespace ManagedDoom
 						&& !player.Cards[(int)CardType.BlueSkull])
 					{
 						//player.Message = PD_BLUEK;
-						StartSound(null, Sfx.OOF);
+						world.StartSound(null, Sfx.OOF);
 						return;
 					}
 					break;
@@ -480,7 +487,7 @@ namespace ManagedDoom
 						&& !player.Cards[(int)CardType.YellowSkull])
 					{
 						//player.Message = PD_YELLOWK;
-						StartSound(null, Sfx.OOF);
+						world.StartSound(null, Sfx.OOF);
 						return;
 					}
 					break;
@@ -496,7 +503,7 @@ namespace ManagedDoom
 						&& !player.Cards[(int)CardType.RedSkull])
 					{
 						//player.Message = PD_REDK;
-						StartSound(null, Sfx.OOF);
+						world.StartSound(null, Sfx.OOF);
 						return;
 					}
 					break;
@@ -542,23 +549,23 @@ namespace ManagedDoom
 			{
 				case 117: // BLAZING DOOR RAISE
 				case 118: // BLAZING DOOR OPEN
-					StartSound(sec.SoundOrigin, Sfx.BDOPN);
+					world.StartSound(sec.SoundOrigin, Sfx.BDOPN);
 					break;
 
 				case 1: // NORMAL DOOR SOUND
 				case 31:
-					StartSound(sec.SoundOrigin, Sfx.DOROPN);
+					world.StartSound(sec.SoundOrigin, Sfx.DOROPN);
 					break;
 
 				default:    // LOCKED DOOR SOUND
-					StartSound(sec.SoundOrigin, Sfx.DOROPN);
+					world.StartSound(sec.SoundOrigin, Sfx.DOROPN);
 					break;
 			}
 
 
 			// new door thinker
-			door = ThinkerPool.RentVlDoor(this);
-			thinkers.Add(door);
+			door = ThinkerPool.RentVlDoor(world);
+			world.Thinkers.Add(door);
 			sec.SpecialData = door;
 			door.Sector = sec;
 			door.Direction = 1;

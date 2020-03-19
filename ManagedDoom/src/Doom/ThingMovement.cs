@@ -268,7 +268,7 @@ namespace ManagedDoom
             {
                 var damage = ((world.Random.Next() % 8) + 1) * tmthing.Info.Damage;
 
-                world.DamageMobj(thing, tmthing, tmthing, damage);
+                world.ThingInteraction.DamageMobj(thing, tmthing, tmthing, damage);
 
                 tmthing.Flags &= ~MobjFlags.SkullFly;
                 tmthing.MomX = tmthing.MomY = tmthing.MomZ = Fixed.Zero;
@@ -323,7 +323,7 @@ namespace ManagedDoom
 
                 // damage / explode
                 var damage = ((world.Random.Next() % 8) + 1) * tmthing.Info.Damage;
-                world.DamageMobj(thing, tmthing, tmthing.Target, damage);
+                world.ThingInteraction.DamageMobj(thing, tmthing, tmthing.Target, damage);
 
                 // don't traverse any more
                 return false;

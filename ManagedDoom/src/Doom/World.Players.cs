@@ -237,7 +237,7 @@ namespace ManagedDoom
             {
                 if (!player.UseDown)
                 {
-                    UseLines(player);
+                    MapInteraction.UseLines(player);
                     player.UseDown = true;
                 }
             }

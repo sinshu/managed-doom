@@ -25,6 +25,8 @@ namespace ManagedDoom
 
 		public override void Run()
 		{
+			var sa = World.SectorAction;
+
 			SectorActionResult res;
 
 			switch (Direction)
@@ -78,7 +80,7 @@ namespace ManagedDoom
 
 				case -1:
 					// DOWN
-					res = World.MovePlane(
+					res = sa.MovePlane(
 						Sector,
 						Speed,
 						Sector.FloorHeight,
@@ -129,7 +131,7 @@ namespace ManagedDoom
 
 				case 1:
 					// UP
-					res = World.MovePlane(
+					res = sa.MovePlane(
 						Sector,
 						Speed,
 						TopHeight,
