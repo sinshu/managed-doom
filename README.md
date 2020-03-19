@@ -2,7 +2,7 @@
 
 ![Managed Doom](screenshots/window.png)
 
-The goal of this project is to make a fully functional Doom source port written in C# with no unsafe code.
+The goal of this project is to make a fully functional Doom source port written in C# without unsafe code.
 
 The rendering engine is almost complete and capable of showing 3D view like the screenshots below at practical speed.
 
@@ -49,7 +49,7 @@ https://www.youtube.com/watch?v=JjSNhx9gzqo
     * [x] Collision detection
     * [x] Player movement
     * [ ] Player Attack
-    * [ ] Monster AI
+    * [x] Monster AI
     * [ ] Doors and platforms
     * [ ] Animated textures
 
