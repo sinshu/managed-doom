@@ -115,50 +115,7 @@ namespace ManagedDoom
             }
         }
 
-        
 
-
-
-        
-
-        public bool SetMobjState(Mobj mobj, State state)
-        {
-            var ta = ThingAllocation;
-
-            StateDef st;
-
-            do
-            {
-                if (state == State.Null)
-                {
-                    mobj.State = Info.States[(int)State.Null];
-                    ta.RemoveMobj(mobj);
-                    return false;
-                }
-
-                st = Info.States[(int)state];
-                mobj.State = st;
-                mobj.Tics = st.Tics;
-                mobj.Sprite = st.Sprite;
-                mobj.Frame = st.Frame;
-
-                // Modified handling.
-                // Call action functions when the state is set
-                if (st.MobjAction != null)
-                {
-                    st.MobjAction(mobj);
-                }
-
-                state = st.Next;
-            }
-            while (mobj.Tics == 0);
-
-            return true;
-        }
-
-
-
-        
 
         public void StartSound(Mobj mobj, Sfx sfx)
         {

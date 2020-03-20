@@ -273,7 +273,7 @@ namespace ManagedDoom
                 tmthing.Flags &= ~MobjFlags.SkullFly;
                 tmthing.MomX = tmthing.MomY = tmthing.MomZ = Fixed.Zero;
 
-                world.SetMobjState(tmthing, tmthing.Info.SpawnState);
+                tmthing.SetState(tmthing.Info.SpawnState);
 
                 // stop moving
                 return false;
@@ -803,7 +803,7 @@ namespace ManagedDoom
                     mo.Flags &= ~MobjFlags.SkullFly;
                     mo.MomX = mo.MomY = mo.MomZ = Fixed.Zero;
 
-                    world.SetMobjState(mo, mo.Info.SpawnState);
+                    mo.SetState(mo.Info.SpawnState);
                 }
 
                 return;
@@ -928,7 +928,7 @@ namespace ManagedDoom
                 // if in a walking frame, stop moving
                 if (player != null && player.Mobj.State.Frame < 4)
                 {
-                    world.SetMobjState(player.Mobj, State.Play);
+                    player.Mobj.SetState(State.Play);
                 }
 
                 mo.MomX = Fixed.Zero;
@@ -1071,7 +1071,7 @@ namespace ManagedDoom
         {
             mo.MomX = mo.MomY = mo.MomZ = Fixed.Zero;
 
-            world.SetMobjState(mo, Info.MobjInfos[(int)mo.Type].DeathState);
+            mo.SetState(Info.MobjInfos[(int)mo.Type].DeathState);
 
             mo.Tics -= world.Random.Next() & 3;
 

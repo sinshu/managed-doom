@@ -130,7 +130,7 @@ namespace ManagedDoom
                 // you can cycle through multiple states in a tic
                 if (Tics == 0)
                 {
-                    if (!world.SetMobjState(this, State.Next))
+                    if (!SetState(State.Next))
                     {
                         // freed itself
                         return;
@@ -161,6 +161,41 @@ namespace ManagedDoom
                 P_NightmareRespawn(mobj);
                 */
             }
+        }
+
+        public bool SetState(State state)
+        {
+            var ta = world.ThingAllocation;
+
+            StateDef st;
+
+            do
+            {
+                if (state == ManagedDoom.State.Null)
+                {
+                    State = ManagedDoom.Info.States[(int)ManagedDoom.State.Null];
+                    ta.RemoveMobj(this);
+                    return false;
+                }
+
+                st = ManagedDoom.Info.States[(int)state];
+                State = st;
+                Tics = st.Tics;
+                Sprite = st.Sprite;
+                Frame = st.Frame;
+
+                // Modified handling.
+                // Call action functions when the state is set
+                if (st.MobjAction != null)
+                {
+                    st.MobjAction(this);
+                }
+
+                state = st.Next;
+            }
+            while (Tics == 0);
+
+            return true;
         }
 
         public override int GetHashCode()

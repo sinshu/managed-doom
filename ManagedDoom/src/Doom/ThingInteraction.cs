@@ -72,11 +72,11 @@ namespace ManagedDoom
 			if (target.Health < -target.Info.SpawnHealth
 				&& target.Info.XdeathState != 0)
 			{
-				world.SetMobjState(target, target.Info.XdeathState);
+				target.SetState(target.Info.XdeathState);
 			}
 			else
 			{
-				world.SetMobjState(target, target.Info.DeathState);
+				target.SetState(target.Info.DeathState);
 			}
 
 			target.Tics -= world.Random.Next() & 3;
@@ -279,7 +279,7 @@ namespace ManagedDoom
 				// fight back!
 				target.Flags |= MobjFlags.JustHit;
 
-				world.SetMobjState(target, target.Info.PainState);
+				target.SetState(target.Info.PainState);
 			}
 
 			// we're awake now...
@@ -296,7 +296,7 @@ namespace ManagedDoom
 				if (target.State == Info.States[(int)target.Info.SpawnState]
 					&& target.Info.SeeState != State.Null)
 				{
-					world.SetMobjState(target, target.Info.SeeState);
+					target.SetState(target.Info.SeeState);
 				}
 			}
 		}

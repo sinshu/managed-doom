@@ -127,7 +127,7 @@ namespace ManagedDoom
             if ((cmd.ForwardMove != 0 || cmd.SideMove != 0)
                 && player.Mobj.State == Info.States[(int)State.Play])
             {
-                SetMobjState(player.Mobj, State.PlayRun1);
+                player.Mobj.SetState(State.PlayRun1);
             }
         }
 

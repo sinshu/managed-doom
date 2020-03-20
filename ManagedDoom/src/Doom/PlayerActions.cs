@@ -17,7 +17,7 @@ namespace ManagedDoom
             if (player.Mobj.State == Info.States[(int)State.PlayAtk1]
                 || player.Mobj.State == Info.States[(int)State.PlayAtk2])
             {
-                world.SetMobjState(player.Mobj, State.Play);
+                player.Mobj.SetState(State.Play);
             }
 
             if (player.ReadyWeapon == WeaponType.Chainsaw
@@ -249,7 +249,7 @@ namespace ManagedDoom
                 return;
             }
 
-            world.SetMobjState(player.Mobj, State.PlayAtk1);
+            player.Mobj.SetState(State.PlayAtk1);
             var newstate = Info.WeaponInfos[(int)player.ReadyWeapon].AttackState;
             world.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
             P_NoiseAlert(world, player.Mobj, player.Mobj);
@@ -409,7 +409,7 @@ namespace ManagedDoom
 
             world.StartSound(player.Mobj, Sfx.PISTOL);
 
-            world.SetMobjState(player.Mobj, State.PlayAtk2);
+            player.Mobj.SetState(State.PlayAtk2);
             player.Ammo[(int)Info.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
             world.P_SetPsprite(player,
@@ -430,7 +430,7 @@ namespace ManagedDoom
             var world = player.Mobj.World;
 
             world.StartSound(player.Mobj, Sfx.SHOTGN);
-            world.SetMobjState(player.Mobj, State.PlayAtk2);
+            player.Mobj.SetState(State.PlayAtk2);
 
             player.Ammo[(int)Info.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 

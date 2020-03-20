@@ -133,8 +133,8 @@ namespace ManagedDoom
                 return;
             }
 
-            // go into chase state
-            seeyou:
+        // go into chase state
+        seeyou:
             if (actor.Info.SeeSound != 0)
             {
                 int sound;
@@ -168,7 +168,7 @@ namespace ManagedDoom
                 }
             }
 
-            world.SetMobjState(actor, actor.Info.SeeState);
+            actor.SetState(actor.Info.SeeState);
         }
 
 
@@ -640,7 +640,7 @@ namespace ManagedDoom
                     return;
                 }
 
-                world.SetMobjState(actor, actor.Info.SpawnState);
+                actor.SetState(actor.Info.SpawnState);
 
                 return;
             }
@@ -667,7 +667,7 @@ namespace ManagedDoom
                     world.StartSound(actor, actor.Info.AttackSound);
                 }
 
-                world.SetMobjState(actor, actor.Info.MeleeState);
+                actor.SetState(actor.Info.MeleeState);
 
                 return;
             }
@@ -686,7 +686,7 @@ namespace ManagedDoom
                     goto nomissile;
                 }
 
-                world.SetMobjState(actor, actor.Info.MissileState);
+                actor.SetState(actor.Info.MissileState);
                 actor.Flags |= MobjFlags.JustAttacked;
 
                 return;
