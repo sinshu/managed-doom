@@ -336,7 +336,7 @@ namespace ManagedDoom
                 if ((tmflags & MobjFlags.PickUp) != 0)
                 {
                     // can remove thing
-                    world.TouchSpecialThing(thing, tmthing);
+                    world.ItemPickup.TouchSpecialThing(thing, tmthing);
                 }
                 return !solid;
             }

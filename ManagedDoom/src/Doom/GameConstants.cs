@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public sealed partial class World
+    public static class GameConstants
     {
         public const int TicRate = 35;
     }

@@ -11,7 +11,7 @@ namespace ManagedDoom
         private Map map;
         private DoomRandom random;
 
-        private int consoleplayer = 0;
+        public int consoleplayer = 0;
 
         private int validCount;
 
@@ -31,6 +31,8 @@ namespace ManagedDoom
         private Hitscan hitscan;
         private VisibilityCheck visibilityCheck;
         private SectorAction sectorAction;
+        private PlayerBehavior playerBehavior;
+        private ItemPickup itemPickup;
 
         public World(CommonResource resorces, GameOptions options, Player[] players)
         {
@@ -53,6 +55,8 @@ namespace ManagedDoom
             hitscan = new Hitscan(this);
             visibilityCheck = new VisibilityCheck(this);
             sectorAction = new SectorAction(this);
+            playerBehavior = new PlayerBehavior(this);
+            itemPickup = new ItemPickup(this);
 
 
             LoadThings();
@@ -64,7 +68,7 @@ namespace ManagedDoom
             {
                 if (Players[i].InGame)
                 {
-                    PlayerThink(Players[i]);
+                    playerBehavior.PlayerThink(Players[i]);
                 }
             }
 
@@ -169,6 +173,8 @@ namespace ManagedDoom
         public Hitscan Hitscan => hitscan;
         public VisibilityCheck VisibilityCheck => visibilityCheck;
         public SectorAction SectorAction => sectorAction;
+        public PlayerBehavior PlayerBehavior => playerBehavior;
+        public ItemPickup ItemPickup => itemPickup;
 
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);

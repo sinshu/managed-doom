@@ -12,6 +12,7 @@ namespace ManagedDoom
         public static void WeaponReady(Player player, PlayerSpriteDef psp)
         {
             var world = player.Mobj.World;
+            var pb = world.PlayerBehavior;
 
             // get out of attack state
             if (player.Mobj.State == DoomInfo.States[(int)State.PlayAtk1]
@@ -33,7 +34,7 @@ namespace ManagedDoom
                 // change weapon
                 //  (pending weapon should allready be validated)
                 var newstate = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState;
-                world.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
+                pb.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
                 return;
             }
 
@@ -59,7 +60,7 @@ namespace ManagedDoom
             var angle = (128 * player.Mobj.World.levelTime) & Trig.FineMask;
             psp.Sx = Fixed.One + player.Bob * Trig.Cos(angle);
             angle &= Trig.FineAngleCount / 2 - 1;
-            psp.Sy = World.WEAPONTOP + player.Bob * Trig.Sin(angle);
+            psp.Sy = PlayerBehavior.WEAPONTOP + player.Bob * Trig.Sin(angle);
         }
 
         private static readonly int BFGCELLS = 40;
@@ -72,6 +73,7 @@ namespace ManagedDoom
         private static bool CheckAmmo(Player player)
         {
             var world = player.Mobj.World;
+            var pb = world.PlayerBehavior;
 
             var ammo = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo;
 
@@ -153,7 +155,7 @@ namespace ManagedDoom
             } while (player.PendingWeapon == WeaponType.NoChange);
 
             // Now set appropriate weapon overlay.
-            world.P_SetPsprite(
+            pb.P_SetPsprite(
                 player,
                 PlayerSprite.Weapon,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState);
@@ -251,7 +253,7 @@ namespace ManagedDoom
 
             player.Mobj.SetState(State.PlayAtk1);
             var newstate = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].AttackState;
-            world.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
+            world.PlayerBehavior.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
             P_NoiseAlert(world, player.Mobj, player.Mobj);
         }
 
@@ -265,11 +267,12 @@ namespace ManagedDoom
         public static void Lower(Player player, PlayerSpriteDef psp)
         {
             var world = player.Mobj.World;
+            var pb = world.PlayerBehavior;
 
-            psp.Sy += World.LOWERSPEED;
+            psp.Sy += PlayerBehavior.LOWERSPEED;
 
             // Is already down.
-            if (psp.Sy < World.WEAPONBOTTOM)
+            if (psp.Sy < PlayerBehavior.WEAPONBOTTOM)
             {
                 return;
             }
@@ -277,7 +280,7 @@ namespace ManagedDoom
             // Player is dead.
             if (player.PlayerState == PlayerState.Dead)
             {
-                psp.Sy = World.WEAPONBOTTOM;
+                psp.Sy = PlayerBehavior.WEAPONBOTTOM;
 
                 // don't bring weapon back up
                 return;
@@ -288,31 +291,33 @@ namespace ManagedDoom
             if (player.Health == 0)
             {
                 // Player is dead, so keep the weapon off screen.
-                world.P_SetPsprite(player, PlayerSprite.Weapon, State.Null);
+                pb.P_SetPsprite(player, PlayerSprite.Weapon, State.Null);
                 return;
             }
 
             player.ReadyWeapon = player.PendingWeapon;
 
-            world.P_BringUpWeapon(player);
+            pb.P_BringUpWeapon(player);
         }
 
         public static void Raise(Player player, PlayerSpriteDef psp)
         {
-            psp.Sy -= World.RAISESPEED;
+            var pb = player.Mobj.World.PlayerBehavior;
 
-            if (psp.Sy > World.WEAPONTOP)
+            psp.Sy -= PlayerBehavior.RAISESPEED;
+
+            if (psp.Sy > PlayerBehavior.WEAPONTOP)
             {
                 return;
             }
 
-            psp.Sy = World.WEAPONTOP;
+            psp.Sy = PlayerBehavior.WEAPONTOP;
 
             // The weapon has been raised all the way,
             //  so change to the ready state.
             var newstate = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].ReadyState;
 
-            player.Mobj.World.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
+            pb.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
         }
 
         public static void Punch(Player player, PlayerSpriteDef psp)
@@ -412,7 +417,7 @@ namespace ManagedDoom
             player.Mobj.SetState(State.PlayAtk2);
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.P_SetPsprite(player,
+            world.PlayerBehavior.P_SetPsprite(player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
 
@@ -434,7 +439,7 @@ namespace ManagedDoom
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.P_SetPsprite(
+            world.PlayerBehavior.P_SetPsprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
