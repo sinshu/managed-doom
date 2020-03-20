@@ -444,5 +444,31 @@ namespace ManagedDoom
         {
             player.ExtraLight = 2;
         }
+
+        //
+        // A_FireCGun
+        //
+        public void FireCGun(Player player, PlayerSpriteDef psp)
+        {
+            world.StartSound(player.Mobj, Sfx.PISTOL);
+
+            if (player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] == 0)
+            {
+                return;
+            }
+
+            player.Mobj.SetState(State.PlayAtk2);
+            player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
+
+            world.PlayerBehavior.P_SetPsprite(
+                player,
+                PlayerSprite.Flash,
+                DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState
+                + psp.State.Number - DoomInfo.States[(int)State.Chain1].Number);
+
+            P_BulletSlope(player.Mobj);
+
+            P_GunShot(player.Mobj, player.Refire == 0);
+        }
     }
 }

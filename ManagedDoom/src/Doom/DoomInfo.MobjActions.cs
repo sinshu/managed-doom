@@ -58,6 +58,7 @@ namespace ManagedDoom
 
             public void SPosAttack(World world, Mobj actor)
             {
+                world.MonsterBehavior.SPosAttack(actor);
             }
 
             public void VileChase(World world, Mobj actor)
@@ -126,10 +127,12 @@ namespace ManagedDoom
 
             public void CPosAttack(World world, Mobj actor)
             {
+                world.MonsterBehavior.CPosAttack(actor);
             }
 
             public void CPosRefire(World world, Mobj actor)
             {
+                world.MonsterBehavior.CPosRefire(actor);
             }
 
             public void TroopAttack(World world, Mobj actor)
@@ -143,6 +146,7 @@ namespace ManagedDoom
 
             public void HeadAttack(World world, Mobj actor)
             {
+                world.MonsterBehavior.HeadAttack(actor);
             }
 
             public void BruisAttack(World world, Mobj actor)

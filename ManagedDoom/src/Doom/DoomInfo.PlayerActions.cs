@@ -78,6 +78,7 @@ namespace ManagedDoom
 
             public void FireCGun(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.FireCGun(player, psp);
             }
 
             public void GunFlash(World world, Player player, PlayerSpriteDef psp)

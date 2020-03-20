@@ -725,6 +725,60 @@ namespace ManagedDoom
             world.Hitscan.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
         }
 
+        public void SPosAttack(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            world.StartSound(actor, Sfx.SHOTGN);
+            FaceTarget(actor);
+            var bangle = actor.Angle;
+            var slope = world.Hitscan.AimLineAttack(actor, bangle, World.MISSILERANGE);
+
+            for (var i = 0; i < 3; i++)
+            {
+                var angle = bangle + new Angle((world.Random.Next() - world.Random.Next()) << 20);
+                var damage = ((world.Random.Next() % 5) + 1) * 3;
+                world.Hitscan.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
+            }
+        }
+
+        public void CPosAttack(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            world.StartSound(actor, Sfx.SHOTGN);
+            FaceTarget(actor);
+            var bangle = actor.Angle;
+            var slope = world.Hitscan.AimLineAttack(actor, bangle, World.MISSILERANGE);
+
+            var angle = bangle + new Angle((world.Random.Next() - world.Random.Next()) << 20);
+            var damage = ((world.Random.Next() % 5) + 1) * 3;
+            world.Hitscan.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
+        }
+
+        public void CPosRefire(Mobj actor)
+        {
+            // keep firing unless target got out of sight
+            FaceTarget(actor);
+
+            if (world.Random.Next() < 40)
+            {
+                return;
+            }
+
+            if (actor.Target == null
+                || actor.Target.Health <= 0
+                || !world.VisibilityCheck.CheckSight(actor, actor.Target))
+            {
+                actor.SetState(actor.Info.SeeState);
+            }
+        }
 
         public void Scream(Mobj actor)
         {
@@ -784,6 +838,23 @@ namespace ManagedDoom
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Troopshot);
         }
 
+        public void HeadAttack(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
 
+            FaceTarget(actor);
+            if (P_CheckMeleeRange(actor))
+            {
+                var damage = (world.Random.Next() % 6 + 1) * 10;
+                world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
+                return;
+            }
+
+            // launch a missile
+            world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Headshot);
+        }
     }
 }
