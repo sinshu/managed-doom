@@ -14,14 +14,14 @@ namespace ManagedDoom
             var world = player.Mobj.World;
 
             // get out of attack state
-            if (player.Mobj.State == Info.States[(int)State.PlayAtk1]
-                || player.Mobj.State == Info.States[(int)State.PlayAtk2])
+            if (player.Mobj.State == DoomInfo.States[(int)State.PlayAtk1]
+                || player.Mobj.State == DoomInfo.States[(int)State.PlayAtk2])
             {
                 player.Mobj.SetState(State.Play);
             }
 
             if (player.ReadyWeapon == WeaponType.Chainsaw
-                && psp.State == Info.States[(int)State.Saw])
+                && psp.State == DoomInfo.States[(int)State.Saw])
             {
                 world.StartSound(player.Mobj, Sfx.SAWIDL);
             }
@@ -32,7 +32,7 @@ namespace ManagedDoom
             {
                 // change weapon
                 //  (pending weapon should allready be validated)
-                var newstate = Info.WeaponInfos[(int)player.ReadyWeapon].DownState;
+                var newstate = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState;
                 world.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
                 return;
             }
@@ -73,7 +73,7 @@ namespace ManagedDoom
         {
             var world = player.Mobj.World;
 
-            var ammo = Info.WeaponInfos[(int)player.ReadyWeapon].Ammo;
+            var ammo = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo;
 
             // Minimal amount for one shot varies.
             int count;
@@ -156,7 +156,7 @@ namespace ManagedDoom
             world.P_SetPsprite(
                 player,
                 PlayerSprite.Weapon,
-                Info.WeaponInfos[(int)player.ReadyWeapon].DownState);
+                DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState);
 
             return false;
         }
@@ -250,7 +250,7 @@ namespace ManagedDoom
             }
 
             player.Mobj.SetState(State.PlayAtk1);
-            var newstate = Info.WeaponInfos[(int)player.ReadyWeapon].AttackState;
+            var newstate = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].AttackState;
             world.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
             P_NoiseAlert(world, player.Mobj, player.Mobj);
         }
@@ -310,7 +310,7 @@ namespace ManagedDoom
 
             // The weapon has been raised all the way,
             //  so change to the ready state.
-            var newstate = Info.WeaponInfos[(int)player.ReadyWeapon].ReadyState;
+            var newstate = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].ReadyState;
 
             player.Mobj.World.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
         }
@@ -410,11 +410,11 @@ namespace ManagedDoom
             world.StartSound(player.Mobj, Sfx.PISTOL);
 
             player.Mobj.SetState(State.PlayAtk2);
-            player.Ammo[(int)Info.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
+            player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
             world.P_SetPsprite(player,
                 PlayerSprite.Flash,
-                Info.WeaponInfos[(int)player.ReadyWeapon].FlashState);
+                DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
 
             P_BulletSlope(player.Mobj);
             P_GunShot(player.Mobj, player.Refire == 0);
@@ -432,12 +432,12 @@ namespace ManagedDoom
             world.StartSound(player.Mobj, Sfx.SHOTGN);
             player.Mobj.SetState(State.PlayAtk2);
 
-            player.Ammo[(int)Info.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
+            player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
             world.P_SetPsprite(
                 player,
                 PlayerSprite.Flash,
-                Info.WeaponInfos[(int)player.ReadyWeapon].FlashState);
+                DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
 
             P_BulletSlope(player.Mobj);
 

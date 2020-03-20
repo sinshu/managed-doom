@@ -164,7 +164,7 @@ namespace ManagedDoom
                     IterateThings(blockX, blockY, mobj => { count++; return true; });
                     if (count > 0)
                     {
-                        sb.Append(Info.SpriteNames[(int)thingLists[index].Sprite][0]);
+                        sb.Append(DoomInfo.SpriteNames[(int)thingLists[index].Sprite][0]);
                         sb.Append(count);
                     }
                     else

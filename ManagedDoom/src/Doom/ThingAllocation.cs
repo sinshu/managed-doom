@@ -73,22 +73,22 @@ namespace ManagedDoom
 
             int i;
             // find which type to spawn
-            for (i = 0; i < Info.MobjInfos.Length; i++)
+            for (i = 0; i < DoomInfo.MobjInfos.Length; i++)
             {
-                if (mthing.Type == Info.MobjInfos[i].DoomEdNum)
+                if (mthing.Type == DoomInfo.MobjInfos[i].DoomEdNum)
                 {
                     break;
                 }
             }
 
-            if (i == Info.MobjInfos.Length)
+            if (i == DoomInfo.MobjInfos.Length)
             {
                 throw new Exception("P_SpawnMapThing: Unknown type!");
             }
 
             // don't spawn keycards and players in deathmatch
             if (world.Options.Deathmatch != 0
-                && (Info.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
+                && (DoomInfo.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
             {
                 return;
             }
@@ -96,7 +96,7 @@ namespace ManagedDoom
             // don't spawn any monsters if -nomonsters
             if (world.Options.NoMonsters
                 && (i == (int)MobjType.Skull
-                    || (Info.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
+                    || (DoomInfo.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
             {
                 return;
             }
@@ -105,7 +105,7 @@ namespace ManagedDoom
             Fixed x = mthing.X;
             Fixed y = mthing.Y;
             Fixed z;
-            if ((Info.MobjInfos[i].Flags & MobjFlags.SpawnCeiling) != 0)
+            if ((DoomInfo.MobjInfos[i].Flags & MobjFlags.SpawnCeiling) != 0)
             {
                 z = Mobj.OnCeilingZ;
             }
@@ -215,7 +215,7 @@ namespace ManagedDoom
         {
             var mobj = ThinkerPool.RentMobj(world);
 
-            var info = Info.MobjInfos[(int)type];
+            var info = DoomInfo.MobjInfos[(int)type];
 
             mobj.Type = type;
             mobj.Info = info;
@@ -235,7 +235,7 @@ namespace ManagedDoom
 
             // do not set the state with P_SetMobjState,
             // because action routines can not be called yet
-            var st = Info.States[(int)info.SpawnState];
+            var st = DoomInfo.States[(int)info.SpawnState];
 
             mobj.State = st;
             mobj.Tics = st.Tics;

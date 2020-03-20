@@ -125,7 +125,7 @@ namespace ManagedDoom
             }
 
             if ((cmd.ForwardMove != 0 || cmd.SideMove != 0)
-                && player.Mobj.State == Info.States[(int)State.Play])
+                && player.Mobj.State == DoomInfo.States[(int)State.Play])
             {
                 player.Mobj.SetState(State.PlayRun1);
             }
@@ -366,7 +366,7 @@ namespace ManagedDoom
                 StartSound(player.Mobj, Sfx.SAWUP);
             }
 
-            var newstate = Info.WeaponInfos[(int)player.PendingWeapon].UpState;
+            var newstate = DoomInfo.WeaponInfos[(int)player.PendingWeapon].UpState;
 
             player.PendingWeapon = WeaponType.NoChange;
             player.PSprites[(int)PlayerSprite.Weapon].Sy = WEAPONBOTTOM;
@@ -390,7 +390,7 @@ namespace ManagedDoom
                     break;
                 }
 
-                var state = Info.States[(int)stnum];
+                var state = DoomInfo.States[(int)stnum];
                 psp.State = state;
                 psp.Tics = state.Tics; // could be 0
 
@@ -594,11 +594,11 @@ namespace ManagedDoom
 
                 if (Options.Deathmatch != 0)
                 {
-                    GiveAmmo(player, Info.WeaponInfos[(int)weapon].Ammo, 5);
+                    GiveAmmo(player, DoomInfo.WeaponInfos[(int)weapon].Ammo, 5);
                 }
                 else
                 {
-                    GiveAmmo(player, Info.WeaponInfos[(int)weapon].Ammo, 2);
+                    GiveAmmo(player, DoomInfo.WeaponInfos[(int)weapon].Ammo, 2);
                 }
 
                 player.PendingWeapon = weapon;
@@ -612,17 +612,17 @@ namespace ManagedDoom
             }
 
             bool gaveammo;
-            if (Info.WeaponInfos[(int)weapon].Ammo != AmmoType.NoAmmo)
+            if (DoomInfo.WeaponInfos[(int)weapon].Ammo != AmmoType.NoAmmo)
             {
                 // give one clip with a dropped weapon,
                 // two clips with a found weapon
                 if (dropped)
                 {
-                    gaveammo = GiveAmmo(player, Info.WeaponInfos[(int)weapon].Ammo, 1);
+                    gaveammo = GiveAmmo(player, DoomInfo.WeaponInfos[(int)weapon].Ammo, 1);
                 }
                 else
                 {
-                    gaveammo = GiveAmmo(player, Info.WeaponInfos[(int)weapon].Ammo, 2);
+                    gaveammo = GiveAmmo(player, DoomInfo.WeaponInfos[(int)weapon].Ammo, 2);
                 }
             }
             else

@@ -1071,7 +1071,7 @@ namespace ManagedDoom
         {
             mo.MomX = mo.MomY = mo.MomZ = Fixed.Zero;
 
-            mo.SetState(Info.MobjInfos[(int)mo.Type].DeathState);
+            mo.SetState(DoomInfo.MobjInfos[(int)mo.Type].DeathState);
 
             mo.Tics -= world.Random.Next() & 3;
 

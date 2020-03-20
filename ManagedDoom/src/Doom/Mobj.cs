@@ -173,12 +173,12 @@ namespace ManagedDoom
             {
                 if (state == ManagedDoom.State.Null)
                 {
-                    State = ManagedDoom.Info.States[(int)ManagedDoom.State.Null];
+                    State = DoomInfo.States[(int)ManagedDoom.State.Null];
                     ta.RemoveMobj(this);
                     return false;
                 }
 
-                st = ManagedDoom.Info.States[(int)state];
+                st = DoomInfo.States[(int)state];
                 State = st;
                 Tics = st.Tics;
                 Sprite = st.Sprite;

@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public static class Info
+    public static class DoomInfo
     {
         public static readonly string[] SpriteNames =
         {

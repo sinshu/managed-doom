@@ -14,7 +14,7 @@ namespace ManagedDoom
             var temp = new Dictionary<string, List<SpriteInfo>>();
             for (var i = 0; i < (int)Sprite.Count; i++)
             {
-                temp.Add(Info.SpriteNames[i], new List<SpriteInfo>());
+                temp.Add(DoomInfo.SpriteNames[i], new List<SpriteInfo>());
             }
 
             var cache = new Dictionary<int, Patch>();
@@ -95,7 +95,7 @@ namespace ManagedDoom
             spriteDefs = new SpriteDef[(int)Sprite.Count];
             for (var i = 0; i < spriteDefs.Length; i++)
             {
-                var list = temp[Info.SpriteNames[i]];
+                var list = temp[DoomInfo.SpriteNames[i]];
 
                 var frames = new SpriteFrame[list.Count];
                 for (var j = 0; j < frames.Length; j++)
@@ -118,7 +118,7 @@ namespace ManagedDoom
             for (var i = 0; i < (int)Sprite.Count; i++)
             {
                 var spriteDef = spriteDefs[i];
-                Console.WriteLine(Info.SpriteNames[i]);
+                Console.WriteLine(DoomInfo.SpriteNames[i]);
                 for (var j = 0; j < spriteDef.Frames.Length; j++)
                 {
                     var frame = spriteDef.Frames[j];
