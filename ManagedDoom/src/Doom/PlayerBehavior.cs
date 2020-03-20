@@ -412,7 +412,7 @@ namespace ManagedDoom
                 // Modified handling.
                 if (state.PlayerAction != null)
                 {
-                    state.PlayerAction(player, psp);
+                    state.PlayerAction(world, player, psp);
                     if (psp.State == null)
                     {
                         break;

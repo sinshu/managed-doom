@@ -415,7 +415,7 @@ namespace ManagedDoom
             P_GunShot(player.Mobj, player.Refire == 0);
         }
 
-        public static void Light1(Player player)
+        public void Light1(Player player)
         {
             player.ExtraLight = 1;
         }

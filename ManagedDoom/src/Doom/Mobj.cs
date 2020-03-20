@@ -188,7 +188,7 @@ namespace ManagedDoom
                 // Call action functions when the state is set
                 if (st.MobjAction != null)
                 {
-                    st.MobjAction(this);
+                    st.MobjAction(world, this);
                 }
 
                 state = st.Next;
