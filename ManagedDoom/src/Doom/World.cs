@@ -33,6 +33,7 @@ namespace ManagedDoom
         private SectorAction sectorAction;
         private PlayerBehavior playerBehavior;
         private ItemPickup itemPickup;
+        private WeaponBehavior weaponBehavior;
 
         public World(CommonResource resorces, GameOptions options, Player[] players)
         {
@@ -57,6 +58,7 @@ namespace ManagedDoom
             sectorAction = new SectorAction(this);
             playerBehavior = new PlayerBehavior(this);
             itemPickup = new ItemPickup(this);
+            weaponBehavior = new WeaponBehavior(this);
 
 
             LoadThings();
@@ -175,6 +177,7 @@ namespace ManagedDoom
         public SectorAction SectorAction => sectorAction;
         public PlayerBehavior PlayerBehavior => playerBehavior;
         public ItemPickup ItemPickup => itemPickup;
+        public WeaponBehavior WeaponBehavior => weaponBehavior;
 
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);
