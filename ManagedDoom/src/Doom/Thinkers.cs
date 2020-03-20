@@ -14,7 +14,7 @@ namespace ManagedDoom
         {
             this.world = world;
 
-            cap = new Thinker(world);
+            cap = new Thinker();
             cap.Prev = cap.Next = cap;
         }
 

@@ -4,6 +4,8 @@ namespace ManagedDoom
 {
 	public class VlDoor : Thinker
 	{
+		private World world;
+
 		public VlDoorType Type;
 		public Sector Sector;
 		public Fixed TopHeight;
@@ -19,13 +21,14 @@ namespace ManagedDoom
 		// when it reaches 0, start going down
 		public int TopCountDown;
 
-		public VlDoor(World world) : base(world)
+		public VlDoor(World world)
 		{
+			this.world = world;
 		}
 
 		public override void Run()
 		{
-			var sa = World.SectorAction;
+			var sa = world.SectorAction;
 
 			SectorActionResult res;
 
@@ -40,18 +43,18 @@ namespace ManagedDoom
 							case VlDoorType.BlazeRaise:
 								// time to go back down
 								Direction = -1;
-								World.StartSound(Sector.SoundOrigin, Sfx.BDCLS);
+								world.StartSound(Sector.SoundOrigin, Sfx.BDCLS);
 								break;
 
 							case VlDoorType.Normal:
 								// time to go back down
 								Direction = -1;
-								World.StartSound(Sector.SoundOrigin, Sfx.DORCLS);
+								world.StartSound(Sector.SoundOrigin, Sfx.DORCLS);
 								break;
 
 							case VlDoorType.Close30ThenOpen:
 								Direction = 1;
-								World.StartSound(Sector.SoundOrigin, Sfx.DOROPN);
+								world.StartSound(Sector.SoundOrigin, Sfx.DOROPN);
 								break;
 
 							default:
@@ -69,7 +72,7 @@ namespace ManagedDoom
 							case VlDoorType.RaiseIn5Mins:
 								Direction = 1;
 								Type = VlDoorType.Normal;
-								World.StartSound(Sector.SoundOrigin, Sfx.DOROPN);
+								world.StartSound(Sector.SoundOrigin, Sfx.DOROPN);
 								break;
 
 							default:
@@ -93,15 +96,15 @@ namespace ManagedDoom
 							case VlDoorType.BlazeClose:
 								Sector.SpecialData = null;
 								// unlink and free
-								World.Thinkers.Remove(this);
-								World.StartSound(Sector.SoundOrigin, Sfx.BDCLS);
+								world.Thinkers.Remove(this);
+								world.StartSound(Sector.SoundOrigin, Sfx.BDCLS);
 								break;
 
 							case VlDoorType.Normal:
 							case VlDoorType.Close:
 								Sector.SpecialData = null;
 								// unlink and free
-								World.Thinkers.Remove(this);
+								world.Thinkers.Remove(this);
 								break;
 
 							case VlDoorType.Close30ThenOpen:
@@ -123,7 +126,7 @@ namespace ManagedDoom
 
 							default:
 								Direction = 1;
-								World.StartSound(Sector.SoundOrigin, Sfx.DOROPN);
+								world.StartSound(Sector.SoundOrigin, Sfx.DOROPN);
 								break;
 						}
 					}
@@ -151,7 +154,7 @@ namespace ManagedDoom
 							case VlDoorType.BlazeOpen:
 							case VlDoorType.Open:
 								Sector.SpecialData = null;
-								World.Thinkers.Remove(this); // unlink and free
+								world.Thinkers.Remove(this); // unlink and free
 								break;
 
 							default:

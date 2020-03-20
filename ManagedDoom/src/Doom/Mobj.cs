@@ -7,6 +7,8 @@ namespace ManagedDoom
         public static readonly Fixed OnFloorZ = Fixed.MinValue;
         public static readonly Fixed OnCeilingZ = Fixed.MaxValue;
 
+        private World world;
+
         // Info for drawing: position.
         public Fixed X;
         public Fixed Y;
@@ -83,8 +85,9 @@ namespace ManagedDoom
 
 
 
-        public Mobj(World world) : base(world)
+        public Mobj(World world)
         {
+            this.world = world;
         }
 
 
@@ -95,7 +98,7 @@ namespace ManagedDoom
                 || MomY != Fixed.Zero
                 || (Flags & MobjFlags.SkullFly) != 0)
             {
-                World.ThingMovement.P_XYMovement(this);
+                world.ThingMovement.P_XYMovement(this);
 
                 // FIXME: decent NOP/NULL/Nil function pointer please.
                 if (Removed)
@@ -107,7 +110,7 @@ namespace ManagedDoom
 
             if ((Z != FloorZ) || MomZ != Fixed.Zero)
             {
-                World.ThingMovement.P_ZMovement(this);
+                world.ThingMovement.P_ZMovement(this);
 
                 // FIXME: decent NOP/NULL/Nil function pointer please.
                 if (Removed)
@@ -127,7 +130,7 @@ namespace ManagedDoom
                 // you can cycle through multiple states in a tic
                 if (Tics == 0)
                 {
-                    if (!World.SetMobjState(this, State.Next))
+                    if (!world.SetMobjState(this, State.Next))
                     {
                         // freed itself
                         return;
@@ -194,5 +197,7 @@ namespace ManagedDoom
 
             return hash;
         }
+
+        public World World => world;
     }
 }
