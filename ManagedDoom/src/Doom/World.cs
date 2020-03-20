@@ -34,6 +34,8 @@ namespace ManagedDoom
         private PlayerBehavior playerBehavior;
         private ItemPickup itemPickup;
         private WeaponBehavior weaponBehavior;
+        private MonsterBehavior monsterBehavior;
+
 
         public World(CommonResource resorces, GameOptions options, Player[] players)
         {
@@ -59,6 +61,7 @@ namespace ManagedDoom
             playerBehavior = new PlayerBehavior(this);
             itemPickup = new ItemPickup(this);
             weaponBehavior = new WeaponBehavior(this);
+            monsterBehavior = new MonsterBehavior(this);
 
 
             LoadThings();
@@ -178,6 +181,7 @@ namespace ManagedDoom
         public PlayerBehavior PlayerBehavior => playerBehavior;
         public ItemPickup ItemPickup => itemPickup;
         public WeaponBehavior WeaponBehavior => weaponBehavior;
+        public MonsterBehavior MonsterBehavior => monsterBehavior;
 
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);
