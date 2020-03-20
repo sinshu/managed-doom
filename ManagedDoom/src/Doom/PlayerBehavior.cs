@@ -171,7 +171,7 @@ namespace ManagedDoom
 
             if (player.PlayerState == PlayerState.Dead)
             {
-                //P_DeathThink(player);
+                DeathThink(player);
                 return;
             }
 
@@ -328,6 +328,75 @@ namespace ManagedDoom
                 player.FixedColorMap = 0;
             }
         }
+
+
+        //
+        // P_DeathThink
+        // Fall on your face when dying.
+        // Decrease POV height to floor height.
+        //
+        private static Angle ANG5 = new Angle(Angle.Ang90.Data / 18);
+
+        private void DeathThink(Player player)
+        {
+            P_MovePsprites(player);
+
+            // fall to the ground
+            if (player.ViewHeight > Fixed.FromInt(6))
+            {
+                player.ViewHeight -= Fixed.One;
+            }
+
+            if (player.ViewHeight < Fixed.FromInt(6))
+            {
+                player.ViewHeight = Fixed.FromInt(6);
+            }
+
+            player.DeltaViewHeight = Fixed.Zero;
+            var onground = (player.Mobj.Z <= player.Mobj.FloorZ);
+            CalcHeight(player);
+
+            if (player.Attacker != null && player.Attacker != player.Mobj)
+            {
+                var angle = Geometry.PointToAngle(
+                    player.Mobj.X,
+                    player.Mobj.Y,
+                    player.Attacker.X,
+                    player.Attacker.Y);
+
+                var delta = angle - player.Mobj.Angle;
+
+                if (delta < ANG5 || delta.Data > (-ANG5).Data)
+                {
+                    // Looking at killer,
+                    //  so fade damage flash down.
+                    player.Mobj.Angle = angle;
+
+                    if (player.DamageCount > 0)
+                    {
+                        player.DamageCount--;
+                    }
+                }
+                else if (delta < Angle.Ang180)
+                {
+                    player.Mobj.Angle += ANG5;
+                }
+                else
+                {
+                    player.Mobj.Angle -= ANG5;
+                }
+            }
+            else if (player.DamageCount > 0)
+            {
+                player.DamageCount--;
+            }
+
+            if ((player.Cmd.Buttons & Buttons.Use) != 0)
+            {
+                player.PlayerState = PlayerState.Reborn;
+            }
+        }
+
 
 
         //
