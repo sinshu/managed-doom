@@ -18,6 +18,26 @@ namespace ManagedDoom
             return new VlDoor(world);
         }
 
+        public static FireFlicker RentFireFlicker(World world)
+        {
+            return new FireFlicker(world);
+        }
+
+        public static LightFlash RentLightFlash(World world)
+        {
+            return new LightFlash(world);
+        }
+
+        public static StrobeFlash RentStrobeFlash(World world)
+        {
+            return new StrobeFlash(world);
+        }
+
+        public static GlowLight RentGlowLight(World world)
+        {
+            return new GlowLight(world);
+        }
+
         public static void Return(Thinker thinker)
         {
         }

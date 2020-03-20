@@ -35,6 +35,7 @@ namespace ManagedDoom
         private ItemPickup itemPickup;
         private WeaponBehavior weaponBehavior;
         private MonsterBehavior monsterBehavior;
+        private LightingChange lightingChange;
 
 
         public World(CommonResource resorces, GameOptions options, Player[] players)
@@ -62,9 +63,12 @@ namespace ManagedDoom
             itemPickup = new ItemPickup(this);
             weaponBehavior = new WeaponBehavior(this);
             monsterBehavior = new MonsterBehavior(this);
+            lightingChange = new LightingChange(this);
 
 
             LoadThings();
+
+            SpawnSpecials();
         }
 
         public void Update()
@@ -121,6 +125,102 @@ namespace ManagedDoom
                 }
 
                 ta.SpawnMapThing(mt);
+            }
+        }
+
+
+        private void SpawnSpecials()
+        {
+            /*
+            episode = 1;
+            if (W_CheckNumForName("texture2") >= 0)
+                episode = 2;
+
+
+            // See if -TIMER needs to be used.
+            levelTimer = false;
+
+            i = M_CheckParm("-avg");
+            if (i && deathmatch)
+            {
+                levelTimer = true;
+                levelTimeCount = 20 * 60 * 35;
+            }
+
+            i = M_CheckParm("-timer");
+            if (i && deathmatch)
+            {
+                int time;
+                time = atoi(myargv[i + 1]) * 60 * 35;
+                levelTimer = true;
+                levelTimeCount = time;
+            }
+            */
+
+            //	Init special SECTORs.
+            foreach (var sector in map.Sectors)
+            {
+                if (sector.Special == 0)
+                {
+                    continue;
+                }
+
+                switch ((int)sector.Special)
+                {
+                    case 1:
+                        // FLICKERING LIGHTS
+                        lightingChange.SpawnLightFlash(sector);
+                        break;
+
+                    case 2:
+                        // STROBE FAST
+                        lightingChange.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 0);
+                        break;
+
+                    case 3:
+                        // STROBE SLOW
+                        lightingChange.SpawnStrobeFlash(sector, StrobeFlash.SLOWDARK, 0);
+                        break;
+
+                    case 4:
+                        // STROBE FAST/DEATH SLIME
+                        lightingChange.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 0);
+                        sector.Special = (SectorSpecial)4;
+                        break;
+
+                    case 8:
+                        // GLOWING LIGHT
+                        lightingChange.SpawnGlowingLight(sector);
+                        break;
+                    case 9:
+                        // SECRET SECTOR
+                        //totalsecret++;
+                        break;
+
+                    case 10:
+                        // DOOR CLOSE IN 30 SECONDS
+                        //P_SpawnDoorCloseIn30(sector);
+                        break;
+
+                    case 12:
+                        // SYNC STROBE SLOW
+                        lightingChange.SpawnStrobeFlash(sector, StrobeFlash.SLOWDARK, 1);
+                        break;
+
+                    case 13:
+                        // SYNC STROBE FAST
+                        lightingChange.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 1);
+                        break;
+
+                    case 14:
+                        // DOOR RAISE IN 5 MINUTES
+                        //P_SpawnDoorRaiseIn5Mins(sector, i);
+                        break;
+
+                    case 17:
+                        lightingChange.SpawnFireFlicker(sector);
+                        break;
+                }
             }
         }
 
@@ -182,6 +282,7 @@ namespace ManagedDoom
         public ItemPickup ItemPickup => itemPickup;
         public WeaponBehavior WeaponBehavior => weaponBehavior;
         public MonsterBehavior MonsterBehavior => monsterBehavior;
+        public LightingChange LightingChange => lightingChange;
 
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);
