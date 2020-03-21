@@ -212,20 +212,20 @@ namespace ManagedDoom
             mc.LineOpening(ld);
 
             // adjust floor / ceiling heights
-            if (mc.openTop < tmceilingz)
+            if (mc.OpenTop < tmceilingz)
             {
-                tmceilingz = mc.openTop;
+                tmceilingz = mc.OpenTop;
                 ceilingline = ld;
             }
 
-            if (mc.openBottom > tmfloorz)
+            if (mc.OpenBottom > tmfloorz)
             {
-                tmfloorz = mc.openBottom;
+                tmfloorz = mc.OpenBottom;
             }
 
-            if (mc.lowFloor < tmdropoffz)
+            if (mc.LowFloor < tmdropoffz)
             {
-                tmdropoffz = mc.lowFloor;
+                tmdropoffz = mc.LowFloor;
             }
 
             // if contacted a special line, add it to the list
@@ -620,19 +620,19 @@ namespace ManagedDoom
             // set openrange, opentop, openbottom
             mc.LineOpening(li);
 
-            if (mc.openRange < slidemo.Height)
+            if (mc.OpenRange < slidemo.Height)
             {
                 // doesn't fit
                 goto isblocking;
             }
 
-            if (mc.openTop - slidemo.Z < slidemo.Height)
+            if (mc.OpenTop - slidemo.Z < slidemo.Height)
             {
                 // mobj is too high
                 goto isblocking;
             }
 
-            if (mc.openBottom - slidemo.Z > Fixed.FromInt(24))
+            if (mc.OpenBottom - slidemo.Z > Fixed.FromInt(24))
             {
                 // too big a step up
                 goto isblocking;

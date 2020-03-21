@@ -6,33 +6,27 @@ namespace ManagedDoom
     {
         private World world;
 
+        private Fixed openTop;
+        private Fixed openBottom;
+        private Fixed openRange;
+        private Fixed lowFloor;
+
         public MapCollision(World world)
         {
             this.world = world;
         }
 
-        //
-        // P_LineOpening
-        // Sets opentop and openbottom to the window
-        // through a two sided line.
-        // OPTIMIZE: keep this precalculated
-        //
-        public Fixed openTop;
-        public Fixed openBottom;
-        public Fixed openRange;
-        public Fixed lowFloor;
-
-        public void LineOpening(LineDef linedef)
+        public void LineOpening(LineDef line)
         {
-            if (linedef.Side1 == null)
+            if (line.Side1 == null)
             {
-                // single sided line
+                // If the line is single sided, nothing can pass through.
                 openRange = Fixed.Zero;
                 return;
             }
 
-            var front = linedef.FrontSector;
-            var back = linedef.BackSector;
+            var front = line.FrontSector;
+            var back = line.BackSector;
 
             if (front.CeilingHeight < back.CeilingHeight)
             {
@@ -56,5 +50,10 @@ namespace ManagedDoom
 
             openRange = openTop - openBottom;
         }
+
+        public Fixed OpenTop => openTop;
+        public Fixed OpenBottom => openBottom;
+        public Fixed OpenRange => openRange;
+        public Fixed LowFloor => lowFloor;
     }
 }

@@ -196,7 +196,7 @@ namespace ManagedDoom
 
                 mc.LineOpening(check);
 
-                if (mc.openRange <= Fixed.Zero)
+                if (mc.OpenRange <= Fixed.Zero)
                 {
                     // closed door
                     continue;

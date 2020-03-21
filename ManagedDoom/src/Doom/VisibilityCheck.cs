@@ -65,7 +65,6 @@ namespace ManagedDoom
 		public bool CrossSubsector(int num, int validcount)
 		{
 			var pt = world.PathTraversal;
-			var mc = world.MapCollision;
 
 			var map = world.Map;
 
@@ -132,27 +131,29 @@ namespace ManagedDoom
 
 				// possible occluder
 				// because of ceiling height differences
+				Fixed openTop;
 				if (front.CeilingHeight < back.CeilingHeight)
 				{
-					mc.openTop = front.CeilingHeight;
+					openTop = front.CeilingHeight;
 				}
 				else
 				{
-					mc.openTop = back.CeilingHeight;
+					openTop = back.CeilingHeight;
 				}
 
 				// because of ceiling height differences
+				Fixed openBottom;
 				if (front.FloorHeight > back.FloorHeight)
 				{
-					mc.openBottom = front.FloorHeight;
+					openBottom = front.FloorHeight;
 				}
 				else
 				{
-					mc.openBottom = back.FloorHeight;
+					openBottom = back.FloorHeight;
 				}
 
 				// quick test for totally closed doors
-				if (mc.openBottom >= mc.openTop)
+				if (openBottom >= openTop)
 				{
 					// stop
 					return false;
@@ -162,7 +163,7 @@ namespace ManagedDoom
 
 				if (front.FloorHeight != back.FloorHeight)
 				{
-					var slope = (mc.openBottom - sightzstart) / frac;
+					var slope = (openBottom - sightzstart) / frac;
 					if (slope > bottomslope)
 					{
 						bottomslope = slope;
@@ -171,7 +172,7 @@ namespace ManagedDoom
 
 				if (front.CeilingHeight != back.CeilingHeight)
 				{
-					var slope = (mc.openTop - sightzstart) / frac;
+					var slope = (openTop - sightzstart) / frac;
 					if (slope < topslope)
 					{
 						topslope = slope;

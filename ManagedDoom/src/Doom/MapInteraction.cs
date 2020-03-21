@@ -409,7 +409,7 @@ namespace ManagedDoom
 			if (ic.Line.Special == 0)
 			{
 				mc.LineOpening(ic.Line);
-				if (mc.openRange <= Fixed.Zero)
+				if (mc.OpenRange <= Fixed.Zero)
 				{
 					world.StartSound(usething, Sfx.NOWAY);
 

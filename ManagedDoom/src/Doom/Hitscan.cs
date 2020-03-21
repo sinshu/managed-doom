@@ -61,7 +61,7 @@ namespace ManagedDoom
                 // the possible target ranges.
                 mc.LineOpening(li);
 
-                if (mc.openBottom >= mc.openTop)
+                if (mc.OpenBottom >= mc.OpenTop)
                 {
                     // stop
                     return false;
@@ -71,7 +71,7 @@ namespace ManagedDoom
 
                 if (li.FrontSector.FloorHeight != li.BackSector.FloorHeight)
                 {
-                    var slope = (mc.openBottom - shootz) / dist;
+                    var slope = (mc.OpenBottom - shootz) / dist;
                     if (slope > bottomslope)
                     {
                         bottomslope = slope;
@@ -80,7 +80,7 @@ namespace ManagedDoom
 
                 if (li.FrontSector.CeilingHeight != li.BackSector.CeilingHeight)
                 {
-                    var slope = (mc.openTop - shootz) / dist;
+                    var slope = (mc.OpenTop - shootz) / dist;
                     if (slope < topslope)
                     {
                         topslope = slope;
@@ -181,7 +181,7 @@ namespace ManagedDoom
 
                 if (li.FrontSector.FloorHeight != li.BackSector.FloorHeight)
                 {
-                    var slope = (mc.openBottom - shootz) / dist;
+                    var slope = (mc.OpenBottom - shootz) / dist;
                     if (slope > aimslope)
                     {
                         goto hitline;
@@ -190,7 +190,7 @@ namespace ManagedDoom
 
                 if (li.FrontSector.CeilingHeight != li.BackSector.CeilingHeight)
                 {
-                    var slope = (mc.openTop - shootz) / dist;
+                    var slope = (mc.OpenTop - shootz) / dist;
                     if (slope < aimslope)
                     {
                         goto hitline;
