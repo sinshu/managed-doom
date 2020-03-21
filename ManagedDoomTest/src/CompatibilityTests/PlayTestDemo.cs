@@ -7,7 +7,7 @@ using ManagedDoom;
 namespace ManagedDoomTest.CompatibilityTests
 {
     [TestClass]
-    public class PlayDemo
+    public class PlayTestDemo
     {
         [TestMethod]
         public void PlayerMovementTest()
