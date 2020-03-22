@@ -5,7 +5,7 @@ namespace ManagedDoom
     public sealed class ThingMovement
     {
         private World world;
-        
+
         public ThingMovement(World world)
         {
             this.world = world;
@@ -242,8 +242,7 @@ namespace ManagedDoom
 
             var blockdist = thing.Radius + currentThing.Radius;
 
-            if (Fixed.Abs(thing.X - currentX) >= blockdist
-                || Fixed.Abs(thing.Y - currentY) >= blockdist)
+            if (Fixed.Abs(thing.X - currentX) >= blockdist || Fixed.Abs(thing.Y - currentY) >= blockdist)
             {
                 // Didn't hit it.
                 return true;
@@ -364,6 +363,7 @@ namespace ManagedDoom
         public bool CheckPosition(Mobj thing, Fixed x, Fixed y)
         {
             var map = world.Map;
+            var bm = map.BlockMap;
 
             currentThing = thing;
             currentFlags = thing.Flags;
@@ -401,35 +401,39 @@ namespace ManagedDoom
             // because mobj_ts are grouped into mapblocks
             // based on their origin point, and can overlap
             // into adjacent blocks by up to MAXRADIUS units.
-            var xl = (currentBox[Box.Left] - map.BlockMap.OriginX - GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
-            var xh = (currentBox[Box.Right] - map.BlockMap.OriginX + GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
-            var yl = (currentBox[Box.Bottom] - map.BlockMap.OriginY - GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
-            var yh = (currentBox[Box.Top] - map.BlockMap.OriginY + GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
-
-            for (var bx = xl; bx <= xh; bx++)
             {
-                for (var by = yl; by <= yh; by++)
+                var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConstants.MaxThingRadius);
+                var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConstants.MaxThingRadius);
+                var blockY1 = bm.GetBlockY(currentBox[Box.Bottom] - GameConstants.MaxThingRadius);
+                var blockY2 = bm.GetBlockY(currentBox[Box.Top] + GameConstants.MaxThingRadius);
+
+                for (var bx = blockX1; bx <= blockX2; bx++)
                 {
-                    if (!map.BlockMap.IterateThings(bx, by, checkThingFunc))
+                    for (var by = blockY1; by <= blockY2; by++)
                     {
-                        return false;
+                        if (!map.BlockMap.IterateThings(bx, by, checkThingFunc))
+                        {
+                            return false;
+                        }
                     }
                 }
             }
 
-            // check lines
-            xl = (currentBox[Box.Left] - map.BlockMap.OriginX).Data >> BlockMap.MapBlockShift;
-            xh = (currentBox[Box.Right] - map.BlockMap.OriginX).Data >> BlockMap.MapBlockShift;
-            yl = (currentBox[Box.Bottom] - map.BlockMap.OriginY).Data >> BlockMap.MapBlockShift;
-            yh = (currentBox[Box.Top] - map.BlockMap.OriginY).Data >> BlockMap.MapBlockShift;
-
-            for (var bx = xl; bx <= xh; bx++)
+            // Check lines.
             {
-                for (var by = yl; by <= yh; by++)
+                var blockX1 = bm.GetBlockX(currentBox[Box.Left]);
+                var blockX2 = bm.GetBlockX(currentBox[Box.Right]);
+                var blockY1 = bm.GetBlockY(currentBox[Box.Bottom]);
+                var blockY2 = bm.GetBlockY(currentBox[Box.Top]);
+
+                for (var bx = blockX1; bx <= blockX2; bx++)
                 {
-                    if (!map.BlockMap.IterateLines(bx, by, checkLineFunc, validCount))
+                    for (var by = blockY1; by <= blockY2; by++)
                     {
-                        return false;
+                        if (!map.BlockMap.IterateLines(bx, by, checkLineFunc, validCount))
+                        {
+                            return false;
+                        }
                     }
                 }
             }
@@ -595,9 +599,9 @@ namespace ManagedDoom
                     else if ((thing.Flags & MobjFlags.Missile) != 0)
                     {
                         // Explode a missile.
-                        if (currentCeilingLine != null &&
-                            currentCeilingLine.BackSector != null &&
-                            currentCeilingLine.BackSector.CeilingFlat == world.Map.SkyFlatNumber)
+                        if (currentCeilingLine != null
+                            && currentCeilingLine.BackSector != null
+                            && currentCeilingLine.BackSector.CeilingFlat == world.Map.SkyFlatNumber)
                         {
                             // Hack to prevent missiles exploding against the sky.
                             // Does not handle sky floors.
@@ -653,9 +657,7 @@ namespace ManagedDoom
                 && thing.MomX < stopSpeed
                 && thing.MomY > -stopSpeed
                 && thing.MomY < stopSpeed
-                && (player == null
-                    || (player.Cmd.ForwardMove == 0
-                        && player.Cmd.SideMove == 0)))
+                && (player == null || (player.Cmd.ForwardMove == 0 && player.Cmd.SideMove == 0)))
             {
                 // If in a walking frame, stop moving.
                 if (player != null && player.Mobj.State.Frame < 4)
@@ -684,22 +686,18 @@ namespace ManagedDoom
             {
                 thing.Player.ViewHeight -= thing.FloorZ - thing.Z;
 
-                thing.Player.DeltaViewHeight
-                    = new Fixed((Player.VIEWHEIGHT - thing.Player.ViewHeight).Data >> 3);
+                thing.Player.DeltaViewHeight = new Fixed((Player.VIEWHEIGHT - thing.Player.ViewHeight).Data >> 3);
             }
 
             // Adjust height.
             thing.Z += thing.MomZ;
 
-            if ((thing.Flags & MobjFlags.Float) != 0
-                && thing.Target != null)
+            if ((thing.Flags & MobjFlags.Float) != 0 && thing.Target != null)
             {
                 // Float down towards target if too close.
-                if ((thing.Flags & MobjFlags.SkullFly) == 0
-                     && (thing.Flags & MobjFlags.InFloat) == 0)
+                if ((thing.Flags & MobjFlags.SkullFly) == 0 && (thing.Flags & MobjFlags.InFloat) == 0)
                 {
-                    var dist = Geometry.AproxDistance(
-                        thing.X - thing.Target.X, thing.Y - thing.Target.Y);
+                    var dist = Geometry.AproxDistance(thing.X - thing.Target.X, thing.Y - thing.Target.Y);
 
                     var delta = (thing.Target.Z + new Fixed(thing.Height.Data >> 1)) - thing.Z;
 
@@ -712,7 +710,6 @@ namespace ManagedDoom
                         thing.Z += FloatSpeed;
                     }
                 }
-
             }
 
             // Clip movement.
@@ -730,8 +727,7 @@ namespace ManagedDoom
 
                 if (thing.MomZ < Fixed.Zero)
                 {
-                    if (thing.Player != null
-                        && thing.MomZ < -Gravity * 8)
+                    if (thing.Player != null && thing.MomZ < -Gravity * 8)
                     {
                         // Squat down.
                         // Decrease viewheight for a moment
@@ -744,8 +740,7 @@ namespace ManagedDoom
                 }
                 thing.Z = thing.FloorZ;
 
-                if ((thing.Flags & MobjFlags.Missile) != 0
-                     && (thing.Flags & MobjFlags.NoClip) == 0)
+                if ((thing.Flags & MobjFlags.Missile) != 0 && (thing.Flags & MobjFlags.NoClip) == 0)
                 {
                     world.ThingInteraction.ExplodeMissile(thing);
                     return;
@@ -781,8 +776,7 @@ namespace ManagedDoom
                     thing.MomZ = -thing.MomZ;
                 }
 
-                if ((thing.Flags & MobjFlags.Missile) != 0
-                     && (thing.Flags & MobjFlags.NoClip) == 0)
+                if ((thing.Flags & MobjFlags.Missile) != 0 && (thing.Flags & MobjFlags.NoClip) == 0)
                 {
                     world.ThingInteraction.ExplodeMissile(thing);
                     return;
@@ -950,10 +944,7 @@ namespace ManagedDoom
             if (++hitCount == 3)
             {
                 // The move most have hit the middle, so stairstep.
-                if (!TryMove(thing, thing.X, thing.Y + thing.MomY))
-                {
-                    TryMove(thing, thing.X + thing.MomX, thing.Y);
-                }
+                StairStep(thing);
                 return;
             }
 
@@ -1003,10 +994,7 @@ namespace ManagedDoom
             if (bestSlideFrac == new Fixed(Fixed.FracUnit + 1))
             {
                 // The move most have hit the middle, so stairstep.
-                if (!TryMove(thing, thing.X, thing.Y + thing.MomY))
-                {
-                    TryMove(thing, thing.X + thing.MomX, thing.Y);
-                }
+                StairStep(thing);
                 return;
             }
 
@@ -1020,10 +1008,7 @@ namespace ManagedDoom
                 if (!TryMove(thing, thing.X + newX, thing.Y + newY))
                 {
                     // The move most have hit the middle, so stairstep.
-                    if (!TryMove(thing, thing.X, thing.Y + thing.MomY))
-                    {
-                        TryMove(thing, thing.X + thing.MomX, thing.Y);
-                    }
+                    StairStep(thing);
                     return;
                 }
             }
@@ -1054,6 +1039,14 @@ namespace ManagedDoom
             if (!TryMove(thing, thing.X + slideMoveX, thing.Y + slideMoveY))
             {
                 goto retry;
+            }
+        }
+
+        private void StairStep(Mobj thing)
+        {
+            if (!TryMove(thing, thing.X, thing.Y + thing.MomY))
+            {
+                TryMove(thing, thing.X + thing.MomX, thing.Y);
             }
         }
     }
