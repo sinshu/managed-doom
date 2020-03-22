@@ -306,6 +306,7 @@ namespace ManagedDoom
         public void P_CheckMissileSpawn(Mobj th)
         {
             var tm = world.ThingMovement;
+            var ti = world.ThingInteraction;
 
             th.Tics -= world.Random.Next() & 3;
             if (th.Tics < 1)
@@ -319,9 +320,9 @@ namespace ManagedDoom
             th.Y += new Fixed(th.MomY.Data >> 1);
             th.Z += new Fixed(th.MomZ.Data >> 1);
 
-            if (!tm.P_TryMove(th, th.X, th.Y))
+            if (!tm.TryMove(th, th.X, th.Y))
             {
-                tm.P_ExplodeMissile(th);
+                ti.ExplodeMissile(th);
             }
         }
 

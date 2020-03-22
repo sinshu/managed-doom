@@ -4,6 +4,8 @@ namespace ManagedDoom
 {
     public static class GameConstants
     {
-        public const int TicRate = 35;
+        public static readonly int TicRate = 35;
+
+        public static readonly Fixed MaxThingRadius = Fixed.FromInt(32);
     }
 }

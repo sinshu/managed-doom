@@ -30,8 +30,8 @@ namespace ManagedDoom
 			tm.CheckPosition(thing, thing.X, thing.Y);
 			// what about stranding a monster partially off an edge?
 
-			thing.FloorZ = tm.tmfloorz;
-			thing.CeilingZ = tm.tmceilingz;
+			thing.FloorZ = tm.CurrentFloorZ;
+			thing.CeilingZ = tm.CurrentCeilingZ;
 
 			if (onfloor)
 			{

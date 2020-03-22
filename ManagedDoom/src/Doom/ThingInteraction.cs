@@ -300,5 +300,31 @@ namespace ManagedDoom
 				}
 			}
 		}
+
+
+
+		//
+		// P_ExplodeMissile  
+		//
+		public void ExplodeMissile(Mobj thing)
+		{
+			thing.MomX = thing.MomY = thing.MomZ = Fixed.Zero;
+
+			thing.SetState(DoomInfo.MobjInfos[(int)thing.Type].DeathState);
+
+			thing.Tics -= world.Random.Next() & 3;
+
+			if (thing.Tics < 1)
+			{
+				thing.Tics = 1;
+			}
+
+			thing.Flags &= ~MobjFlags.Missile;
+
+			if (thing.Info.DeathSound != 0)
+			{
+				world.StartSound(thing, thing.Info.DeathSound);
+			}
+		}
 	}
 }

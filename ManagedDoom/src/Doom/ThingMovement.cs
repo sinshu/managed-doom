@@ -4,78 +4,80 @@ namespace ManagedDoom
 {
     public sealed class ThingMovement
     {
-        public static readonly Fixed MaxRadius = Fixed.FromInt(32);
-
-        private static readonly Fixed Gravity = Fixed.One;
-        private static readonly Fixed MaxMove = Fixed.FromInt(30);
-
         private World world;
-
-        private Fixed[] tmbbox;
-        private Mobj tmthing;
-        private MobjFlags tmflags;
-        private Fixed tmx;
-        private Fixed tmy;
-
-        public bool floatok;
-
-        public Fixed tmfloorz;
-        public Fixed tmceilingz;
-        public Fixed tmdropoffz;
-
-        private LineDef ceilingline;
-
-        public LineDef[] spechit;
-        public int numspechit;
-
-        private Func<LineDef, bool> checkLine;
-        private Func<Mobj, bool> checkThing;
-
-        public static readonly int MAXSPECIALCROSS = 16;
-
+        
         public ThingMovement(World world)
         {
             this.world = world;
 
-            tmbbox = new Fixed[4];
-
-            spechit = new LineDef[MAXSPECIALCROSS];
-
-            checkLine = PIT_CheckLine;
-            checkThing = PIT_CheckThing;
+            InitThingMovement();
+            InitSlideMovement();
         }
+
+        public static readonly Fixed FloatSpeed = Fixed.FromInt(4);
+
+        private static readonly int maxSpecialCross = 16;
+        private static readonly Fixed MaxMove = Fixed.FromInt(30);
+        private static readonly Fixed Gravity = Fixed.One;
+
+        private Mobj currentThing;
+        private MobjFlags currentFlags;
+        private Fixed currentX;
+        private Fixed currentY;
+        private Fixed[] currentBox;
+
+        private Fixed currentFloorZ;
+        private Fixed currentCeilingZ;
+        private Fixed currentDropoffZ;
+        private bool floatOk;
+
+        private LineDef currentCeilingLine;
+
+        public int hitSpecialCount;
+        public LineDef[] hitSpecialLines;
+
+        private Func<LineDef, bool> checkLineFunc;
+        private Func<Mobj, bool> checkThingFunc;
+
+
+        private void InitThingMovement()
+        {
+            currentBox = new Fixed[4];
+
+            hitSpecialLines = new LineDef[maxSpecialCross];
+
+            checkLineFunc = CheckLine;
+            checkThingFunc = CheckThing;
+        }
+
 
         public void SetThingPosition(Mobj thing)
         {
             var map = world.Map;
 
-            var ss = Geometry.PointInSubsector(thing.X, thing.Y, map);
+            var subsector = Geometry.PointInSubsector(thing.X, thing.Y, map);
 
-            thing.Subsector = ss;
+            thing.Subsector = subsector;
 
-            // invisible things don't go into the sector links
+            // Invisible things don't go into the sector links.
             if ((thing.Flags & MobjFlags.NoSector) == 0)
             {
-                // link into subsector    
-
-                var sec = ss.Sector;
+                var sector = subsector.Sector;
 
                 thing.SPrev = null;
-                thing.SNext = sec.ThingList;
+                thing.SNext = sector.ThingList;
 
-                if (sec.ThingList != null)
+                if (sector.ThingList != null)
                 {
-                    sec.ThingList.SPrev = thing;
+                    sector.ThingList.SPrev = thing;
                 }
 
-                sec.ThingList = thing;
+                sector.ThingList = thing;
             }
 
-            // inert things don't need to be in blockmap
+            // Inert things don't need to be in blockmap.
             if ((thing.Flags & MobjFlags.NoBlockMap) == 0)
             {
-                // link into blockmap
-
                 var index = map.BlockMap.GetIndex(thing.X, thing.Y);
 
                 if (index != -1)
@@ -94,22 +96,22 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    // thing is off the map
+                    // Thing is off the map.
                     thing.BNext = null;
                     thing.BPrev = null;
                 }
             }
         }
 
+
         public void UnsetThingPosition(Mobj thing)
         {
             var map = world.Map;
 
-            // invisible things don't go into the sector links
+            // Invisible things don't go into the sector links.
             if ((thing.Flags & MobjFlags.NoSector) == 0)
             {
-                // unlink from subsector
-
+                // Unlink from subsector.
                 if (thing.SNext != null)
                 {
                     thing.SNext.SPrev = thing.SPrev;
@@ -125,11 +127,10 @@ namespace ManagedDoom
                 }
             }
 
-            // inert things don't need to be in blockmap
+            // Inert things don't need to be in blockmap.
             if ((thing.Flags & MobjFlags.NoBlockMap) == 0)
             {
-                // unlink from block map
-
+                // Unlink from block map.
                 if (thing.BNext != null)
                 {
                     thing.BNext.BPrev = thing.BPrev;
@@ -152,31 +153,24 @@ namespace ManagedDoom
         }
 
 
-
-
-
-        //
-        // PIT_CheckLine
-        // Adjusts tmfloorz and tmceilingz as lines are contacted
-        //
-        private bool PIT_CheckLine(LineDef ld)
+        private bool CheckLine(LineDef line)
         {
             var mc = world.MapCollision;
 
-            if (tmbbox[Box.Right] <= ld.BboxLeft
-                || tmbbox[Box.Left] >= ld.BboxRight
-                || tmbbox[Box.Top] <= ld.BboxBottom
-                || tmbbox[Box.Bottom] >= ld.BboxTop)
+            if (currentBox[Box.Right] <= line.BboxLeft
+                || currentBox[Box.Left] >= line.BboxRight
+                || currentBox[Box.Top] <= line.BboxBottom
+                || currentBox[Box.Bottom] >= line.BboxTop)
             {
                 return true;
             }
 
-            if (Geometry.BoxOnLineSide(tmbbox, ld) != -1)
+            if (Geometry.BoxOnLineSide(currentBox, line) != -1)
             {
                 return true;
             }
 
-            // A line has been hit
+            // A line has been hit.
 
             // The moving thing's destination position will cross
             // the given line.
@@ -187,122 +181,120 @@ namespace ManagedDoom
             // so two special lines that are only 8 pixels apart
             // could be crossed in either order.
 
-            if (ld.BackSector == null)
+            if (line.BackSector == null)
             {
-                // one sided line
+                // One sided line.
                 return false;
             }
 
-            if ((tmthing.Flags & MobjFlags.Missile) == 0)
+            if ((currentThing.Flags & MobjFlags.Missile) == 0)
             {
-                if ((ld.Flags & LineFlags.Blocking) != 0)
+                if ((line.Flags & LineFlags.Blocking) != 0)
                 {
-                    // explicitly blocking everything
+                    // Explicitly blocking everything.
                     return false;
                 }
 
-                if (tmthing.Player == null && (ld.Flags & LineFlags.BlockMonsters) != 0)
+                if (currentThing.Player == null && (line.Flags & LineFlags.BlockMonsters) != 0)
                 {
-                    // block monsters only
+                    // Block monsters only.
                     return false;
                 }
             }
 
-            // set openrange, opentop, openbottom
-            mc.LineOpening(ld);
+            // Set openrange, opentop, openbottom.
+            mc.LineOpening(line);
 
-            // adjust floor / ceiling heights
-            if (mc.OpenTop < tmceilingz)
+            // Adjust floor / ceiling heights.
+            if (mc.OpenTop < currentCeilingZ)
             {
-                tmceilingz = mc.OpenTop;
-                ceilingline = ld;
+                currentCeilingZ = mc.OpenTop;
+                currentCeilingLine = line;
             }
 
-            if (mc.OpenBottom > tmfloorz)
+            if (mc.OpenBottom > currentFloorZ)
             {
-                tmfloorz = mc.OpenBottom;
+                currentFloorZ = mc.OpenBottom;
             }
 
-            if (mc.LowFloor < tmdropoffz)
+            if (mc.LowFloor < currentDropoffZ)
             {
-                tmdropoffz = mc.LowFloor;
+                currentDropoffZ = mc.LowFloor;
             }
 
-            // if contacted a special line, add it to the list
-            if (ld.Special != 0)
+            // If contacted a special line, add it to the list
+            if (line.Special != 0)
             {
-                spechit[numspechit] = ld;
-                numspechit++;
+                hitSpecialLines[hitSpecialCount] = line;
+                hitSpecialCount++;
             }
 
             return true;
         }
 
-        //
-        // PIT_CheckThing
-        //
-        private bool PIT_CheckThing(Mobj thing)
+
+        private bool CheckThing(Mobj thing)
         {
             if ((thing.Flags & (MobjFlags.Solid | MobjFlags.Special | MobjFlags.Shootable)) == 0)
             {
                 return true;
             }
 
-            var blockdist = thing.Radius + tmthing.Radius;
+            var blockdist = thing.Radius + currentThing.Radius;
 
-            if (Fixed.Abs(thing.X - tmx) >= blockdist
-                || Fixed.Abs(thing.Y - tmy) >= blockdist)
+            if (Fixed.Abs(thing.X - currentX) >= blockdist
+                || Fixed.Abs(thing.Y - currentY) >= blockdist)
             {
-                // didn't hit it
+                // Didn't hit it.
                 return true;
             }
 
-            // don't clip against self
-            if (thing == tmthing)
+            // Don't clip against self.
+            if (thing == currentThing)
             {
                 return true;
             }
 
-            // check for skulls slamming into things
-            if ((tmthing.Flags & MobjFlags.SkullFly) != 0)
+            // Check for skulls slamming into things.
+            if ((currentThing.Flags & MobjFlags.SkullFly) != 0)
             {
-                var damage = ((world.Random.Next() % 8) + 1) * tmthing.Info.Damage;
+                var damage = ((world.Random.Next() % 8) + 1) * currentThing.Info.Damage;
 
-                world.ThingInteraction.DamageMobj(thing, tmthing, tmthing, damage);
+                world.ThingInteraction.DamageMobj(thing, currentThing, currentThing, damage);
 
-                tmthing.Flags &= ~MobjFlags.SkullFly;
-                tmthing.MomX = tmthing.MomY = tmthing.MomZ = Fixed.Zero;
+                currentThing.Flags &= ~MobjFlags.SkullFly;
+                currentThing.MomX = currentThing.MomY = currentThing.MomZ = Fixed.Zero;
 
-                tmthing.SetState(tmthing.Info.SpawnState);
+                currentThing.SetState(currentThing.Info.SpawnState);
 
-                // stop moving
+                // Stop moving.
                 return false;
             }
 
 
-            // missiles can hit other things
-            if ((tmthing.Flags & MobjFlags.Missile) != 0)
+            // Missiles can hit other things.
+            if ((currentThing.Flags & MobjFlags.Missile) != 0)
             {
-                // see if it went over / under
-                if (tmthing.Z > thing.Z + thing.Height)
+                // See if it went over / under.
+                if (currentThing.Z > thing.Z + thing.Height)
                 {
-                    // overhead
+                    // Overhead.
                     return true;
                 }
 
-                if (tmthing.Z + tmthing.Height < thing.Z)
+                if (currentThing.Z + currentThing.Height < thing.Z)
                 {
-                    // underneath
+                    // Underneath.
                     return true;
                 }
 
-                if (tmthing.Target != null
-                    && (tmthing.Target.Type == thing.Type
-                        || (tmthing.Target.Type == MobjType.Knight && thing.Type == MobjType.Bruiser)
-                        || (tmthing.Target.Type == MobjType.Bruiser && thing.Type == MobjType.Knight)))
+                if (currentThing.Target != null
+                    && (currentThing.Target.Type == thing.Type
+                        || (currentThing.Target.Type == MobjType.Knight && thing.Type == MobjType.Bruiser)
+                        || (currentThing.Target.Type == MobjType.Bruiser && thing.Type == MobjType.Knight)))
                 {
                     // Don't hit same species as originator.
-                    if (thing == tmthing.Target)
+                    if (thing == currentThing.Target)
                     {
                         return true;
                     }
@@ -317,32 +309,33 @@ namespace ManagedDoom
 
                 if ((thing.Flags & MobjFlags.Shootable) == 0)
                 {
-                    // didn't do any damage
+                    // Didn't do any damage.
                     return (thing.Flags & MobjFlags.Solid) == 0;
                 }
 
-                // damage / explode
-                var damage = ((world.Random.Next() % 8) + 1) * tmthing.Info.Damage;
-                world.ThingInteraction.DamageMobj(thing, tmthing, tmthing.Target, damage);
+                // Damage / explode.
+                var damage = ((world.Random.Next() % 8) + 1) * currentThing.Info.Damage;
+                world.ThingInteraction.DamageMobj(thing, currentThing, currentThing.Target, damage);
 
-                // don't traverse any more
+                // Don't traverse any more.
                 return false;
             }
 
-            // check for special pickup
+            // Check for special pickup.
             if ((thing.Flags & MobjFlags.Special) != 0)
             {
                 var solid = (thing.Flags & MobjFlags.Solid) != 0;
-                if ((tmflags & MobjFlags.PickUp) != 0)
+                if ((currentFlags & MobjFlags.PickUp) != 0)
                 {
-                    // can remove thing
-                    world.ItemPickup.TouchSpecialThing(thing, tmthing);
+                    // Can remove thing.
+                    world.ItemPickup.TouchSpecialThing(thing, currentThing);
                 }
                 return !solid;
             }
 
             return (thing.Flags & MobjFlags.Solid) == 0;
         }
+
 
         //
         // P_CheckPosition
@@ -372,32 +365,33 @@ namespace ManagedDoom
         {
             var map = world.Map;
 
-            tmthing = thing;
-            tmflags = thing.Flags;
+            currentThing = thing;
+            currentFlags = thing.Flags;
 
-            tmx = x;
-            tmy = y;
+            currentX = x;
+            currentY = y;
 
-            tmbbox[Box.Top] = y + tmthing.Radius;
-            tmbbox[Box.Bottom] = y - tmthing.Radius;
-            tmbbox[Box.Right] = x + tmthing.Radius;
-            tmbbox[Box.Left] = x - tmthing.Radius;
+            currentBox[Box.Top] = y + currentThing.Radius;
+            currentBox[Box.Bottom] = y - currentThing.Radius;
+            currentBox[Box.Right] = x + currentThing.Radius;
+            currentBox[Box.Left] = x - currentThing.Radius;
 
             var newsubsec = Geometry.PointInSubsector(x, y, map);
-            ceilingline = null;
+
+            currentCeilingLine = null;
 
             // The base floor / ceiling is from the subsector
             // that contains the point.
             // Any contacted lines the step closer together
             // will adjust them.
-            tmfloorz = tmdropoffz = newsubsec.Sector.FloorHeight;
-            tmceilingz = newsubsec.Sector.CeilingHeight;
+            currentFloorZ = currentDropoffZ = newsubsec.Sector.FloorHeight;
+            currentCeilingZ = newsubsec.Sector.CeilingHeight;
 
             var validCount = world.GetNewValidCount();
 
-            numspechit = 0;
+            hitSpecialCount = 0;
 
-            if ((tmflags & MobjFlags.NoClip) != 0)
+            if ((currentFlags & MobjFlags.NoClip) != 0)
             {
                 return true;
             }
@@ -407,16 +401,16 @@ namespace ManagedDoom
             // because mobj_ts are grouped into mapblocks
             // based on their origin point, and can overlap
             // into adjacent blocks by up to MAXRADIUS units.
-            var xl = (tmbbox[Box.Left] - map.BlockMap.OriginX - MaxRadius).Data >> BlockMap.MapBlockShift;
-            var xh = (tmbbox[Box.Right] - map.BlockMap.OriginX + MaxRadius).Data >> BlockMap.MapBlockShift;
-            var yl = (tmbbox[Box.Bottom] - map.BlockMap.OriginY - MaxRadius).Data >> BlockMap.MapBlockShift;
-            var yh = (tmbbox[Box.Top] - map.BlockMap.OriginY + MaxRadius).Data >> BlockMap.MapBlockShift;
+            var xl = (currentBox[Box.Left] - map.BlockMap.OriginX - GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
+            var xh = (currentBox[Box.Right] - map.BlockMap.OriginX + GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
+            var yl = (currentBox[Box.Bottom] - map.BlockMap.OriginY - GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
+            var yh = (currentBox[Box.Top] - map.BlockMap.OriginY + GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
 
             for (var bx = xl; bx <= xh; bx++)
             {
                 for (var by = yl; by <= yh; by++)
                 {
-                    if (!map.BlockMap.IterateThings(bx, by, checkThing))
+                    if (!map.BlockMap.IterateThings(bx, by, checkThingFunc))
                     {
                         return false;
                     }
@@ -424,16 +418,16 @@ namespace ManagedDoom
             }
 
             // check lines
-            xl = (tmbbox[Box.Left] - map.BlockMap.OriginX).Data >> BlockMap.MapBlockShift;
-            xh = (tmbbox[Box.Right] - map.BlockMap.OriginX).Data >> BlockMap.MapBlockShift;
-            yl = (tmbbox[Box.Bottom] - map.BlockMap.OriginY).Data >> BlockMap.MapBlockShift;
-            yh = (tmbbox[Box.Top] - map.BlockMap.OriginY).Data >> BlockMap.MapBlockShift;
+            xl = (currentBox[Box.Left] - map.BlockMap.OriginX).Data >> BlockMap.MapBlockShift;
+            xh = (currentBox[Box.Right] - map.BlockMap.OriginX).Data >> BlockMap.MapBlockShift;
+            yl = (currentBox[Box.Bottom] - map.BlockMap.OriginY).Data >> BlockMap.MapBlockShift;
+            yh = (currentBox[Box.Top] - map.BlockMap.OriginY).Data >> BlockMap.MapBlockShift;
 
             for (var bx = xl; bx <= xh; bx++)
             {
                 for (var by = yl; by <= yh; by++)
                 {
-                    if (!map.BlockMap.IterateLines(bx, by, checkLine, validCount))
+                    if (!map.BlockMap.IterateLines(bx, by, checkLineFunc, validCount))
                     {
                         return false;
                     }
@@ -444,80 +438,78 @@ namespace ManagedDoom
         }
 
 
-
-
         //
         // P_TryMove
         // Attempt to move to a new position,
         // crossing special lines unless MF_TELEPORT is set.
         //
-        public bool P_TryMove(Mobj thing, Fixed x, Fixed y)
+        public bool TryMove(Mobj thing, Fixed x, Fixed y)
         {
-            floatok = false;
+            floatOk = false;
 
             if (!CheckPosition(thing, x, y))
             {
-                // solid wall or thing
+                // Solid wall or thing.
                 return false;
             }
 
             if ((thing.Flags & MobjFlags.NoClip) == 0)
             {
-                if (tmceilingz - tmfloorz < thing.Height)
+                if (currentCeilingZ - currentFloorZ < thing.Height)
                 {
-                    // doesn't fit
+                    // Doesn't fit.
                     return false;
                 }
 
-                floatok = true;
+                floatOk = true;
 
                 if ((thing.Flags & MobjFlags.Teleport) == 0
-                    && tmceilingz - thing.Z < thing.Height)
+                    && currentCeilingZ - thing.Z < thing.Height)
                 {
-                    // mobj must lower itself to fit
+                    // Mobj must lower itself to fit.
                     return false;
                 }
 
                 if ((thing.Flags & MobjFlags.Teleport) == 0
-                     && tmfloorz - thing.Z > Fixed.FromInt(24))
+                     && currentFloorZ - thing.Z > Fixed.FromInt(24))
                 {
-                    // too big a step up
+                    // Too big a step up.
                     return false;
                 }
 
                 if ((thing.Flags & (MobjFlags.DropOff | MobjFlags.Float)) == 0
-                     && tmfloorz - tmdropoffz > Fixed.FromInt(24))
+                     && currentFloorZ - currentDropoffZ > Fixed.FromInt(24))
                 {
-                    // don't stand over a dropoff
+                    // Don't stand over a dropoff.
                     return false;
                 }
             }
 
-            // the move is ok,
-            // so link the thing into its new position
+            // The move is ok,
+            // so link the thing into its new position.
             UnsetThingPosition(thing);
 
             var oldx = thing.X;
             var oldy = thing.Y;
-            thing.FloorZ = tmfloorz;
-            thing.CeilingZ = tmceilingz;
+            thing.FloorZ = currentFloorZ;
+            thing.CeilingZ = currentCeilingZ;
             thing.X = x;
             thing.Y = y;
 
             SetThingPosition(thing);
 
-            // if any special lines were hit, do the effect
+            // If any special lines were hit, do the effect.
             if ((thing.Flags & (MobjFlags.Teleport | MobjFlags.NoClip)) == 0)
             {
-                while (numspechit-- != 0)
+                while (hitSpecialCount-- > 0)
                 {
-                    // see if the line was crossed
-                    var ld = spechit[numspechit];
-                    var side = Geometry.PointOnLineSide(thing.X, thing.Y, ld);
-                    var oldside = Geometry.PointOnLineSide(oldx, oldy, ld);
-                    if (side != oldside)
+                    // See if the line was crossed.
+                    var line = hitSpecialLines[hitSpecialCount];
+                    var newSide = Geometry.PointOnLineSide(thing.X, thing.Y, line);
+                    var oldSide = Geometry.PointOnLineSide(oldx, oldy, line);
+                    if (newSide != oldSide)
                     {
-                        if (ld.Special != 0)
+                        if (line.Special != 0)
                         {
                             //P_CrossSpecialLine(ld - lines, oldside, thing);
                         }
@@ -529,6 +521,279 @@ namespace ManagedDoom
         }
 
 
+        //
+        // P_XYMovement  
+        //
+        private static readonly Fixed stopSpeed = new Fixed(0x1000);
+        private static readonly Fixed friction = new Fixed(0xe800);
+
+        public void XYMovement(Mobj thing)
+        {
+            if (thing.MomX == Fixed.Zero && thing.MomY == Fixed.Zero)
+            {
+                if ((thing.Flags & MobjFlags.SkullFly) != 0)
+                {
+                    // The skull slammed into something.
+                    thing.Flags &= ~MobjFlags.SkullFly;
+                    thing.MomX = thing.MomY = thing.MomZ = Fixed.Zero;
+
+                    thing.SetState(thing.Info.SpawnState);
+                }
+
+                return;
+            }
+
+            var player = thing.Player;
+
+            if (thing.MomX > MaxMove)
+            {
+                thing.MomX = MaxMove;
+            }
+            else if (thing.MomX < -MaxMove)
+            {
+                thing.MomX = -MaxMove;
+            }
+
+            if (thing.MomY > MaxMove)
+            {
+                thing.MomY = MaxMove;
+            }
+            else if (thing.MomY < -MaxMove)
+            {
+                thing.MomY = -MaxMove;
+            }
+
+            var moveX = thing.MomX;
+            var moveY = thing.MomY;
+
+            do
+            {
+                Fixed pMoveX;
+                Fixed pMoveY;
+
+                if (moveX > MaxMove / 2 || moveY > MaxMove / 2)
+                {
+                    pMoveX = thing.X + moveX / 2;
+                    pMoveY = thing.Y + moveY / 2;
+                    moveX = new Fixed(moveX.Data >> 1);
+                    moveY = new Fixed(moveY.Data >> 1);
+                }
+                else
+                {
+                    pMoveX = thing.X + moveX;
+                    pMoveY = thing.Y + moveY;
+                    moveX = moveY = Fixed.Zero;
+                }
+
+                if (!TryMove(thing, pMoveX, pMoveY))
+                {
+                    // Blocked move.
+                    if (thing.Player != null)
+                    {   // Try to slide along it.
+                        SlideMove(thing);
+                    }
+                    else if ((thing.Flags & MobjFlags.Missile) != 0)
+                    {
+                        // Explode a missile.
+                        if (currentCeilingLine != null &&
+                            currentCeilingLine.BackSector != null &&
+                            currentCeilingLine.BackSector.CeilingFlat == world.Map.SkyFlatNumber)
+                        {
+                            // Hack to prevent missiles exploding against the sky.
+                            // Does not handle sky floors.
+                            world.ThingAllocation.RemoveMobj(thing);
+                            return;
+                        }
+                        world.ThingInteraction.ExplodeMissile(thing);
+                    }
+                    else
+                    {
+                        thing.MomX = thing.MomY = Fixed.Zero;
+                    }
+                }
+            }
+            while (moveX != Fixed.Zero || moveY != Fixed.Zero);
+
+            // Slow down.
+            if (player != null && (player.Cheats & CheatFlags.NoMomentum) != 0)
+            {
+                // Debug option for no sliding at all.
+                thing.MomX = thing.MomY = Fixed.Zero;
+                return;
+            }
+
+            if ((thing.Flags & (MobjFlags.Missile | MobjFlags.SkullFly)) != 0)
+            {
+                // No friction for missiles ever.
+                return;
+            }
+
+            if (thing.Z > thing.FloorZ)
+            {
+                // No friction when airborne.
+                return;
+            }
+
+            if ((thing.Flags & MobjFlags.Corpse) != 0)
+            {
+                // Do not stop sliding if halfway off a step with some momentum.
+                if (thing.MomX > Fixed.One / 4
+                    || thing.MomX < -Fixed.One / 4
+                    || thing.MomY > Fixed.One / 4
+                    || thing.MomY < -Fixed.One / 4)
+                {
+                    if (thing.FloorZ != thing.Subsector.Sector.FloorHeight)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            if (thing.MomX > -stopSpeed
+                && thing.MomX < stopSpeed
+                && thing.MomY > -stopSpeed
+                && thing.MomY < stopSpeed
+                && (player == null
+                    || (player.Cmd.ForwardMove == 0
+                        && player.Cmd.SideMove == 0)))
+            {
+                // If in a walking frame, stop moving.
+                if (player != null && player.Mobj.State.Frame < 4)
+                {
+                    player.Mobj.SetState(State.Play);
+                }
+
+                thing.MomX = Fixed.Zero;
+                thing.MomY = Fixed.Zero;
+            }
+            else
+            {
+                thing.MomX = thing.MomX * friction;
+                thing.MomY = thing.MomY * friction;
+            }
+        }
+
+
+        //
+        // P_ZMovement
+        //
+        public void ZMovement(Mobj thing)
+        {
+            // Check for smooth step up.
+            if (thing.Player != null && thing.Z < thing.FloorZ)
+            {
+                thing.Player.ViewHeight -= thing.FloorZ - thing.Z;
+
+                thing.Player.DeltaViewHeight
+                    = new Fixed((Player.VIEWHEIGHT - thing.Player.ViewHeight).Data >> 3);
+            }
+
+            // Adjust height.
+            thing.Z += thing.MomZ;
+
+            if ((thing.Flags & MobjFlags.Float) != 0
+                && thing.Target != null)
+            {
+                // Float down towards target if too close.
+                if ((thing.Flags & MobjFlags.SkullFly) == 0
+                     && (thing.Flags & MobjFlags.InFloat) == 0)
+                {
+                    var dist = Geometry.AproxDistance(
+                        thing.X - thing.Target.X, thing.Y - thing.Target.Y);
+
+                    var delta = (thing.Target.Z + new Fixed(thing.Height.Data >> 1)) - thing.Z;
+
+                    if (delta < Fixed.Zero && dist < -(delta * 3))
+                    {
+                        thing.Z -= FloatSpeed;
+                    }
+                    else if (delta > Fixed.Zero && dist < (delta * 3))
+                    {
+                        thing.Z += FloatSpeed;
+                    }
+                }
+
+            }
+
+            // Clip movement.
+            if (thing.Z <= thing.FloorZ)
+            {
+                // Hit the floor.
+
+                // Note (id):
+                // Somebody left this after the setting momz to 0, kinda useless there.
+                if ((thing.Flags & MobjFlags.SkullFly) != 0)
+                {
+                    // The skull slammed into something.
+                    thing.MomZ = -thing.MomZ;
+                }
+
+                if (thing.MomZ < Fixed.Zero)
+                {
+                    if (thing.Player != null
+                        && thing.MomZ < -Gravity * 8)
+                    {
+                        // Squat down.
+                        // Decrease viewheight for a moment
+                        // after hitting the ground (hard),
+                        // and utter appropriate sound.
+                        thing.Player.DeltaViewHeight = new Fixed(thing.MomZ.Data >> 3);
+                        world.StartSound(thing, Sfx.OOF);
+                    }
+                    thing.MomZ = Fixed.Zero;
+                }
+                thing.Z = thing.FloorZ;
+
+                if ((thing.Flags & MobjFlags.Missile) != 0
+                     && (thing.Flags & MobjFlags.NoClip) == 0)
+                {
+                    world.ThingInteraction.ExplodeMissile(thing);
+                    return;
+                }
+            }
+            else if ((thing.Flags & MobjFlags.NoGravity) == 0)
+            {
+                if (thing.MomZ == Fixed.Zero)
+                {
+                    thing.MomZ = -Gravity * 2;
+                }
+                else
+                {
+                    thing.MomZ -= Gravity;
+                }
+            }
+
+            if (thing.Z + thing.Height > thing.CeilingZ)
+            {
+                // Hit the ceiling.
+                if (thing.MomZ > Fixed.Zero)
+                {
+                    thing.MomZ = Fixed.Zero;
+                }
+
+                {
+                    thing.Z = thing.CeilingZ - thing.Height;
+                }
+
+                if ((thing.Flags & MobjFlags.SkullFly) != 0)
+                {
+                    // The skull slammed into something.
+                    thing.MomZ = -thing.MomZ;
+                }
+
+                if ((thing.Flags & MobjFlags.Missile) != 0
+                     && (thing.Flags & MobjFlags.NoClip) == 0)
+                {
+                    world.ThingInteraction.ExplodeMissile(thing);
+                    return;
+                }
+            }
+        }
+
+        public Fixed CurrentFloorZ => currentFloorZ;
+        public Fixed CurrentCeilingZ => currentCeilingZ;
+        public Fixed CurrentDropoffZ => currentDropoffZ;
+        public bool FloatOk => floatOk;
 
 
 
@@ -536,123 +801,129 @@ namespace ManagedDoom
         // SLIDE MOVE
         // Allows the player to slide along any angled walls.
         //
-        private Fixed bestslidefrac;
-        private Fixed secondslidefrac;
+        private Fixed bestSlideFrac;
+        private Fixed secondSlideFrac;
 
-        private LineDef bestslideline;
-        private LineDef secondslideline;
+        private LineDef bestSlideLine;
+        private LineDef secondSlideLine;
 
-        private Mobj slidemo;
+        private Mobj slideThing;
+        private Fixed slideMoveX;
+        private Fixed slideMoveY;
 
-        private Fixed tmxmove;
-        private Fixed tmymove;
+        private Func<Intercept, bool> slideTraverseFunc;
+
+
+        private void InitSlideMovement()
+        {
+            slideTraverseFunc = SlideTraverse;
+        }
+
 
         //
         // P_HitSlideLine
         // Adjusts the xmove / ymove
         // so that the next move will slide along the wall.
         //
-        private void P_HitSlideLine(LineDef ld)
+        private void HitSlideLine(LineDef line)
         {
-            if (ld.SlopeType == SlopeType.Horizontal)
+            if (line.SlopeType == SlopeType.Horizontal)
             {
-                tmymove = Fixed.Zero;
+                slideMoveY = Fixed.Zero;
                 return;
             }
 
-            if (ld.SlopeType == SlopeType.Vertical)
+            if (line.SlopeType == SlopeType.Vertical)
             {
-                tmxmove = Fixed.Zero;
+                slideMoveX = Fixed.Zero;
                 return;
             }
 
-            var side = Geometry.PointOnLineSide(slidemo.X, slidemo.Y, ld);
+            var side = Geometry.PointOnLineSide(slideThing.X, slideThing.Y, line);
 
-            var lineangle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, ld.Dx, ld.Dy);
-
+            var lineAngle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, line.Dx, line.Dy);
             if (side == 1)
             {
-                lineangle += Angle.Ang180;
+                lineAngle += Angle.Ang180;
             }
 
-            var moveangle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, tmxmove, tmymove);
-            var deltaangle = moveangle - lineangle;
+            var moveAngle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, slideMoveX, slideMoveY);
 
-            if (deltaangle > Angle.Ang180)
+            var deltaAngle = moveAngle - lineAngle;
+            if (deltaAngle > Angle.Ang180)
             {
-                deltaangle += Angle.Ang180;
+                deltaAngle += Angle.Ang180;
             }
-            //	I_Error ("SlideLine: ang>ANG180");
 
-            var movelen = Geometry.AproxDistance(tmxmove, tmymove);
-            var newlen = movelen * Trig.Cos(deltaangle);
+            var moveDist = Geometry.AproxDistance(slideMoveX, slideMoveY);
+            var newDist = moveDist * Trig.Cos(deltaAngle);
 
-            tmxmove = newlen * Trig.Cos(lineangle);
-            tmymove = newlen * Trig.Sin(lineangle);
+            slideMoveX = newDist * Trig.Cos(lineAngle);
+            slideMoveY = newDist * Trig.Sin(lineAngle);
         }
 
 
         //
         // PTR_SlideTraverse
         //
-        private bool PTR_SlideTraverse(Intercept ic)
+        private bool SlideTraverse(Intercept intercept)
         {
             var mc = world.MapCollision;
 
-            if (ic.Line == null)
+            if (intercept.Line == null)
             {
                 throw new Exception("PTR_SlideTraverse: not a line?");
             }
 
-            LineDef li = ic.Line;
+            var line = intercept.Line;
 
-            if ((li.Flags & LineFlags.TwoSided) == 0)
+            if ((line.Flags & LineFlags.TwoSided) == 0)
             {
-                if (Geometry.PointOnLineSide(slidemo.X, slidemo.Y, li) != 0)
+                if (Geometry.PointOnLineSide(slideThing.X, slideThing.Y, line) != 0)
                 {
-                    // don't hit the back side
+                    // Don't hit the back side.
                     return true;
                 }
 
-                goto isblocking;
+                goto isBlocking;
             }
 
-            // set openrange, opentop, openbottom
-            mc.LineOpening(li);
+            // Set openrange, opentop, openbottom.
+            mc.LineOpening(line);
 
-            if (mc.OpenRange < slidemo.Height)
+            if (mc.OpenRange < slideThing.Height)
             {
-                // doesn't fit
-                goto isblocking;
+                // Doesn't fit.
+                goto isBlocking;
             }
 
-            if (mc.OpenTop - slidemo.Z < slidemo.Height)
+            if (mc.OpenTop - slideThing.Z < slideThing.Height)
             {
-                // mobj is too high
-                goto isblocking;
+                // Mobj is too high.
+                goto isBlocking;
             }
 
-            if (mc.OpenBottom - slidemo.Z > Fixed.FromInt(24))
+            if (mc.OpenBottom - slideThing.Z > Fixed.FromInt(24))
             {
-                // too big a step up
-                goto isblocking;
+                // Too big a step up.
+                goto isBlocking;
             }
 
-            // this line doesn't block movement
+            // This line doesn't block movement.
             return true;
 
-        // the line does block movement,
-        // see if it is closer than best so far
-        isblocking:
-            if (ic.Frac < bestslidefrac)
+        // The line does block movement,
+        // see if it is closer than best so far.
+        isBlocking:
+            if (intercept.Frac < bestSlideFrac)
             {
-                secondslidefrac = bestslidefrac;
-                secondslideline = bestslideline;
-                bestslidefrac = ic.Frac;
-                bestslideline = li;
+                secondSlideFrac = bestSlideFrac;
+                secondSlideLine = bestSlideLine;
+                bestSlideFrac = intercept.Frac;
+                bestSlideLine = line;
             }
 
-            // stop
+            // Stop.
             return false;
         }
 
@@ -666,89 +937,92 @@ namespace ManagedDoom
         //
         // This is a kludgy mess.
         //
-        private void P_SlideMove(Mobj mo)
+        private void SlideMove(Mobj thing)
         {
             var pt = world.PathTraversal;
 
-            slidemo = mo;
-            var hitcount = 0;
+            slideThing = thing;
+
+            var hitCount = 0;
 
         retry:
-            if (++hitcount == 3)
+            // Don't loop forever.
+            if (++hitCount == 3)
             {
-                // don't loop forever
-
-                // the move most have hit the middle, so stairstep
-                if (!P_TryMove(mo, mo.X, mo.Y + mo.MomY))
+                // The move most have hit the middle, so stairstep.
+                if (!TryMove(thing, thing.X, thing.Y + thing.MomY))
                 {
-                    P_TryMove(mo, mo.X + mo.MomX, mo.Y);
+                    TryMove(thing, thing.X + thing.MomX, thing.Y);
                 }
                 return;
             }
 
-            Fixed leadx;
-            Fixed leady;
-            Fixed trailx;
-            Fixed traily;
+            Fixed leadX;
+            Fixed leadY;
+            Fixed trailX;
+            Fixed trailY;
 
-            // trace along the three leading corners
-            if (mo.MomX > Fixed.Zero)
+            // Trace along the three leading corners.
+            if (thing.MomX > Fixed.Zero)
             {
-                leadx = mo.X + mo.Radius;
-                trailx = mo.X - mo.Radius;
+                leadX = thing.X + thing.Radius;
+                trailX = thing.X - thing.Radius;
             }
             else
             {
-                leadx = mo.X - mo.Radius;
-                trailx = mo.X + mo.Radius;
+                leadX = thing.X - thing.Radius;
+                trailX = thing.X + thing.Radius;
             }
 
-            if (mo.MomY > Fixed.Zero)
+            if (thing.MomY > Fixed.Zero)
             {
-                leady = mo.Y + mo.Radius;
-                traily = mo.Y - mo.Radius;
+                leadY = thing.Y + thing.Radius;
+                trailY = thing.Y - thing.Radius;
             }
             else
             {
-                leady = mo.Y - mo.Radius;
-                traily = mo.Y + mo.Radius;
+                leadY = thing.Y - thing.Radius;
+                trailY = thing.Y + thing.Radius;
             }
 
-            bestslidefrac = new Fixed(Fixed.FracUnit + 1);
+            bestSlideFrac = new Fixed(Fixed.FracUnit + 1);
 
-            pt.PathTraverse(leadx, leady, leadx + mo.MomX, leady + mo.MomY,
-                PathTraverseFlags.AddLines, ic => PTR_SlideTraverse(ic));
+            pt.PathTraverse(
+                leadX, leadY, leadX + thing.MomX, leadY + thing.MomY,
+                PathTraverseFlags.AddLines, slideTraverseFunc);
 
-            pt.PathTraverse(trailx, leady, trailx + mo.MomX, leady + mo.MomY,
-                PathTraverseFlags.AddLines, ic => PTR_SlideTraverse(ic));
+            pt.PathTraverse(
+                trailX, leadY, trailX + thing.MomX, leadY + thing.MomY,
+                PathTraverseFlags.AddLines, slideTraverseFunc);
 
-            pt.PathTraverse(leadx, traily, leadx + mo.MomX, traily + mo.MomY,
-                PathTraverseFlags.AddLines, ic => PTR_SlideTraverse(ic));
+            pt.PathTraverse(
+                leadX, trailY, leadX + thing.MomX, trailY + thing.MomY,
+                PathTraverseFlags.AddLines, slideTraverseFunc);
 
-            // move up to the wall
-            if (bestslidefrac == new Fixed(Fixed.FracUnit + 1))
+            // Move up to the wall.
+            if (bestSlideFrac == new Fixed(Fixed.FracUnit + 1))
             {
-                // the move most have hit the middle, so stairstep
-                if (!P_TryMove(mo, mo.X, mo.Y + mo.MomY))
+                // The move most have hit the middle, so stairstep.
+                if (!TryMove(thing, thing.X, thing.Y + thing.MomY))
                 {
-                    P_TryMove(mo, mo.X + mo.MomX, mo.Y);
+                    TryMove(thing, thing.X + thing.MomX, thing.Y);
                 }
                 return;
             }
 
-            // fudge a bit to make sure it doesn't hit
-            bestslidefrac = new Fixed(bestslidefrac.Data - 0x800);
-            if (bestslidefrac > Fixed.Zero)
+            // Fudge a bit to make sure it doesn't hit.
+            bestSlideFrac = new Fixed(bestSlideFrac.Data - 0x800);
+            if (bestSlideFrac > Fixed.Zero)
             {
-                var newx = mo.MomX * bestslidefrac;
-                var newy = mo.MomY * bestslidefrac;
+                var newX = thing.MomX * bestSlideFrac;
+                var newY = thing.MomY * bestSlideFrac;
 
-                if (!P_TryMove(mo, mo.X + newx, mo.Y + newy))
+                if (!TryMove(thing, thing.X + newX, thing.Y + newY))
                 {
-                    // the move most have hit the middle, so stairstep
-                    if (!P_TryMove(mo, mo.X, mo.Y + mo.MomY))
+                    // The move most have hit the middle, so stairstep.
+                    if (!TryMove(thing, thing.X, thing.Y + thing.MomY))
                     {
-                        P_TryMove(mo, mo.X + mo.MomX, mo.Y);
+                        TryMove(thing, thing.X + thing.MomX, thing.Y);
                     }
                     return;
                 }
@@ -756,335 +1030,30 @@ namespace ManagedDoom
 
             // Now continue along the wall.
             // First calculate remainder.
-            bestslidefrac = new Fixed(Fixed.FracUnit - (bestslidefrac.Data + 0x800));
+            bestSlideFrac = new Fixed(Fixed.FracUnit - (bestSlideFrac.Data + 0x800));
 
-            if (bestslidefrac > Fixed.One)
+            if (bestSlideFrac > Fixed.One)
             {
-                bestslidefrac = Fixed.One;
+                bestSlideFrac = Fixed.One;
             }
 
-            if (bestslidefrac <= Fixed.Zero)
+            if (bestSlideFrac <= Fixed.Zero)
             {
                 return;
             }
 
-            tmxmove = mo.MomX * bestslidefrac;
-            tmymove = mo.MomY * bestslidefrac;
+            slideMoveX = thing.MomX * bestSlideFrac;
+            slideMoveY = thing.MomY * bestSlideFrac;
 
-            // clip the moves
-            P_HitSlideLine(bestslideline);
+            // Clip the moves.
+            HitSlideLine(bestSlideLine);
 
-            mo.MomX = tmxmove;
-            mo.MomY = tmymove;
+            thing.MomX = slideMoveX;
+            thing.MomY = slideMoveY;
 
-            if (!P_TryMove(mo, mo.X + tmxmove, mo.Y + tmymove))
+            if (!TryMove(thing, thing.X + slideMoveX, thing.Y + slideMoveY))
             {
                 goto retry;
-            }
-        }
-
-
-
-
-
-        //
-        // P_XYMovement  
-        //
-        private static readonly Fixed StopSpeed = new Fixed(0x1000);
-        private static readonly Fixed Friction = new Fixed(0xe800);
-
-        public void P_XYMovement(Mobj mo)
-        {
-            if (mo.MomX == Fixed.Zero && mo.MomY == Fixed.Zero)
-            {
-                if ((mo.Flags & MobjFlags.SkullFly) != 0)
-                {
-                    // the skull slammed into something
-                    mo.Flags &= ~MobjFlags.SkullFly;
-                    mo.MomX = mo.MomY = mo.MomZ = Fixed.Zero;
-
-                    mo.SetState(mo.Info.SpawnState);
-                }
-
-                return;
-            }
-
-            var player = mo.Player;
-
-            if (mo.MomX > MaxMove)
-            {
-                mo.MomX = MaxMove;
-            }
-            else if (mo.MomX < -MaxMove)
-            {
-                mo.MomX = -MaxMove;
-            }
-
-            if (mo.MomY > MaxMove)
-            {
-                mo.MomY = MaxMove;
-            }
-            else if (mo.MomY < -MaxMove)
-            {
-                mo.MomY = -MaxMove;
-            }
-
-            var xmove = mo.MomX;
-            var ymove = mo.MomY;
-
-            do
-            {
-                Fixed ptryx;
-                Fixed ptryy;
-
-                if (xmove > MaxMove / 2 || ymove > MaxMove / 2)
-                {
-                    ptryx = mo.X + xmove / 2;
-                    ptryy = mo.Y + ymove / 2;
-                    xmove = new Fixed(xmove.Data >> 1);
-                    ymove = new Fixed(ymove.Data >> 1);
-                }
-                else
-                {
-                    ptryx = mo.X + xmove;
-                    ptryy = mo.Y + ymove;
-                    xmove = ymove = Fixed.Zero;
-                }
-
-                if (!P_TryMove(mo, ptryx, ptryy))
-                {
-                    // blocked move
-                    if (mo.Player != null)
-                    {   // try to slide along it
-                        P_SlideMove(mo);
-                    }
-                    else if ((mo.Flags & MobjFlags.Missile) != 0)
-                    {
-                        // explode a missile
-                        if (ceilingline != null &&
-                            ceilingline.BackSector != null &&
-                            ceilingline.BackSector.CeilingFlat == world.Map.SkyFlatNumber)
-                        {
-                            // Hack to prevent missiles exploding
-                            // against the sky.
-                            // Does not handle sky floors.
-                            world.ThingAllocation.RemoveMobj(mo);
-                            return;
-                        }
-                        P_ExplodeMissile(mo);
-                    }
-                    else
-                    {
-                        mo.MomX = mo.MomY = Fixed.Zero;
-                    }
-                }
-            }
-            while (xmove != Fixed.Zero || ymove != Fixed.Zero);
-
-            // slow down
-            if (player != null && (player.Cheats & CheatFlags.NoMomentum) != 0)
-            {
-                // debug option for no sliding at all
-                mo.MomX = mo.MomY = Fixed.Zero;
-                return;
-            }
-
-            if ((mo.Flags & (MobjFlags.Missile | MobjFlags.SkullFly)) != 0)
-            {
-                // no friction for missiles ever
-                return;
-            }
-
-            if (mo.Z > mo.FloorZ)
-            {
-                // no friction when airborne
-                return;
-            }
-
-            if ((mo.Flags & MobjFlags.Corpse) != 0)
-            {
-                // do not stop sliding
-                //  if halfway off a step with some momentum
-                if (mo.MomX > Fixed.One / 4
-                    || mo.MomX < -Fixed.One / 4
-                    || mo.MomY > Fixed.One / 4
-                    || mo.MomY < -Fixed.One / 4)
-                {
-                    if (mo.FloorZ != mo.Subsector.Sector.FloorHeight)
-                    {
-                        return;
-                    }
-                }
-            }
-
-            if (mo.MomX > -StopSpeed
-                && mo.MomX < StopSpeed
-                && mo.MomY > -StopSpeed
-                && mo.MomY < StopSpeed
-                && (player == null
-                    || (player.Cmd.ForwardMove == 0
-                        && player.Cmd.SideMove == 0)))
-            {
-                // if in a walking frame, stop moving
-                if (player != null && player.Mobj.State.Frame < 4)
-                {
-                    player.Mobj.SetState(State.Play);
-                }
-
-                mo.MomX = Fixed.Zero;
-                mo.MomY = Fixed.Zero;
-            }
-            else
-            {
-                mo.MomX = mo.MomX * Friction;
-                mo.MomY = mo.MomY * Friction;
-            }
-        }
-
-
-
-        public static readonly Fixed FLOATSPEED = Fixed.FromInt(4);
-
-        //
-        // P_ZMovement
-        //
-        public void P_ZMovement(Mobj mo)
-        {
-            // check for smooth step up
-            if (mo.Player != null && mo.Z < mo.FloorZ)
-            {
-                mo.Player.ViewHeight -= mo.FloorZ - mo.Z;
-
-                mo.Player.DeltaViewHeight
-                    = new Fixed((Player.VIEWHEIGHT - mo.Player.ViewHeight).Data >> 3);
-            }
-
-            // adjust height
-            mo.Z += mo.MomZ;
-
-            if ((mo.Flags & MobjFlags.Float) != 0
-                && mo.Target != null)
-            {
-                // float down towards target if too close
-                if ((mo.Flags & MobjFlags.SkullFly) == 0
-                     && (mo.Flags & MobjFlags.InFloat) == 0)
-                {
-                    var dist = Geometry.AproxDistance(
-                        mo.X - mo.Target.X, mo.Y - mo.Target.Y);
-
-                    var delta = (mo.Target.Z + new Fixed(mo.Height.Data >> 1)) - mo.Z;
-
-                    if (delta < Fixed.Zero && dist < -(delta * 3))
-                    {
-                        mo.Z -= FLOATSPEED;
-                    }
-                    else if (delta > Fixed.Zero && dist < (delta * 3))
-                    {
-                        mo.Z += FLOATSPEED;
-                    }
-                }
-
-            }
-
-            // clip movement
-            if (mo.Z <= mo.FloorZ)
-            {
-                // hit the floor
-
-                // Note (id):
-                //  somebody left this after the setting momz to 0,
-                //  kinda useless there.
-                if ((mo.Flags & MobjFlags.SkullFly) != 0)
-                {
-                    // the skull slammed into something
-                    mo.MomZ = -mo.MomZ;
-                }
-
-                if (mo.MomZ < Fixed.Zero)
-                {
-                    if (mo.Player != null
-                        && mo.MomZ < -Gravity * 8)
-                    {
-                        // Squat down.
-                        // Decrease viewheight for a moment
-                        // after hitting the ground (hard),
-                        // and utter appropriate sound.
-                        mo.Player.DeltaViewHeight = new Fixed(mo.MomZ.Data >> 3);
-                        world.StartSound(mo, Sfx.OOF);
-                    }
-                    mo.MomZ = Fixed.Zero;
-                }
-                mo.Z = mo.FloorZ;
-
-                if ((mo.Flags & MobjFlags.Missile) != 0
-                     && (mo.Flags & MobjFlags.NoClip) == 0)
-                {
-                    P_ExplodeMissile(mo);
-                    return;
-                }
-            }
-            else if ((mo.Flags & MobjFlags.NoGravity) == 0)
-            {
-                if (mo.MomZ == Fixed.Zero)
-                {
-                    mo.MomZ = -Gravity * 2;
-                }
-                else
-                {
-                    mo.MomZ -= Gravity;
-                }
-            }
-
-            if (mo.Z + mo.Height > mo.CeilingZ)
-            {
-                // hit the ceiling
-                if (mo.MomZ > Fixed.Zero)
-                {
-                    mo.MomZ = Fixed.Zero;
-                }
-
-                {
-                    mo.Z = mo.CeilingZ - mo.Height;
-                }
-
-                if ((mo.Flags & MobjFlags.SkullFly) != 0)
-                {   // the skull slammed into something
-                    mo.MomZ = -mo.MomZ;
-                }
-
-                if ((mo.Flags & MobjFlags.Missile) != 0
-                     && (mo.Flags & MobjFlags.NoClip) == 0)
-                {
-                    P_ExplodeMissile(mo);
-                    return;
-                }
-            }
-        }
-
-
-
-
-        //
-        // P_ExplodeMissile  
-        //
-        public void P_ExplodeMissile(Mobj mo)
-        {
-            mo.MomX = mo.MomY = mo.MomZ = Fixed.Zero;
-
-            mo.SetState(DoomInfo.MobjInfos[(int)mo.Type].DeathState);
-
-            mo.Tics -= world.Random.Next() & 3;
-
-            if (mo.Tics < 1)
-            {
-                mo.Tics = 1;
-            }
-
-            mo.Flags &= ~MobjFlags.Missile;
-
-            if (mo.Info.DeathSound != 0)
-            {
-                world.StartSound(mo, mo.Info.DeathSound);
             }
         }
     }

@@ -220,21 +220,21 @@ namespace ManagedDoom
             var tryx = actor.X + actor.Info.Speed * xspeed[(int)actor.MoveDir];
             var tryy = actor.Y + actor.Info.Speed * yspeed[(int)actor.MoveDir];
 
-            var try_ok = tm.P_TryMove(actor, tryx, tryy);
+            var try_ok = tm.TryMove(actor, tryx, tryy);
 
             if (!try_ok)
             {
                 // open any specials
-                if ((actor.Flags & MobjFlags.Float) != 0 && tm.floatok)
+                if ((actor.Flags & MobjFlags.Float) != 0 && tm.FloatOk)
                 {
                     // must adjust height
-                    if (actor.Z < tm.tmfloorz)
+                    if (actor.Z < tm.CurrentFloorZ)
                     {
-                        actor.Z += ThingMovement.FLOATSPEED;
+                        actor.Z += ThingMovement.FloatSpeed;
                     }
                     else
                     {
-                        actor.Z -= ThingMovement.FLOATSPEED;
+                        actor.Z -= ThingMovement.FloatSpeed;
                     }
 
                     actor.Flags |= MobjFlags.InFloat;
@@ -242,16 +242,16 @@ namespace ManagedDoom
                     return true;
                 }
 
-                if (tm.numspechit == 0)
+                if (tm.hitSpecialCount == 0)
                 {
                     return false;
                 }
 
                 actor.MoveDir = Direction.None;
                 var good = false;
-                while (tm.numspechit-- > 0)
+                while (tm.hitSpecialCount-- > 0)
                 {
-                    var ld = tm.spechit[tm.numspechit];
+                    var ld = tm.hitSpecialLines[tm.hitSpecialCount];
                     // if the special is not a door
                     // that can be opened,
                     // return false
