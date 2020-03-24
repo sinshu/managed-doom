@@ -22,6 +22,14 @@ namespace ManagedDoom
             return replaced;
         }
 
+        public char this[int index]
+        {
+            get
+            {
+                return replaced[index];
+            }
+        }
+
         public static implicit operator string(DoomString ds)
         {
             return ds.replaced;
