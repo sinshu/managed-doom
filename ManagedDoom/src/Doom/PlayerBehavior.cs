@@ -526,5 +526,18 @@ namespace ManagedDoom
             player.PSprites[(int)PlayerSprite.Flash].Sx = player.PSprites[(int)PlayerSprite.Weapon].Sx;
             player.PSprites[(int)PlayerSprite.Flash].Sy = player.PSprites[(int)PlayerSprite.Weapon].Sy;
         }
+
+
+        //
+        // P_DropWeapon
+        // Player died, so put the weapon away.
+        //
+        public void DropWeapon(Player player)
+        {
+            P_SetPsprite(
+                player,
+                PlayerSprite.Weapon,
+                DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState);
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var players = new Player[Player.MaxPlayerCount];
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
                 {
-                    players[i] = new Player();
+                    players[i] = new Player(i);
                     players[i].PlayerState = PlayerState.Reborn;
                 }
                 players[0].InGame = true;
@@ -57,7 +57,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var players = new Player[Player.MaxPlayerCount];
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
                 {
-                    players[i] = new Player();
+                    players[i] = new Player(i);
                     players[i].PlayerState = PlayerState.Reborn;
                 }
                 players[0].InGame = true;
@@ -91,7 +91,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var players = new Player[Player.MaxPlayerCount];
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
                 {
-                    players[i] = new Player();
+                    players[i] = new Player(i);
                     players[i].PlayerState = PlayerState.Reborn;
                 }
                 players[0].InGame = true;

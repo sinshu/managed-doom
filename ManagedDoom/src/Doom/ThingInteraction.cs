@@ -43,7 +43,7 @@ namespace ManagedDoom
 			{
 				// count all monster deaths,
 				// even those caused by other monsters
-				//players[0].killcount++;
+				world.Players[0].KillCount++;
 			}
 
 			if (target.Player != null)
@@ -51,12 +51,12 @@ namespace ManagedDoom
 				// count environment kills against you
 				if (source == null)
 				{
-					//target->player->frags[target->player - players]++;
+					target.Player.Frags[target.Player.Number]++;
 				}
 
 				target.Flags &= ~MobjFlags.Solid;
 				target.Player.PlayerState = PlayerState.Dead;
-				//P_DropWeapon(target->player);
+				world.PlayerBehavior.DropWeapon(target.Player);
 
 				/*
 				if (target->player == &players[consoleplayer]

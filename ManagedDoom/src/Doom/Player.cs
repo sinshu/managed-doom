@@ -9,6 +9,7 @@ namespace ManagedDoom
         public const int MAXHEALTH = 100;
         public static readonly Fixed VIEWHEIGHT = Fixed.FromInt(41);
 
+        public int Number;
         public bool InGame;
 
         public Mobj Mobj;
@@ -97,8 +98,10 @@ namespace ManagedDoom
         // True if secret level has been done.
         public bool DidSecret;
 
-        public Player()
+        public Player(int number)
         {
+            Number = number;
+
             Cmd = new TicCmd();
 
             Powers = new int[(int)PowerType.Count];
