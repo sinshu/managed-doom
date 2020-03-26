@@ -155,35 +155,6 @@ namespace ManagedDoomTest.CompatibilityTests
         }
 
         [TestMethod]
-        public void ImpTest()
-        {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\imp_test.wad"))
-            {
-                var demo = new Demo(@"data\imp_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
-
-                var lastHash = 0;
-                var aggHash = 0;
-                while (true)
-                {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
-                    {
-                        break;
-                    }
-
-                    lastHash = world.GetMobjHash();
-                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
-                }
-
-                Assert.AreEqual(0xaeee7433u, (uint)lastHash);
-                Assert.AreEqual(0x64f0da30u, (uint)aggHash);
-            }
-        }
-
-        [TestMethod]
         public void ShotgunguyTest()
         {
             using (var resource = new CommonResource(WadPath.Doom2, @"data\shotgunguy_test.wad"))
@@ -209,6 +180,64 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 Assert.AreEqual(0x7bc7cdbau, (uint)lastHash);
                 Assert.AreEqual(0x8010e4ffu, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
+        public void ChaingunguyTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\chaingunguy_test.wad"))
+            {
+                var demo = new Demo(@"data\chaingunguy_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0xc135229fu, (uint)lastHash);
+                Assert.AreEqual(0x7b9590d8u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
+        public void ImpTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\imp_test.wad"))
+            {
+                var demo = new Demo(@"data\imp_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0xaeee7433u, (uint)lastHash);
+                Assert.AreEqual(0x64f0da30u, (uint)aggHash);
             }
         }
 
