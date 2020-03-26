@@ -184,6 +184,35 @@ namespace ManagedDoomTest.CompatibilityTests
         }
 
         [TestMethod]
+        public void ShotgunguyTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\shotgunguy_test.wad"))
+            {
+                var demo = new Demo(@"data\shotgunguy_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x7bc7cdbau, (uint)lastHash);
+                Assert.AreEqual(0x8010e4ffu, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
         public void LocalDoorTest()
         {
             using (var resource = new CommonResource(WadPath.Doom2, @"data\localdoor_test.wad"))
