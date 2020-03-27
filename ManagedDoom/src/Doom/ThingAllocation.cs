@@ -357,13 +357,15 @@ namespace ManagedDoom
                 an += new Angle((world.Random.Next() - world.Random.Next()) << 20);
             }
 
+            var speed = GetMissileSpeed(th.Type);
+
             th.Angle = an;
             //an >>= ANGLETOFINESHIFT;
-            th.MomX = new Fixed(th.Info.Speed) * Trig.Cos(an); // finecosine[an]);
-            th.MomY = new Fixed(th.Info.Speed) * Trig.Sin(an); // finesine[an]);
+            th.MomX = new Fixed(speed) * Trig.Cos(an); // finecosine[an]);
+            th.MomY = new Fixed(speed) * Trig.Sin(an); // finesine[an]);
 
             var dist = Geometry.AproxDistance(dest.X - source.X, dest.Y - source.Y);
-            dist = dist / th.Info.Speed;
+            dist = dist / speed;
 
             if (dist.Data < 1)
             {
@@ -375,6 +377,26 @@ namespace ManagedDoom
             P_CheckMissileSpawn(th);
 
             return th;
+        }
+
+        private int GetMissileSpeed(MobjType type)
+        {
+            if (world.Options.FastMonsters || world.Options.GameSkill == Skill.Nightmare)
+            {
+                switch (type)
+                {
+                    case MobjType.Bruisershot:
+                    case MobjType.Headshot:
+                    case MobjType.Troopshot:
+                        return 20 * Fixed.FracUnit;
+                    default:
+                        return DoomInfo.MobjInfos[(int)type].Speed;
+                }
+            }
+            else
+            {
+                return DoomInfo.MobjInfos[(int)type].Speed;
+            }
         }
     }
 }
