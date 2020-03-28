@@ -242,6 +242,35 @@ namespace ManagedDoomTest.CompatibilityTests
         }
 
         [TestMethod]
+        public void FastImpTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\imp_test.wad"))
+            {
+                var demo = new Demo(@"data\fast_imp_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x314b23f3u, (uint)lastHash);
+                Assert.AreEqual(0x7ffd501du, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
         public void LocalDoorTest()
         {
             using (var resource = new CommonResource(WadPath.Doom2, @"data\localdoor_test.wad"))
