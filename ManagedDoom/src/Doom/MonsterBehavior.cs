@@ -617,7 +617,7 @@ namespace ManagedDoom
             if ((actor.Flags & MobjFlags.JustAttacked) != 0)
             {
                 actor.Flags &= ~MobjFlags.JustAttacked;
-                if (world.Options.GameSkill != Skill.Nightmare
+                if (world.Options.Skill != Skill.Nightmare
                     && !world.Options.FastMonsters)
                 {
                     P_NewChaseDir(actor);
@@ -643,7 +643,7 @@ namespace ManagedDoom
             // check for missile attack
             if (actor.Info.MissileState != 0)
             {
-                if (world.Options.GameSkill < Skill.Nightmare
+                if (world.Options.Skill < Skill.Nightmare
                     && !world.Options.FastMonsters && actor.MoveCount != 0)
                 {
                     goto nomissile;

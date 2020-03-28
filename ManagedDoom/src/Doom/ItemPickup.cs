@@ -48,8 +48,8 @@ namespace ManagedDoom
                 num = AmmoInfo.Clip[(int)ammo] / 2;
             }
 
-            if (world.Options.GameSkill == Skill.Baby
-                || world.Options.GameSkill == Skill.Nightmare)
+            if (world.Options.Skill == Skill.Baby
+                || world.Options.Skill == Skill.Nightmare)
             {
                 // give double ammo in trainer mode,
                 // you'll need in nightmare

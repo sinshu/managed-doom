@@ -15,7 +15,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = new CommonResource(WadPath.Doom2))
             {
                 var options = new GameOptions();
-                options.GameSkill = Skill.Hard;
+                options.Skill = Skill.Hard;
 
                 var players = new Player[Player.MaxPlayerCount];
                 for (var i = 0; i < Player.MaxPlayerCount; i++)

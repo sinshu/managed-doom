@@ -23,7 +23,7 @@ namespace ManagedDoom
             this.data = data;
 
             options = new GameOptions();
-            options.GameSkill = (Skill)data[p++];
+            options.Skill = (Skill)data[p++];
             options.Episode = data[p++];
             options.Map = data[p++];
             options.Deathmatch = data[p++];

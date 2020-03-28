@@ -180,7 +180,7 @@ namespace ManagedDoom
 
                 st = DoomInfo.States[(int)state];
                 State = st;
-                Tics = st.Tics;
+                Tics = GetTics(st);
                 Sprite = st.Sprite;
                 Frame = st.Frame;
 
@@ -196,6 +196,27 @@ namespace ManagedDoom
             while (Tics == 0);
 
             return true;
+        }
+
+        private int GetTics(StateDef state)
+        {
+            var options = world.Options;
+            if (options.FastMonsters || options.Skill == Skill.Nightmare)
+            {
+                if ((int)ManagedDoom.State.SargRun1 <= state.Number
+                    && state.Number <= (int)ManagedDoom.State.SargPain2)
+                {
+                    return state.Tics >> 1;
+                }
+                else
+                {
+                    return state.Tics;
+                }
+            }
+            else
+            {
+                return state.Tics;
+            }
         }
 
         public override int GetHashCode()
