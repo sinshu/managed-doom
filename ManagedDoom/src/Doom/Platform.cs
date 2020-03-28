@@ -94,7 +94,7 @@ namespace ManagedDoom
 					break;
 
 				case PlatformState.Waiting:
-					if (--Count > 0)
+					if (--Count == 0)
 					{
 						if (Sector.FloorHeight == Low)
 						{

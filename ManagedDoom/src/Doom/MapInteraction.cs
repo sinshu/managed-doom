@@ -257,7 +257,7 @@ namespace ManagedDoom
 
 				case 122:
 					// Blazing PlatDownWaitUpStay
-					//if (EV_DoPlat(line, blazeDWUS, 0))
+					if (sa.EV_DoPlat(line, PlatformType.BlazeDwus, 0))
 					{
 						//P_ChangeSwitchTexture(line, 0);
 					}
@@ -342,7 +342,7 @@ namespace ManagedDoom
 
 				case 62:
 					// PlatDownWaitUpStay
-					//if (EV_DoPlat(line, downWaitUpStay, 1))
+					if (sa.EV_DoPlat(line, PlatformType.DownWaitUpStay, 1))
 					{
 						//P_ChangeSwitchTexture(line, 1);
 					}
