@@ -45,7 +45,10 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    current.Run();
+                    if (current.Active)
+                    {
+                        current.Run();
+                    }
                 }
                 current = current.Next;
             }

@@ -18,6 +18,11 @@ namespace ManagedDoom
             return new VlDoor(world);
         }
 
+        public static Platform RentPlatform(World world)
+        {
+            return new Platform(world);
+        }
+
         public static FireFlicker RentFireFlicker(World world)
         {
             return new FireFlicker(world);

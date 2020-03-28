@@ -6,10 +6,12 @@ namespace ManagedDoom
     {
         public Thinker Prev;
         public Thinker Next;
+        public bool Active;
         public bool Removed;
 
         public Thinker()
         {
+            Active = true;
             Removed = false;
         }
 

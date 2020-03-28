@@ -604,5 +604,298 @@ namespace ManagedDoom
 			door.TopHeight = FindLowestCeilingSurrounding(sec);
 			door.TopHeight -= Fixed.FromInt(4);
 		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		//
+		// RETURN NEXT SECTOR # THAT LINE TAG REFERS TO
+		//
+		public int FindSectorFromLineTag(LineDef line, int start)
+		{
+			var sectors = world.Map.Sectors;
+
+			for (var i = start + 1; i < sectors.Length; i++)
+			{
+				if (sectors[i].Tag == line.Tag)
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+
+
+
+
+
+
+
+
+
+
+
+		//
+		// P_FindNextHighestFloor
+		// FIND NEXT HIGHEST FLOOR IN SURROUNDING SECTORS
+		// Note: this should be doable w/o a fixed array.
+
+		// 20 adjoining sectors max!
+		private static readonly int MAX_ADJOINING_SECTORS = 20;
+		private Fixed[] heightlist = new Fixed[MAX_ADJOINING_SECTORS];
+
+		public Fixed FindNextHighestFloor(Sector sec, Fixed currentheight)
+		{
+			var height = currentheight;
+			var h = 0;
+			for (var i = 0; i < sec.Lines.Length; i++)
+			{
+				var check = sec.Lines[i];
+				var other = GetNextSector(check, sec);
+
+				if (other == null)
+				{
+					continue;
+				}
+
+				if (other.FloorHeight > height)
+				{
+					heightlist[h++] = other.FloorHeight;
+				}
+
+				// Check for overflow. Exit.
+				if (h >= heightlist.Length)
+				{
+					throw new Exception("Sector with more than 20 adjoining sectors");
+				}
+			}
+
+			// Find lowest height in list
+			if (h == 0)
+			{
+				return currentheight;
+			}
+
+			var min = heightlist[0];
+
+			// Range checking? 
+			for (var i = 1; i < h; i++)
+			{
+				if (heightlist[i] < min)
+				{
+					min = heightlist[i];
+				}
+			}
+
+			return min;
+		}
+
+
+
+
+		private static readonly int PLATWAIT = 3;
+		private static readonly Fixed PLATSPEED = Fixed.One;
+
+		//
+		// Do Platforms
+		//  "amount" is only used for SOME platforms.
+		//
+		public bool EV_DoPlat(LineDef line, PlatformType type, int amount)
+		{
+			var secnum = -1;
+			var rtn = false;
+
+			//	Activate all <type> plats that are in_stasis
+			switch (type)
+			{
+				case PlatformType.PerpetualRaise:
+					ActivateInStasis(line.Tag);
+					break;
+
+				default:
+					break;
+			}
+
+			var sectors = world.Map.Sectors;
+			var sides = world.Map.Sides;
+			while ((secnum = FindSectorFromLineTag(line, secnum)) >= 0)
+			{
+				var sec = sectors[secnum];
+
+				if (sec.SpecialData != null)
+				{
+					continue;
+				}
+
+				// Find lowest & highest floors around sector
+				rtn = true;
+				var plat = ThinkerPool.RentPlatform(world);
+				world.Thinkers.Add(plat);
+
+				plat.Type = type;
+				plat.Sector = sec;
+				plat.Sector.SpecialData = plat;
+				plat.Crush = false;
+				plat.Tag = line.Tag;
+
+				switch (type)
+				{
+					case PlatformType.RaiseToNearestAndChange:
+						plat.Speed = PLATSPEED / 2;
+						sec.FloorFlat = line.Side0.Sector.FloorFlat;
+						plat.High = FindNextHighestFloor(sec, sec.FloorHeight);
+						plat.Wait = 0;
+						plat.Status = PlatformState.Up;
+						// NO MORE DAMAGE, IF APPLICABLE
+						sec.Special = 0;
+
+						world.StartSound(sec.SoundOrigin, Sfx.STNMOV);
+						break;
+
+					case PlatformType.RaiseAndChange:
+						plat.Speed = PLATSPEED / 2;
+						sec.FloorFlat = line.Side0.Sector.FloorFlat;
+						plat.High = sec.FloorHeight + amount * Fixed.One;
+						plat.Wait = 0;
+						plat.Status = PlatformState.Up;
+
+						world.StartSound(sec.SoundOrigin, Sfx.STNMOV);
+						break;
+
+					case PlatformType.DownWaitUpStay:
+						plat.Speed = PLATSPEED * 4;
+						plat.Low = FindLowestFloorSurrounding(sec);
+
+						if (plat.Low > sec.FloorHeight)
+						{
+							plat.Low = sec.FloorHeight;
+						}
+
+						plat.High = sec.FloorHeight;
+						plat.Wait = 35 * PLATWAIT;
+						plat.Status = PlatformState.Down;
+						world.StartSound(sec.SoundOrigin, Sfx.PSTART);
+						break;
+
+					case PlatformType.BlazeDwus:
+						plat.Speed = PLATSPEED * 8;
+						plat.Low = FindLowestFloorSurrounding(sec);
+
+						if (plat.Low > sec.FloorHeight)
+						{
+							plat.Low = sec.FloorHeight;
+						}
+
+						plat.High = sec.FloorHeight;
+						plat.Wait = 35 * PLATWAIT;
+						plat.Status = PlatformState.Down;
+						world.StartSound(sec.SoundOrigin, Sfx.PSTART);
+						break;
+
+					case PlatformType.PerpetualRaise:
+						plat.Speed = PLATSPEED;
+						plat.Low = FindLowestFloorSurrounding(sec);
+
+						if (plat.Low > sec.FloorHeight)
+						{
+							plat.Low = sec.FloorHeight;
+						}
+
+						plat.High = FindHighestFloorSurrounding(sec);
+
+						if (plat.High < sec.FloorHeight)
+						{
+							plat.High = sec.FloorHeight;
+						}
+
+						plat.Wait = 35 * PLATWAIT;
+						plat.Status = (PlatformState)(world.Random.Next() & 1);
+
+						world.StartSound(sec.SoundOrigin, Sfx.PSTART);
+						break;
+				}
+
+				AddActivePlat(plat);
+			}
+			return rtn;
+		}
+
+		
+
+		private static readonly int MAXPLATS = 30;
+		private Platform[] activeplats = new Platform[MAXPLATS];
+
+		public void ActivateInStasis(int tag)
+		{
+			for (var i = 0; i < activeplats.Length; i++)
+			{
+				if (activeplats[i] != null
+					&& activeplats[i].Tag == tag
+					&& activeplats[i].Status == PlatformState.InStasis)
+				{
+					activeplats[i].Status = activeplats[i].Oldstatus;
+					activeplats[i].Active = true;
+				}
+			}
+		}
+
+		public void EV_StopPlat(LineDef line)
+		{
+			for (var j = 0; j < activeplats.Length; j++)
+			{
+				if (activeplats[j] != null
+					&& activeplats[j].Status != PlatformState.InStasis
+					&& activeplats[j].Tag == line.Tag)
+				{
+					activeplats[j].Oldstatus = activeplats[j].Status;
+					activeplats[j].Status = PlatformState.InStasis;
+					activeplats[j].Active = false;
+				}
+			}
+		}
+
+		public void AddActivePlat(Platform plat)
+		{
+			for (var i = 0; i < activeplats.Length; i++)
+			{
+				if (activeplats[i] == null)
+				{
+					activeplats[i] = plat;
+					return;
+				}
+			}
+
+			throw new Exception("P_AddActivePlat: no more plats!");
+		}
+
+		public void RemoveActivePlat(Platform plat)
+		{
+			for (var i = 0; i < activeplats.Length; i++)
+			{
+				if (plat == activeplats[i])
+				{
+					activeplats[i].Sector.SpecialData = null;
+					world.Thinkers.Remove(activeplats[i]);
+					activeplats[i] = null;
+
+					return;
+				}
+			}
+
+			throw new Exception("P_RemoveActivePlat: can't find plat!");
+		}
 	}
 }
