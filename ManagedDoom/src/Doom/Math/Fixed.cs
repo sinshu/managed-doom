@@ -194,15 +194,15 @@ namespace ManagedDoom
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int ToIntFloor(Fixed a)
+        public int ToIntFloor()
         {
-            return a.data >> FracBits;
+            return data >> FracBits;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int ToIntCeiling(Fixed a)
+        public int ToIntCeiling()
         {
-            return (a.data + FracUnit - 1) >> FracBits;
+            return (data + FracUnit - 1) >> FracBits;
         }
 
         public override bool Equals(object obj)

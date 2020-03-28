@@ -336,8 +336,8 @@ namespace ManagedDoomTest.UnitTests
                 var a = random.Next(666);
 
                 var fa = Fixed.FromDouble(a);
-                var ffloor = Fixed.ToIntFloor(fa);
-                var fceiling = Fixed.ToIntCeiling(fa);
+                var ffloor = fa.ToIntFloor();
+                var fceiling = fa.ToIntCeiling();
 
                 Assert.AreEqual(a, ffloor, 1.0E-9);
                 Assert.AreEqual(a, fceiling, 1.0E-9);
@@ -355,8 +355,8 @@ namespace ManagedDoomTest.UnitTests
                 var ceiling = Math.Ceiling(a);
 
                 var fa = Fixed.FromDouble(a);
-                var ffloor = Fixed.ToIntFloor(fa);
-                var fceiling = Fixed.ToIntCeiling(fa);
+                var ffloor = fa.ToIntFloor();
+                var fceiling = fa.ToIntCeiling();
 
                 Assert.AreEqual(floor, ffloor, 1.0E-9);
                 Assert.AreEqual(ceiling, fceiling, 1.0E-9);

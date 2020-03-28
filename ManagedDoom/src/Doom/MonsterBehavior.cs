@@ -780,6 +780,14 @@ namespace ManagedDoom
             }
         }
 
+        public void Pain(Mobj actor)
+        {
+            if (actor.Info.PainSound != 0)
+            {
+                world.StartSound(actor, actor.Info.PainSound);
+            }
+        }
+
         public void Scream(Mobj actor)
         {
             int sound;
@@ -838,6 +846,21 @@ namespace ManagedDoom
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Troopshot);
         }
 
+        public void SargAttack(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            FaceTarget(actor);
+            if (P_CheckMeleeRange(actor))
+            {
+                var damage = ((world.Random.Next() % 10) + 1) * 4;
+                world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
+            }
+        }
+
         public void HeadAttack(Mobj actor)
         {
             if (actor.Target == null)
@@ -855,6 +878,14 @@ namespace ManagedDoom
 
             // launch a missile
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Headshot);
+        }
+
+        //
+        // A_Explode
+        //
+        public void Explode(Mobj thingy)
+        {
+            world.ThingInteraction.RadiusAttack(thingy, thingy.Target, 128);
         }
     }
 }

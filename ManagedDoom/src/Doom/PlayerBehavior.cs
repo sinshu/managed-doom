@@ -191,7 +191,7 @@ namespace ManagedDoom
 
             if (player.Mobj.Subsector.Sector.Special != 0)
             {
-                //P_PlayerInSpecialSector(player);
+                PlayerInSpecialSector(player);
             }
 
             // Check for weapon change.
@@ -328,6 +328,89 @@ namespace ManagedDoom
                 player.FixedColorMap = 0;
             }
         }
+
+        //
+        // P_PlayerInSpecialSector
+        // Called every tic frame
+        //  that the player origin is in a special sector
+        //
+        private void PlayerInSpecialSector(Player player)
+        {
+            var sector = player.Mobj.Subsector.Sector;
+
+            // Falling, not all the way down yet?
+            if (player.Mobj.Z != sector.FloorHeight)
+            {
+                return;
+            }
+
+            var ti = world.ThingInteraction;
+
+            // Has hitten ground.
+            switch ((int)sector.Special)
+            {
+                case 5:
+                    // HELLSLIME DAMAGE
+                    if (player.Powers[(int)PowerType.IronFeet] == 0)
+                    {
+                        if ((world.levelTime & 0x1f) == 0)
+                        {
+                            ti.DamageMobj(player.Mobj, null, null, 10);
+                        }
+                    }
+                    break;
+
+                case 7:
+                    // NUKAGE DAMAGE
+                    if (player.Powers[(int)PowerType.IronFeet] == 0)
+                    {
+                        if ((world.levelTime & 0x1f) == 0)
+                        {
+                            ti.DamageMobj(player.Mobj, null, null, 5);
+                        }
+                    }
+                    break;
+
+                case 16:
+                // SUPER HELLSLIME DAMAGE
+                case 4:
+                    // STROBE HURT
+                    if (player.Powers[(int)PowerType.IronFeet] == 0
+                        || (world.Random.Next() < 5))
+                    {
+                        if ((world.levelTime & 0x1f) == 0)
+                        {
+                            ti.DamageMobj(player.Mobj, null, null, 20);
+                        }
+                    }
+                    break;
+
+                case 9:
+                    // SECRET SECTOR
+                    player.SecretCount++;
+                    sector.Special = 0;
+                    break;
+
+                case 11:
+                    // EXIT SUPER DAMAGE! (for E1M8 finale)
+                    player.Cheats &= ~CheatFlags.GodMode;
+
+                    if ((world.levelTime & 0x1f) == 0)
+                    {
+                        ti.DamageMobj(player.Mobj, null, null, 20);
+                    }
+
+                    if (player.Health <= 10)
+                    {
+                        //G_ExitLevel();
+                    }
+                    break;
+
+                default:
+                    throw new Exception("P_PlayerInSpecialSector: unknown special " + (int)sector.Special);
+            }
+        }
+
 
 
         //

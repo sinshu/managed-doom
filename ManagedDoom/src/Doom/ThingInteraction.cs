@@ -326,5 +326,87 @@ namespace ManagedDoom
 				world.StartSound(thing, thing.Info.DeathSound);
 			}
 		}
+
+
+
+
+		//
+		// RADIUS ATTACK
+		//
+		private Mobj bombsource;
+		private Mobj bombspot;
+		private int bombdamage;
+
+		//
+		// PIT_RadiusAttack
+		// "bombsource" is the creature
+		// that caused the explosion at "bombspot".
+		//
+		private bool PIT_RadiusAttack(Mobj thing)
+		{
+			if ((thing.Flags & MobjFlags.Shootable) == 0)
+			{
+				return true;
+			}
+
+			// Boss spider and cyborg
+			// take no damage from concussion.
+			if (thing.Type == MobjType.Cyborg || thing.Type == MobjType.Spider)
+			{
+				return true;
+			}
+
+			var dx = Fixed.Abs(thing.X - bombspot.X);
+			var dy = Fixed.Abs(thing.Y - bombspot.Y);
+
+			var dist = dx > dy ? dx : dy;
+			dist = new Fixed((dist - thing.Radius).Data >> Fixed.FracBits);
+
+			if (dist < Fixed.Zero)
+			{
+				dist = Fixed.Zero;
+			}
+
+			if (dist.Data >= bombdamage)
+			{
+				// out of range
+				return true;
+			}
+
+			if (world.VisibilityCheck.CheckSight(thing, bombspot))
+			{
+				// must be in direct path
+				DamageMobj(thing, bombspot, bombsource, bombdamage - dist.Data);
+			}
+
+			return true;
+		}
+
+		//
+		// P_RadiusAttack
+		// Source is the creature that caused the explosion at spot.
+		//
+		public void RadiusAttack(Mobj spot, Mobj source, int damage)
+		{
+			var bm = world.Map.BlockMap;
+			var dist = Fixed.FromInt(damage + GameConstants.MaxThingRadius.ToIntFloor());
+			var yh = (spot.Y + dist - bm.OriginY).Data >> BlockMap.MapBlockShift;
+			var yl = (spot.Y - dist - bm.OriginY).Data >> BlockMap.MapBlockShift;
+			var xh = (spot.X + dist - bm.OriginX).Data >> BlockMap.MapBlockShift;
+			var xl = (spot.X - dist - bm.OriginX).Data >> BlockMap.MapBlockShift;
+			bombspot = spot;
+			bombsource = source;
+			bombdamage = damage;
+
+			for (var y = yl; y <= yh; y++)
+			{
+				for (var x = xl; x <= xh; x++)
+				{
+					bm.IterateThings(x, y, mo => PIT_RadiusAttack(mo));
+				}
+			}
+		}
+
+
 	}
 }

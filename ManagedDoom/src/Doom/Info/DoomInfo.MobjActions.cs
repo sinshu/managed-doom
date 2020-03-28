@@ -12,10 +12,12 @@ namespace ManagedDoom
 
             public void Explode(World world, Mobj actor)
             {
+                world.MonsterBehavior.Explode(actor);
             }
 
             public void Pain(World world, Mobj actor)
             {
+                world.MonsterBehavior.Pain(actor);
             }
 
             public void PlayerScream(World world, Mobj actor)
@@ -142,6 +144,7 @@ namespace ManagedDoom
 
             public void SargAttack(World world, Mobj actor)
             {
+                world.MonsterBehavior.SargAttack(actor);
             }
 
             public void HeadAttack(World world, Mobj actor)
