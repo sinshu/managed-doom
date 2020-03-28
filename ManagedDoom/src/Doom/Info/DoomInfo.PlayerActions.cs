@@ -58,22 +58,27 @@ namespace ManagedDoom
 
             public void FireShotgun2(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.FireShotgun2(player, psp);
             }
 
             public void CheckReload(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.CheckReload(player, psp);
             }
 
             public void OpenShotgun2(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.OpenShotgun2(player, psp);
             }
 
             public void LoadShotgun2(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.LoadShotgun2(player, psp);
             }
 
             public void CloseShotgun2(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.CloseShotgun2(player, psp);
             }
 
             public void FireCGun(World world, Player player, PlayerSpriteDef psp)

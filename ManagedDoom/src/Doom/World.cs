@@ -255,6 +255,21 @@ namespace ManagedDoom
             return hash;
         }
 
+        public void DumpMobjCsv(string path)
+        {
+            using (var writer = new System.IO.StreamWriter(path))
+            {
+                foreach (var thinker in thinkers)
+                {
+                    var mobj = thinker as Mobj;
+                    if (mobj != null)
+                    {
+                        writer.WriteLine(mobj.DumpCsv());
+                    }
+                }
+            }
+        }
+
         public int GetSectorHash()
         {
             var hash = 0;

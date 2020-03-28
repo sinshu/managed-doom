@@ -233,6 +233,32 @@ namespace ManagedDoom
             return hash;
         }
 
+        public string DumpCsv()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.Append(X.Data).Append(",");
+            sb.Append(Y.Data).Append(",");
+            sb.Append(Z.Data).Append(",");
+            sb.Append((int)Angle.Data).Append(",");
+            sb.Append((int)Sprite).Append(",");
+            sb.Append(Frame).Append(",");
+            sb.Append(FloorZ.Data).Append(",");
+            sb.Append(CeilingZ.Data).Append(",");
+            sb.Append(Radius.Data).Append(",");
+            sb.Append(Height.Data).Append(",");
+            sb.Append(MomX.Data).Append(",");
+            sb.Append(MomY.Data).Append(",");
+            sb.Append(MomZ.Data).Append(",");
+            sb.Append((int)Tics).Append(",");
+            sb.Append((int)Flags).Append(",");
+            sb.Append(Health).Append(",");
+            sb.Append((int)MoveDir).Append(",");
+            sb.Append(MoveCount).Append(",");
+            sb.Append(ReactionTime).Append(",");
+            sb.Append(Threshold);
+            return sb.ToString();
+        }
+
         public World World => world;
     }
 }

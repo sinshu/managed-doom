@@ -515,7 +515,7 @@ namespace ManagedDoom
                     {
                         if (line.Special != 0)
                         {
-                            //P_CrossSpecialLine(ld - lines, oldside, thing);
+                            world.MapInteraction.CrossSpecialLine(line, oldSide, thing);
                         }
                     }
                 }

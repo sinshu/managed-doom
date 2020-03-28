@@ -470,5 +470,58 @@ namespace ManagedDoom
 
             P_GunShot(player.Mobj, player.Refire == 0);
         }
+
+        //
+        // A_FireShotgun2
+        //
+        public void FireShotgun2(Player player, PlayerSpriteDef psp)
+        {
+            world.StartSound(player.Mobj, Sfx.DSHTGN);
+            player.Mobj.SetState(State.PlayAtk2);
+
+            player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] -= 2;
+
+            world.PlayerBehavior.P_SetPsprite(
+                player,
+                PlayerSprite.Flash,
+                DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
+
+            P_BulletSlope(player.Mobj);
+
+            var hs = world.Hitscan;
+            for (var i = 0; i < 20; i++)
+            {
+                var damage = 5 * (world.Random.Next() % 3 + 1);
+                var angle = player.Mobj.Angle;
+                angle += new Angle((world.Random.Next() - world.Random.Next()) << 19);
+                hs.LineAttack(
+                    player.Mobj,
+                    angle,
+                    World.MISSILERANGE,
+                    hs.bulletslope + new Fixed((world.Random.Next() - world.Random.Next()) << 5),
+                    damage);
+            }
+        }
+
+        public void CheckReload(Player player, PlayerSpriteDef psp)
+        {
+            CheckAmmo(player);
+        }
+
+        public void OpenShotgun2(Player player, PlayerSpriteDef psp)
+        {
+            world.StartSound(player.Mobj, Sfx.DBOPN);
+        }
+
+        public void LoadShotgun2(Player player, PlayerSpriteDef psp)
+        {
+            world.StartSound(player.Mobj, Sfx.DBLOAD);
+        }
+
+        public void CloseShotgun2(Player player, PlayerSpriteDef psp)
+        {
+            world.StartSound(player.Mobj, Sfx.DBCLS);
+            ReFire(player, psp);
+        }
     }
 }
