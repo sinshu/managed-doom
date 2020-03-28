@@ -7,7 +7,7 @@ using ManagedDoom;
 namespace ManagedDoomTest.CompatibilityTests
 {
     [TestClass]
-    public class PlayIwadDemo
+    public class IwadDemo
     {
         [TestMethod]
         public void Doom2Demo1()
