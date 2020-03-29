@@ -269,5 +269,63 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0x18bdbd50u, (uint)aggHash);
             }
         }
+
+        [TestMethod]
+        public void CacoDemonTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\cacodemon_test.wad"))
+            {
+                var demo = new Demo(@"data\cacodemon_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x76c0d9f4u, (uint)lastHash);
+                Assert.AreEqual(0xf40d2331u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
+        public void FastCacoDemonTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\cacodemon_test.wad"))
+            {
+                var demo = new Demo(@"data\fast_cacodemon_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x73316e3bu, (uint)lastHash);
+                Assert.AreEqual(0x7219647fu, (uint)aggHash);
+            }
+        }
     }
 }
