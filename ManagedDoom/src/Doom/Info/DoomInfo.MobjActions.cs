@@ -109,18 +109,22 @@ namespace ManagedDoom
 
             public void FatRaise(World world, Mobj actor)
             {
+                world.MonsterBehavior.FatRaise(actor);
             }
 
             public void FatAttack1(World world, Mobj actor)
             {
+                world.MonsterBehavior.FatAttack1(actor);
             }
 
             public void FatAttack2(World world, Mobj actor)
             {
+                world.MonsterBehavior.FatAttack2(actor);
             }
 
             public void FatAttack3(World world, Mobj actor)
             {
+                world.MonsterBehavior.FatAttack3(actor);
             }
 
             public void BossDeath(World world, Mobj actor)

@@ -914,5 +914,69 @@ namespace ManagedDoom
         {
             world.ThingInteraction.RadiusAttack(thingy, thingy.Target, 128);
         }
+
+
+
+
+        private static readonly Angle FATSPREAD = new Angle(Angle.Ang90.Data / 8);
+
+        public void FatRaise(Mobj actor)
+        {
+            FaceTarget(actor);
+            world.StartSound(actor, Sfx.MANATK);
+        }
+
+        public void FatAttack1(Mobj actor)
+        {
+            var ta = world.ThingAllocation;
+
+            FaceTarget(actor);
+
+            // Change direction  to ...
+            actor.Angle += FATSPREAD;
+            ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+
+            var mo = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            mo.Angle += FATSPREAD;
+            var an = mo.Angle; // >> ANGLETOFINESHIFT;
+            mo.MomX = new Fixed(mo.Info.Speed) * Trig.Cos(an);
+            mo.MomY = new Fixed(mo.Info.Speed) * Trig.Sin(an);
+        }
+
+        public void FatAttack2(Mobj actor)
+        {
+            var ta = world.ThingAllocation;
+
+            FaceTarget(actor);
+
+            // Now here choose opposite deviation.
+            actor.Angle -= FATSPREAD;
+            ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+
+            var mo = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            mo.Angle -= new Angle(FATSPREAD.Data * 2);
+            var an = mo.Angle; // >> ANGLETOFINESHIFT;
+            mo.MomX = new Fixed(mo.Info.Speed) * Trig.Cos(an);
+            mo.MomY = new Fixed(mo.Info.Speed) * Trig.Sin(an);
+        }
+
+        public void FatAttack3(Mobj actor)
+        {
+            var ta = world.ThingAllocation;
+
+            FaceTarget(actor);
+
+            var mo = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            mo.Angle -= new Angle(FATSPREAD.Data / 2);
+            var an = mo.Angle; // >> ANGLETOFINESHIFT;
+            mo.MomX = new Fixed(mo.Info.Speed) * Trig.Cos(an);
+            mo.MomY = new Fixed(mo.Info.Speed) * Trig.Sin(an);
+
+            mo = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            mo.Angle += new Angle(FATSPREAD.Data / 2);
+            an = mo.Angle; // >> ANGLETOFINESHIFT;
+            mo.MomX = new Fixed(mo.Info.Speed) * Trig.Cos(an);
+            mo.MomY = new Fixed(mo.Info.Speed) * Trig.Sin(an);
+        }
     }
 }
