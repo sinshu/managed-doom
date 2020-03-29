@@ -39,6 +39,35 @@ namespace ManagedDoomTest.CompatibilityTests
         }
 
         [TestMethod]
+        public void SuperShotgunTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\supershotgun_test.wad"))
+            {
+                var demo = new Demo(@"data\supershotgun_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0xe2f7936eu, (uint)lastHash);
+                Assert.AreEqual(0x538061e4u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
         public void ChaingunTest()
         {
             using (var resource = new CommonResource(WadPath.Doom2, @"data\chaingun_test.wad"))
