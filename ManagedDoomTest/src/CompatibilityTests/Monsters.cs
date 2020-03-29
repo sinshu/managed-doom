@@ -271,6 +271,35 @@ namespace ManagedDoomTest.CompatibilityTests
         }
 
         [TestMethod]
+        public void LostSoulTest_Final2()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\lostsoul_test.wad"))
+            {
+                var demo = new Demo(@"data\lostsoul_test_final2.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x2cdb1c94u, (uint)lastHash);
+                Assert.AreEqual(0x99d18c88u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
         public void CacoDemonTest()
         {
             using (var resource = new CommonResource(WadPath.Doom2, @"data\cacodemon_test.wad"))
