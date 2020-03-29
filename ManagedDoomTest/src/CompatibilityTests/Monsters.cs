@@ -182,5 +182,63 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0x7ffd501du, (uint)aggHash);
             }
         }
+
+        [TestMethod]
+        public void DemonTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\demon_test.wad"))
+            {
+                var demo = new Demo(@"data\demon_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0xcfdcb5d1u, (uint)lastHash);
+                Assert.AreEqual(0x37ad1000u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
+        public void FastDemonTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\demon_test.wad"))
+            {
+                var demo = new Demo(@"data\fast_demon_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x195cbb15u, (uint)lastHash);
+                Assert.AreEqual(0x18bdbd50u, (uint)aggHash);
+            }
+        }
     }
 }
