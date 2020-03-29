@@ -10,6 +10,35 @@ namespace ManagedDoomTest.CompatibilityTests
     public class Monsters
     {
         [TestMethod]
+        public void BarrelTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\barrel_test.wad"))
+            {
+                var demo = new Demo(@"data\barrel_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0xfb76dc03u, (uint)lastHash);
+                Assert.AreEqual(0xccc38bc3u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
         public void ZombiemanTest()
         {
             using (var resource = new CommonResource(WadPath.Doom2, @"data\zombieman_test.wad"))
