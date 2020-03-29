@@ -1049,5 +1049,114 @@ namespace ManagedDoom
                 TryMove(thing, thing.X + thing.MomX, thing.Y);
             }
         }
+
+
+
+
+
+
+
+
+        //
+        // TELEPORT MOVE
+        // 
+
+        //
+        // PIT_StompThing
+        //
+        private bool PIT_StompThing(Mobj thing)
+        {
+            if ((thing.Flags & MobjFlags.Shootable) == 0)
+            {
+                return true;
+            }
+
+            var blockdist = thing.Radius + currentThing.Radius;
+
+            if (Fixed.Abs(thing.X - currentX) >= blockdist
+                || Fixed.Abs(thing.Y - currentY) >= blockdist)
+            {
+                // didn't hit it
+                return true;
+            }
+
+            // don't clip against self
+            if (thing == currentThing)
+            {
+                return true;
+            }
+
+            // monsters don't stomp things except on boss level
+            if (currentThing.Player == null && world.Options.Map != 30)
+            {
+                return false;
+            }
+
+            world.ThingInteraction.DamageMobj(thing, currentThing, currentThing, 10000);
+
+            return true;
+        }
+
+        //
+        // P_TeleportMove
+        //
+        public bool TeleportMove(Mobj thing, Fixed x, Fixed y)
+        {
+            // kill anything occupying the position
+            currentThing = thing;
+            currentFlags = thing.Flags;
+
+            currentX = x;
+            currentY = y;
+
+            currentBox[Box.Top] = y + currentThing.Radius;
+            currentBox[Box.Bottom] = y - currentThing.Radius;
+            currentBox[Box.Right] = x + currentThing.Radius;
+            currentBox[Box.Left] = x - currentThing.Radius;
+
+            var newsubsec = Geometry.PointInSubsector(x, y, world.Map);
+            currentCeilingLine = null;
+
+            // The base floor/ceiling is from the subsector
+            // that contains the point.
+            // Any contacted lines the step closer together
+            // will adjust them.
+            currentFloorZ = currentDropoffZ = newsubsec.Sector.FloorHeight;
+            currentCeilingZ = newsubsec.Sector.CeilingHeight;
+
+            var validcount = world.GetNewValidCount();
+            hitSpecialCount = 0;
+
+            // stomp on any things contacted
+            var bm = world.Map.BlockMap;
+            var xl = (currentBox[Box.Left] - bm.OriginX - GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
+            var xh = (currentBox[Box.Right] - bm.OriginX + GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
+            var yl = (currentBox[Box.Bottom] - bm.OriginY - GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
+            var yh = (currentBox[Box.Top] - bm.OriginY + GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
+
+            for (var bx = xl; bx <= xh; bx++)
+            {
+                for (var by = yl; by <= yh; by++)
+                {
+                    if (!bm.IterateThings(bx, by, mo => PIT_StompThing(mo)))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            // the move is ok,
+            // so link the thing into its new position
+            UnsetThingPosition(thing);
+
+            thing.FloorZ = currentFloorZ;
+            thing.CeilingZ = currentCeilingZ;
+            thing.X = x;
+            thing.Y = y;
+
+            SetThingPosition(thing);
+
+            return true;
+        }
     }
 }

@@ -705,6 +705,94 @@ namespace ManagedDoom
 
 
 
+		private static readonly Fixed DOORSPEED = Fixed.FromInt(2);
+
+		public bool EV_DoDoor(LineDef line, VlDoorType type)
+		{
+			var secnum = -1;
+			var rtn = false;
+
+			var sectors = world.Map.Sectors;
+			while ((secnum = FindSectorFromLineTag(line, secnum)) >= 0)
+			{
+				var sec = sectors[secnum];
+				if (sec.SpecialData != null)
+				{
+					continue;
+				}
+
+				// new door thinker
+				rtn = true;
+				var door = ThinkerPool.RentVlDoor(world);
+				world.Thinkers.Add(door);
+				sec.SpecialData = door;
+
+				door.Sector = sec;
+				door.Type = type;
+				door.TopWait = VDOORWAIT;
+				door.Speed = VDOORSPEED;
+
+				switch (type)
+				{
+					case VlDoorType.BlazeClose:
+						door.TopHeight = FindLowestCeilingSurrounding(sec);
+						door.TopHeight -= Fixed.FromInt(4);
+						door.Direction = -1;
+						door.Speed = VDOORSPEED * 4;
+						world.StartSound(door.Sector.SoundOrigin, Sfx.BDCLS);
+						break;
+
+					case VlDoorType.Close:
+						door.TopHeight = FindLowestCeilingSurrounding(sec);
+						door.TopHeight -= Fixed.FromInt(4);
+						door.Direction = -1;
+						world.StartSound(door.Sector.SoundOrigin, Sfx.DORCLS);
+						break;
+
+					case VlDoorType.Close30ThenOpen:
+						door.TopHeight = sec.CeilingHeight;
+						door.Direction = -1;
+						world.StartSound(door.Sector.SoundOrigin, Sfx.DORCLS);
+						break;
+
+					case VlDoorType.BlazeRaise:
+					case VlDoorType.BlazeOpen:
+						door.Direction = 1;
+						door.TopHeight = FindLowestCeilingSurrounding(sec);
+						door.TopHeight -= Fixed.FromInt(4);
+						door.Speed = VDOORSPEED * 4;
+						if (door.TopHeight != sec.CeilingHeight)
+						{
+							world.StartSound(door.Sector.SoundOrigin, Sfx.BDOPN);
+						}
+						break;
+
+					case VlDoorType.Normal:
+					case VlDoorType.Open:
+						door.Direction = 1;
+						door.TopHeight = FindLowestCeilingSurrounding(sec);
+						door.TopHeight -= Fixed.FromInt(4);
+						if (door.TopHeight != sec.CeilingHeight)
+						{
+							world.StartSound(door.Sector.SoundOrigin, Sfx.DOROPN);
+						}
+						break;
+
+					default:
+						break;
+				}
+
+			}
+			return rtn;
+		}
+
+
+
+
+
+
+
+
 
 		private static readonly int PLATWAIT = 3;
 		private static readonly Fixed PLATSPEED = Fixed.One;
@@ -833,7 +921,7 @@ namespace ManagedDoom
 			return rtn;
 		}
 
-		
+
 
 		private static readonly int MAXPLATS = 30;
 		private Platform[] activeplats = new Platform[MAXPLATS];
@@ -896,6 +984,104 @@ namespace ManagedDoom
 			}
 
 			throw new Exception("P_RemoveActivePlat: can't find plat!");
+		}
+
+
+
+
+
+
+
+
+
+		//
+		// TELEPORTATION
+		//
+		public bool EV_Teleport(LineDef line, int side, Mobj thing)
+		{
+			// don't teleport missiles
+			if ((thing.Flags & MobjFlags.Missile) != 0)
+			{
+				return false;
+			}
+
+			// Don't teleport if hit back of line,
+			//  so you can get out of teleporter.
+			if (side == 1)
+			{
+				return false;
+			}
+
+			var tag = line.Tag;
+			var sectors = world.Map.Sectors;
+			for (var i = 0; i < sectors.Length; i++)
+			{
+				if (sectors[i].Tag == tag)
+				{
+					foreach (var thinker in world.Thinkers)
+					{
+						var m = thinker as Mobj;
+
+						if (m == null)
+						{
+							// not a mobj
+							continue;
+						}
+
+						// not a teleportman
+						if (m.Type != MobjType.Teleportman)
+						{
+							continue;
+						}
+
+						var sector = m.Subsector.Sector;
+
+						// wrong sector
+						if (sector.Number != i)
+						{
+							continue;
+						}
+
+						var oldx = thing.X;
+						var oldy = thing.Y;
+						var oldz = thing.Z;
+
+						if (!world.ThingMovement.TeleportMove(thing, m.X, m.Y))
+						{
+							return false;
+						}
+
+						thing.Z = thing.FloorZ; //fixme: not needed?
+						if (thing.Player != null)
+						{
+							thing.Player.ViewZ = thing.Z + thing.Player.ViewHeight;
+						}
+
+						// spawn teleport fog at source and destination
+						var fog = world.ThingAllocation.SpawnMobj(oldx, oldy, oldz, MobjType.Tfog);
+						world.StartSound(fog, Sfx.TELEPT);
+						var an = m.Angle; // >> ANGLETOFINESHIFT;
+						fog = world.ThingAllocation.SpawnMobj(
+							m.X + 20 * Trig.Cos(an),
+							m.Y + 20 * Trig.Sin(an),
+							thing.Z, MobjType.Tfog);
+
+						// emit sound, where?
+						world.StartSound(fog, Sfx.TELEPT);
+
+						// don't move for a bit
+						if (thing.Player != null)
+						{
+							thing.ReactionTime = 18;
+						}
+
+						thing.Angle = m.Angle;
+						thing.MomX = thing.MomY = thing.MomZ = Fixed.Zero;
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 	}
 }

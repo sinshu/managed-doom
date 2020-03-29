@@ -155,7 +155,7 @@ namespace ManagedDoom
 
 				case 29:
 					// Raise Door
-					//if (EV_DoDoor(line, normal))
+					if (sa.EV_DoDoor(line, VlDoorType.Normal))
 					{
 						//P_ChangeSwitchTexture(line, 0);
 					}
@@ -187,7 +187,7 @@ namespace ManagedDoom
 
 				case 50:
 					// Close Door
-					//if (EV_DoDoor(line, close))
+					if (sa.EV_DoDoor(line, VlDoorType.Close))
 					{
 						//P_ChangeSwitchTexture(line, 0);
 					}
@@ -225,7 +225,7 @@ namespace ManagedDoom
 
 				case 103:
 					// Open Door
-					//if (EV_DoDoor(line, open))
+					if (sa.EV_DoDoor(line, VlDoorType.Open))
 					{
 						//P_ChangeSwitchTexture(line, 0);
 					}
@@ -233,7 +233,7 @@ namespace ManagedDoom
 
 				case 111:
 					// Blazing Door Raise (faster than TURBO!)
-					//if (EV_DoDoor(line, blazeRaise))
+					if (sa.EV_DoDoor(line, VlDoorType.BlazeRaise))
 					{
 						//P_ChangeSwitchTexture(line, 0);
 					}
@@ -241,7 +241,7 @@ namespace ManagedDoom
 
 				case 112:
 					// Blazing Door Open (faster than TURBO!)
-					//if (EV_DoDoor(line, blazeOpen))
+					if (sa.EV_DoDoor(line, VlDoorType.BlazeOpen))
 					{
 						//P_ChangeSwitchTexture(line, 0);
 					}
@@ -249,7 +249,7 @@ namespace ManagedDoom
 
 				case 113:
 					// Blazing Door Close (faster than TURBO!)
-					//if (EV_DoDoor(line, blazeClose))
+					if (sa.EV_DoDoor(line, VlDoorType.BlazeClose))
 					{
 						//P_ChangeSwitchTexture(line, 0);
 					}
@@ -302,7 +302,7 @@ namespace ManagedDoom
 				// BUTTONS
 				case 42:
 					// Close Door
-					//if (EV_DoDoor(line, close))
+					if (sa.EV_DoDoor(line, VlDoorType.Close))
 					{
 						//P_ChangeSwitchTexture(line, 1);
 					}
@@ -334,7 +334,7 @@ namespace ManagedDoom
 
 				case 61:
 					// Open Door
-					//if (EV_DoDoor(line, open))
+					if (sa.EV_DoDoor(line, VlDoorType.Open))
 					{
 						//P_ChangeSwitchTexture(line, 1);
 					}
@@ -350,7 +350,7 @@ namespace ManagedDoom
 
 				case 63:
 					// Raise Door
-					//if (EV_DoDoor(line, normal))
+					if (sa.EV_DoDoor(line, VlDoorType.Normal))
 					{
 						//P_ChangeSwitchTexture(line, 1);
 					}
@@ -414,7 +414,7 @@ namespace ManagedDoom
 
 				case 114:
 					// Blazing Door Raise (faster than TURBO!)
-					//if (EV_DoDoor(line, blazeRaise))
+					if (sa.EV_DoDoor(line, VlDoorType.BlazeRaise))
 					{
 						//P_ChangeSwitchTexture(line, 1);
 					}
@@ -422,7 +422,7 @@ namespace ManagedDoom
 
 				case 115:
 					// Blazing Door Open (faster than TURBO!)
-					//if (EV_DoDoor(line, blazeOpen))
+					if (sa.EV_DoDoor(line, VlDoorType.BlazeOpen))
 					{
 						//P_ChangeSwitchTexture(line, 1);
 					}
@@ -430,7 +430,7 @@ namespace ManagedDoom
 
 				case 116:
 					// Blazing Door Close (faster than TURBO!)
-					//if (EV_DoDoor(line, blazeClose))
+					if (sa.EV_DoDoor(line, VlDoorType.BlazeClose))
 					{
 						//P_ChangeSwitchTexture(line, 1);
 					}
@@ -607,19 +607,19 @@ namespace ManagedDoom
 				// All from here to RETRIGGERS.
 				case 2:
 					// Open Door
-					//EV_DoDoor(line, open);
+					sa.EV_DoDoor(line, VlDoorType.Open);
 					line.Special = 0;
 					break;
 
 				case 3:
 					// Close Door
-					//EV_DoDoor(line, close);
+					sa.EV_DoDoor(line, VlDoorType.Close);
 					line.Special = 0;
 					break;
 
 				case 4:
 					// Raise Door
-					//EV_DoDoor(line, normal);
+					sa.EV_DoDoor(line, VlDoorType.Normal);
 					line.Special = 0;
 					break;
 
@@ -661,7 +661,7 @@ namespace ManagedDoom
 
 				case 16:
 					// Close Door 30
-					//EV_DoDoor(line, close30ThenOpen);
+					sa.EV_DoDoor(line, VlDoorType.Close30ThenOpen);
 					line.Special = 0;
 					break;
 
@@ -722,7 +722,7 @@ namespace ManagedDoom
 
 				case 39:
 					// TELEPORT!
-					//EV_Teleport(line, side, thing);
+					sa.EV_Teleport(line, side, thing);
 					line.Special = 0;
 					break;
 
@@ -788,13 +788,13 @@ namespace ManagedDoom
 
 				case 108:
 					// Blazing Door Raise (faster than TURBO!)
-					//EV_DoDoor(line, blazeRaise);
+					sa.EV_DoDoor(line, VlDoorType.BlazeRaise);
 					line.Special = 0;
 					break;
 
 				case 109:
 					// Blazing Door Open (faster than TURBO!)
-					//EV_DoDoor(line, blazeOpen);
+					sa.EV_DoDoor(line, VlDoorType.BlazeOpen);
 					line.Special = 0;
 					break;
 
@@ -806,7 +806,7 @@ namespace ManagedDoom
 
 				case 110:
 					// Blazing Door Close (faster than TURBO!)
-					//EV_DoDoor(line, blazeClose);
+					sa.EV_DoDoor(line, VlDoorType.BlazeClose);
 					line.Special = 0;
 					break;
 
@@ -831,7 +831,7 @@ namespace ManagedDoom
 					// TELEPORT MonsterONLY
 					if (thing.Player == null)
 					{
-						//EV_Teleport(line, side, thing);
+						sa.EV_Teleport(line, side, thing);
 						line.Special = 0;
 					}
 					break;
@@ -866,12 +866,12 @@ namespace ManagedDoom
 
 				case 75:
 					// Close Door
-					//EV_DoDoor(line, close);
+					sa.EV_DoDoor(line, VlDoorType.Close);
 					break;
 
 				case 76:
 					// Close Door 30
-					//EV_DoDoor(line, close30ThenOpen);
+					sa.EV_DoDoor(line, VlDoorType.Close30ThenOpen);
 					break;
 
 				case 77:
@@ -911,7 +911,7 @@ namespace ManagedDoom
 
 				case 86:
 					// Open Door
-					//EV_DoDoor(line, open);
+					sa.EV_DoDoor(line, VlDoorType.Open);
 					break;
 
 				case 87:
@@ -931,7 +931,7 @@ namespace ManagedDoom
 
 				case 90:
 					// Raise Door
-					//EV_DoDoor(line, normal);
+					sa.EV_DoDoor(line, VlDoorType.Normal);
 					break;
 
 				case 91:
@@ -968,7 +968,7 @@ namespace ManagedDoom
 
 				case 97:
 					// TELEPORT!
-					//EV_Teleport(line, side, thing);
+					sa.EV_Teleport(line, side, thing);
 					break;
 
 				case 98:
@@ -978,17 +978,17 @@ namespace ManagedDoom
 
 				case 105:
 					// Blazing Door Raise (faster than TURBO!)
-					//EV_DoDoor(line, blazeRaise);
+					sa.EV_DoDoor(line, VlDoorType.BlazeRaise);
 					break;
 
 				case 106:
 					// Blazing Door Open (faster than TURBO!)
-					//EV_DoDoor(line, blazeOpen);
+					sa.EV_DoDoor(line, VlDoorType.BlazeOpen);
 					break;
 
 				case 107:
 					// Blazing Door Close (faster than TURBO!)
-					//EV_DoDoor(line, blazeClose);
+					sa.EV_DoDoor(line, VlDoorType.BlazeClose);
 					break;
 
 				case 120:
@@ -1000,7 +1000,7 @@ namespace ManagedDoom
 					// TELEPORT MonsterONLY.
 					if (thing.Player == null)
 					{
-						//EV_Teleport(line, side, thing);
+						sa.EV_Teleport(line, side, thing);
 					}
 					break;
 

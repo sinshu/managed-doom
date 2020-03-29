@@ -880,6 +880,33 @@ namespace ManagedDoom
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Headshot);
         }
 
+        private static readonly Fixed SKULLSPEED = Fixed.FromInt(20);
+
+        public void SkullAttack(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            var dest = actor.Target;
+            actor.Flags |= MobjFlags.SkullFly;
+
+            world.StartSound(actor, actor.Info.AttackSound);
+            FaceTarget(actor);
+            var an = actor.Angle; // >> ANGLETOFINESHIFT;
+            actor.MomX = SKULLSPEED * Trig.Cos(an);
+            actor.MomY = SKULLSPEED * Trig.Sin(an);
+            var dist = Geometry.AproxDistance(dest.X - actor.X, dest.Y - actor.Y);
+            dist = new Fixed(dist.Data / SKULLSPEED.Data);
+
+            if (dist.Data < 1)
+            {
+                dist = new Fixed(1);
+            }
+            actor.MomZ = new Fixed((dest.Z + new Fixed(dest.Height.Data >> 1) - actor.Z).Data / dist.Data);
+        }
+
         //
         // A_Explode
         //

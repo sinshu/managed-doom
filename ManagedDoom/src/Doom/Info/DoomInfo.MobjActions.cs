@@ -158,6 +158,7 @@ namespace ManagedDoom
 
             public void SkullAttack(World world, Mobj actor)
             {
+                world.MonsterBehavior.SkullAttack(actor);
             }
 
             public void Metal(World world, Mobj actor)
