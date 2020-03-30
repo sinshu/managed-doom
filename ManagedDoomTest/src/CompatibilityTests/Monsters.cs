@@ -356,5 +356,34 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0x7219647fu, (uint)aggHash);
             }
         }
+
+        [TestMethod]
+        public void FatsoTest()
+        {
+            using (var resource = new CommonResource(WadPath.Doom2, @"data\fatso_test.wad"))
+            {
+                var demo = new Demo(@"data\fatso_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0xadc6371eu, (uint)lastHash);
+                Assert.AreEqual(0x196eebe6u, (uint)aggHash);
+            }
+        }
     }
 }
