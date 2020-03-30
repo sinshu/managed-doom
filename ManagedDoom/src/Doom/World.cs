@@ -228,11 +228,22 @@ namespace ManagedDoom
 
         public void StartSound(Mobj mobj, Sfx sfx)
         {
-            Console.WriteLine("StartSound: " + sfx);
+            if (audio == null)
+            {
+                return;
+            }
+
+            audio.StartSound(mobj, sfx);
         }
 
         public void StopSound(Mobj mobj)
         {
+            if (audio == null)
+            {
+                return;
+            }
+
+            audio.StopSound(mobj);
         }
 
         public int GetNewValidCount()
@@ -303,5 +314,15 @@ namespace ManagedDoom
         public static readonly Fixed USERANGE = Fixed.FromInt(64);
         public static readonly Fixed MELEERANGE = Fixed.FromInt(64);
         public static readonly Fixed MISSILERANGE = Fixed.FromInt(32 * 64);
+
+
+
+        private SfmlAudio audio;
+
+        public SfmlAudio Audio
+        {
+            get => audio;
+            set => audio = value;
+        }
     }
 }

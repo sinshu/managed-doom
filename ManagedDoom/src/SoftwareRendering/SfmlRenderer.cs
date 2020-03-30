@@ -9,7 +9,7 @@ using SFML.Window;
 
 namespace ManagedDoom.SoftwareRendering
 {
-    public sealed class Renderer : IDisposable
+    public sealed class SfmlRenderer : IDisposable
     {
         private RenderWindow sfmlWindow;
         private Palette palette;
@@ -30,11 +30,11 @@ namespace ManagedDoom.SoftwareRendering
         private SFML.Graphics.Sprite sfmlSprite;
         private SFML.Graphics.RenderStates sfmlStates;
 
-        private ThreeDRenderer threeD;
+        private ThreeD threeD;
 
         private World world;
 
-        public Renderer(RenderWindow window, CommonResource resource, bool highResolution)
+        public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
         {
             sfmlWindow = window;
             palette = resource.Palette;
@@ -81,7 +81,7 @@ namespace ManagedDoom.SoftwareRendering
 
             sfmlStates = new RenderStates(BlendMode.None);
 
-            threeD = new ThreeDRenderer(resource, screenWidth, screenHeight, screenData);
+            threeD = new ThreeD(resource, screenWidth, screenHeight, screenData);
         }
 
         private static uint[] InitColors(Palette palette)

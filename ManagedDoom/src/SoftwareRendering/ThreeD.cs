@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace ManagedDoom.SoftwareRendering
 {
-    public sealed class ThreeDRenderer
+    public sealed class ThreeD
     {
         private ColorMap colorMap;
         private TextureLookup textures;
@@ -18,7 +18,7 @@ namespace ManagedDoom.SoftwareRendering
         private int screenHeight;
         private byte[] screenData;
 
-        public ThreeDRenderer(
+        public ThreeD(
             CommonResource resource,
             int screenWidth,
             int screenHeight,
