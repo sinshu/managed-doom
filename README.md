@@ -24,12 +24,11 @@ Now I'm working on the game physics, including thing movement, interaction and s
 
 
 
-## Video sample
+## Video sample (Doom 2, demo 3)
 
-Now the first demo in Doom 2 can be played!  
-https://www.youtube.com/watch?v=-_SoxPy4IXc  
+https://www.youtube.com/watch?v=LZpyeLlm_1Y  
 
-[![YouTube video of Managed Doom](https://img.youtube.com/vi/-_SoxPy4IXc/0.jpg)](https://youtu.be/-_SoxPy4IXc)
+[![YouTube video of Managed Doom](https://img.youtube.com/vi/LZpyeLlm_1Y/0.jpg)](https://youtu.be/LZpyeLlm_1Y)
 
 
 
