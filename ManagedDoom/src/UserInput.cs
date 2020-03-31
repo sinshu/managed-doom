@@ -116,12 +116,12 @@ namespace ManagedDoom
 
             if (keyFire)
             {
-                cmd.Buttons |= Buttons.Attack;
+                cmd.Buttons |= TicCmdButtons.Attack;
             }
 
             if (keyUse)
             {
-                cmd.Buttons |= Buttons.Use;
+                cmd.Buttons |= TicCmdButtons.Use;
             }
 
             // If the previous or next weapon button is pressed, the
@@ -143,8 +143,8 @@ namespace ManagedDoom
                 {
                     if (weaponKeys[i])
                     {
-                        cmd.Buttons |= Buttons.Change;
-                        cmd.Buttons |= (byte)(i << Buttons.WeaponShift);
+                        cmd.Buttons |= TicCmdButtons.Change;
+                        cmd.Buttons |= (byte)(i << TicCmdButtons.WeaponShift);
                         break;
                     }
                 }

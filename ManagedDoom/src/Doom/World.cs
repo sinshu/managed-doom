@@ -22,6 +22,8 @@ namespace ManagedDoom
 
 
         private Thinkers thinkers;
+        private Specials specials;
+
         private ThingAllocation thingAllocation;
         private ThingMovement thingMovement;
         private ThingInteraction thingInteraction;
@@ -50,6 +52,8 @@ namespace ManagedDoom
             validCount = 0;
 
             thinkers = new Thinkers(this);
+            specials = new Specials(this);
+
             thingAllocation = new ThingAllocation(this);
             thingMovement = new ThingMovement(this);
             thingInteraction = new ThingInteraction(this);
@@ -82,6 +86,7 @@ namespace ManagedDoom
             }
 
             thinkers.Run();
+            specials.Update();
 
             levelTime++;
         }
@@ -295,6 +300,8 @@ namespace ManagedDoom
         public DoomRandom Random => random;
 
         public Thinkers Thinkers => thinkers;
+        public Specials Specials => specials;
+
         public ThingAllocation ThingAllocation => thingAllocation;
         public ThingMovement ThingMovement => thingMovement;
         public ThingInteraction ThingInteraction => thingInteraction;

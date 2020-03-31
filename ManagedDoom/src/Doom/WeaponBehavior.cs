@@ -46,7 +46,7 @@ namespace ManagedDoom
 
             // check for fire
             //  the missile launcher and bfg do not auto fire
-            if ((player.Cmd.Buttons & Buttons.Attack) != 0)
+            if ((player.Cmd.Buttons & TicCmdButtons.Attack) != 0)
             {
                 if (!player.AttackDown
                     || (player.ReadyWeapon != WeaponType.Missile
@@ -347,7 +347,7 @@ namespace ManagedDoom
         {
             // check for fire
             //  (if a weaponchange is pending, let it go through instead)
-            if ((player.Cmd.Buttons & Buttons.Attack) != 0
+            if ((player.Cmd.Buttons & TicCmdButtons.Attack) != 0
                 && player.PendingWeapon == WeaponType.NoChange
                 && player.Health != 0)
             {

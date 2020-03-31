@@ -22,6 +22,7 @@ namespace ManagedDoom
 
             public void PlayerScream(World world, Mobj actor)
             {
+                world.PlayerBehavior.PlayerScream(actor);
             }
 
             public void Fall(World world, Mobj actor)

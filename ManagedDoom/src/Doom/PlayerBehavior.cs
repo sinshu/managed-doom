@@ -197,17 +197,17 @@ namespace ManagedDoom
             // Check for weapon change.
 
             // A special event has no other buttons.
-            if ((cmd.Buttons & Buttons.Special) != 0)
+            if ((cmd.Buttons & TicCmdButtons.Special) != 0)
             {
                 cmd.Buttons = 0;
             }
 
-            if ((cmd.Buttons & Buttons.Change) != 0)
+            if ((cmd.Buttons & TicCmdButtons.Change) != 0)
             {
                 // The actual changing of the weapon is done
                 //  when the weapon psprite can do it
                 //  (read: not in the middle of an attack).
-                var newweapon = (cmd.Buttons & Buttons.WeaponMask) >> Buttons.WeaponShift;
+                var newweapon = (cmd.Buttons & TicCmdButtons.WeaponMask) >> TicCmdButtons.WeaponShift;
 
                 if (newweapon == (int)WeaponType.Fist
                     && player.WeaponOwned[(int)WeaponType.Chainsaw]
@@ -240,7 +240,7 @@ namespace ManagedDoom
             }
 
             // check for use
-            if ((cmd.Buttons & Buttons.Use) != 0)
+            if ((cmd.Buttons & TicCmdButtons.Use) != 0)
             {
                 if (!player.UseDown)
                 {
@@ -474,7 +474,7 @@ namespace ManagedDoom
                 player.DamageCount--;
             }
 
-            if ((player.Cmd.Buttons & Buttons.Use) != 0)
+            if ((player.Cmd.Buttons & TicCmdButtons.Use) != 0)
             {
                 player.PlayerState = PlayerState.Reborn;
             }
@@ -621,6 +621,23 @@ namespace ManagedDoom
                 player,
                 PlayerSprite.Weapon,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState);
+        }
+
+
+        public void PlayerScream(Mobj mo)
+        {
+            // Default death sound.
+            var sound = Sfx.PLDETH;
+
+            if ((world.Options.GameMode == GameMode.Commercial)
+                && (mo.Health < -50))
+            {
+                // IF THE PLAYER DIES
+                // LESS THAN -50% WITHOUT GIBBING
+                sound = Sfx.PDIEHI;
+            }
+
+            world.StartSound(mo, sound);
         }
     }
 }

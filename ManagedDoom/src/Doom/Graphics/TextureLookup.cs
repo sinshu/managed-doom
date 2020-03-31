@@ -47,7 +47,15 @@ namespace ManagedDoom
                 return 0;
             }
 
-            return nameToNumber[name];
+            int number;
+            if (nameToNumber.TryGetValue(name, out number))
+            {
+                return number;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         private static Patch[] LoadPatches(Wad wad)

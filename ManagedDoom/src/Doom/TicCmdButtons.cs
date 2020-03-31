@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public static class Buttons
+    public static class TicCmdButtons
     {
         public const int Attack = 1;
 

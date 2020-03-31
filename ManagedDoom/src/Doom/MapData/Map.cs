@@ -132,6 +132,8 @@ namespace ManagedDoom
             }
         }
 
+        public TextureLookup Textures => textures;
+        public FlatLookup Flats => flats;
         public Vertex[] Vertices => vertices;
         public Sector[] Sectors => sectors;
         public SideDef[] Sides => sides;

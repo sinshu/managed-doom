@@ -18,6 +18,7 @@ namespace ManagedDoom
 		//
 		public bool UseSpecialLine(Mobj thing, LineDef line, int side)
 		{
+			var specials = world.Specials;
 			var sa = world.SectorAction;
 
 			// Err...
@@ -109,7 +110,7 @@ namespace ManagedDoom
 					// Raise Floor 32 and change texture
 					if (sa.EV_DoPlat(line, PlatformType.RaiseAndChange, 32))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -117,7 +118,7 @@ namespace ManagedDoom
 					// Raise Floor 24 and change texture
 					if (sa.EV_DoPlat(line, PlatformType.RaiseAndChange, 24))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -133,7 +134,7 @@ namespace ManagedDoom
 					// Raise Plat next highest floor and change texture
 					if (sa.EV_DoPlat(line, PlatformType.RaiseToNearestAndChange, 0))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -141,7 +142,7 @@ namespace ManagedDoom
 					// PlatDownWaitUpStay
 					if (sa.EV_DoPlat(line, PlatformType.DownWaitUpStay, 0))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -157,7 +158,7 @@ namespace ManagedDoom
 					// Raise Door
 					if (sa.EV_DoDoor(line, VlDoorType.Normal))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -189,7 +190,7 @@ namespace ManagedDoom
 					// Close Door
 					if (sa.EV_DoDoor(line, VlDoorType.Close))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -227,7 +228,7 @@ namespace ManagedDoom
 					// Open Door
 					if (sa.EV_DoDoor(line, VlDoorType.Open))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -235,7 +236,7 @@ namespace ManagedDoom
 					// Blazing Door Raise (faster than TURBO!)
 					if (sa.EV_DoDoor(line, VlDoorType.BlazeRaise))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -243,7 +244,7 @@ namespace ManagedDoom
 					// Blazing Door Open (faster than TURBO!)
 					if (sa.EV_DoDoor(line, VlDoorType.BlazeOpen))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -251,7 +252,7 @@ namespace ManagedDoom
 					// Blazing Door Close (faster than TURBO!)
 					if (sa.EV_DoDoor(line, VlDoorType.BlazeClose))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -259,7 +260,7 @@ namespace ManagedDoom
 					// Blazing PlatDownWaitUpStay
 					if (sa.EV_DoPlat(line, PlatformType.BlazeDwus, 0))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -304,7 +305,7 @@ namespace ManagedDoom
 					// Close Door
 					if (sa.EV_DoDoor(line, VlDoorType.Close))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -336,7 +337,7 @@ namespace ManagedDoom
 					// Open Door
 					if (sa.EV_DoDoor(line, VlDoorType.Open))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -344,7 +345,7 @@ namespace ManagedDoom
 					// PlatDownWaitUpStay
 					if (sa.EV_DoPlat(line, PlatformType.DownWaitUpStay, 1))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -352,7 +353,7 @@ namespace ManagedDoom
 					// Raise Door
 					if (sa.EV_DoDoor(line, VlDoorType.Normal))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -368,7 +369,7 @@ namespace ManagedDoom
 					// Raise Floor 24 and change texture
 					if (sa.EV_DoPlat(line, PlatformType.RaiseAndChange, 24))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -392,7 +393,7 @@ namespace ManagedDoom
 					// Raise Plat to next highest floor and change texture
 					if (sa.EV_DoPlat(line, PlatformType.RaiseToNearestAndChange, 0))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -416,7 +417,7 @@ namespace ManagedDoom
 					// Blazing Door Raise (faster than TURBO!)
 					if (sa.EV_DoDoor(line, VlDoorType.BlazeRaise))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -424,7 +425,7 @@ namespace ManagedDoom
 					// Blazing Door Open (faster than TURBO!)
 					if (sa.EV_DoDoor(line, VlDoorType.BlazeOpen))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -432,7 +433,7 @@ namespace ManagedDoom
 					// Blazing Door Close (faster than TURBO!)
 					if (sa.EV_DoDoor(line, VlDoorType.BlazeClose))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -440,7 +441,7 @@ namespace ManagedDoom
 					// Blazing PlatDownWaitUpStay
 					if (sa.EV_DoPlat(line, PlatformType.BlazeDwus, 0))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 

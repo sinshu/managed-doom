@@ -35,7 +35,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 {
                     if (i < pressFireUntil)
                     {
-                        players[0].Cmd.Buttons = Buttons.Attack;
+                        players[0].Cmd.Buttons = TicCmdButtons.Attack;
                     }
                     else
                     {
