@@ -11,12 +11,28 @@ namespace ManagedDoom
         private Dictionary<string, Texture> nameToTexture;
         private Dictionary<string, int> nameToNumber;
 
-        public TextureLookup(Wad wad)
+        public TextureLookup(Wad wad, bool useDummy)
         {
             textures = new List<Texture>();
             nameToTexture = new Dictionary<string, Texture>();
             nameToNumber = new Dictionary<string, int>();
 
+            if (useDummy)
+            {
+                InitDummy(wad);
+            }
+            else
+            {
+                Init(wad);
+            }
+        }
+
+        public TextureLookup(Wad wad) : this(wad, false)
+        {
+        }
+
+        private void Init(Wad wad)
+        {
             var patches = LoadPatches(wad);
 
             for (var n = 1; n <= 2; n++)
@@ -36,6 +52,30 @@ namespace ManagedDoom
                     nameToNumber.Add(texture.Name, textures.Count);
                     textures.Add(texture);
                     nameToTexture.Add(texture.Name, texture);
+                }
+            }
+        }
+
+        private void InitDummy(Wad wad)
+        {
+            for (var n = 1; n <= 2; n++)
+            {
+                var lumpNumber = wad.GetLumpNumber("TEXTURE" + n);
+                if (lumpNumber == -1)
+                {
+                    break;
+                }
+
+                var data = wad.ReadLump(lumpNumber);
+                var count = BitConverter.ToInt32(data, 0);
+                for (var i = 0; i < count; i++)
+                {
+                    var offset = BitConverter.ToInt32(data, 4 + 4 * i);
+                    var name = Texture.GetName(data, offset);
+                    var texture = DoomDebug.GetDummyTexture();
+                    nameToNumber.Add(name, textures.Count);
+                    textures.Add(texture);
+                    nameToTexture.Add(name, texture);
                 }
             }
         }

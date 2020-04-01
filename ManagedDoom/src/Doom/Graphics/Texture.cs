@@ -52,6 +52,11 @@ namespace ManagedDoom
                 patches);
         }
 
+        public static string GetName(byte[] data, int offset)
+        {
+            return DoomInterop.ToString(data, offset, 8);
+        }
+
         private static Patch GenerateComposite(string name, int width, int height, TexturePatch[] patches)
         {
             var patchCount = new int[width];
