@@ -343,6 +343,56 @@ namespace ManagedDoom
             }
         }
 
+        // Something is wrong with the code below!!!
+        // It seems that these weird angle calculations cause demo desync.
+        public void Saw(Player player, PlayerSpriteDef psp)
+        {
+            var damage = 2 * (world.Random.Next() % 10 + 1);
+            var angle = player.Mobj.Angle;
+            angle += new Angle((world.Random.Next() - world.Random.Next()) << 18);
+
+            var hs = world.Hitscan;
+
+            // use meleerange + 1 se the puff doesn't skip the flash
+            var slope = hs.AimLineAttack(player.Mobj, angle, World.MELEERANGE + new Fixed(1));
+            hs.LineAttack(player.Mobj, angle, World.MELEERANGE + new Fixed(1), slope, damage);
+
+            if (hs.linetarget == null)
+            {
+                world.StartSound(player.Mobj, Sfx.SAWFUL);
+                return;
+            }
+            world.StartSound(player.Mobj, Sfx.SAWHIT);
+
+            // turn to face target
+            angle = Geometry.PointToAngle(
+                player.Mobj.X, player.Mobj.Y,
+                hs.linetarget.X, hs.linetarget.Y);
+            if (angle - player.Mobj.Angle > Angle.Ang180)
+            {
+                if ((angle.Data - player.Mobj.Angle.Data < (uint)-(int)Angle.Ang90.Data / 20))
+                {
+                    player.Mobj.Angle = angle + new Angle(Angle.Ang90.Data / 21);
+                }
+                else
+                {
+                    player.Mobj.Angle -= new Angle(Angle.Ang90.Data / 20);
+                }
+            }
+            else
+            {
+                if (angle.Data - player.Mobj.Angle.Data > Angle.Ang90.Data / 20)
+                {
+                    player.Mobj.Angle = angle - new Angle(Angle.Ang90.Data / 21);
+                }
+                else
+                {
+                    player.Mobj.Angle += new Angle(Angle.Ang90.Data / 20);
+                }
+            }
+            player.Mobj.Flags |= MobjFlags.JustAttacked;
+        }
+
         public void ReFire(Player player, PlayerSpriteDef psp)
         {
             // check for fire

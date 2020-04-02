@@ -96,6 +96,7 @@ namespace ManagedDoom
 
             public void Saw(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.Saw(player, psp);
             }
 
             public void FirePlasma(World world, Player player, PlayerSpriteDef psp)
