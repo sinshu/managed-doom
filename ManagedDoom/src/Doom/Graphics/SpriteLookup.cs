@@ -9,7 +9,11 @@ namespace ManagedDoom
     {
         private SpriteDef[] spriteDefs;
 
-        public SpriteLookup(Wad wad)
+        public SpriteLookup(Wad wad) : this(wad, false)
+        {
+        }
+
+        public SpriteLookup(Wad wad, bool useDummy)
         {
             var temp = new Dictionary<string, List<SpriteInfo>>();
             for (var i = 0; i < (int)Sprite.Count; i++)
@@ -45,7 +49,7 @@ namespace ManagedDoom
                         {
                             if (list[frame].Patches[i] == null)
                             {
-                                list[frame].Patches[i] = CachedRead(lump, wad, cache);
+                                list[frame].Patches[i] = CachedRead(lump, wad, cache, useDummy);
                                 list[frame].Flip[i] = false;
                             }
                         }
@@ -54,7 +58,7 @@ namespace ManagedDoom
                     {
                         if (list[frame].Patches[rotation - 1] == null)
                         {
-                            list[frame].Patches[rotation - 1] = CachedRead(lump, wad, cache);
+                            list[frame].Patches[rotation - 1] = CachedRead(lump, wad, cache, useDummy);
                             list[frame].Flip[rotation - 1] = false;
                         }
                     }
@@ -76,7 +80,7 @@ namespace ManagedDoom
                         {
                             if (list[frame].Patches[i] == null)
                             {
-                                list[frame].Patches[i] = CachedRead(lump, wad, cache);
+                                list[frame].Patches[i] = CachedRead(lump, wad, cache, useDummy);
                                 list[frame].Flip[i] = true;
                             }
                         }
@@ -85,7 +89,7 @@ namespace ManagedDoom
                     {
                         if (list[frame].Patches[rotation - 1] == null)
                         {
-                            list[frame].Patches[rotation - 1] = CachedRead(lump, wad, cache);
+                            list[frame].Patches[rotation - 1] = CachedRead(lump, wad, cache, useDummy);
                             list[frame].Flip[rotation - 1] = true;
                         }
                     }
@@ -182,8 +186,13 @@ namespace ManagedDoom
             }
         }
 
-        private static Patch CachedRead(int lump, Wad wad, Dictionary<int, Patch> cache)
+        private static Patch CachedRead(int lump, Wad wad, Dictionary<int, Patch> cache, bool useDummy)
         {
+            if (useDummy)
+            {
+                return Dummy.GetPatch();
+            }
+
             if (!cache.ContainsKey(lump))
             {
                 var name = wad.LumpInfos[lump].Name;

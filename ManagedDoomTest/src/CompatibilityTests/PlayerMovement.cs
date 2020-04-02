@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void PlayerMovementTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\player_movement_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\player_movement_test.wad"))
             {
                 var demo = new Demo(@"data\player_movement_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -41,7 +41,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ThingCollisionTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\thing_collision_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\thing_collision_test.wad"))
             {
                 var demo = new Demo(@"data\thing_collision_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -70,7 +70,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void AutoAimTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\autoaim_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\autoaim_test.wad"))
             {
                 var demo = new Demo(@"data\autoaim_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);

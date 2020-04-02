@@ -16,8 +16,8 @@ namespace ManagedDoomTest.UnitTests
         {
             using (var wad = new Wad(WadPath.Doom1))
             {
-                var flats = new FlatLookup(wad);
-                var textures = new TextureLookup(wad);
+                var flats = new FlatLookup(wad, true);
+                var textures = new TextureLookup(wad, true);
                 var map = new Map(wad, textures, flats, new GameOptions());
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());
@@ -64,8 +64,8 @@ namespace ManagedDoomTest.UnitTests
         {
             using (var wad = new Wad(WadPath.Doom2))
             {
-                var flats = new FlatLookup(wad);
-                var textures = new TextureLookup(wad);
+                var flats = new FlatLookup(wad, true);
+                var textures = new TextureLookup(wad, true);
                 var map = new Map(wad, textures, flats, new GameOptions());
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());

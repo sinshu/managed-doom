@@ -13,12 +13,28 @@ namespace ManagedDoom
         private int skyFlatNumber;
         private Flat skyFlat;
 
-        public FlatLookup(Wad wad)
+        public FlatLookup(Wad wad) : this(wad, false)
+        {
+        }
+
+        public FlatLookup(Wad wad, bool useDummy)
         {
             flats = new List<Flat>();
             nameToFlat = new Dictionary<string, Flat>();
             nameToNumber = new Dictionary<string, int>();
 
+            if (!useDummy)
+            {
+                Init(wad);
+            }
+            else
+            {
+                InitDummy(wad);
+            }
+        }
+
+        private void Init(Wad wad)
+        {
             foreach (var lump in EnumerateFlats(wad))
             {
                 var name = wad.LumpInfos[lump].Name;
@@ -31,6 +47,29 @@ namespace ManagedDoom
                 var data = wad.ReadLump(lump);
 
                 var flat = Flat.FromData(name, data);
+
+                nameToNumber.Add(name, flats.Count);
+                flats.Add(flat);
+                nameToFlat.Add(name, flat);
+
+            }
+
+            skyFlatNumber = nameToNumber["F_SKY1"];
+            skyFlat = nameToFlat["F_SKY1"];
+        }
+
+        private void InitDummy(Wad wad)
+        {
+            foreach (var lump in EnumerateFlats(wad))
+            {
+                var name = wad.LumpInfos[lump].Name;
+
+                if (nameToFlat.ContainsKey(name))
+                {
+                    continue;
+                }
+
+                var flat = name != "F_SKY1" ? Dummy.GetFlat() : Dummy.GetSkyFlat();
 
                 nameToNumber.Add(name, flats.Count);
                 flats.Add(flat);

@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom1Demo1()
         {
-            using (var resource = new CommonResource(WadPath.Doom1))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var world = new World(resource, demo.Options, demo.Players);
@@ -49,7 +49,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom2Demo1()
         {
-            using (var resource = new CommonResource(WadPath.Doom2))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var world = new World(resource, demo.Options, demo.Players);
@@ -86,7 +86,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom2Demo2()
         {
-            using (var resource = new CommonResource(WadPath.Doom2))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 var world = new World(resource, demo.Options, demo.Players);
@@ -123,7 +123,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom2Demo3_Final2()
         {
-            using (var resource = new CommonResource(WadPath.Doom2))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 var world = new World(resource, demo.Options, demo.Players);

@@ -11,24 +11,24 @@ namespace ManagedDoom
         private Dictionary<string, Texture> nameToTexture;
         private Dictionary<string, int> nameToNumber;
 
+        public TextureLookup(Wad wad) : this(wad, false)
+        {
+        }
+
         public TextureLookup(Wad wad, bool useDummy)
         {
             textures = new List<Texture>();
             nameToTexture = new Dictionary<string, Texture>();
             nameToNumber = new Dictionary<string, int>();
 
-            if (useDummy)
-            {
-                InitDummy(wad);
-            }
-            else
+            if (!useDummy)
             {
                 Init(wad);
             }
-        }
-
-        public TextureLookup(Wad wad) : this(wad, false)
-        {
+            else
+            {
+                InitDummy(wad);
+            }
         }
 
         private void Init(Wad wad)
@@ -72,7 +72,7 @@ namespace ManagedDoom
                 {
                     var offset = BitConverter.ToInt32(data, 4 + 4 * i);
                     var name = Texture.GetName(data, offset);
-                    var texture = DoomDebug.GetDummyTexture();
+                    var texture = Dummy.GetTexture();
                     nameToNumber.Add(name, textures.Count);
                     textures.Add(texture);
                     nameToTexture.Add(name, texture);

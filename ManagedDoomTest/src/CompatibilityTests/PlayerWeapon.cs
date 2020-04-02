@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ShotgunTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\shotgun_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\shotgun_test.wad"))
             {
                 var demo = new Demo(@"data\shotgun_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -41,7 +41,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void SuperShotgunTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\supershotgun_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\supershotgun_test.wad"))
             {
                 var demo = new Demo(@"data\supershotgun_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -70,7 +70,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ChaingunTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\chaingun_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\chaingun_test.wad"))
             {
                 var demo = new Demo(@"data\chaingun_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);

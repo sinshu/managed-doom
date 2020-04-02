@@ -12,6 +12,10 @@ namespace ManagedDoom
         private FlatLookup flats;
         private SpriteLookup sprites;
 
+        private CommonResource()
+        {
+        }
+
         public CommonResource(params string[] wadPaths)
         {
             try
@@ -27,6 +31,18 @@ namespace ManagedDoom
             {
                 ExceptionDispatchInfo.Capture(e).Throw();
             }
+        }
+
+        public static CommonResource CreateDummy(params string[] wadPaths)
+        {
+            var resource = new CommonResource();
+            resource.wad = new Wad(wadPaths);
+            resource.palette = new Palette(resource.wad);
+            resource.colorMap = new ColorMap(resource.wad);
+            resource.textures = new TextureLookup(resource.wad, true);
+            resource.flats = new FlatLookup(resource.wad, true);
+            resource.sprites = new SpriteLookup(resource.wad, true);
+            return resource;
         }
 
         public void Dispose()

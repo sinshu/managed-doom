@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void BarrelTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\barrel_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\barrel_test.wad"))
             {
                 var demo = new Demo(@"data\barrel_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -41,7 +41,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ZombiemanTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\zombieman_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\zombieman_test.wad"))
             {
                 var demo = new Demo(@"data\zombieman_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -70,7 +70,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ZombiemanTest2()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\zombieman_test2.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\zombieman_test2.wad"))
             {
                 var demo = new Demo(@"data\zombieman_test2.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -99,7 +99,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ShotgunguyTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\shotgunguy_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\shotgunguy_test.wad"))
             {
                 var demo = new Demo(@"data\shotgunguy_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -128,7 +128,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ChaingunguyTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\chaingunguy_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\chaingunguy_test.wad"))
             {
                 var demo = new Demo(@"data\chaingunguy_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -157,7 +157,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ImpTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\imp_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\imp_test.wad"))
             {
                 var demo = new Demo(@"data\imp_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -186,7 +186,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void FastImpTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\imp_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\imp_test.wad"))
             {
                 var demo = new Demo(@"data\fast_imp_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -215,7 +215,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void DemonTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\demon_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\demon_test.wad"))
             {
                 var demo = new Demo(@"data\demon_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -244,7 +244,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void FastDemonTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\demon_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\demon_test.wad"))
             {
                 var demo = new Demo(@"data\fast_demon_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -273,7 +273,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void LostSoulTest_Final2()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\lostsoul_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\lostsoul_test.wad"))
             {
                 var demo = new Demo(@"data\lostsoul_test_final2.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -302,7 +302,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void CacoDemonTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\cacodemon_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\cacodemon_test.wad"))
             {
                 var demo = new Demo(@"data\cacodemon_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -331,7 +331,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void FastCacoDemonTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\cacodemon_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\cacodemon_test.wad"))
             {
                 var demo = new Demo(@"data\fast_cacodemon_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -360,7 +360,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void FatsoTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\fatso_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\fatso_test.wad"))
             {
                 var demo = new Demo(@"data\fatso_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);

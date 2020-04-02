@@ -11,7 +11,7 @@ namespace ManagedDoom
         private string name;
         private byte[] data;
 
-        private Flat(string name, byte[] data)
+        public Flat(string name, byte[] data)
         {
             this.name = name;
             this.data = data;

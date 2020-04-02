@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void TeleporterTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\teleporter_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\teleporter_test.wad"))
             {
                 var demo = new Demo(@"data\teleporter_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
@@ -41,7 +41,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void LocalDoorTest()
         {
-            using (var resource = new CommonResource(WadPath.Doom2, @"data\localdoor_test.wad"))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\localdoor_test.wad"))
             {
                 var demo = new Demo(@"data\localdoor_test.lmp");
                 var world = new World(resource, demo.Options, demo.Players);
