@@ -7,6 +7,7 @@ namespace ManagedDoomTest
 {
     public static class WadPath
     {
+        public static readonly string Doom1Shareware = "DOOM1.WAD";
         public static readonly string Doom1 = "DOOM.WAD";
         public static readonly string Doom2 = "DOOM2.WAD";
         public static readonly string Tnt = "TNT.WAD";

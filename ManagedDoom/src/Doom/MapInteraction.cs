@@ -467,14 +467,14 @@ namespace ManagedDoom
 
 				case 138:
 					// Light Turn On
-					//EV_LightTurnOn(line, 255);
-					//P_ChangeSwitchTexture(line, 1);
+					sa.EV_LightTurnOn(line, 255);
+					specials.ChangeSwitchTexture(line, true);
 					break;
 
 				case 139:
 					// Light Turn Off
-					//EV_LightTurnOn(line, 35);
-					//P_ChangeSwitchTexture(line, 1);
+					sa.EV_LightTurnOn(line, 35);
+					specials.ChangeSwitchTexture(line, true);
 					break;
 			}
 
@@ -650,13 +650,13 @@ namespace ManagedDoom
 
 				case 12:
 					// Light Turn On - brightest near
-					//EV_LightTurnOn(line, 0);
+					sa.EV_LightTurnOn(line, 0);
 					line.Special = 0;
 					break;
 
 				case 13:
 					// Light Turn On 255
-					//EV_LightTurnOn(line, 255);
+					sa.EV_LightTurnOn(line, 255);
 					line.Special = 0;
 					break;
 
@@ -668,7 +668,7 @@ namespace ManagedDoom
 
 				case 17:
 					// Start Light Strobing
-					//EV_StartLightStrobing(line);
+					sa.EV_StartLightStrobing(line);
 					line.Special = 0;
 					break;
 
@@ -699,7 +699,7 @@ namespace ManagedDoom
 
 				case 35:
 					// Lights Very Dark
-					//EV_LightTurnOn(line, 35);
+					sa.EV_LightTurnOn(line, 35);
 					line.Special = 0;
 					break;
 
@@ -783,7 +783,7 @@ namespace ManagedDoom
 
 				case 104:
 					// Turn lights off in sector(tag)
-					//EV_TurnTagLightsOff(line);
+					sa.EV_TurnTagLightsOff(line);
 					line.Special = 0;
 					break;
 
@@ -882,17 +882,17 @@ namespace ManagedDoom
 
 				case 79:
 					// Lights Very Dark
-					//EV_LightTurnOn(line, 35);
+					sa.EV_LightTurnOn(line, 35);
 					break;
 
 				case 80:
 					// Light Turn On - brightest near
-					//EV_LightTurnOn(line, 0);
+					sa.EV_LightTurnOn(line, 0);
 					break;
 
 				case 81:
 					// Light Turn On 255
-					//EV_LightTurnOn(line, 255);
+					sa.EV_LightTurnOn(line, 255);
 					break;
 
 				case 82:

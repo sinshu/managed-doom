@@ -10,6 +10,43 @@ namespace ManagedDoomTest.CompatibilityTests
     public class IwadDemo
     {
         [TestMethod]
+        public void Doom1SharewareDemo2()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom1Shareware))
+            {
+                var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastMobjHash = world.GetMobjHash();
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+
+                    lastSectorHash = world.GetSectorHash();
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0xf7f5daddu, (uint)lastMobjHash);
+                Assert.AreEqual(0xb576525au, (uint)aggMobjHash);
+
+                Assert.AreEqual(0xf2e936b0u, (uint)lastSectorHash);
+                Assert.AreEqual(0xe62009fau, (uint)aggSectorHash);
+            }
+        }
+
+        [TestMethod]
         public void Doom1Demo1()
         {
             using (var resource = CommonResource.CreateDummy(WadPath.Doom1))

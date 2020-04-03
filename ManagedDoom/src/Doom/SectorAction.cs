@@ -1083,5 +1083,101 @@ namespace ManagedDoom
 			}
 			return false;
 		}
+
+
+
+
+
+
+
+
+
+		//
+		// Start strobing lights (usually from a trigger)
+		//
+		public void EV_StartLightStrobing(LineDef line)
+		{
+			var secnum = -1;
+			while ((secnum = FindSectorFromLineTag(line, secnum)) >= 0)
+			{
+				var sec = world.Map.Sectors[secnum];
+				if (sec.SpecialData != null)
+				{
+					continue;
+				}
+
+				world.LightingChange.SpawnStrobeFlash(sec, StrobeFlash.SLOWDARK, 0);
+			}
+		}
+
+
+
+		//
+		// TURN LINE'S TAG LIGHTS OFF
+		//
+		public void EV_TurnTagLightsOff(LineDef line)
+		{
+			var sectors = world.Map.Sectors;
+			for (var j = 0; j < sectors.Length; j++)
+			{
+				var sector = sectors[j];
+				if (sector.Tag == line.Tag)
+				{
+					var min = sector.LightLevel;
+					for (var i = 0; i < sector.Lines.Length; i++)
+					{
+						var templine = sector.Lines[i];
+						var tsec = GetNextSector(templine, sector);
+						if (tsec == null)
+						{
+							continue;
+						}
+						if (tsec.LightLevel < min)
+						{
+							min = tsec.LightLevel;
+						}
+					}
+					sector.LightLevel = min;
+				}
+			}
+		}
+
+
+		//
+		// TURN LINE'S TAG LIGHTS ON
+		//
+		public void EV_LightTurnOn(LineDef line, int bright)
+		{
+			var sectors = world.Map.Sectors;
+			for (var i = 0; i < sectors.Length; i++)
+			{
+				var sector = sectors[i];
+				if (sector.Tag == line.Tag)
+				{
+					// bright = 0 means to search
+					// for highest light level
+					// surrounding sector
+					if (bright == 0)
+					{
+						for (var j = 0; j < sector.Lines.Length; j++)
+						{
+							var templine = sector.Lines[j];
+							var temp = GetNextSector(templine, sector);
+
+							if (temp == null)
+							{
+								continue;
+							}
+
+							if (temp.LightLevel > bright)
+							{
+								bright = temp.LightLevel;
+							}
+						}
+					}
+					sector.LightLevel = bright;
+				}
+			}
+		}
 	}
 }
