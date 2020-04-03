@@ -86,6 +86,24 @@ namespace ManagedDoom
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Angle operator *(uint a, Angle b)
+        {
+            return new Angle(a * b.data);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Angle operator *(Angle a, uint b)
+        {
+            return new Angle(a.data * b);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Angle operator /(Angle a, uint b)
+        {
+            return new Angle(a.data / b);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Angle a, Angle b)
         {
             return a.data == b.data;

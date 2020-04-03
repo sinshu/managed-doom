@@ -9,7 +9,7 @@ namespace ManagedDoomTest.UnitTests
     [TestClass]
     public class AngleTest
     {
-        private static readonly double delta = 1.0E-6;
+        private static readonly double delta = 1.0E-3;
 
         [TestMethod]
         public void ToRadian()
@@ -156,6 +156,57 @@ namespace ManagedDoomTest.UnitTests
 
                 Assert.AreEqual(expectedSin, actualSin, delta);
                 Assert.AreEqual(expectedCos, actualCos, delta);
+            }
+        }
+
+        [TestMethod]
+        public void Multiplication1()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 100; i++)
+            {
+                var a = (uint)random.Next(30);
+                var b = (uint)random.Next(12);
+                var c = a * b;
+
+                var fa = Angle.FromDegree(a);
+                var fc = fa * b;
+
+                Assert.AreEqual(c, fc.ToDegree(), delta);
+            }
+        }
+
+        [TestMethod]
+        public void Multiplication2()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 100; i++)
+            {
+                var a = (uint)random.Next(30);
+                var b = (uint)random.Next(12);
+                var c = a * b;
+
+                var fb = Angle.FromDegree(b);
+                var fc = a * fb;
+
+                Assert.AreEqual(c, fc.ToDegree(), delta);
+            }
+        }
+
+        [TestMethod]
+        public void Division()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 100; i++)
+            {
+                var a = (double)random.Next(360);
+                var b = (uint)(random.Next(30) + 1);
+                var c = a / b;
+
+                var fa = Angle.FromDegree(a);
+                var fc = fa / b;
+
+                Assert.AreEqual(c, fc.ToDegree(), delta);
             }
         }
 
