@@ -86,9 +86,9 @@ namespace ManagedDoom
 				// SWITCHES
 				case 7:
 					// Build Stairs
-					//if (EV_BuildStairs(line, build8))
+					if (sa.EV_BuildStairs(line, StairType.Build8))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -266,9 +266,9 @@ namespace ManagedDoom
 
 				case 127:
 					// Build Stairs Turbo 16
-					//if (EV_BuildStairs(line, turbo16))
+					if (sa.EV_BuildStairs(line, StairType.Turbo16))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -638,7 +638,7 @@ namespace ManagedDoom
 
 				case 8:
 					// Build Stairs
-					//EV_BuildStairs(line, build8);
+					sa.EV_BuildStairs(line, StairType.Build8);
 					line.Special = 0;
 					break;
 
@@ -801,7 +801,7 @@ namespace ManagedDoom
 
 				case 100:
 					// Build Stairs Turbo 16
-					//EV_BuildStairs(line, turbo16);
+					sa.EV_BuildStairs(line, StairType.Turbo16);
 					line.Special = 0;
 					break;
 

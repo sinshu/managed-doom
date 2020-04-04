@@ -1371,5 +1371,109 @@ namespace ManagedDoom
 			}
 			return rtn;
 		}
+
+
+
+
+		//
+		// BUILD A STAIRCASE!
+		//
+		public bool EV_BuildStairs(LineDef line, StairType type)
+		{
+			var secnum = -1;
+			var rtn = false;
+			while ((secnum = FindSectorFromLineTag(line, secnum)) >= 0)
+			{
+				var sec = world.Map.Sectors[secnum];
+
+				// ALREADY MOVING?  IF SO, KEEP GOING...
+				if (sec.SpecialData != null)
+				{
+					continue;
+				}
+
+				// new floor thinker
+				rtn = true;
+				var floor = ThinkerPool.RentFloorMove(world);
+				world.Thinkers.Add(floor);
+				sec.SpecialData = floor;
+				floor.Direction = 1;
+				floor.Sector = sec;
+				Fixed speed;
+				Fixed stairsize;
+				switch (type)
+				{
+					case StairType.Build8:
+						speed = FLOORSPEED / 4;
+						stairsize = Fixed.FromInt(8);
+						break;
+					case StairType.Turbo16:
+						speed = FLOORSPEED * 4;
+						stairsize = Fixed.FromInt(16);
+						break;
+					default:
+						throw new Exception("Unknown stair type!");
+				}
+				floor.Speed = speed;
+				var height = sec.FloorHeight + stairsize;
+				floor.FloorDestHeight = height;
+
+				var texture = sec.FloorFlat;
+
+				// Find next sector to raise
+				// 1.	Find 2-sided line with same sector side[0]
+				// 2.	Other side is the next sector to raise
+				bool ok;
+				do
+				{
+					ok = false;
+					for (var i = 0; i < sec.Lines.Length; i++)
+					{
+						if (((sec.Lines[i]).Flags & LineFlags.TwoSided) == 0)
+						{
+							continue;
+						}
+
+						var tsec = (sec.Lines[i]).FrontSector;
+						var newsecnum = tsec.Number;
+
+						if (secnum != newsecnum)
+						{
+							continue;
+						}
+
+						tsec = (sec.Lines[i]).BackSector;
+						newsecnum = tsec.Number;
+
+						if (tsec.FloorFlat != texture)
+						{
+							continue;
+						}
+
+						height += stairsize;
+
+						if (tsec.SpecialData != null)
+						{
+							continue;
+						}
+
+						sec = tsec;
+						secnum = newsecnum;
+						floor = ThinkerPool.RentFloorMove(world);
+
+						world.Thinkers.Add(floor);
+
+						sec.SpecialData = floor;
+						floor.Direction = 1;
+						floor.Sector = sec;
+						floor.Speed = speed;
+						floor.FloorDestHeight = height;
+						ok = true;
+						break;
+					}
+				} while (ok);
+			}
+			return rtn;
+		}
 	}
 }
