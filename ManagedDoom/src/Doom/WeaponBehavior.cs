@@ -343,8 +343,6 @@ namespace ManagedDoom
             }
         }
 
-        // Something is wrong with the code below!!!
-        // It seems that these weird angle calculations cause demo desync.
         public void Saw(Player player, PlayerSpriteDef psp)
         {
             var damage = 2 * (world.Random.Next() % 10 + 1);
@@ -370,24 +368,25 @@ namespace ManagedDoom
                 hs.linetarget.X, hs.linetarget.Y);
             if (angle - player.Mobj.Angle > Angle.Ang180)
             {
-                if ((angle.Data - player.Mobj.Angle.Data < (uint)-(int)Angle.Ang90.Data / 20))
+                // The cast to int is necessary to prevent demo desync. Why?
+                if ((int)(angle - player.Mobj.Angle).Data < -Angle.Ang90.Data / 20)
                 {
-                    player.Mobj.Angle = angle + new Angle(Angle.Ang90.Data / 21);
+                    player.Mobj.Angle = angle + Angle.Ang90 / 21;
                 }
                 else
                 {
-                    player.Mobj.Angle -= new Angle(Angle.Ang90.Data / 20);
+                    player.Mobj.Angle -= Angle.Ang90 / 20;
                 }
             }
             else
             {
-                if (angle.Data - player.Mobj.Angle.Data > Angle.Ang90.Data / 20)
+                if (angle - player.Mobj.Angle > Angle.Ang90 / 20)
                 {
-                    player.Mobj.Angle = angle - new Angle(Angle.Ang90.Data / 21);
+                    player.Mobj.Angle = angle - Angle.Ang90 / 21;
                 }
                 else
                 {
-                    player.Mobj.Angle += new Angle(Angle.Ang90.Data / 20);
+                    player.Mobj.Angle += Angle.Ang90 / 20;
                 }
             }
             player.Mobj.Flags |= MobjFlags.JustAttacked;

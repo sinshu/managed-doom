@@ -71,7 +71,7 @@ namespace ManagedDoom
 
             // chainsaw
             new WeaponInfo(
-                AmmoType.Cell,
+                AmmoType.NoAmmo,
                 State.Sawup,
                 State.Sawdown,
                 State.Saw,

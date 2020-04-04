@@ -306,6 +306,43 @@ namespace ManagedDoomTest.CompatibilityTests
         }
 
         [TestMethod]
+        public void TntDemo2()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Tnt))
+            {
+                var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastMobjHash = world.GetMobjHash();
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+
+                    lastSectorHash = world.GetSectorHash();
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0x03b2fe31u, (uint)lastMobjHash);
+                Assert.AreEqual(0xa67458d0u, (uint)aggMobjHash);
+
+                Assert.AreEqual(0xee0bf323u, (uint)lastSectorHash);
+                Assert.AreEqual(0xcb6929e1u, (uint)aggSectorHash);
+            }
+        }
+
+        [TestMethod]
         public void TntDemo3()
         {
             using (var resource = CommonResource.CreateDummy(WadPath.Tnt))
