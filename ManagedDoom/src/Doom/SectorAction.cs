@@ -1179,5 +1179,197 @@ namespace ManagedDoom
 				}
 			}
 		}
+
+
+
+
+
+
+
+
+
+
+		private static readonly Fixed FLOORSPEED = Fixed.One;
+
+		//
+		// HANDLE FLOOR TYPES
+		//
+		public bool EV_DoFloor(LineDef line, FloorMoveType floortype)
+		{
+			var secnum = -1;
+			var rtn = false;
+			while ((secnum = FindSectorFromLineTag(line, secnum)) >= 0)
+			{
+				var sec = world.Map.Sectors[secnum];
+
+				// ALREADY MOVING?  IF SO, KEEP GOING...
+				if (sec.SpecialData != null)
+				{
+					continue;
+				}
+
+				// new floor thinker
+				rtn = true;
+				var floor = ThinkerPool.RentFloorMove(world);
+				world.Thinkers.Add(floor);
+				sec.SpecialData = floor;
+				floor.Type = floortype;
+				floor.Crush = false;
+
+				switch (floortype)
+				{
+					case FloorMoveType.LowerFloor:
+						floor.Direction = -1;
+						floor.Sector = sec;
+						floor.Speed = FLOORSPEED;
+						floor.FloorDestHeight = FindHighestFloorSurrounding(sec);
+						break;
+
+					case FloorMoveType.LowerFloorToLowest:
+						floor.Direction = -1;
+						floor.Sector = sec;
+						floor.Speed = FLOORSPEED;
+						floor.FloorDestHeight = FindLowestFloorSurrounding(sec);
+						break;
+
+					case FloorMoveType.TurboLower:
+						floor.Direction = -1;
+						floor.Sector = sec;
+						floor.Speed = FLOORSPEED * 4;
+						floor.FloorDestHeight = FindHighestFloorSurrounding(sec);
+						if (floor.FloorDestHeight != sec.FloorHeight)
+						{
+							floor.FloorDestHeight += Fixed.FromInt(8);
+						}
+						break;
+
+					case FloorMoveType.RaiseFloorCrush:
+					case FloorMoveType.RaiseFloor:
+						if (floortype == FloorMoveType.RaiseFloorCrush)
+						{
+							floor.Crush = true;
+						}
+						floor.Direction = 1;
+						floor.Sector = sec;
+						floor.Speed = FLOORSPEED;
+						floor.FloorDestHeight = FindLowestCeilingSurrounding(sec);
+						if (floor.FloorDestHeight > sec.CeilingHeight)
+						{
+							floor.FloorDestHeight = sec.CeilingHeight;
+						}
+						floor.FloorDestHeight -= Fixed.FromInt(8) * (floortype == FloorMoveType.RaiseFloorCrush ? 1 : 0);
+						break;
+
+					case FloorMoveType.RaiseFloorTurbo:
+						floor.Direction = 1;
+						floor.Sector = sec;
+						floor.Speed = FLOORSPEED * 4;
+						floor.FloorDestHeight = FindNextHighestFloor(sec, sec.FloorHeight);
+						break;
+
+					case FloorMoveType.RaiseFloorToNearest:
+						floor.Direction = 1;
+						floor.Sector = sec;
+						floor.Speed = FLOORSPEED;
+						floor.FloorDestHeight = FindNextHighestFloor(sec, sec.FloorHeight);
+						break;
+
+					case FloorMoveType.RaiseFloor24:
+						floor.Direction = 1;
+						floor.Sector = sec;
+						floor.Speed = FLOORSPEED;
+						floor.FloorDestHeight = floor.Sector.FloorHeight + Fixed.FromInt(24);
+						break;
+
+					case FloorMoveType.RaiseFloor512:
+						floor.Direction = 1;
+						floor.Sector = sec;
+						floor.Speed = FLOORSPEED;
+						floor.FloorDestHeight = floor.Sector.FloorHeight + Fixed.FromInt(512);
+						break;
+
+					case FloorMoveType.RaiseFloor24AndChange:
+						floor.Direction = 1;
+						floor.Sector = sec;
+						floor.Speed = FLOORSPEED;
+						floor.FloorDestHeight = floor.Sector.FloorHeight + Fixed.FromInt(24);
+						sec.FloorFlat = line.FrontSector.FloorFlat;
+						sec.Special = line.FrontSector.Special;
+						break;
+
+					case FloorMoveType.RaiseToTexture:
+						{
+							var minsize = int.MaxValue;
+
+							floor.Direction = 1;
+							floor.Sector = sec;
+							floor.Speed = FLOORSPEED;
+							var textures = world.Map.Textures;
+							for (var i = 0; i < sec.Lines.Length; i++)
+							{
+								if ((sec.Lines[i].Flags & LineFlags.TwoSided) != 0)
+								{
+									var side = sec.Lines[i].Side0;
+									if (side.BottomTexture >= 0)
+									{
+										if (textures[side.BottomTexture].Height < minsize)
+										{
+											minsize = textures[side.BottomTexture].Height;
+										}
+									}
+									side = sec.Lines[i].Side1;
+									if (side.BottomTexture >= 0)
+									{
+										if (textures[side.BottomTexture].Height < minsize)
+										{
+											minsize = textures[side.BottomTexture].Height;
+										}
+									}
+								}
+							}
+							floor.FloorDestHeight = floor.Sector.FloorHeight + Fixed.FromInt(minsize);
+						}
+						break;
+
+					case FloorMoveType.LowerAndChange:
+						floor.Direction = -1;
+						floor.Sector = sec;
+						floor.Speed = FLOORSPEED;
+						floor.FloorDestHeight = FindLowestFloorSurrounding(sec);
+						floor.Texture = sec.FloorFlat;
+
+						for (var i = 0; i < sec.Lines.Length; i++)
+						{
+							if ((sec.Lines[i].Flags & LineFlags.TwoSided) != 0)
+							{
+								if (sec.Lines[i].Side0.Sector.Number == secnum)
+								{
+									sec = sec.Lines[i].Side1.Sector;
+
+									if (sec.FloorHeight == floor.FloorDestHeight)
+									{
+										floor.Texture = sec.FloorFlat;
+										floor.NewSpecial = sec.Special;
+										break;
+									}
+								}
+								else
+								{
+									sec = sec.Lines[i].Side0.Sector;
+
+									if (sec.FloorHeight == floor.FloorDestHeight)
+									{
+										floor.Texture = sec.FloorFlat;
+										floor.NewSpecial = sec.Special;
+										break;
+									}
+								}
+							}
+						}
+						break;
+				}
+			}
+			return rtn;
+		}
 	}
 }

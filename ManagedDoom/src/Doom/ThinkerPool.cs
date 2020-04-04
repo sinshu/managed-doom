@@ -23,6 +23,11 @@ namespace ManagedDoom
             return new Platform(world);
         }
 
+        public static FloorMove RentFloorMove(World world)
+        {
+            return new FloorMove(world);
+        }
+
         public static FireFlicker RentFireFlicker(World world)
         {
             return new FireFlicker(world);

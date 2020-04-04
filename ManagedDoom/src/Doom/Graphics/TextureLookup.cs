@@ -72,7 +72,8 @@ namespace ManagedDoom
                 {
                     var offset = BitConverter.ToInt32(data, 4 + 4 * i);
                     var name = Texture.GetName(data, offset);
-                    var texture = Dummy.GetTexture();
+                    var height = Texture.GetHeight(data, offset);
+                    var texture = Dummy.GetTexture(height);
                     nameToNumber.Add(name, textures.Count);
                     textures.Add(texture);
                     nameToTexture.Add(name, texture);

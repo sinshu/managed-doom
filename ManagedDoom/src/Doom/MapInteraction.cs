@@ -124,9 +124,9 @@ namespace ManagedDoom
 
 				case 18:
 					// Raise Floor to next highest floor
-					//if (EV_DoFloor(line, raiseFloorToNearest))
+					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorToNearest))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -148,9 +148,9 @@ namespace ManagedDoom
 
 				case 23:
 					// Lower Floor to Lowest
-					//if (EV_DoFloor(line, lowerFloorToLowest))
+					if (sa.EV_DoFloor(line, FloorMoveType.LowerFloorToLowest))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -172,9 +172,9 @@ namespace ManagedDoom
 
 				case 71:
 					// Turbo Lower Floor
-					//if (EV_DoFloor(line, turboLower))
+					if (sa.EV_DoFloor(line, FloorMoveType.TurboLower))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -202,25 +202,25 @@ namespace ManagedDoom
 
 				case 55:
 					// Raise Floor Crush
-					//if (EV_DoFloor(line, raiseFloorCrush))
+					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorCrush))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
 				case 101:
 					// Raise Floor
-					//if (EV_DoFloor(line, raiseFloor))
+					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloor))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
 				case 102:
 					// Lower Floor to Surrounding floor height
-					//if (EV_DoFloor(line, lowerFloor))
+					if (sa.EV_DoFloor(line, FloorMoveType.LowerFloor))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -274,9 +274,9 @@ namespace ManagedDoom
 
 				case 131:
 					// Raise Floor Turbo
-					//if (EV_DoFloor(line, raiseFloorTurbo))
+					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorTurbo))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -294,9 +294,9 @@ namespace ManagedDoom
 
 				case 140:
 					// Raise Floor 512
-					//if (EV_DoFloor(line, raiseFloor512))
+					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloor512))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -319,17 +319,17 @@ namespace ManagedDoom
 
 				case 45:
 					// Lower Floor to Surrounding floor height
-					//if (EV_DoFloor(line, lowerFloor))
+					if (sa.EV_DoFloor(line, FloorMoveType.LowerFloor))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
 				case 60:
 					// Lower Floor to Lowest
-					//if (EV_DoFloor(line, lowerFloorToLowest))
+					if (sa.EV_DoFloor(line, FloorMoveType.LowerFloorToLowest))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -359,9 +359,9 @@ namespace ManagedDoom
 
 				case 64:
 					// Raise Floor to ceiling
-					//if (EV_DoFloor(line, raiseFloor))
+					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloor))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -377,15 +377,15 @@ namespace ManagedDoom
 					// Raise Floor 32 and change texture
 					if (sa.EV_DoPlat(line, PlatformType.RaiseAndChange, 32))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
 				case 65:
 					// Raise Floor Crush
-					//if (EV_DoFloor(line, raiseFloorCrush))
+					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorCrush))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -399,17 +399,17 @@ namespace ManagedDoom
 
 				case 69:
 					// Raise Floor to next highest floor
-					//if (EV_DoFloor(line, raiseFloorToNearest))
+					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorToNearest))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
 				case 70:
 					// Turbo Lower Floor
-					//if (EV_DoFloor(line, turboLower))
+					if (sa.EV_DoFloor(line, FloorMoveType.TurboLower))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -447,9 +447,9 @@ namespace ManagedDoom
 
 				case 132:
 					// Raise Floor Turbo
-					//if (EV_DoFloor(line, raiseFloorTurbo))
+					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorTurbo))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -626,7 +626,7 @@ namespace ManagedDoom
 
 				case 5:
 					// Raise Floor
-					//EV_DoFloor(line, raiseFloor);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor);
 					line.Special = 0;
 					break;
 
@@ -674,7 +674,7 @@ namespace ManagedDoom
 
 				case 19:
 					// Lower Floor
-					//EV_DoFloor(line, lowerFloor);
+					sa.EV_DoFloor(line, FloorMoveType.LowerFloor);
 					line.Special = 0;
 					break;
 
@@ -693,7 +693,7 @@ namespace ManagedDoom
 				case 30:
 					// Raise floor to shortest texture height
 					//  on either side of lines.
-					//EV_DoFloor(line, raiseToTexture);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseToTexture);
 					line.Special = 0;
 					break;
 
@@ -705,19 +705,19 @@ namespace ManagedDoom
 
 				case 36:
 					// Lower Floor (TURBO)
-					//EV_DoFloor(line, turboLower);
+					sa.EV_DoFloor(line, FloorMoveType.TurboLower);
 					line.Special = 0;
 					break;
 
 				case 37:
 					// LowerAndChange
-					//EV_DoFloor(line, lowerAndChange);
+					sa.EV_DoFloor(line, FloorMoveType.LowerAndChange);
 					line.Special = 0;
 					break;
 
 				case 38:
 					// Lower Floor To Lowest
-					//EV_DoFloor(line, lowerFloorToLowest);
+					sa.EV_DoFloor(line, FloorMoveType.LowerFloorToLowest);
 					line.Special = 0;
 					break;
 
@@ -759,7 +759,7 @@ namespace ManagedDoom
 
 				case 56:
 					// Raise Floor Crush
-					//EV_DoFloor(line, raiseFloorCrush);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorCrush);
 					line.Special = 0;
 					break;
 
@@ -771,13 +771,13 @@ namespace ManagedDoom
 
 				case 58:
 					// Raise Floor 24
-					//EV_DoFloor(line, raiseFloor24);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor24);
 					line.Special = 0;
 					break;
 
 				case 59:
 					// Raise Floor 24 And Change
-					//EV_DoFloor(line, raiseFloor24AndChange);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor24AndChange);
 					line.Special = 0;
 					break;
 
@@ -813,7 +813,7 @@ namespace ManagedDoom
 
 				case 119:
 					// Raise floor to nearest surr. floor
-					//EV_DoFloor(line, raiseFloorToNearest);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorToNearest);
 					line.Special = 0;
 					break;
 
@@ -839,7 +839,7 @@ namespace ManagedDoom
 
 				case 130:
 					// Raise Floor Turbo
-					//EV_DoFloor(line, raiseFloorTurbo);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorTurbo);
 					line.Special = 0;
 					break;
 
@@ -897,17 +897,17 @@ namespace ManagedDoom
 
 				case 82:
 					// Lower Floor To Lowest
-					//EV_DoFloor(line, lowerFloorToLowest);
+					sa.EV_DoFloor(line, FloorMoveType.LowerFloorToLowest);
 					break;
 
 				case 83:
 					// Lower Floor
-					//EV_DoFloor(line, lowerFloor);
+					sa.EV_DoFloor(line, FloorMoveType.LowerFloor);
 					break;
 
 				case 84:
 					// LowerAndChange
-					//EV_DoFloor(line, lowerAndChange);
+					sa.EV_DoFloor(line, FloorMoveType.LowerAndChange);
 					break;
 
 				case 86:
@@ -937,22 +937,22 @@ namespace ManagedDoom
 
 				case 91:
 					// Raise Floor
-					//EV_DoFloor(line, raiseFloor);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor);
 					break;
 
 				case 92:
 					// Raise Floor 24
-					//EV_DoFloor(line, raiseFloor24);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor24);
 					break;
 
 				case 93:
 					// Raise Floor 24 And Change
-					//EV_DoFloor(line, raiseFloor24AndChange);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor24AndChange);
 					break;
 
 				case 94:
 					// Raise Floor Crush
-					//EV_DoFloor(line, raiseFloorCrush);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorCrush);
 					break;
 
 				case 95:
@@ -964,7 +964,7 @@ namespace ManagedDoom
 				case 96:
 					// Raise floor to shortest texture height
 					// on either side of lines.
-					//EV_DoFloor(line, raiseToTexture);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseToTexture);
 					break;
 
 				case 97:
@@ -974,7 +974,7 @@ namespace ManagedDoom
 
 				case 98:
 					// Lower Floor (TURBO)
-					//EV_DoFloor(line, turboLower);
+					sa.EV_DoFloor(line, FloorMoveType.TurboLower);
 					break;
 
 				case 105:
@@ -1007,12 +1007,12 @@ namespace ManagedDoom
 
 				case 128:
 					// Raise To Nearest Floor
-					//EV_DoFloor(line, raiseFloorToNearest);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorToNearest);
 					break;
 
 				case 129:
 					// Raise Floor Turbo
-					//EV_DoFloor(line, raiseFloorTurbo);
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorTurbo);
 					break;
 			}
 		}

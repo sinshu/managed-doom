@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ManagedDoom
 {
@@ -39,21 +40,21 @@ namespace ManagedDoom
 
 
 
-        private static Texture dummyTexture;
+        private static Dictionary<int, Texture> dummyTextures = new Dictionary<int, Texture>();
 
-        public static Texture GetTexture()
+        public static Texture GetTexture(int height)
         {
-            if (dummyTexture != null)
+            if (dummyTextures.ContainsKey(height))
             {
-                return dummyTexture;
+                return dummyTextures[height];
             }
             else
             {
                 var patch = new TexturePatch[] { new TexturePatch(0, 0, GetPatch()) };
 
-                dummyTexture = new Texture("DUMMY", false, 64, 128, patch);
+                dummyTextures.Add(height, new Texture("DUMMY", false, 64, height, patch));
 
-                return dummyTexture;
+                return dummyTextures[height];
             }
         }
 

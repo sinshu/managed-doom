@@ -57,6 +57,11 @@ namespace ManagedDoom
             return DoomInterop.ToString(data, offset, 8);
         }
 
+        public static int GetHeight(byte[] data, int offset)
+        {
+            return BitConverter.ToInt16(data, offset + 14);
+        }
+
         private static Patch GenerateComposite(string name, int width, int height, TexturePatch[] patches)
         {
             var patchCount = new int[width];
