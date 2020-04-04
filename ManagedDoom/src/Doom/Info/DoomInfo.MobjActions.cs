@@ -66,30 +66,37 @@ namespace ManagedDoom
 
             public void VileChase(World world, Mobj actor)
             {
+                world.MonsterBehavior.VileChase(actor);
             }
 
             public void VileStart(World world, Mobj actor)
             {
+                world.MonsterBehavior.VileStart(actor);
             }
 
             public void VileTarget(World world, Mobj actor)
             {
+                world.MonsterBehavior.VileTarget(actor);
             }
 
             public void VileAttack(World world, Mobj actor)
             {
+                world.MonsterBehavior.VileAttack(actor);
             }
 
             public void StartFire(World world, Mobj actor)
             {
+                world.MonsterBehavior.StartFire(actor);
             }
 
             public void Fire(World world, Mobj actor)
             {
+                world.MonsterBehavior.Fire(actor);
             }
 
             public void FireCrackle(World world, Mobj actor)
             {
+                world.MonsterBehavior.FireCrackle(actor);
             }
 
             public void Tracer(World world, Mobj actor)
@@ -173,14 +180,17 @@ namespace ManagedDoom
 
             public void SpidRefire(World world, Mobj actor)
             {
+                world.MonsterBehavior.SpidRefire(actor);
             }
 
             public void BabyMetal(World world, Mobj actor)
             {
+                world.MonsterBehavior.BabyMetal(actor);
             }
 
             public void BspiAttack(World world, Mobj actor)
             {
+                world.MonsterBehavior.BspiAttack(actor);
             }
 
             public void Hoof(World world, Mobj actor)

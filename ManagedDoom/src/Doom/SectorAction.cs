@@ -788,6 +788,72 @@ namespace ManagedDoom
 
 
 
+		//
+		// EV_DoLockedDoor
+		// Move a locked door up/down
+		//
+
+		public bool EV_DoLockedDoor(LineDef line, VlDoorType type, Mobj thing)
+		{
+			var p = thing.Player;
+
+			if (p == null)
+			{
+				return false;
+			}
+
+			switch ((int)line.Special)
+			{
+				case 99: // Blue Lock
+				case 133:
+					if (p == null)
+					{
+						return false;
+					}
+					if (!p.Cards[(int)CardType.BlueCard] && !p.Cards[(int)CardType.BlueSkull])
+					{
+						//p->message = PD_BLUEO;
+						world.StartSound(null, Sfx.OOF);
+						return false;
+					}
+					break;
+
+				case 134: // Red Lock
+				case 135:
+					if (p == null)
+					{
+						return false;
+					}
+					if (!p.Cards[(int)CardType.RedCard] && !p.Cards[(int)CardType.RedSkull])
+					{
+						//p->message = PD_REDO;
+						world.StartSound(null, Sfx.OOF);
+						return false;
+					}
+					break;
+
+				case 136: // Yellow Lock
+				case 137:
+					if (p == null)
+					{
+						return false;
+					}
+					if (!p.Cards[(int)CardType.YellowCard] && !p.Cards[(int)CardType.YellowSkull])
+					{
+						//p->message = PD_YELLOWO;
+						world.StartSound(null, Sfx.OOF);
+						return false;
+					}
+					break;
+			}
+
+			return EV_DoDoor(line, type);
+		}
+
+
+
+
+
 
 
 

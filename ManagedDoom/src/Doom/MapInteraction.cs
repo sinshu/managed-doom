@@ -286,9 +286,9 @@ namespace ManagedDoom
 				// BlzOpenDoor RED
 				case 137:
 					// BlzOpenDoor YELLOW
-					//if (EV_DoLockedDoor(line, blazeOpen, thing))
+					if (sa.EV_DoLockedDoor(line, VlDoorType.BlazeOpen, thing))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -459,9 +459,9 @@ namespace ManagedDoom
 				// BlzOpenDoor RED
 				case 136:
 					// BlzOpenDoor YELLOW
-					//if (EV_DoLockedDoor(line, blazeOpen, thing))
+					if (sa.EV_DoLockedDoor(line, VlDoorType.BlazeOpen, thing))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 

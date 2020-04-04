@@ -11,5 +11,6 @@ namespace ManagedDoomTest
         public static readonly string Doom1 = "DOOM.WAD";
         public static readonly string Doom2 = "DOOM2.WAD";
         public static readonly string Tnt = "TNT.WAD";
+        public static readonly string Plutonia = "PLUTONIA.WAD";
     }
 }

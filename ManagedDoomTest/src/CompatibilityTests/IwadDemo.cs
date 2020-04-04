@@ -489,5 +489,42 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0x08d5fbb0u, (uint)aggSectorHash);
             }
         }
+
+        [TestMethod]
+        public void PlutoniaDemo1_Final2()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Plutonia))
+            {
+                var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastMobjHash = world.GetMobjHash();
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+
+                    lastSectorHash = world.GetSectorHash();
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0x919a2c10u, (uint)lastMobjHash);
+                Assert.AreEqual(0x50740a10u, (uint)aggMobjHash);
+
+                Assert.AreEqual(0x67f448a4u, (uint)lastSectorHash);
+                Assert.AreEqual(0x7cbaf2f8u, (uint)aggSectorHash);
+            }
+        }
     }
 }
