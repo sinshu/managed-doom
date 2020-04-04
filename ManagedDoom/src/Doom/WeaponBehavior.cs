@@ -572,5 +572,29 @@ namespace ManagedDoom
             world.StartSound(player.Mobj, Sfx.DBCLS);
             ReFire(player, psp);
         }
+
+
+
+
+        //
+        // A_GunFlash
+        //
+        public void GunFlash(Player player, PlayerSpriteDef psp)
+        {
+            player.Mobj.SetState(State.PlayAtk2);
+            world.PlayerBehavior.P_SetPsprite(
+                player,
+                PlayerSprite.Flash,
+                DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
+        }
+
+        //
+        // A_FireMissile
+        //
+        public void FireMissile(Player player, PlayerSpriteDef psp)
+        {
+            player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
+            world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Rocket);
+        }
     }
 }

@@ -398,5 +398,58 @@ namespace ManagedDoom
                 return DoomInfo.MobjInfos[(int)type].Speed;
             }
         }
+
+
+
+
+        //
+        // P_SpawnPlayerMissile
+        // Tries to aim at a nearby monster
+        //
+        public void SpawnPlayerMissile(Mobj source, MobjType type)
+        {
+            var hs = world.Hitscan;
+
+            // see which target is to be aimed at
+            var an = source.Angle;
+            var slope = hs.AimLineAttack(source, an, Fixed.FromInt(16 * 64));
+
+            if (hs.linetarget == null)
+            {
+                an += new Angle(1 << 26);
+                slope = hs.AimLineAttack(source, an, Fixed.FromInt(16 * 64));
+
+                if (hs.linetarget == null)
+                {
+                    an -= new Angle(2 << 26);
+                    slope = hs.AimLineAttack(source, an, Fixed.FromInt(16 * 64));
+                }
+
+                if (hs.linetarget == null)
+                {
+                    an = source.Angle;
+                    slope = Fixed.Zero;
+                }
+            }
+
+            var x = source.X;
+            var y = source.Y;
+            var z = source.Z + Fixed.FromInt(4 * 8);
+
+            var th = SpawnMobj(x, y, z, type);
+
+            if (th.Info.SeeSound != 0)
+            {
+                world.StartSound(th, th.Info.SeeSound);
+            }
+
+            th.Target = source;
+            th.Angle = an;
+            th.MomX = new Fixed(th.Info.Speed) * Trig.Cos(an);
+            th.MomY = new Fixed(th.Info.Speed) * Trig.Sin(an);
+            th.MomZ = new Fixed(th.Info.Speed) * slope;
+
+            P_CheckMissileSpawn(th);
+        }
     }
 }

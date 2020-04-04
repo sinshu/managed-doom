@@ -10,6 +10,43 @@ namespace ManagedDoomTest.CompatibilityTests
     public class IwadDemo
     {
         [TestMethod]
+        public void Doom1SharewareDemo1()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom1Shareware))
+            {
+                var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastMobjHash = world.GetMobjHash();
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+
+                    lastSectorHash = world.GetSectorHash();
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0xa497cb7fu, (uint)lastMobjHash);
+                Assert.AreEqual(0x5a1776fdu, (uint)aggMobjHash);
+
+                Assert.AreEqual(0x55d373a2u, (uint)lastSectorHash);
+                Assert.AreEqual(0xcaafd23bu, (uint)aggSectorHash);
+            }
+        }
+
+        [TestMethod]
         public void Doom1SharewareDemo2()
         {
             using (var resource = CommonResource.CreateDummy(WadPath.Doom1Shareware))
@@ -43,6 +80,43 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 Assert.AreEqual(0xf2e936b0u, (uint)lastSectorHash);
                 Assert.AreEqual(0xe62009fau, (uint)aggSectorHash);
+            }
+        }
+
+        [TestMethod]
+        public void Doom1SharewareDemo3()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom1Shareware))
+            {
+                var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastMobjHash = world.GetMobjHash();
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+
+                    lastSectorHash = world.GetSectorHash();
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0x893f32d2u, (uint)lastMobjHash);
+                Assert.AreEqual(0x22b21b86u, (uint)aggMobjHash);
+
+                Assert.AreEqual(0xfef34aafu, (uint)lastSectorHash);
+                Assert.AreEqual(0xa881ce6fu, (uint)aggSectorHash);
             }
         }
 

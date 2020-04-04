@@ -88,10 +88,12 @@ namespace ManagedDoom
 
             public void GunFlash(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.GunFlash(player, psp);
             }
 
             public void FireMissile(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.FireMissile(player, psp);
             }
 
             public void Saw(World world, Player player, PlayerSpriteDef psp)
