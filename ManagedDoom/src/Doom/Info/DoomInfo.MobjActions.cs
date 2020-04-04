@@ -159,6 +159,7 @@ namespace ManagedDoom
 
             public void BruisAttack(World world, Mobj actor)
             {
+                world.MonsterBehavior.BruisAttack(actor);
             }
 
             public void SkullAttack(World world, Mobj actor)

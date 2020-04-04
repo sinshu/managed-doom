@@ -880,6 +880,32 @@ namespace ManagedDoom
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Headshot);
         }
 
+        public void BruisAttack(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            if (P_CheckMeleeRange(actor))
+            {
+                world.StartSound(actor, Sfx.CLAW);
+                var damage = (world.Random.Next() % 8 + 1) * 10;
+                world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
+                return;
+            }
+
+            // launch a missile
+            world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Bruisershot);
+        }
+
+
+
+
+
+
+
+
         private static readonly Fixed SKULLSPEED = Fixed.FromInt(20);
 
         public void SkullAttack(Mobj actor)

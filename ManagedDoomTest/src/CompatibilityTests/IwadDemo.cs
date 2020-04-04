@@ -121,6 +121,43 @@ namespace ManagedDoomTest.CompatibilityTests
         }
 
         [TestMethod]
+        public void Doom1Demo3()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            {
+                var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastMobjHash = world.GetMobjHash();
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+
+                    lastSectorHash = world.GetSectorHash();
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0xcdce0d85u, (uint)lastMobjHash);
+                Assert.AreEqual(0x9e5f7780u, (uint)aggMobjHash);
+
+                Assert.AreEqual(0x553d0ec9u, (uint)lastSectorHash);
+                Assert.AreEqual(0x9991bb03u, (uint)aggSectorHash);
+            }
+        }
+
+        [TestMethod]
         public void Doom2Demo1()
         {
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
