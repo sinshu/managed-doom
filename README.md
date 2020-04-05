@@ -55,7 +55,7 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [x] Demo compatibility (All the v1.9 IWAD demos can be played)
 
 - __Audio__
-    * [*] Sounds
+    * [x] Sounds
     * [ ] Music
 
 
