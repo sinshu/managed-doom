@@ -1406,5 +1406,109 @@ namespace ManagedDoom
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
             }
         }
+
+
+
+
+
+
+        //
+        // A_PainShootSkull
+        // Spawn a lost soul and launch it at the target
+        //
+        public void PainShootSkull(Mobj actor, Angle angle)
+        {
+            // count total number of skull currently on the level
+            var count = 0;
+
+            foreach (var thinker in world.Thinkers)
+            {
+                var mobj = thinker as Mobj;
+                if (mobj != null && mobj.Type == MobjType.Skull)
+                {
+                    count++;
+                }
+            }
+
+            // if there are allready 20 skulls on the level,
+            // don't spit another one
+            if (count > 20)
+            {
+                return;
+            }
+
+            // okay, there's playe for another one
+            var an = angle; // >> ANGLETOFINESHIFT;
+
+            var prestep = Fixed.FromInt(4)
+                + 3 * (actor.Info.Radius + DoomInfo.MobjInfos[(int)MobjType.Skull].Radius) / 2;
+
+            var x = actor.X + prestep * Trig.Cos(an);
+            var y = actor.Y + prestep * Trig.Sin(an);
+            var z = actor.Z + Fixed.FromInt(8);
+
+            var newmobj = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Skull);
+
+            // Check for movements.
+            if (!world.ThingMovement.TryMove(newmobj, newmobj.X, newmobj.Y))
+            {
+                // kill it immediately
+                world.ThingInteraction.DamageMobj(newmobj, actor, actor, 10000);
+                return;
+            }
+
+            newmobj.Target = actor.Target;
+            SkullAttack(newmobj);
+        }
+
+        //
+        // A_PainAttack
+        // Spawn a lost soul and launch it at the target
+        // 
+        public void PainAttack(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            FaceTarget(actor);
+            PainShootSkull(actor, actor.Angle);
+        }
+
+
+        public void PainDie(Mobj actor)
+        {
+            Fall(actor);
+            PainShootSkull(actor, actor.Angle + Angle.Ang90);
+            PainShootSkull(actor, actor.Angle + Angle.Ang180);
+            PainShootSkull(actor, actor.Angle + Angle.Ang270);
+        }
+
+
+
+
+        public void Hoof(Mobj mo)
+        {
+            world.StartSound(mo, Sfx.HOOF);
+            Chase(mo);
+        }
+
+        public void Metal(Mobj mo)
+        {
+            world.StartSound(mo, Sfx.METAL);
+            Chase(mo);
+        }
+
+        public void CyberAttack(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            FaceTarget(actor);
+            world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Rocket);
+        }
     }
 }

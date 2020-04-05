@@ -654,7 +654,7 @@ namespace ManagedDoom
 		// Note: this should be doable w/o a fixed array.
 
 		// 20 adjoining sectors max!
-		private static readonly int MAX_ADJOINING_SECTORS = 20;
+		private static readonly int MAX_ADJOINING_SECTORS = 30;
 		private Fixed[] heightlist = new Fixed[MAX_ADJOINING_SECTORS];
 
 		public Fixed FindNextHighestFloor(Sector sec, Fixed currentheight)

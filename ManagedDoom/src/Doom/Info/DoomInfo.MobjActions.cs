@@ -180,6 +180,7 @@ namespace ManagedDoom
 
             public void Metal(World world, Mobj actor)
             {
+                world.MonsterBehavior.Metal(actor);
             }
 
             public void SpidRefire(World world, Mobj actor)
@@ -199,18 +200,22 @@ namespace ManagedDoom
 
             public void Hoof(World world, Mobj actor)
             {
+                world.MonsterBehavior.Hoof(actor);
             }
 
             public void CyberAttack(World world, Mobj actor)
             {
+                world.MonsterBehavior.CyberAttack(actor);
             }
 
             public void PainAttack(World world, Mobj actor)
             {
+                world.MonsterBehavior.PainAttack(actor);
             }
 
             public void PainDie(World world, Mobj actor)
             {
+                world.MonsterBehavior.PainDie(actor);
             }
 
             public void KeenDie(World world, Mobj actor)

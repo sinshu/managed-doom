@@ -151,8 +151,17 @@ namespace ManagedDoom
         //
         private void SpawnPlayer(Thing mthing)
         {
+            var number = (int)mthing.Type - 1;
+
+            // This check is neccesary in Plutonia MAP12,
+            // which contains an unknown thing with type 0.
+            if (number < 0)
+            {
+                return;
+            }
+
             // not playing?
-            if (!world.Players[(int)mthing.Type - 1].InGame)
+            if (!world.Players[number].InGame)
             {
                 return;
             }
