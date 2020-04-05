@@ -2,11 +2,11 @@
 
 ![Managed Doom](screenshots/window.png)
 
-The goal of this project is to make a fully functional Doom source port written in C# without unsafe code.
+The goal of this project is to make a fully functional Doom source port written in C# without unsafe code.  
 
-The rendering engine is almost complete and capable of showing 3D view like the screenshots below at practical speed.
+The rendering engine is almost complete and capable of showing 3D view like the screenshots below.  
 
-Now I'm working on the game physics, including thing movement, interaction and so on.
+Now I'm working on the gaming code. Although several functionalities are still missing, most weapons, monsters and gimmicks work much like the original game.  
 
 
 
@@ -52,9 +52,10 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [x] Monster AI
     * [ ] Doors and platforms
     * [ ] Animated textures
+    * [x] Demo compatibility (All the v1.9 IWAD demos can be played)
 
 - __Audio__
-    * [ ] Sounds
+    * [*] Sounds
     * [ ] Music
 
 
