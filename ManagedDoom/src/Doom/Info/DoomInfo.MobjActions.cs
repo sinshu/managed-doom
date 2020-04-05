@@ -101,18 +101,22 @@ namespace ManagedDoom
 
             public void Tracer(World world, Mobj actor)
             {
+                world.MonsterBehavior.Tracer(actor);
             }
 
             public void SkelWhoosh(World world, Mobj actor)
             {
+                world.MonsterBehavior.SkelWhoosh(actor);
             }
 
             public void SkelFist(World world, Mobj actor)
             {
+                world.MonsterBehavior.SkelFist(actor);
             }
 
             public void SkelMissile(World world, Mobj actor)
             {
+                world.MonsterBehavior.SkelMissile(actor);
             }
 
             public void FatRaise(World world, Mobj actor)

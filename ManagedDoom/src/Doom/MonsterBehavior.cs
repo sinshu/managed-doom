@@ -1263,5 +1263,148 @@ namespace ManagedDoom
             fire.Y = actor.Target.Y - Fixed.FromInt(24) * Trig.Sin(an);
             world.ThingInteraction.RadiusAttack(fire, actor, 70);
         }
+
+
+
+
+
+
+
+
+
+        //
+        // A_SkelMissile
+        //
+        public void SkelMissile(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            FaceTarget(actor);
+            actor.Z += Fixed.FromInt(16); // so missile spawns higher
+            var mo = world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Tracer);
+            actor.Z -= Fixed.FromInt(16); // back to normal
+
+            mo.X += mo.MomX;
+            mo.Y += mo.MomY;
+            mo.Tracer = actor.Target;
+        }
+
+        private static Angle TRACEANGLE = new Angle(0xc000000);
+
+        public void Tracer(Mobj actor)
+        {
+            // Using leveltime here is a temporal cope.
+            // This should cause desync in multi-level demos.
+            if ((world.levelTime & 3) != 0)
+            {
+                return;
+            }
+
+            // spawn a puff of smoke behind the rocket		
+            world.Hitscan.SpawnPuff(actor.X, actor.Y, actor.Z);
+
+            var th = world.ThingAllocation.SpawnMobj(
+                actor.X - actor.MomX,
+                actor.Y - actor.MomY,
+                actor.Z, MobjType.Smoke);
+
+            th.MomZ = Fixed.One;
+            th.Tics -= world.Random.Next() & 3;
+            if (th.Tics < 1)
+            {
+                th.Tics = 1;
+            }
+
+            // adjust direction
+            var dest = actor.Tracer;
+
+            if (dest == null || dest.Health <= 0)
+            {
+                return;
+            }
+
+            // change angle	
+            var exact = Geometry.PointToAngle(
+                actor.X, actor.Y,
+                dest.X, dest.Y);
+
+            if (exact != actor.Angle)
+            {
+                if (exact - actor.Angle > Angle.Ang180)
+                {
+                    actor.Angle -= TRACEANGLE;
+                    if (exact - actor.Angle < Angle.Ang180)
+                    {
+                        actor.Angle = exact;
+                    }
+                }
+                else
+                {
+                    actor.Angle += TRACEANGLE;
+                    if (exact - actor.Angle > Angle.Ang180)
+                    {
+                        actor.Angle = exact;
+                    }
+                }
+            }
+
+            actor.MomX = new Fixed(actor.Info.Speed) * Trig.Cos(exact);
+            actor.MomY = new Fixed(actor.Info.Speed) * Trig.Sin(exact);
+
+            // change slope
+            var dist = Geometry.AproxDistance(
+                dest.X - actor.X,
+                dest.Y - actor.Y);
+
+            dist = new Fixed(dist.Data / actor.Info.Speed);
+
+            if (dist < new Fixed(1))
+            {
+                dist = new Fixed(1);
+            }
+
+            var slope = new Fixed((dest.Z + Fixed.FromInt(40) - actor.Z).Data / dist.Data);
+
+            if (slope < actor.MomZ)
+            {
+                actor.MomZ -= Fixed.One / 8;
+            }
+            else
+            {
+                actor.MomZ += Fixed.One / 8;
+            }
+        }
+
+
+        public void SkelWhoosh(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            FaceTarget(actor);
+            world.StartSound(actor, Sfx.SKESWG);
+        }
+
+        public void SkelFist(Mobj actor)
+        {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
+            FaceTarget(actor);
+
+            if (P_CheckMeleeRange(actor))
+            {
+                var damage = ((world.Random.Next() % 10) + 1) * 6;
+                world.StartSound(actor, Sfx.SKEPCH);
+                world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
+            }
+        }
     }
 }

@@ -359,7 +359,7 @@ namespace ManagedDoom
 
 
 
-        private void SpawnPuff(Fixed x, Fixed y, Fixed z)
+        public void SpawnPuff(Fixed x, Fixed y, Fixed z)
         {
             z += new Fixed((world.Random.Next() - world.Random.Next()) << 10);
 
@@ -384,7 +384,7 @@ namespace ManagedDoom
         //
         // P_SpawnBlood
         // 
-        private void SpawnBlood(Fixed x, Fixed y, Fixed z, int damage)
+        public void SpawnBlood(Fixed x, Fixed y, Fixed z, int damage)
         {
             z += new Fixed((world.Random.Next() - world.Random.Next()) << 10);
             var th = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Blood);
