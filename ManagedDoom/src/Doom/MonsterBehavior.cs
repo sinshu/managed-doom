@@ -1351,6 +1351,7 @@ namespace ManagedDoom
                 }
             }
 
+            exact = actor.Angle;
             actor.MomX = new Fixed(actor.Info.Speed) * Trig.Cos(exact);
             actor.MomY = new Fixed(actor.Info.Speed) * Trig.Sin(exact);
 

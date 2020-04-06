@@ -358,6 +358,35 @@ namespace ManagedDoomTest.CompatibilityTests
         }
 
         [TestMethod]
+        public void RevenantTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\revenant_test.wad"))
+            {
+                var demo = new Demo(@"data\revenant_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x8b9fe3aeu, (uint)lastHash);
+                Assert.AreEqual(0x24e038d7u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
         public void FatsoTest()
         {
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\fatso_test.wad"))
