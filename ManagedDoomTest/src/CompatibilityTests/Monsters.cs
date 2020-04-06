@@ -414,5 +414,34 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0x196eebe6u, (uint)aggHash);
             }
         }
+
+        [TestMethod]
+        public void PainElementalTest_Final2()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\painelemental_test.wad"))
+            {
+                var demo = new Demo(@"data\painelemental_test_final2.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+                while (true)
+                {
+                    var hasNext = demo.ReadCmd();
+                    world.Update();
+
+                    if (!hasNext)
+                    {
+                        break;
+                    }
+
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x6984f76fu, (uint)lastHash);
+                Assert.AreEqual(0x50ba7933u, (uint)aggHash);
+            }
+        }
     }
 }
