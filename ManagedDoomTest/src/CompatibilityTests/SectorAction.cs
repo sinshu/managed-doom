@@ -19,16 +19,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastMobjHash = world.GetMobjHash();
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
                 }
@@ -50,26 +49,23 @@ namespace ManagedDoomTest.CompatibilityTests
                 var aggMobjHash = 0;
                 var lastSectorHash = 0;
                 var aggSectorHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastMobjHash = world.GetMobjHash();
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-
                     lastSectorHash = world.GetSectorHash();
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
                 Assert.AreEqual(0x9d6c0abeu, (uint)lastMobjHash);
                 Assert.AreEqual(0x7e1bb5f2u, (uint)aggMobjHash);
-
                 Assert.AreEqual(0xfdf3e7a0u, (uint)lastSectorHash);
                 Assert.AreEqual(0x0a0f1980u, (uint)aggSectorHash);
             }

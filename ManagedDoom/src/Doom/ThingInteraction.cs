@@ -389,7 +389,7 @@ namespace ManagedDoom
 		public void RadiusAttack(Mobj spot, Mobj source, int damage)
 		{
 			var bm = world.Map.BlockMap;
-			var dist = Fixed.FromInt(damage + GameConstants.MaxThingRadius.ToIntFloor());
+			var dist = Fixed.FromInt(damage + GameConstants.MaxThingRadius.Data);
 			var yh = (spot.Y + dist - bm.OriginY).Data >> BlockMap.MapBlockShift;
 			var yl = (spot.Y - dist - bm.OriginY).Data >> BlockMap.MapBlockShift;
 			var xh = (spot.X + dist - bm.OriginX).Data >> BlockMap.MapBlockShift;
@@ -406,7 +406,5 @@ namespace ManagedDoom
 				}
 			}
 		}
-
-
 	}
 }

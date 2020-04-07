@@ -19,16 +19,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -48,16 +47,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -77,16 +75,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -106,16 +103,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -135,16 +131,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -164,16 +159,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -193,16 +187,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -222,16 +215,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -251,16 +243,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -280,16 +271,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -309,16 +299,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -338,22 +327,77 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
                 Assert.AreEqual(0x73316e3bu, (uint)lastHash);
                 Assert.AreEqual(0x7219647fu, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
+        public void BaronTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\baron_test.wad"))
+            {
+                var demo = new Demo(@"data\baron_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd())
+                    {
+                        break;
+                    }
+
+                    world.Update();
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x3b6c14d3u, (uint)lastHash);
+                Assert.AreEqual(0xdb003628u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
+        public void FastBaronTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\baron_test.wad"))
+            {
+                var demo = new Demo(@"data\fast_baron_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd())
+                    {
+                        break;
+                    }
+
+                    world.Update();
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x79fb12efu, (uint)lastHash);
+                Assert.AreEqual(0x1f5070bdu, (uint)aggHash);
             }
         }
 
@@ -367,16 +411,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -396,16 +439,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -425,22 +467,49 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
                 Assert.AreEqual(0x6984f76fu, (uint)lastHash);
                 Assert.AreEqual(0x50ba7933u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
+        public void ArchvileTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\archvile_test.wad"))
+            {
+                var demo = new Demo(@"data\archvile_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd())
+                    {
+                        break;
+                    }
+
+                    world.Update();
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0xaa5531f2u, (uint)lastHash);
+                Assert.AreEqual(0xeb4456c4u, (uint)aggHash);
             }
         }
     }

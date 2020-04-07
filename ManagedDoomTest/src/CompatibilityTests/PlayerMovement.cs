@@ -19,16 +19,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -48,16 +47,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
@@ -77,16 +75,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var lastHash = 0;
                 var aggHash = 0;
+
                 while (true)
                 {
-                    var hasNext = demo.ReadCmd();
-                    world.Update();
-
-                    if (!hasNext)
+                    if (!demo.ReadCmd())
                     {
                         break;
                     }
 
+                    world.Update();
                     lastHash = world.GetMobjHash();
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
