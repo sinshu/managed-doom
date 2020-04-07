@@ -63,7 +63,7 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [ ] Intermission screen
     * [ ] Menu screen
     * [ ] Save / load
-    * [ ] DeHacked support
+    * [ ] DeHackEd support
 
 
 
