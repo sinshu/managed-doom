@@ -33,7 +33,7 @@ namespace ManagedDoom
 
             public void ReFire(World world, Player player, PlayerSpriteDef psp)
             {
-                world.WeaponBehavior.ReFire(player, psp);
+                world.WeaponBehavior.ReFire(player);
             }
 
             public void FirePistol(World world, Player player, PlayerSpriteDef psp)
@@ -48,7 +48,7 @@ namespace ManagedDoom
 
             public void FireShotgun(World world, Player player, PlayerSpriteDef psp)
             {
-                world.WeaponBehavior.FireShotgun(player, psp);
+                world.WeaponBehavior.FireShotgun(player);
             }
 
             public void Light2(World world, Player player, PlayerSpriteDef psp)
@@ -58,27 +58,27 @@ namespace ManagedDoom
 
             public void FireShotgun2(World world, Player player, PlayerSpriteDef psp)
             {
-                world.WeaponBehavior.FireShotgun2(player, psp);
+                world.WeaponBehavior.FireShotgun2(player);
             }
 
             public void CheckReload(World world, Player player, PlayerSpriteDef psp)
             {
-                world.WeaponBehavior.CheckReload(player, psp);
+                world.WeaponBehavior.CheckReload(player);
             }
 
             public void OpenShotgun2(World world, Player player, PlayerSpriteDef psp)
             {
-                world.WeaponBehavior.OpenShotgun2(player, psp);
+                world.WeaponBehavior.OpenShotgun2(player);
             }
 
             public void LoadShotgun2(World world, Player player, PlayerSpriteDef psp)
             {
-                world.WeaponBehavior.LoadShotgun2(player, psp);
+                world.WeaponBehavior.LoadShotgun2(player);
             }
 
             public void CloseShotgun2(World world, Player player, PlayerSpriteDef psp)
             {
-                world.WeaponBehavior.CloseShotgun2(player, psp);
+                world.WeaponBehavior.CloseShotgun2(player);
             }
 
             public void FireCGun(World world, Player player, PlayerSpriteDef psp)
@@ -88,29 +88,32 @@ namespace ManagedDoom
 
             public void GunFlash(World world, Player player, PlayerSpriteDef psp)
             {
-                world.WeaponBehavior.GunFlash(player, psp);
+                world.WeaponBehavior.GunFlash(player);
             }
 
             public void FireMissile(World world, Player player, PlayerSpriteDef psp)
             {
-                world.WeaponBehavior.FireMissile(player, psp);
+                world.WeaponBehavior.FireMissile(player);
             }
 
             public void Saw(World world, Player player, PlayerSpriteDef psp)
             {
-                world.WeaponBehavior.Saw(player, psp);
+                world.WeaponBehavior.Saw(player);
             }
 
             public void FirePlasma(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.FirePlasma(player);
             }
 
             public void BFGsound(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.A_BFGsound(player);
             }
 
             public void FireBFG(World world, Player player, PlayerSpriteDef psp)
             {
+                world.WeaponBehavior.FireBFG(player);
             }
         }
     }

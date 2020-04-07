@@ -8,6 +8,7 @@ namespace ManagedDoom
         {
             public void BFGSpray(World world, Mobj actor)
             {
+                world.WeaponBehavior.BFGSpray(actor);
             }
 
             public void Explode(World world, Mobj actor)
@@ -32,6 +33,7 @@ namespace ManagedDoom
 
             public void XScream(World world, Mobj actor)
             {
+                world.MonsterBehavior.XScream(actor);
             }
 
             public void Look(World world, Mobj actor)

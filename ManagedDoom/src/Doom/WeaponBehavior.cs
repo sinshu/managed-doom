@@ -343,7 +343,7 @@ namespace ManagedDoom
             }
         }
 
-        public void Saw(Player player, PlayerSpriteDef psp)
+        public void Saw(Player player)
         {
             var damage = 2 * (world.Random.Next() % 10 + 1);
             var angle = player.Mobj.Angle;
@@ -392,7 +392,7 @@ namespace ManagedDoom
             player.Mobj.Flags |= MobjFlags.JustAttacked;
         }
 
-        public void ReFire(Player player, PlayerSpriteDef psp)
+        public void ReFire(Player player)
         {
             // check for fire
             //  (if a weaponchange is pending, let it go through instead)
@@ -469,7 +469,7 @@ namespace ManagedDoom
             player.ExtraLight = 1;
         }
 
-        public void FireShotgun(Player player, PlayerSpriteDef psp)
+        public void FireShotgun(Player player)
         {
             world.StartSound(player.Mobj, Sfx.SHOTGN);
             player.Mobj.SetState(State.PlayAtk2);
@@ -523,7 +523,7 @@ namespace ManagedDoom
         //
         // A_FireShotgun2
         //
-        public void FireShotgun2(Player player, PlayerSpriteDef psp)
+        public void FireShotgun2(Player player)
         {
             world.StartSound(player.Mobj, Sfx.DSHTGN);
             player.Mobj.SetState(State.PlayAtk2);
@@ -552,25 +552,25 @@ namespace ManagedDoom
             }
         }
 
-        public void CheckReload(Player player, PlayerSpriteDef psp)
+        public void CheckReload(Player player)
         {
             CheckAmmo(player);
         }
 
-        public void OpenShotgun2(Player player, PlayerSpriteDef psp)
+        public void OpenShotgun2(Player player)
         {
             world.StartSound(player.Mobj, Sfx.DBOPN);
         }
 
-        public void LoadShotgun2(Player player, PlayerSpriteDef psp)
+        public void LoadShotgun2(Player player)
         {
             world.StartSound(player.Mobj, Sfx.DBLOAD);
         }
 
-        public void CloseShotgun2(Player player, PlayerSpriteDef psp)
+        public void CloseShotgun2(Player player)
         {
             world.StartSound(player.Mobj, Sfx.DBCLS);
-            ReFire(player, psp);
+            ReFire(player);
         }
 
 
@@ -579,7 +579,7 @@ namespace ManagedDoom
         //
         // A_GunFlash
         //
-        public void GunFlash(Player player, PlayerSpriteDef psp)
+        public void GunFlash(Player player)
         {
             player.Mobj.SetState(State.PlayAtk2);
             world.PlayerBehavior.P_SetPsprite(
@@ -591,10 +591,91 @@ namespace ManagedDoom
         //
         // A_FireMissile
         //
-        public void FireMissile(Player player, PlayerSpriteDef psp)
+        public void FireMissile(Player player)
         {
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
             world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Rocket);
+        }
+
+
+
+
+
+
+
+
+        //
+        // A_FirePlasma
+        //
+        public void FirePlasma(Player player)
+        {
+            player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
+
+            world.PlayerBehavior.P_SetPsprite(
+                player,
+                PlayerSprite.Flash,
+                DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState + (world.Random.Next() & 1));
+
+            world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Plasma);
+        }
+
+        //
+        // A_BFGsound
+        //
+        public void A_BFGsound(Player player)
+        {
+            world.StartSound(player.Mobj, Sfx.BFG);
+        }
+
+
+        //
+        // A_FireBFG
+        //
+        public void FireBFG(Player player)
+        {
+            player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] -= BFGCELLS;
+            world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Bfg);
+        }
+
+
+
+        //
+        // A_BFGSpray
+        // Spawn a BFG explosion on every monster in view
+        //
+        public void BFGSpray(Mobj mo)
+        {
+            // offset angles from its attack angle
+            for (var i = 0; i < 40; i++)
+            {
+                var an = mo.Angle - Angle.Ang90 / 2 + Angle.Ang90 / 40 * (uint)i;
+
+                var hs = world.Hitscan;
+
+                // mo->target is the originator (player)
+                //  of the missile
+                hs.AimLineAttack(mo.Target, an, Fixed.FromInt(16 * 64));
+
+                if (hs.linetarget == null)
+                {
+                    continue;
+                }
+
+                world.ThingAllocation.SpawnMobj(
+                    hs.linetarget.X,
+                    hs.linetarget.Y,
+                    hs.linetarget.Z + new Fixed(hs.linetarget.Height.Data >> 2),
+                    MobjType.Extrabfg);
+
+                var damage = 0;
+                for (var j = 0; j < 15; j++)
+                {
+                    damage += (world.Random.Next() & 7) + 1;
+                }
+
+                world.ThingInteraction.DamageMobj(
+                    hs.linetarget, mo.Target, mo.Target, damage);
+            }
         }
     }
 }

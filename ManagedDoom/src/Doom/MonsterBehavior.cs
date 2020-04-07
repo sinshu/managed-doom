@@ -825,6 +825,11 @@ namespace ManagedDoom
             }
         }
 
+        public void XScream(Mobj actor)
+        {
+            world.StartSound(actor, Sfx.SLOP);
+        }
+
 
         public void TroopAttack(Mobj actor)
         {
