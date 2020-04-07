@@ -645,12 +645,12 @@ namespace ManagedDoom
         //
         public void BFGSpray(Mobj mo)
         {
+            var hs = world.Hitscan;
+
             // offset angles from its attack angle
             for (var i = 0; i < 40; i++)
             {
                 var an = mo.Angle - Angle.Ang90 / 2 + Angle.Ang90 / 40 * (uint)i;
-
-                var hs = world.Hitscan;
 
                 // mo->target is the originator (player)
                 //  of the missile
