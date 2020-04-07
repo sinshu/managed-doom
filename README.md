@@ -48,7 +48,7 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
 - __Gaming code__
     * [x] Collision detection
     * [x] Player movement
-    * [ ] Player Attack
+    * [x] Player Attack
     * [x] Monster AI
     * [ ] Doors and platforms
     * [ ] Animated textures
@@ -57,6 +57,13 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
 - __Audio__
     * [x] Sounds
     * [ ] Music
+
+- __Other things__
+    * [ ] Title screen
+    * [ ] Intermission screen
+    * [ ] Menu screen
+    * [ ] Save / load
+    * [ ] DeHacked support
 
 
 
