@@ -92,5 +92,33 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0xb2104158u, (uint)aggHash);
             }
         }
+
+        [TestMethod]
+        public void RocketTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\rocket_test.wad"))
+            {
+                var demo = new Demo(@"data\rocket_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd())
+                    {
+                        break;
+                    }
+
+                    world.Update();
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x8dce774bu, (uint)lastHash);
+                Assert.AreEqual(0x87f45b5bu, (uint)aggHash);
+            }
+        }
     }
 }
