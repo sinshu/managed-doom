@@ -5,15 +5,12 @@ namespace ManagedDoom
 {
     public class Specials
     {
-        private static readonly int MAXSWITCHES = 50;
         private static readonly int MAXBUTTONS = 16;
         private static readonly int BUTTONTIME = 35;
 
         private World world;
 
         private Button[] buttonList;
-
-        private int[] switchList;
 
         public Specials(World world)
         {
@@ -24,25 +21,6 @@ namespace ManagedDoom
             {
                 buttonList[i] = new Button();
             }
-
-            InitSwitchList();
-        }
-
-        private void InitSwitchList()
-        {
-            var textures = world.Map.Textures;
-            var list = new List<int>();
-            foreach (var tuple in DoomInfo.SwitchNames)
-            {
-                var texNum1 = textures.GetNumber(tuple.Item1);
-                var texNum2 = textures.GetNumber(tuple.Item2);
-                if (texNum1 != -1 && texNum2 != -1)
-                {
-                    list.Add(texNum1);
-                    list.Add(texNum2);
-                }
-            }
-            switchList = list.ToArray();
         }
 
         public void ChangeSwitchTexture(LineDef line, bool useAgain)
@@ -63,6 +41,8 @@ namespace ManagedDoom
             {
                 sound = Sfx.SWTCHX;
             }
+
+            var switchList = world.Map.Textures.SwitchList;
 
             for (var i = 0; i < switchList.Length; i++)
             {

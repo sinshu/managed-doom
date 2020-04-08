@@ -11,16 +11,14 @@ namespace ManagedDoom
         private Dictionary<string, Texture> nameToTexture;
         private Dictionary<string, int> nameToNumber;
 
+        private int[] switchList;
+
         public TextureLookup(Wad wad) : this(wad, false)
         {
         }
 
         public TextureLookup(Wad wad, bool useDummy)
         {
-            textures = new List<Texture>();
-            nameToTexture = new Dictionary<string, Texture>();
-            nameToNumber = new Dictionary<string, int>();
-
             if (!useDummy)
             {
                 Init(wad);
@@ -29,10 +27,16 @@ namespace ManagedDoom
             {
                 InitDummy(wad);
             }
+
+            InitSwitchList();
         }
 
         private void Init(Wad wad)
         {
+            textures = new List<Texture>();
+            nameToTexture = new Dictionary<string, Texture>();
+            nameToNumber = new Dictionary<string, int>();
+
             var patches = LoadPatches(wad);
 
             for (var n = 1; n <= 2; n++)
@@ -58,6 +62,10 @@ namespace ManagedDoom
 
         private void InitDummy(Wad wad)
         {
+            textures = new List<Texture>();
+            nameToTexture = new Dictionary<string, Texture>();
+            nameToNumber = new Dictionary<string, int>();
+
             for (var n = 1; n <= 2; n++)
             {
                 var lumpNumber = wad.GetLumpNumber("TEXTURE" + n);
@@ -79,6 +87,22 @@ namespace ManagedDoom
                     nameToTexture.Add(name, texture);
                 }
             }
+        }
+
+        private void InitSwitchList()
+        {
+            var list = new List<int>();
+            foreach (var tuple in DoomInfo.SwitchNames)
+            {
+                var texNum1 = GetNumber(tuple.Item1);
+                var texNum2 = GetNumber(tuple.Item2);
+                if (texNum1 != -1 && texNum2 != -1)
+                {
+                    list.Add(texNum1);
+                    list.Add(texNum2);
+                }
+            }
+            switchList = list.ToArray();
         }
 
         public int GetNumber(string name)
@@ -144,5 +168,6 @@ namespace ManagedDoom
         public int Count => textures.Count;
         public Texture this[int num] => textures[num];
         public Texture this[string name] => nameToTexture[name];
+        public int[] SwitchList => switchList;
     }
 }
