@@ -10,6 +10,62 @@ namespace ManagedDoomTest.CompatibilityTests
     public class PlayerWeapon
     {
         [TestMethod]
+        public void PunchTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\punch_test.wad"))
+            {
+                var demo = new Demo(@"data\punch_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd())
+                    {
+                        break;
+                    }
+
+                    world.Update();
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x3d6c0f49u, (uint)lastHash);
+                Assert.AreEqual(0x97d3aa02u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
+        public void ChainsawTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\chainsaw_test.wad"))
+            {
+                var demo = new Demo(@"data\chainsaw_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd())
+                    {
+                        break;
+                    }
+
+                    world.Update();
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x5db30e69u, (uint)lastHash);
+                Assert.AreEqual(0xed598949u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
         public void ShotgunTest()
         {
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\shotgun_test.wad"))
@@ -146,6 +202,34 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 Assert.AreEqual(0x116924d3u, (uint)lastHash);
                 Assert.AreEqual(0x88fc9e68u, (uint)aggHash);
+            }
+        }
+
+        [TestMethod]
+        public void BfgTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\bfg_test.wad"))
+            {
+                var demo = new Demo(@"data\bfg_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd())
+                    {
+                        break;
+                    }
+
+                    world.Update();
+                    lastHash = world.GetMobjHash();
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0xdeaf403fu, (uint)lastHash);
+                Assert.AreEqual(0xb2c67368u, (uint)aggHash);
             }
         }
     }
