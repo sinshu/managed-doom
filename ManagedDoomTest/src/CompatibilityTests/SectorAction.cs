@@ -70,5 +70,39 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0x0a0f1980u, (uint)aggSectorHash);
             }
         }
+
+        [TestMethod]
+        public void PlatformTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\platform_test.wad"))
+            {
+                var demo = new Demo(@"data\platform_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd())
+                    {
+                        break;
+                    }
+
+                    world.Update();
+                    lastMobjHash = world.GetMobjHash();
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    lastSectorHash = world.GetSectorHash();
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0x3da2f507u, (uint)lastMobjHash);
+                Assert.AreEqual(0x3402f715u, (uint)aggMobjHash);
+                Assert.AreEqual(0xc71b4d00u, (uint)lastSectorHash);
+                Assert.AreEqual(0x2fb8dd00u, (uint)aggSectorHash);
+            }
+        }
     }
 }
