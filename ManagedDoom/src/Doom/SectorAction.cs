@@ -1541,5 +1541,180 @@ namespace ManagedDoom
 			}
 			return rtn;
 		}
+
+
+
+
+
+
+
+
+		public static readonly Fixed CEILSPEED = Fixed.One;
+		public static readonly int CEILWAIT = 150;
+		private static readonly int MAXCEILINGS = 30;
+
+		private CeilingMove[] activeceilings = new CeilingMove[MAXCEILINGS];
+
+		//
+		// Add an active ceiling
+		//
+		public void AddActiveCeiling(CeilingMove c)
+		{
+			for (var i = 0; i < activeceilings.Length; i++)
+			{
+				if (activeceilings[i] == null)
+				{
+					activeceilings[i] = c;
+					return;
+				}
+			}
+		}
+
+
+
+		//
+		// Remove a ceiling's thinker
+		//
+		public void RemoveActiveCeiling(CeilingMove c)
+		{
+			for (var i = 0; i < activeceilings.Length; i++)
+			{
+				if (activeceilings[i] == c)
+				{
+					activeceilings[i].Sector.SpecialData = null;
+					world.Thinkers.Remove(activeceilings[i]);
+					activeceilings[i] = null;
+					break;
+				}
+			}
+		}
+
+
+
+		//
+		// Restart a ceiling that's in-stasis
+		//
+		public void ActivateInStasisCeiling(LineDef line)
+		{
+			for (var i = 0; i < activeceilings.Length; i++)
+			{
+				if (activeceilings[i] != null
+					&& (activeceilings[i].Tag == line.Tag)
+					&& (activeceilings[i].Direction == 0))
+				{
+					activeceilings[i].Direction = activeceilings[i].OldDirection;
+					activeceilings[i].Active = true;
+				}
+			}
+		}
+
+
+
+		//
+		// EV_CeilingCrushStop
+		// Stop a ceiling from crushing!
+		//
+		public bool EV_CeilingCrushStop(LineDef line)
+		{
+			var rtn = false;
+
+			for (var i = 0; i < activeceilings.Length; i++)
+			{
+				if (activeceilings[i] != null
+					&& (activeceilings[i].Tag == line.Tag)
+					&& (activeceilings[i].Direction != 0))
+				{
+					activeceilings[i].OldDirection = activeceilings[i].Direction;
+					activeceilings[i].Active = false;
+					activeceilings[i].Direction = 0; // in-stasis
+					rtn = true;
+				}
+			}
+
+			return rtn;
+		}
+
+
+
+
+		//
+		// EV_DoCeiling
+		// Move a ceiling up/down and all around!
+		//
+		public bool EV_DoCeiling(LineDef line, CeilingMoveType type)
+		{
+			var secnum = -1;
+			var rtn = false;
+
+			//	Reactivate in-stasis ceilings...for certain types.
+			switch (type)
+			{
+				case CeilingMoveType.FastCrushAndRaise:
+				case CeilingMoveType.SilentCrushAndRaise:
+				case CeilingMoveType.CrushAndRaise:
+					ActivateInStasisCeiling(line);
+					break;
+				default:
+					break;
+			}
+
+			while ((secnum = FindSectorFromLineTag(line, secnum)) >= 0)
+			{
+				var sec = world.Map.Sectors[secnum];
+				if (sec.SpecialData != null)
+				{
+					continue;
+				}
+
+				// new door thinker
+				rtn = true;
+				var ceiling = ThinkerPool.RentCeiligMove(world);
+				world.Thinkers.Add(ceiling);
+				sec.SpecialData = ceiling;
+				ceiling.Sector = sec;
+				ceiling.Crush = false;
+
+				switch (type)
+				{
+					case CeilingMoveType.FastCrushAndRaise:
+						ceiling.Crush = true;
+						ceiling.TopHeight = sec.CeilingHeight;
+						ceiling.BottomHeight = sec.FloorHeight + Fixed.FromInt(8);
+						ceiling.Direction = -1;
+						ceiling.Speed = CEILSPEED * 2;
+						break;
+
+					case CeilingMoveType.SilentCrushAndRaise:
+					case CeilingMoveType.CrushAndRaise:
+					case CeilingMoveType.LowerAndCrush:
+					case CeilingMoveType.LowerToFloor:
+						if (type == CeilingMoveType.SilentCrushAndRaise
+							|| type == CeilingMoveType.CrushAndRaise)
+						{
+							ceiling.Crush = true;
+							ceiling.TopHeight = sec.CeilingHeight;
+						}
+						ceiling.BottomHeight = sec.FloorHeight;
+						if (type != CeilingMoveType.LowerToFloor)
+						{
+							ceiling.BottomHeight += Fixed.FromInt(8);
+						}
+						ceiling.Direction = -1;
+						ceiling.Speed = CEILSPEED;
+						break;
+
+					case CeilingMoveType.RaiseToHighest:
+						ceiling.TopHeight = FindHighestCeilingSurrounding(sec);
+						ceiling.Direction = 1;
+						ceiling.Speed = CEILSPEED;
+						break;
+				}
+
+				ceiling.Tag = sec.Tag;
+				ceiling.Type = type;
+				AddActiveCeiling(ceiling);
+			}
+			return rtn;
+		}
 	}
 }

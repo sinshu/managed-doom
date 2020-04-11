@@ -159,6 +159,7 @@ namespace ManagedDoom
         {
             var pt = world.PathTraversal;
             var mc = world.MapCollision;
+            var mi = world.MapInteraction;
 
             if (ic.Line != null)
             {
@@ -166,7 +167,7 @@ namespace ManagedDoom
 
                 if (li.Special != 0)
                 {
-                    //P_ShootSpecialLine(shootthing, li);
+                    mi.ShootSpecialLine(shootthing, li);
                 }
 
                 if ((li.Flags & LineFlags.TwoSided) == 0)

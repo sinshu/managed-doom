@@ -28,6 +28,11 @@ namespace ManagedDoom
             return new FloorMove(world);
         }
 
+        public static CeilingMove RentCeiligMove(World world)
+        {
+            return new CeilingMove(world);
+        }
+
         public static FireFlicker RentFireFlicker(World world)
         {
             return new FireFlicker(world);

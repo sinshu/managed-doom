@@ -50,7 +50,7 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [x] Player movement
     * [x] Player attack
     * [x] Monster AI
-    * [ ] Doors and platforms
+    * [x] Doors and platforms
     * [ ] Animated textures
     * [x] Demo compatibility (All the v1.9 IWAD demos can be played)
 

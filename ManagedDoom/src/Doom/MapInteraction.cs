@@ -164,9 +164,9 @@ namespace ManagedDoom
 
 				case 41:
 					// Lower Ceiling to Floor
-					//if (EV_DoCeiling(line, lowerToFloor))
+					if (sa.EV_DoCeiling(line, CeilingMoveType.LowerToFloor))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -180,9 +180,9 @@ namespace ManagedDoom
 
 				case 49:
 					// Ceiling Crush And Raise
-					//if (EV_DoCeiling(line, crushAndRaise))
+					if (sa.EV_DoCeiling(line, CeilingMoveType.CrushAndRaise))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 
@@ -311,9 +311,9 @@ namespace ManagedDoom
 
 				case 43:
 					// Lower Ceiling to Floor
-					//if (EV_DoCeiling(line, lowerToFloor))
+					if (sa.EV_DoCeiling(line, CeilingMoveType.LowerToFloor))
 					{
-						//P_ChangeSwitchTexture(line, 1);
+						specials.ChangeSwitchTexture(line, true);
 					}
 					break;
 
@@ -632,7 +632,7 @@ namespace ManagedDoom
 
 				case 6:
 					// Fast Ceiling Crush & Raise
-					//EV_DoCeiling(line, fastCrushAndRaise);
+					sa.EV_DoCeiling(line, CeilingMoveType.FastCrushAndRaise);
 					line.Special = 0;
 					break;
 
@@ -686,7 +686,7 @@ namespace ManagedDoom
 
 				case 25:
 					// Ceiling Crush and Raise
-					//EV_DoCeiling(line, crushAndRaise);
+					sa.EV_DoCeiling(line, CeilingMoveType.CrushAndRaise);
 					line.Special = 0;
 					break;
 
@@ -729,14 +729,14 @@ namespace ManagedDoom
 
 				case 40:
 					// RaiseCeilingLowerFloor
-					//EV_DoCeiling(line, raiseToHighest);
-					//EV_DoFloor(line, lowerFloorToLowest);
+					sa.EV_DoCeiling(line, CeilingMoveType.RaiseToHighest);
+					sa.EV_DoFloor(line, FloorMoveType.LowerFloorToLowest);
 					line.Special = 0;
 					break;
 
 				case 44:
 					// Ceiling Crush
-					//EV_DoCeiling(line, lowerAndCrush);
+					sa.EV_DoCeiling(line, CeilingMoveType.LowerAndCrush);
 					line.Special = 0;
 					break;
 
@@ -765,7 +765,7 @@ namespace ManagedDoom
 
 				case 57:
 					// Ceiling Crush Stop
-					//EV_CeilingCrushStop(line);
+					sa.EV_CeilingCrushStop(line);
 					line.Special = 0;
 					break;
 
@@ -845,24 +845,24 @@ namespace ManagedDoom
 
 				case 141:
 					// Silent Ceiling Crush & Raise
-					//EV_DoCeiling(line, silentCrushAndRaise);
+					sa.EV_DoCeiling(line, CeilingMoveType.SilentCrushAndRaise);
 					line.Special = 0;
 					break;
 
 				// RETRIGGERS.  All from here till end.
 				case 72:
 					// Ceiling Crush
-					//EV_DoCeiling(line, lowerAndCrush);
+					sa.EV_DoCeiling(line, CeilingMoveType.LowerAndCrush);
 					break;
 
 				case 73:
 					// Ceiling Crush and Raise
-					//EV_DoCeiling(line, crushAndRaise);
+					sa.EV_DoCeiling(line, CeilingMoveType.CrushAndRaise);
 					break;
 
 				case 74:
 					// Ceiling Crush Stop
-					//EV_CeilingCrushStop(line);
+					sa.EV_CeilingCrushStop(line);
 					break;
 
 				case 75:
@@ -877,7 +877,7 @@ namespace ManagedDoom
 
 				case 77:
 					// Fast Ceiling Crush & Raise
-					//EV_DoCeiling(line, fastCrushAndRaise);
+					sa.EV_DoCeiling(line, CeilingMoveType.FastCrushAndRaise);
 					break;
 
 				case 79:
@@ -1013,6 +1013,59 @@ namespace ManagedDoom
 				case 129:
 					// Raise Floor Turbo
 					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorTurbo);
+					break;
+			}
+		}
+
+
+
+
+		//
+		// P_ShootSpecialLine - IMPACT SPECIALS
+		// Called when a thing shoots a special line.
+		//
+		public void ShootSpecialLine(Mobj thing, LineDef line)
+		{
+			bool ok;
+
+			//	Impacts that other things can activate.
+			if (thing.Player == null)
+			{
+				ok = false;
+				switch ((int)line.Special)
+				{
+					case 46:
+						// OPEN DOOR IMPACT
+						ok = true;
+						break;
+				}
+				if (!ok)
+				{
+					return;
+				}
+			}
+
+			var sa = world.SectorAction;
+			var specials = world.Specials;
+
+			switch ((int)line.Special)
+			{
+				case 24:
+					// RAISE FLOOR
+					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor);
+					specials.ChangeSwitchTexture(line, false);
+					break;
+
+				case 46:
+					// OPEN DOOR
+					sa.EV_DoDoor(line, VlDoorType.Open);
+					specials.ChangeSwitchTexture(line, true);
+					break;
+
+				case 47:
+					// RAISE FLOOR NEAR AND CHANGE
+					sa.EV_DoPlat(line, PlatformType.RaiseToNearestAndChange, 0);
+					specials.ChangeSwitchTexture(line, false);
 					break;
 			}
 		}
