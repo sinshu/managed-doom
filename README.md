@@ -48,7 +48,7 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
 - __Gaming code__
     * [x] Collision detection
     * [x] Player movement
-    * [x] Player Attack
+    * [x] Player attack
     * [x] Monster AI
     * [ ] Doors and platforms
     * [ ] Animated textures
@@ -59,6 +59,8 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [ ] Music
 
 - __Other things__
+    * [ ] Status bar
+    * [ ] Automap
     * [ ] Title screen
     * [ ] Intermission screen
     * [ ] Menu screen
