@@ -134,7 +134,7 @@ namespace ManagedDoom
             }
 
             // mobj->angle = ANG45 * (mthing->angle/45);
-            mobj.Angle = new Angle(Angle.Ang45.Data * (uint)(mthing.Angle / 45));
+            mobj.Angle = mthing.Angle;
 
             if ((mthing.Flags & ThingFlags.Ambush) != 0)
             {
@@ -183,7 +183,7 @@ namespace ManagedDoom
             {
                 //mobj->flags |= (mthing->type - 1) << MF_TRANSSHIFT;
             }
-            mobj.Angle = new Angle(Angle.Ang45.Data * (uint)(mthing.Angle / 45));
+            mobj.Angle = mthing.Angle;
             mobj.Player = p;
             mobj.Health = p.Health;
 

@@ -8,14 +8,14 @@ namespace ManagedDoom
 
         private Fixed x;
         private Fixed y;
-        private int angle;
+        private Angle angle;
         private int type;
         private ThingFlags flags;
 
         public Thing(
             Fixed x,
             Fixed y,
-            int angle,
+            Angle angle,
             int type,
             ThingFlags flags)
         {
@@ -37,7 +37,7 @@ namespace ManagedDoom
             return new Thing(
                 Fixed.FromInt(x),
                 Fixed.FromInt(y),
-                angle,
+                new Angle(ManagedDoom.Angle.Ang45.Data * (uint)(angle / 45)),
                 type,
                 (ThingFlags)flags);
         }
@@ -45,19 +45,19 @@ namespace ManagedDoom
         public static Thing[] FromWad(Wad wad, int lump)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % Thing.DataSize != 0)
+            if (length % DataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / Thing.DataSize;
+            var count = length / DataSize;
             var things = new Thing[count];
 
             for (var i = 0; i < count; i++)
             {
-                var offset = Thing.DataSize * i;
-                things[i] = Thing.FromData(data, offset);
+                var offset = DataSize * i;
+                things[i] = FromData(data, offset);
             }
 
             return things;
@@ -65,7 +65,7 @@ namespace ManagedDoom
 
         public Fixed X => x;
         public Fixed Y => y;
-        public int Angle => angle;
+        public Angle Angle => angle;
         public int Type => type;
         public ThingFlags Flags => flags;
     }
