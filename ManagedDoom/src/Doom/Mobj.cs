@@ -139,27 +139,36 @@ namespace ManagedDoom
             }
             else
             {
-                /*
                 // check for nightmare respawn
-                if (!(mobj->flags & MF_COUNTKILL))
+                if ((Flags & MobjFlags.CountKill) == 0)
+                {
                     return;
+                }
 
-                if (!respawnmonsters)
+                var options = world.Options;
+                if (!(options.Skill == Skill.Nightmare || options.RespawnMonsters))
+                {
                     return;
+                }
 
-                mobj->movecount++;
+                MoveCount++;
 
-                if (mobj->movecount < 12 * 35)
+                if (MoveCount < 12 * 35)
+                {
                     return;
+                }
 
-                if (leveltime & 31)
+                if ((world.levelTime & 31) != 0)
+                {
                     return;
+                }
 
-                if (P_Random() > 4)
+                if (world.Random.Next() > 4)
+                {
                     return;
+                }
 
-                P_NightmareRespawn(mobj);
-                */
+                NightmareRespawn();
             }
         }
 
@@ -217,6 +226,77 @@ namespace ManagedDoom
             {
                 return state.Tics;
             }
+        }
+
+        //
+        // P_NightmareRespawn
+        //
+        private void NightmareRespawn()
+        {
+            Thing sp;
+            if (SpawnPoint != null)
+            {
+                sp = SpawnPoint;
+            }
+            else
+            {
+                sp = Thing.Empty;
+            }
+
+            var x = sp.X;
+            var y = sp.Y;
+
+            // somthing is occupying it's position?
+            if (!world.ThingMovement.CheckPosition(this, x, y))
+            {
+                // no respwan
+                return;
+            }
+
+            // spawn a teleport fog at old spot
+            // because of removal of the body?
+            var mo = world.ThingAllocation.SpawnMobj(
+                X, Y, Subsector.Sector.FloorHeight, MobjType.Tfog);
+
+            // initiate teleport sound
+            world.StartSound(mo, Sfx.TELEPT);
+
+            // spawn a teleport fog at the new spot
+            var ss = Geometry.PointInSubsector(x, y, world.Map);
+
+            mo = world.ThingAllocation.SpawnMobj(
+                x, y, ss.Sector.FloorHeight, MobjType.Tfog);
+
+            world.StartSound(mo, Sfx.TELEPT);
+
+            // spawn the new monster
+            var mthing = sp;
+
+            // spawn it
+            Fixed z;
+            if ((Info.Flags & MobjFlags.SpawnCeiling) != 0)
+            {
+                z = OnCeilingZ;
+            }
+            else
+            {
+                z = OnFloorZ;
+            }
+
+            // inherit attributes from deceased one
+            mo = world.ThingAllocation.SpawnMobj(x, y, z, Type);
+            mo.SpawnPoint = SpawnPoint;
+            mo.Angle = mthing.Angle;
+
+            if ((mthing.Flags & ThingFlags.Ambush) != 0)
+            {
+                mo.Flags |= MobjFlags.Ambush;
+            }
+
+            mo.ReactionTime = 18;
+
+            // remove the old monster,
+            world.ThingAllocation.RemoveMobj(this);
         }
 
         public override int GetHashCode()

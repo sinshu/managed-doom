@@ -6,6 +6,12 @@ namespace ManagedDoom
     {
         public const int DataSize = 10;
 
+        public static Thing Empty = new Thing(
+            Fixed.Zero,
+            Fixed.Zero,
+            Angle.Ang0,
+            0, 0);
+
         private Fixed x;
         private Fixed y;
         private Angle angle;
