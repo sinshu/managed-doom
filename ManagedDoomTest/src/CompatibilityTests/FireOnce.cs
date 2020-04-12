@@ -43,10 +43,10 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    aggHash = DoomDebug.CombineHash(aggHash, world.GetMobjHash());
+                    aggHash = DoomDebug.CombineHash(aggHash, DoomDebug.GetMobjHash(world));
                 }
 
-                Assert.AreEqual(0xef1aa1d8u, (uint)world.GetMobjHash());
+                Assert.AreEqual(0xef1aa1d8u, (uint)DoomDebug.GetMobjHash(world));
                 Assert.AreEqual(0xe6edcf39u, (uint)aggHash);
             }
         }

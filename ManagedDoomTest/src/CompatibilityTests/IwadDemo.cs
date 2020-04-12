@@ -30,9 +30,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -64,9 +64,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -98,9 +98,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -132,9 +132,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -166,9 +166,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -200,9 +200,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -234,9 +234,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -268,9 +268,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -302,9 +302,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -336,9 +336,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -370,9 +370,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -404,9 +404,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -438,9 +438,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -472,9 +472,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -506,9 +506,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 
@@ -540,9 +540,9 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
                 }
 

@@ -257,45 +257,6 @@ namespace ManagedDoom
             return validCount;
         }
 
-        public int GetMobjHash()
-        {
-            var hash = 0;
-            foreach (var thinker in thinkers)
-            {
-                var mobj = thinker as Mobj;
-                if (mobj != null)
-                {
-                    hash = DoomDebug.CombineHash(hash, mobj.GetHashCode());
-                }
-            }
-            return hash;
-        }
-
-        public void DumpMobjCsv(string path)
-        {
-            using (var writer = new System.IO.StreamWriter(path))
-            {
-                foreach (var thinker in thinkers)
-                {
-                    var mobj = thinker as Mobj;
-                    if (mobj != null)
-                    {
-                        writer.WriteLine(mobj.DumpCsv());
-                    }
-                }
-            }
-        }
-
-        public int GetSectorHash()
-        {
-            var hash = 0;
-            foreach (var sector in map.Sectors)
-            {
-                hash = DoomDebug.CombineHash(hash, sector.GetHashCode());
-            }
-            return hash;
-        }
-
         public Map Map => map;
         public DoomRandom Random => random;
 

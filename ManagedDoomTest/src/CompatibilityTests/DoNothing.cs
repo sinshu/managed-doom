@@ -35,13 +35,13 @@ namespace ManagedDoomTest.CompatibilityTests
                 for (var i = 0; i < tics; i++)
                 {
                     world.Update();
-                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, world.GetMobjHash());
-                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, world.GetSectorHash());
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(world));
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, DoomDebug.GetSectorHash(world));
                 }
 
-                Assert.AreEqual(0x66be313bu, (uint)world.GetMobjHash());
+                Assert.AreEqual(0x66be313bu, (uint)DoomDebug.GetMobjHash(world));
                 Assert.AreEqual(0xbd67b2b2u, (uint)aggMobjHash);
-                Assert.AreEqual(0x2cef7a1du, (uint)world.GetSectorHash());
+                Assert.AreEqual(0x2cef7a1du, (uint)DoomDebug.GetSectorHash(world));
                 Assert.AreEqual(0x5b99ca23u, (uint)aggSectorHash);
             }
         }
@@ -66,15 +66,15 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var tics = 350;
 
-                var aggHash = 0;
+                var aggMobjHash = 0;
                 for (var i = 0; i < tics; i++)
                 {
                     world.Update();
-                    aggHash = DoomDebug.CombineHash(aggHash, world.GetMobjHash());
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(world));
                 }
 
-                Assert.AreEqual(0xc108ff16u, (uint)world.GetMobjHash());
-                Assert.AreEqual(0x3bd5113cu, (uint)aggHash);
+                Assert.AreEqual(0xc108ff16u, (uint)DoomDebug.GetMobjHash(world));
+                Assert.AreEqual(0x3bd5113cu, (uint)aggMobjHash);
             }
         }
 
@@ -105,13 +105,13 @@ namespace ManagedDoomTest.CompatibilityTests
                 for (var i = 0; i < tics; i++)
                 {
                     world.Update();
-                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, world.GetMobjHash());
-                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, world.GetSectorHash());
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(world));
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, DoomDebug.GetSectorHash(world));
                 }
 
-                Assert.AreEqual(0x21187a94u, (uint)world.GetMobjHash());
+                Assert.AreEqual(0x21187a94u, (uint)DoomDebug.GetMobjHash(world));
                 Assert.AreEqual(0x55752988u, (uint)aggMobjHash);
-                Assert.AreEqual(0xead9e45bu, (uint)world.GetSectorHash());
+                Assert.AreEqual(0xead9e45bu, (uint)DoomDebug.GetSectorHash(world));
                 Assert.AreEqual(0x1397c7cbu, (uint)aggSectorHash);
             }
         }

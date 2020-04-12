@@ -26,9 +26,9 @@ namespace ManagedDoomTest.CompatibilityTests
                 {
                     demo.ReadCmd();
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
 
                     if (world.levelTime == 18003)
@@ -61,9 +61,9 @@ namespace ManagedDoomTest.CompatibilityTests
                 {
                     demo.ReadCmd();
                     world.Update();
-                    lastMobjHash = world.GetMobjHash();
+                    lastMobjHash = DoomDebug.GetMobjHash(world);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = world.GetSectorHash();
+                    lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
 
                     if (world.levelTime == 24659)

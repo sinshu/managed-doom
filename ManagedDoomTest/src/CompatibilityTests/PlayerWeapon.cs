@@ -28,7 +28,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastHash = world.GetMobjHash();
+                    lastHash = DoomDebug.GetMobjHash(world);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -56,7 +56,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastHash = world.GetMobjHash();
+                    lastHash = DoomDebug.GetMobjHash(world);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -84,7 +84,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastHash = world.GetMobjHash();
+                    lastHash = DoomDebug.GetMobjHash(world);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -112,7 +112,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastHash = world.GetMobjHash();
+                    lastHash = DoomDebug.GetMobjHash(world);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -140,7 +140,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastHash = world.GetMobjHash();
+                    lastHash = DoomDebug.GetMobjHash(world);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -168,7 +168,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastHash = world.GetMobjHash();
+                    lastHash = DoomDebug.GetMobjHash(world);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -196,7 +196,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastHash = world.GetMobjHash();
+                    lastHash = DoomDebug.GetMobjHash(world);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -224,7 +224,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
-                    lastHash = world.GetMobjHash();
+                    lastHash = DoomDebug.GetMobjHash(world);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 

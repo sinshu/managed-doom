@@ -299,67 +299,6 @@ namespace ManagedDoom
             world.ThingAllocation.RemoveMobj(this);
         }
 
-        public override int GetHashCode()
-        {
-            var hash = 0;
-
-            hash = DoomDebug.CombineHash(hash, X.Data);
-            hash = DoomDebug.CombineHash(hash, Y.Data);
-            hash = DoomDebug.CombineHash(hash, Z.Data);
-
-            hash = DoomDebug.CombineHash(hash, (int)Angle.Data);
-            hash = DoomDebug.CombineHash(hash, (int)Sprite);
-            hash = DoomDebug.CombineHash(hash, Frame);
-
-            hash = DoomDebug.CombineHash(hash, FloorZ.Data);
-            hash = DoomDebug.CombineHash(hash, CeilingZ.Data);
-
-            hash = DoomDebug.CombineHash(hash, Radius.Data);
-            hash = DoomDebug.CombineHash(hash, Height.Data);
-
-            hash = DoomDebug.CombineHash(hash, MomX.Data);
-            hash = DoomDebug.CombineHash(hash, MomY.Data);
-            hash = DoomDebug.CombineHash(hash, MomZ.Data);
-
-            hash = DoomDebug.CombineHash(hash, (int)Tics);
-            hash = DoomDebug.CombineHash(hash, (int)Flags);
-            hash = DoomDebug.CombineHash(hash, Health);
-
-            hash = DoomDebug.CombineHash(hash, (int)MoveDir);
-            hash = DoomDebug.CombineHash(hash, MoveCount);
-
-            hash = DoomDebug.CombineHash(hash, ReactionTime);
-            hash = DoomDebug.CombineHash(hash, Threshold);
-
-            return hash;
-        }
-
-        public string DumpCsv()
-        {
-            var sb = new System.Text.StringBuilder();
-            sb.Append(X.Data).Append(",");
-            sb.Append(Y.Data).Append(",");
-            sb.Append(Z.Data).Append(",");
-            sb.Append((int)Angle.Data).Append(",");
-            sb.Append((int)Sprite).Append(",");
-            sb.Append(Frame).Append(",");
-            sb.Append(FloorZ.Data).Append(",");
-            sb.Append(CeilingZ.Data).Append(",");
-            sb.Append(Radius.Data).Append(",");
-            sb.Append(Height.Data).Append(",");
-            sb.Append(MomX.Data).Append(",");
-            sb.Append(MomY.Data).Append(",");
-            sb.Append(MomZ.Data).Append(",");
-            sb.Append((int)Tics).Append(",");
-            sb.Append((int)Flags).Append(",");
-            sb.Append(Health).Append(",");
-            sb.Append((int)MoveDir).Append(",");
-            sb.Append(MoveCount).Append(",");
-            sb.Append(ReactionTime).Append(",");
-            sb.Append(Threshold);
-            return sb.ToString();
-        }
-
         public World World => world;
     }
 }
