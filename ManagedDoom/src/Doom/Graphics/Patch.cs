@@ -69,6 +69,11 @@ namespace ManagedDoom
                 columns);
         }
 
+        public static Patch FromWad(string name, Wad wad)
+        {
+            return FromData(name, wad.ReadLump(name));
+        }
+
         private static void PadData(ref byte[] data, int width)
         {
             var need = 0;

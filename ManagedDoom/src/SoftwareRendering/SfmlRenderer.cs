@@ -32,6 +32,9 @@ namespace ManagedDoom.SoftwareRendering
 
         private ThreeD threeD;
 
+        private CommonPatches patches;
+        private Intermission intermission;
+
         private World world;
 
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
@@ -82,6 +85,9 @@ namespace ManagedDoom.SoftwareRendering
             sfmlStates = new RenderStates(BlendMode.None);
 
             threeD = new ThreeD(resource, screenWidth, screenHeight, screenData);
+
+            patches = new CommonPatches(resource.Wad);
+            intermission = new Intermission(patches, screenWidth, screenHeight, screenData);
         }
 
         private static uint[] InitColors(Palette palette)
@@ -112,9 +118,13 @@ namespace ManagedDoom.SoftwareRendering
             threeD.UnbindWorld();
         }
 
+        //private int cnt = 0;
         public void Render()
         {
             threeD.Render(world.Players[0]);
+
+            //intermission.DrawTest(patches.Numbers[0], cnt -8, cnt -8);
+            //cnt++;
 
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
             for (var i = 0; i < p.Length; i++)
