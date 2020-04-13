@@ -118,13 +118,15 @@ namespace ManagedDoom.SoftwareRendering
             threeD.UnbindWorld();
         }
 
-        //private int cnt = 0;
+        //private int cnt = -35;
+
         public void Render()
         {
             threeD.Render(world.Players[0]);
 
-            //intermission.DrawTest(patches.Numbers[0], cnt -8, cnt -8);
             //cnt++;
+
+            //intermission.DrawPatch(patches.Numbers[0], cnt, 0, 7);
 
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
             for (var i = 0; i < p.Length; i++)

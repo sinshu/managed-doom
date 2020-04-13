@@ -28,33 +28,32 @@ namespace ManagedDoom.SoftwareRendering
             ratio = screenWidth / 320;
         }
 
-        public void DrawTest(Patch patch, int x, int y)
+        public void DrawPatch(Patch patch, int x, int y, int ratio)
         {
-            var x1 = x;
-            var x2 = x + patch.Width;
-            var c1 = 0;
-            var c2 = patch.Width;
+            var drawX = x;
+            var drawWidth = ratio * patch.Width;
 
-            if (x1 < 0)
+            var i = 0;
+            var frac = Fixed.One / (2 * ratio);
+            var step = Fixed.One / ratio;
+
+            if (drawX < 0)
             {
-                c1 -= x1;
-                x1 = 0;
+                var exceed = -drawX;
+                frac += exceed * step;
+                i += exceed;
             }
 
-            if (x2 > screenWidth)
+            if (drawX + drawWidth > screenWidth)
             {
-                c2 -= x2 - screenWidth;
-                x2 = screenWidth;
+                var exceed = drawX + drawWidth - screenWidth;
+                drawWidth -= exceed;
             }
 
-            x = x1;
-            for (var c = c1; c < c2; c++)
+            for (; i < drawWidth; i++)
             {
-                for (var i = 0; i < ratio; i++)
-                {
-                    DrawColumn(patch.Columns[c], ratio * x + i, ratio * y, ratio);
-                }
-                x++;
+                DrawColumn(patch.Columns[frac.ToIntFloor()], drawX + i, y, ratio);
+                frac += step;
             }
         }
 
@@ -62,38 +61,37 @@ namespace ManagedDoom.SoftwareRendering
         {
             foreach (var column in source)
             {
-                var colTopDelta = ratio * column.TopDelta;
-                var colLength = ratio * column.Length;
+                var exTopDelta = ratio * column.TopDelta;
+                var exLength = ratio * column.Length;
 
                 var sourceIndex = column.Offset;
-                var drawY = y + colTopDelta;
-                var length = colLength;
+                var drawY = y + exTopDelta;
+                var drawLength = exLength;
 
-                var topExceedance = -(y + colTopDelta);
-                if (topExceedance > 0)
+                var i = 0;
+                var p = screenHeight * x + drawY;
+                var frac = Fixed.FromInt(sourceIndex) + Fixed.One / (2 * ratio);
+                var step = Fixed.One / ratio;
+
+                if (drawY < 0)
                 {
-                    sourceIndex += topExceedance;
-                    drawY += topExceedance;
-                    length -= topExceedance;
+                    var exceed = -drawY;
+                    p += exceed;
+                    frac += exceed * step;
+                    i += exceed;
                 }
 
-                var bottomExceedance = y + colTopDelta + colLength - screenHeight;
-                if (bottomExceedance > 0)
+                if (drawY + drawLength > screenHeight)
                 {
-                    length -= bottomExceedance;
+                    var exceed = drawY + drawLength - screenHeight;
+                    drawLength -= exceed;
                 }
 
-                if (length > 0)
+                for (; i < drawLength; i++)
                 {
-                    var p = screenHeight * x + drawY;
-                    var frac = Fixed.FromInt(sourceIndex);
-                    var step = Fixed.One / ratio;
-                    for (var i = 0; i < length; i++)
-                    {
-                        screenData[p] = column.Data[frac.ToIntFloor()];
-                        p++;
-                        frac += step;
-                    }
+                    screenData[p] = column.Data[frac.ToIntFloor()];
+                    p++;
+                    frac += step;
                 }
             }
         }
