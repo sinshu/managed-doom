@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ManagedDoom
 {
@@ -7,35 +8,10 @@ namespace ManagedDoom
         // background (map of levels).
         private Patch background;
 
-        // You Are Here graphic
-        private Patch youAreHere1;
-        private Patch youAreHere2;
-
-        // splat
-        private Patch splat;
-
-        // %, : graphics
-        private Patch percent;
-        private Patch colon;
-
-        // 0-9 graphic
-        private Patch[] numbers;
-
-        // minus sign
-        private Patch wiminus;
-
-        // "Finished!" graphics
-        private Patch finished;
-
-        // "Entering" graphic
-        private Patch entering;
-
-        // "secret"
-        private Patch sp_secret;
-
         // "Kills", "Scrt", "Items", "Frags"
         private Patch kills;
         private Patch secret;
+        private Patch sp_secret;
         private Patch items;
         private Patch frags;
 
@@ -43,6 +19,22 @@ namespace ManagedDoom
         private Patch time;
         private Patch par;
         private Patch sucks;
+
+        // minus sign
+        private Patch wiminus;
+
+        // 0-9 graphic
+        private Patch[] numbers;
+
+        // %, : graphics
+        private Patch percent;
+        private Patch colon;
+
+        // "Finished!" graphics
+        private Patch finished;
+
+        // "Entering" graphic
+        private Patch entering;
 
         // "killers", "victims"
         private Patch killers;
@@ -52,6 +44,16 @@ namespace ManagedDoom
         private Patch total;
         private Patch star;
         private Patch bstar;
+
+
+
+
+        // You Are Here graphic
+        private Patch youAreHere1;
+        private Patch youAreHere2;
+
+        // splat
+        private Patch splat;
 
         // "red P[1..MAXPLAYERS]"
         private Patch[] p;
@@ -66,6 +68,16 @@ namespace ManagedDoom
         {
             background = Patch.FromWad("INTERPIC", wad);
 
+            kills = Patch.FromWad("WIOSTK", wad);
+            secret = Patch.FromWad("WIOSTS", wad);
+            sp_secret = Patch.FromWad("WISCRT2", wad);
+            items = Patch.FromWad("WIOSTI", wad);
+            frags = Patch.FromWad("WIFRGS", wad);
+
+            time = Patch.FromWad("WITIME", wad);
+            par = Patch.FromWad("WIPAR", wad);
+            sucks = Patch.FromWad("WISUCKS", wad);
+
             wiminus = Patch.FromWad("WIMINUS", wad);
 
             numbers = new Patch[10];
@@ -75,19 +87,50 @@ namespace ManagedDoom
             }
 
             percent = Patch.FromWad("WIPCNT", wad);
+            colon = Patch.FromWad("WICOLON", wad);
 
             finished = Patch.FromWad("WIF", wad);
 
             entering = Patch.FromWad("WIENTER", wad);
 
-            kills = Patch.FromWad("WIOSTK", wad);
+            killers = Patch.FromWad("WIKILRS", wad);
+            victims = Patch.FromWad("WIVCTMS", wad);
 
-            secret = Patch.FromWad("WIOSTS", wad);
+            total = Patch.FromWad("WIMSTT", wad);
+            star = Patch.FromWad("STFST01", wad);
+            bstar = Patch.FromWad("STFDEAD0", wad);
 
-            sp_secret = Patch.FromWad("WISCRT2", wad);
+            Console.WriteLine("All patches are OK.");
         }
 
         public Patch Background => background;
-        public Patch[] Numbers => numbers;
+
+        public Patch Kills => kills;
+        public Patch Secret => secret;
+        public Patch SP_Secret => sp_secret;
+        public Patch Items => items;
+        public Patch Frags => frags;
+
+        public Patch Time => time;
+        public Patch Par => par;
+        public Patch Sucks => sucks;
+
+        public Patch Minus => wiminus;
+
+        public IReadOnlyList<Patch> Numbers => numbers;
+
+        public Patch Percent => percent;
+        public Patch Colon => colon;
+
+        public Patch Finished => finished;
+
+        public Patch Entering => entering;
+
+        public Patch Killers => killers;
+        public Patch Victims => victims;
+
+        public Patch Total => total;
+        public Patch Star => star;
+        public Patch BStar => BStar;
     }
 }
