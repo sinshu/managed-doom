@@ -100,6 +100,15 @@ namespace ManagedDoom
             star = Patch.FromWad("STFST01", wad);
             bstar = Patch.FromWad("STFDEAD0", wad);
 
+
+
+
+            lnames = new Patch[32];
+            for (var i = 0; i < 32; i++)
+            {
+                lnames[i] = Patch.FromWad("CWILV" + i.ToString("00"), wad);
+            }
+
             Console.WriteLine("All patches are OK.");
         }
 
@@ -132,5 +141,7 @@ namespace ManagedDoom
         public Patch Total => total;
         public Patch Star => star;
         public Patch BStar => BStar;
+
+        public IReadOnlyList<Patch> LevelNames => lnames;
     }
 }

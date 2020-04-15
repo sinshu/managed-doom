@@ -30,10 +30,10 @@ namespace ManagedDoom.SoftwareRendering
         private SFML.Graphics.Sprite sfmlSprite;
         private SFML.Graphics.RenderStates sfmlStates;
 
-        private ThreeD threeD;
+        private ThreeDRenderer threeD;
 
         private CommonPatches patches;
-        private Intermission intermission;
+        private IntermissionRenderer intermission;
 
         private World world;
 
@@ -84,10 +84,10 @@ namespace ManagedDoom.SoftwareRendering
 
             sfmlStates = new RenderStates(BlendMode.None);
 
-            threeD = new ThreeD(resource, screenWidth, screenHeight, screenData);
+            threeD = new ThreeDRenderer(resource, screenWidth, screenHeight, screenData);
 
             patches = new CommonPatches(resource.Wad);
-            intermission = new Intermission(patches, screenWidth, screenHeight, screenData);
+            intermission = new IntermissionRenderer(patches, screenWidth, screenHeight, screenData);
         }
 
         private static uint[] InitColors(Palette palette)
