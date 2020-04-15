@@ -19,12 +19,11 @@ namespace ManagedDoom.SoftwareRendering
         private int sfmlWindowWidth;
         private int sfmlWindowHeight;
 
-        private int screenWidth;
-        private int screenHeight;
+        private DrawScreen screen;
+
         private int sfmlTextureWidth;
         private int sfmlTextureHeight;
 
-        private byte[] screenData;
         private byte[] sfmlTextureData;
         private SFML.Graphics.Texture sfmlTexture;
         private SFML.Graphics.Sprite sfmlSprite;
@@ -49,21 +48,18 @@ namespace ManagedDoom.SoftwareRendering
 
             if (highResolution)
             {
-                screenWidth = 640;
-                screenHeight = 400;
+                screen = new DrawScreen(640, 400);
                 sfmlTextureWidth = 512;
                 sfmlTextureHeight = 1024;
             }
             else
             {
-                screenWidth = 320;
-                screenHeight = 200;
+                screen = new DrawScreen(320, 200);
                 sfmlTextureWidth = 256;
                 sfmlTextureHeight = 512;
             }
 
-            screenData = new byte[screenWidth * screenHeight];
-            sfmlTextureData = new byte[4 * screenWidth * screenHeight];
+            sfmlTextureData = new byte[4 * screen.Width * screen.Height];
 
             try
             {
@@ -78,16 +74,16 @@ namespace ManagedDoom.SoftwareRendering
 
             sfmlSprite.Position = new Vector2f(0, 0);
             sfmlSprite.Rotation = 90;
-            var scaleX = (float)sfmlWindowWidth / screenWidth;
-            var scaleY = (float)sfmlWindowHeight / screenHeight;
+            var scaleX = (float)sfmlWindowWidth / screen.Width;
+            var scaleY = (float)sfmlWindowHeight / screen.Height;
             sfmlSprite.Scale = new Vector2f(scaleY, -scaleX);
 
             sfmlStates = new RenderStates(BlendMode.None);
 
-            threeD = new ThreeDRenderer(resource, screenWidth, screenHeight, screenData);
+            threeD = new ThreeDRenderer(resource, screen);
 
             patches = new CommonPatches(resource.Wad);
-            intermission = new IntermissionRenderer(patches, screenWidth, screenHeight, screenData);
+            intermission = new IntermissionRenderer(patches, screen);
         }
 
         private static uint[] InitColors(Palette palette)
@@ -128,13 +124,14 @@ namespace ManagedDoom.SoftwareRendering
 
             //intermission.DrawPatch(patches.Numbers[0], cnt, 0, 7);
 
+            var screenData = screen.Data;
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
             for (var i = 0; i < p.Length; i++)
             {
                 p[i] = colors[screenData[i]];
             }
 
-            sfmlTexture.Update(sfmlTextureData, (uint)screenHeight, (uint)screenWidth, 0, 0);
+            sfmlTexture.Update(sfmlTextureData, (uint)screen.Height, (uint)screen.Width, 0, 0);
 
             sfmlWindow.Draw(sfmlSprite, sfmlStates);
 

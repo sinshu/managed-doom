@@ -1,31 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
 
 namespace ManagedDoom.SoftwareRendering
 {
-    public sealed class Intermission
+    public sealed class DrawScreen
     {
-        private int screenWidth;
-        private int screenHeight;
-        private byte[] screenData;
+        private int width;
+        private int height;
+        private byte[] data;
 
-        private int ratio;
-
-        public Intermission(
-           CommonPatches patches,
-           int screenWidth,
-           int screenHeight,
-           byte[] screenData)
+        public DrawScreen(int width, int height)
         {
-            this.screenWidth = screenWidth;
-            this.screenHeight = screenHeight;
-            this.screenData = screenData;
-
-            ratio = screenWidth / 320;
+            this.width = width;
+            this.height = height;
+            data = new byte[width * height];
         }
 
         public void DrawPatch(Patch patch, int x, int y, int ratio)
@@ -44,9 +31,9 @@ namespace ManagedDoom.SoftwareRendering
                 i += exceed;
             }
 
-            if (drawX + drawWidth > screenWidth)
+            if (drawX + drawWidth > width)
             {
-                var exceed = drawX + drawWidth - screenWidth;
+                var exceed = drawX + drawWidth - width;
                 drawWidth -= exceed;
             }
 
@@ -69,7 +56,7 @@ namespace ManagedDoom.SoftwareRendering
                 var drawLength = exLength;
 
                 var i = 0;
-                var p = screenHeight * x + drawY;
+                var p = height * x + drawY;
                 var frac = Fixed.FromInt(sourceIndex) + Fixed.One / (2 * ratio);
                 var step = Fixed.One / ratio;
 
@@ -81,19 +68,23 @@ namespace ManagedDoom.SoftwareRendering
                     i += exceed;
                 }
 
-                if (drawY + drawLength > screenHeight)
+                if (drawY + drawLength > height)
                 {
-                    var exceed = drawY + drawLength - screenHeight;
+                    var exceed = drawY + drawLength - height;
                     drawLength -= exceed;
                 }
 
                 for (; i < drawLength; i++)
                 {
-                    screenData[p] = column.Data[frac.ToIntFloor()];
+                    data[p] = column.Data[frac.ToIntFloor()];
                     p++;
                     frac += step;
                 }
             }
         }
+
+        public int Width => width;
+        public int Height => height;
+        public byte[] Data => data;
     }
 }

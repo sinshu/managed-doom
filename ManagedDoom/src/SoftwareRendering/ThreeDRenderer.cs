@@ -14,24 +14,16 @@ namespace ManagedDoom.SoftwareRendering
         private FlatLookup flats;
         private SpriteLookup sprites;
 
-        private int screenWidth;
-        private int screenHeight;
-        private byte[] screenData;
+        private DrawScreen screen;
 
-        public ThreeDRenderer(
-            CommonResource resource,
-            int screenWidth,
-            int screenHeight,
-            byte[] screenData)
+        public ThreeDRenderer(CommonResource resource, DrawScreen screen)
         {
             colorMap = resource.ColorMap;
             textures = resource.Textures;
             flats = resource.Flats;
             sprites = resource.Sprites;
 
-            this.screenWidth = screenWidth;
-            this.screenHeight = screenHeight;
-            this.screenData = screenData;
+            this.screen = screen;
 
             InitWallRendering();
             InitPlaneRendering();
@@ -41,7 +33,7 @@ namespace ManagedDoom.SoftwareRendering
             InitSpriteRendering();
             InitWeaponRendering();
 
-            ResetWindow(0, 0, screenWidth, screenHeight);
+            ResetWindow(0, 0, screen.Width, screen.Height);
             ResetWallRendering();
             ResetPlaneRendering();
             ResetSkyRendering();
@@ -99,7 +91,7 @@ namespace ManagedDoom.SoftwareRendering
         public void InitWallRendering()
         {
             angleToX = new int[Trig.FineAngleCount / 2];
-            xToAngle = new Angle[screenWidth];
+            xToAngle = new Angle[screen.Width];
         }
 
         public void ResetWallRendering()
@@ -197,18 +189,18 @@ namespace ManagedDoom.SoftwareRendering
 
         public void InitPlaneRendering()
         {
-            planeYSlope = new Fixed[screenHeight];
-            planeDistScale = new Fixed[screenWidth];
-            ceilingXFrac = new Fixed[screenHeight];
-            ceilingYFrac = new Fixed[screenHeight];
-            ceilingXStep = new Fixed[screenHeight];
-            ceilingYStep = new Fixed[screenHeight];
-            ceilingLights = new byte[screenHeight][];
-            floorXFrac = new Fixed[screenHeight];
-            floorYFrac = new Fixed[screenHeight];
-            floorXStep = new Fixed[screenHeight];
-            floorYStep = new Fixed[screenHeight];
-            floorLights = new byte[screenHeight][];
+            planeYSlope = new Fixed[screen.Height];
+            planeDistScale = new Fixed[screen.Width];
+            ceilingXFrac = new Fixed[screen.Height];
+            ceilingYFrac = new Fixed[screen.Height];
+            ceilingXStep = new Fixed[screen.Height];
+            ceilingYStep = new Fixed[screen.Height];
+            ceilingLights = new byte[screen.Height][];
+            floorXFrac = new Fixed[screen.Height];
+            floorYFrac = new Fixed[screen.Height];
+            floorXStep = new Fixed[screen.Height];
+            floorYStep = new Fixed[screen.Height];
+            floorLights = new byte[screen.Height][];
         }
 
         public void ResetPlaneRendering()
@@ -259,7 +251,7 @@ namespace ManagedDoom.SoftwareRendering
 
         private void ResetSkyRendering()
         {
-            skyInvScale = new Fixed((int)(((long)Fixed.FracUnit * screenWidth * 200) / (windowWidth * screenHeight)));
+            skyInvScale = new Fixed((int)(((long)Fixed.FracUnit * screen.Width * 200) / (windowWidth * screen.Height)));
         }
 
 
@@ -383,8 +375,8 @@ namespace ManagedDoom.SoftwareRendering
 
         private void InitRenderingHistory()
         {
-            upperClip = new short[screenWidth];
-            lowerClip = new short[screenWidth];
+            upperClip = new short[screen.Width];
+            lowerClip = new short[screen.Width];
 
             clipRanges = new ClipRange[1024];
             for (var i = 0; i < clipRanges.Length; i++)
@@ -392,7 +384,7 @@ namespace ManagedDoom.SoftwareRendering
                 clipRanges[i] = new ClipRange();
             }
 
-            clipData = new short[128 * screenWidth];
+            clipData = new short[128 * screen.Width];
 
             visWallRanges = new VisWallRange[1024];
             for (var i = 0; i < visWallRanges.Length; i++)
@@ -1768,14 +1760,15 @@ namespace ManagedDoom.SoftwareRendering
 
             var height = Fixed.Abs(sector.CeilingHeight - viewZ);
 
-            var data = flat.Data;
+            var flatData = flat.Data;
+            var screenData = screen.Data;
 
             if (sector == ceilingPrevSector && ceilingPrevX == x - 1)
             {
                 var p1 = Math.Max(y1, ceilingPrevY1);
                 var p2 = Math.Min(y2, ceilingPrevY2);
 
-                var pos = screenHeight * (windowX + x) + windowY + y1;
+                var pos = screen.Height * (windowX + x) + windowY + y1;
 
                 for (var y = y1; y < p1; y++)
                 {
@@ -1794,7 +1787,7 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = colorMap[data[spot]];
+                    screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
 
@@ -1804,7 +1797,7 @@ namespace ManagedDoom.SoftwareRendering
                     var yFrac = ceilingYFrac[y] + ceilingYStep[y];
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = ceilingLights[y][data[spot]];
+                    screenData[pos] = ceilingLights[y][flatData[spot]];
                     pos++;
 
                     ceilingXFrac[y] = xFrac;
@@ -1828,13 +1821,13 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = colorMap[data[spot]];
+                    screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
             }
             else
             {
-                var pos = screenHeight * (windowX + x) + windowY + y1;
+                var pos = screen.Height * (windowX + x) + windowY + y1;
 
                 for (var y = y1; y <= y2; y++)
                 {
@@ -1853,7 +1846,7 @@ namespace ManagedDoom.SoftwareRendering
                     ceilingLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = colorMap[data[spot]];
+                    screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
             }
@@ -1885,14 +1878,15 @@ namespace ManagedDoom.SoftwareRendering
 
             var height = Fixed.Abs(sector.FloorHeight - viewZ);
 
-            var data = flat.Data;
+            var flatData = flat.Data;
+            var screenData = screen.Data;
 
             if (sector == floorPrevSector && floorPrevX == x - 1)
             {
                 var p1 = Math.Max(y1, floorPrevY1);
                 var p2 = Math.Min(y2, floorPrevY2);
 
-                var pos = screenHeight * (windowX + x) + windowY + y1;
+                var pos = screen.Height * (windowX + x) + windowY + y1;
 
                 for (var y = y1; y < p1; y++)
                 {
@@ -1911,7 +1905,7 @@ namespace ManagedDoom.SoftwareRendering
                     floorLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = colorMap[data[spot]];
+                    screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
 
@@ -1921,7 +1915,7 @@ namespace ManagedDoom.SoftwareRendering
                     var yFrac = floorYFrac[y] + floorYStep[y];
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = floorLights[y][data[spot]];
+                    screenData[pos] = floorLights[y][flatData[spot]];
                     pos++;
 
                     floorXFrac[y] = xFrac;
@@ -1945,13 +1939,13 @@ namespace ManagedDoom.SoftwareRendering
                     floorLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = colorMap[data[spot]];
+                    screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
             }
             else
             {
-                var pos = screenHeight * (windowX + x) + windowY + y1;
+                var pos = screen.Height * (windowX + x) + windowY + y1;
 
                 for (var y = y1; y <= y2; y++)
                 {
@@ -1970,7 +1964,7 @@ namespace ManagedDoom.SoftwareRendering
                     floorLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
-                    screenData[pos] = colorMap[data[spot]];
+                    screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
             }
@@ -2001,7 +1995,7 @@ namespace ManagedDoom.SoftwareRendering
             // Framebuffer destination address.
             // Use ylookup LUT to avoid multiply with ScreenWidth.
             // Use columnofs LUT for subwindows? 
-            var pos1 = screenHeight * (windowX + x) + windowY + y1;
+            var pos1 = screen.Height * (windowX + x) + windowY + y1;
             var pos2 = pos1 + (y2 - y1);
 
             // Determine scaling,
@@ -2014,6 +2008,7 @@ namespace ManagedDoom.SoftwareRendering
             // This is as fast as it gets.
             var source = column.Data;
             var offset = column.Offset;
+            var screenData = screen.Data;
             for (var pos = pos1; pos <= pos2; pos++)
             {
                 // Re-map color indices from wall texture column
