@@ -1125,15 +1125,16 @@ namespace ManagedDoom
                 viletryy = actor.Y + actor.Info.Speed * yspeed[(int)actor.MoveDir];
 
                 var bm = world.Map.BlockMap;
-                var xl = (viletryx - bm.OriginX - GameConstants.MaxThingRadius * 2).Data >> BlockMap.MapBlockShift;
-                var xh = (viletryx - bm.OriginX + GameConstants.MaxThingRadius * 2).Data >> BlockMap.MapBlockShift;
-                var yl = (viletryy - bm.OriginY - GameConstants.MaxThingRadius * 2).Data >> BlockMap.MapBlockShift;
-                var yh = (viletryy - bm.OriginY + GameConstants.MaxThingRadius * 2).Data >> BlockMap.MapBlockShift;
+                var maxRadius = GameConstants.MaxThingRadius * 2;
+                var blockX1 = bm.GetBlockX(viletryx - maxRadius);
+                var blockX2 = bm.GetBlockX(viletryx + maxRadius);
+                var blockY1 = bm.GetBlockY(viletryy - maxRadius);
+                var blockY2 = bm.GetBlockY(viletryy + maxRadius);
 
                 vileobj = actor;
-                for (var bx = xl; bx <= xh; bx++)
+                for (var bx = blockX1; bx <= blockX2; bx++)
                 {
-                    for (var by = yl; by <= yh; by++)
+                    for (var by = blockY1; by <= blockY2; by++)
                     {
                         // Call PIT_VileCheck to check
                         // whether object is a corpse

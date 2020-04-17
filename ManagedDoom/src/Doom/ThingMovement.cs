@@ -12,6 +12,7 @@ namespace ManagedDoom
 
             InitThingMovement();
             InitSlideMovement();
+            InitTeleportMovement();
         }
 
         public static readonly Fixed FloatSpeed = Fixed.FromInt(4);
@@ -1061,20 +1062,27 @@ namespace ManagedDoom
         // TELEPORT MOVE
         // 
 
+        private Func<Mobj, bool> stompThingFunc;
+
+        private void InitTeleportMovement()
+        {
+            stompThingFunc = StompThing;
+        }
+
         //
         // PIT_StompThing
         //
-        private bool PIT_StompThing(Mobj thing)
+        private bool StompThing(Mobj thing)
         {
             if ((thing.Flags & MobjFlags.Shootable) == 0)
             {
                 return true;
             }
 
-            var blockdist = thing.Radius + currentThing.Radius;
-
-            if (Fixed.Abs(thing.X - currentX) >= blockdist
-                || Fixed.Abs(thing.Y - currentY) >= blockdist)
+            var blockDist = thing.Radius + currentThing.Radius;
+            var dx = Fixed.Abs(thing.X - currentX);
+            var dy = Fixed.Abs(thing.Y - currentY);
+            if (dx >= blockDist || dy >= blockDist)
             {
                 // didn't hit it
                 return true;
@@ -1114,31 +1122,33 @@ namespace ManagedDoom
             currentBox[Box.Right] = x + currentThing.Radius;
             currentBox[Box.Left] = x - currentThing.Radius;
 
-            var newsubsec = Geometry.PointInSubsector(x, y, world.Map);
+            var ss = Geometry.PointInSubsector(x, y, world.Map);
+
             currentCeilingLine = null;
 
             // The base floor/ceiling is from the subsector
             // that contains the point.
             // Any contacted lines the step closer together
             // will adjust them.
-            currentFloorZ = currentDropoffZ = newsubsec.Sector.FloorHeight;
-            currentCeilingZ = newsubsec.Sector.CeilingHeight;
+            currentFloorZ = currentDropoffZ = ss.Sector.FloorHeight;
+            currentCeilingZ = ss.Sector.CeilingHeight;
 
             var validcount = world.GetNewValidCount();
+
             hitSpecialCount = 0;
 
             // stomp on any things contacted
             var bm = world.Map.BlockMap;
-            var xl = (currentBox[Box.Left] - bm.OriginX - GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
-            var xh = (currentBox[Box.Right] - bm.OriginX + GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
-            var yl = (currentBox[Box.Bottom] - bm.OriginY - GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
-            var yh = (currentBox[Box.Top] - bm.OriginY + GameConstants.MaxThingRadius).Data >> BlockMap.MapBlockShift;
+            var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConstants.MaxThingRadius);
+            var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConstants.MaxThingRadius);
+            var blockY1 = bm.GetBlockY(currentBox[Box.Bottom] - GameConstants.MaxThingRadius);
+            var blockY2 = bm.GetBlockY(currentBox[Box.Top] + GameConstants.MaxThingRadius);
 
-            for (var bx = xl; bx <= xh; bx++)
+            for (var bx = blockX1; bx <= blockX2; bx++)
             {
-                for (var by = yl; by <= yh; by++)
+                for (var by = blockY1; by <= blockY2; by++)
                 {
-                    if (!bm.IterateThings(bx, by, mo => PIT_StompThing(mo)))
+                    if (!bm.IterateThings(bx, by, stompThingFunc))
                     {
                         return false;
                     }
