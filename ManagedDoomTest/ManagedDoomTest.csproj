@@ -193,6 +193,12 @@
     <None Update="data\supershotgun_test.wad">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="data\telefrag_test.lmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="data\telefrag_test.wad">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="data\teleporter_test.lmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -568,5 +568,33 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0xeb4456c4u, (uint)aggHash);
             }
         }
+
+        [TestMethod]
+        public void TelefragTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\telefrag_test.wad"))
+            {
+                var demo = new Demo(@"data\telefrag_test.lmp");
+                var world = new World(resource, demo.Options, demo.Players);
+
+                var lastHash = 0;
+                var aggHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd())
+                    {
+                        break;
+                    }
+
+                    world.Update();
+                    lastHash = DoomDebug.GetMobjHash(world);
+                    aggHash = DoomDebug.CombineHash(aggHash, lastHash);
+                }
+
+                Assert.AreEqual(0x4c27ebc9u, (uint)lastHash);
+                Assert.AreEqual(0xa93ecd0eu, (uint)aggHash);
+            }
+        }
     }
 }
