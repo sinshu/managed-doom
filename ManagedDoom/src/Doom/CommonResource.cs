@@ -11,6 +11,7 @@ namespace ManagedDoom
         private TextureLookup textures;
         private FlatLookup flats;
         private SpriteLookup sprites;
+        private CommonPatches patches;
 
         private CommonResource()
         {
@@ -26,6 +27,7 @@ namespace ManagedDoom
                 textures = new TextureLookup(wad);
                 flats = new FlatLookup(wad);
                 sprites = new SpriteLookup(wad);
+                patches = new CommonPatches(wad);
             }
             catch (Exception e)
             {
@@ -62,5 +64,6 @@ namespace ManagedDoom
         public TextureLookup Textures => textures;
         public FlatLookup Flats => flats;
         public SpriteLookup Sprites => sprites;
+        public CommonPatches Patches => patches;
     }
 }

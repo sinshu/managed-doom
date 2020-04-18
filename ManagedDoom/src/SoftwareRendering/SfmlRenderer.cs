@@ -30,8 +30,6 @@ namespace ManagedDoom.SoftwareRendering
         private SFML.Graphics.RenderStates sfmlStates;
 
         private ThreeDRenderer threeD;
-
-        private CommonPatches patches;
         private IntermissionRenderer intermission;
 
         private World world;
@@ -81,9 +79,7 @@ namespace ManagedDoom.SoftwareRendering
             sfmlStates = new RenderStates(BlendMode.None);
 
             threeD = new ThreeDRenderer(resource, screen);
-
-            patches = new CommonPatches(resource.Wad);
-            intermission = new IntermissionRenderer(patches, screen);
+            intermission = new IntermissionRenderer(resource.Patches, screen);
         }
 
         private static uint[] InitColors(Palette palette)
@@ -123,6 +119,25 @@ namespace ManagedDoom.SoftwareRendering
             //cnt++;
 
             //intermission.DrawPatch(patches.Numbers[0], cnt, 0, 7);
+
+            var screenData = screen.Data;
+            var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
+            for (var i = 0; i < p.Length; i++)
+            {
+                p[i] = colors[screenData[i]];
+            }
+
+            sfmlTexture.Update(sfmlTextureData, (uint)screen.Height, (uint)screen.Width, 0, 0);
+
+            sfmlWindow.Draw(sfmlSprite, sfmlStates);
+
+            sfmlWindow.Display();
+        }
+
+        public void IntermissionRenderTest(Intermission im)
+        {
+            intermission.Intermission = im;
+            intermission.Render();
 
             var screenData = screen.Data;
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);

@@ -14,10 +14,10 @@ namespace ManagedDoom
         public int Last;
         public int Next;
 
-        public int MaxKills;
-        public int MaxItems;
-        public int MaxSecret;
-        public int MaxFrags;
+        public int maxKills;
+        public int maxItems;
+        public int maxSecret;
+        public int maxFrags;
 
         // the par time
         public int ParTime;
@@ -30,6 +30,15 @@ namespace ManagedDoom
         public IntermissionInfo()
         {
             Plyr = new PlayerIntermissionInfo[Player.MaxPlayerCount];
+            for (var i = 0; i < Plyr.Length; i++)
+            {
+                Plyr[i] = new PlayerIntermissionInfo();
+            }
         }
+
+        public int MaxKills => Math.Max(maxKills, 1);
+        public int MaxItems => Math.Max(maxItems, 1);
+        public int MaxSecret => Math.Max(maxSecret, 1);
+        public int MaxFrags => Math.Max(maxFrags, 1);
     }
 }

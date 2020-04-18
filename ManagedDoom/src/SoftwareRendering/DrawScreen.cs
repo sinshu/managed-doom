@@ -15,14 +15,14 @@ namespace ManagedDoom.SoftwareRendering
             data = new byte[width * height];
         }
 
-        public void DrawPatch(Patch patch, int x, int y, int ratio)
+        public void DrawPatch(Patch patch, int x, int y, int scale)
         {
             var drawX = x;
-            var drawWidth = ratio * patch.Width;
+            var drawWidth = scale * patch.Width;
 
             var i = 0;
-            var frac = Fixed.One / (2 * ratio);
-            var step = Fixed.One / ratio;
+            var frac = Fixed.One / (2 * scale);
+            var step = Fixed.One / scale;
 
             if (drawX < 0)
             {
@@ -39,17 +39,19 @@ namespace ManagedDoom.SoftwareRendering
 
             for (; i < drawWidth; i++)
             {
-                DrawColumn(patch.Columns[frac.ToIntFloor()], drawX + i, y, ratio);
+                DrawColumn(patch.Columns[frac.ToIntFloor()], drawX + i, y, scale);
                 frac += step;
             }
         }
 
-        private void DrawColumn(Column[] source, int x, int y, int ratio)
+        private void DrawColumn(Column[] source, int x, int y, int scale)
         {
+            var step = Fixed.One / scale;
+
             foreach (var column in source)
             {
-                var exTopDelta = ratio * column.TopDelta;
-                var exLength = ratio * column.Length;
+                var exTopDelta = scale * column.TopDelta;
+                var exLength = scale * column.Length;
 
                 var sourceIndex = column.Offset;
                 var drawY = y + exTopDelta;
@@ -57,8 +59,7 @@ namespace ManagedDoom.SoftwareRendering
 
                 var i = 0;
                 var p = height * x + drawY;
-                var frac = Fixed.FromInt(sourceIndex) + Fixed.One / (2 * ratio);
-                var step = Fixed.One / ratio;
+                var frac = Fixed.One / (2 * scale);
 
                 if (drawY < 0)
                 {
@@ -76,7 +77,7 @@ namespace ManagedDoom.SoftwareRendering
 
                 for (; i < drawLength; i++)
                 {
-                    data[p] = column.Data[frac.ToIntFloor()];
+                    data[p] = column.Data[sourceIndex + frac.ToIntFloor()];
                     p++;
                     frac += step;
                 }
