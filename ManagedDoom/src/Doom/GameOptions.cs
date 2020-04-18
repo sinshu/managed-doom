@@ -14,5 +14,6 @@ namespace ManagedDoom
         public bool FastMonsters = false;
         public bool NoMonsters = false;
         public int ConsolePlayer = 0;
+        public GameVersion Version = GameVersion.Doom19;
     }
 }

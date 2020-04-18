@@ -719,8 +719,31 @@ namespace ManagedDoom
                 // Hit the floor.
 
                 // Note (id):
-                // Somebody left this after the setting momz to 0, kinda useless there.
-                if ((thing.Flags & MobjFlags.SkullFly) != 0)
+                //  somebody left this after the setting momz to 0,
+                //  kinda useless there.
+                //
+                // cph - This was the a bug in the linuxdoom-1.10 source which
+                //  caused it not to sync Doom 2 v1.9 demos. Someone
+                //  added the above comment and moved up the following code. So
+                //  demos would desync in close lost soul fights.
+                // Note that this only applies to original Doom 1 or Doom2 demos - not
+                //  Final Doom and Ultimate Doom.  So we test demo_compatibility *and*
+                //  gamemission. (Note we assume that Doom1 is always Ult Doom, which
+                //  seems to hold for most published demos.)
+                //  
+                //  fraggle - cph got the logic here slightly wrong.  There are three
+                //  versions of Doom 1.9:
+                //
+                //  * The version used in registered doom 1.9 + doom2 - no bounce
+                //  * The version used in ultimate doom - has bounce
+                //  * The version used in final doom - has bounce
+                //
+                // So we need to check that this is either retail or commercial
+                // (but not doom2)
+
+                var correctLostSoulBounce = world.Options.Version >= GameVersion.Ultimate;
+
+                if (correctLostSoulBounce && (thing.Flags & MobjFlags.SkullFly) != 0)
                 {
                     // The skull slammed into something.
                     thing.MomZ = -thing.MomZ;
@@ -740,6 +763,17 @@ namespace ManagedDoom
                     thing.MomZ = Fixed.Zero;
                 }
                 thing.Z = thing.FloorZ;
+
+                // cph 2001/05/26 -
+                // See lost soul bouncing comment above. We need this here for bug
+                // compatibility with original Doom2 v1.9 - if a soul is charging and
+                // hit by a raising floor this incorrectly reverses its Y momentum.
+                //
+
+                if (!correctLostSoulBounce && (thing.Flags & MobjFlags.SkullFly) != 0)
+                {
+                    thing.MomZ = -thing.MomZ;
+                }
 
                 if ((thing.Flags & MobjFlags.Missile) != 0 && (thing.Flags & MobjFlags.NoClip) == 0)
                 {

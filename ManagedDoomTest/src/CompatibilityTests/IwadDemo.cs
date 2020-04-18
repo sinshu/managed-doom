@@ -321,6 +321,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
+                demo.Options.Version = GameVersion.Final2;
                 var world = new World(resource, demo.Options, demo.Players);
 
                 var lastMobjHash = 0;
@@ -525,6 +526,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Plutonia))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
+                demo.Options.Version = GameVersion.Final2;
                 var world = new World(resource, demo.Options, demo.Players);
 
                 var lastMobjHash = 0;
