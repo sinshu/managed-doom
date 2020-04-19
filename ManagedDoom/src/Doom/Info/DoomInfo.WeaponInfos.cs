@@ -9,83 +9,83 @@ namespace ManagedDoom
             // fist
             new WeaponInfo(
                 AmmoType.NoAmmo,
-                State.Punchup,
-                State.Punchdown,
-                State.Punch,
-                State.Punch1,
-                State.Null),
+                MobjState.Punchup,
+                MobjState.Punchdown,
+                MobjState.Punch,
+                MobjState.Punch1,
+                MobjState.Null),
 
             // pistol
             new WeaponInfo(
                 AmmoType.Clip,
-                State.Pistolup,
-                State.Pistoldown,
-                State.Pistol,
-                State.Pistol1,
-                State.Pistolflash),
+                MobjState.Pistolup,
+                MobjState.Pistoldown,
+                MobjState.Pistol,
+                MobjState.Pistol1,
+                MobjState.Pistolflash),
 
             // shotgun
             new WeaponInfo(
                 AmmoType.Shell,
-                State.Sgunup,
-                State.Sgundown,
-                State.Sgun,
-                State.Sgun1,
-                State.Sgunflash1),
+                MobjState.Sgunup,
+                MobjState.Sgundown,
+                MobjState.Sgun,
+                MobjState.Sgun1,
+                MobjState.Sgunflash1),
 
             // chaingun
             new WeaponInfo(
                 AmmoType.Clip,
-                State.Chainup,
-                State.Chaindown,
-                State.Chain,
-                State.Chain1,
-                State.Chainflash1),
+                MobjState.Chainup,
+                MobjState.Chaindown,
+                MobjState.Chain,
+                MobjState.Chain1,
+                MobjState.Chainflash1),
 
             // missile launcher
             new WeaponInfo(
                 AmmoType.Missile,
-                State.Missileup,
-                State.Missiledown,
-                State.Missile,
-                State.Missile1,
-                State.Missileflash1),
+                MobjState.Missileup,
+                MobjState.Missiledown,
+                MobjState.Missile,
+                MobjState.Missile1,
+                MobjState.Missileflash1),
 
             // plasma rifle
             new WeaponInfo(
                 AmmoType.Cell,
-                State.Plasmaup,
-                State.Plasmadown,
-                State.Plasma,
-                State.Plasma1,
-                State.Plasmaflash1),
+                MobjState.Plasmaup,
+                MobjState.Plasmadown,
+                MobjState.Plasma,
+                MobjState.Plasma1,
+                MobjState.Plasmaflash1),
 
             // bfg 9000
             new WeaponInfo(
                 AmmoType.Cell,
-                State.Bfgup,
-                State.Bfgdown,
-                State.Bfg,
-                State.Bfg1,
-                State.Bfgflash1),
+                MobjState.Bfgup,
+                MobjState.Bfgdown,
+                MobjState.Bfg,
+                MobjState.Bfg1,
+                MobjState.Bfgflash1),
 
             // chainsaw
             new WeaponInfo(
                 AmmoType.NoAmmo,
-                State.Sawup,
-                State.Sawdown,
-                State.Saw,
-                State.Saw1,
-                State.Null),
+                MobjState.Sawup,
+                MobjState.Sawdown,
+                MobjState.Saw,
+                MobjState.Saw1,
+                MobjState.Null),
 
             // // super shotgun
             new WeaponInfo(
                 AmmoType.Shell,
-                State.Dsgunup,
-                State.Dsgundown,
-                State.Dsgun,
-                State.Dsgun1,
-                State.Dsgunflash1)
+                MobjState.Dsgunup,
+                MobjState.Dsgundown,
+                MobjState.Dsgun,
+                MobjState.Dsgun1,
+                MobjState.Dsgunflash1)
         };
     }
 }

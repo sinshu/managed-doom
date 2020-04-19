@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public class StateDef
+    public class MobjStateDef
     {
         public int Number;
         public Sprite Sprite;
@@ -10,18 +10,18 @@ namespace ManagedDoom
         public int Tics;
         public Action<World, Player, PlayerSpriteDef> PlayerAction;
         public Action<World, Mobj> MobjAction;
-        public State Next;
+        public MobjState Next;
         public int Misc1;
         public int Misc2;
 
-        public StateDef(
+        public MobjStateDef(
             int number,
             Sprite sprite,
             int frame,
             int tics,
             Action<World, Player, PlayerSpriteDef> playerAction,
             Action<World, Mobj> mobjAction,
-            State next,
+            MobjState next,
             int misc1,
             int misc2)
         {

@@ -15,7 +15,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
             {
                 var options = new GameOptions();
-                options.Skill = Skill.Hard;
+                options.Skill = GameSkill.Hard;
                 options.Map = 1;
 
                 var players = new Player[Player.MaxPlayerCount];
@@ -52,7 +52,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
-                options.Skill = Skill.Hard;
+                options.Skill = GameSkill.Hard;
 
                 var players = new Player[Player.MaxPlayerCount];
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -84,7 +84,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
-                options.Skill = Skill.Medium;
+                options.Skill = GameSkill.Medium;
                 options.Map = 11;
                 options.NoMonsters = true;
 

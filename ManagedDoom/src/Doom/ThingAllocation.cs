@@ -53,11 +53,11 @@ namespace ManagedDoom
             }
 
             int bit;
-            if (world.Options.Skill == Skill.Baby)
+            if (world.Options.Skill == GameSkill.Baby)
             {
                 bit = 1;
             }
-            else if (world.Options.Skill == Skill.Nightmare)
+            else if (world.Options.Skill == GameSkill.Nightmare)
             {
                 bit = 4;
             }
@@ -235,7 +235,7 @@ namespace ManagedDoom
             mobj.Flags = info.Flags;
             mobj.Health = info.SpawnHealth;
 
-            if (world.Options.Skill != Skill.Nightmare)
+            if (world.Options.Skill != GameSkill.Nightmare)
             {
                 mobj.ReactionTime = info.ReactionTime;
             }
@@ -390,7 +390,7 @@ namespace ManagedDoom
 
         private int GetMissileSpeed(MobjType type)
         {
-            if (world.Options.FastMonsters || world.Options.Skill == Skill.Nightmare)
+            if (world.Options.FastMonsters || world.Options.Skill == GameSkill.Nightmare)
             {
                 switch (type)
                 {

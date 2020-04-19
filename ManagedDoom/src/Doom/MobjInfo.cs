@@ -5,19 +5,19 @@ namespace ManagedDoom
     public sealed class MobjInfo
     {
         private int doomEdNum;
-        private State spawnState;
+        private MobjState spawnState;
         private int spawnHealth;
-        private State seeState;
+        private MobjState seeState;
         private Sfx seeSound;
         private int reactionTime;
         private Sfx attackSound;
-        private State painState;
+        private MobjState painState;
         private int painChance;
         private Sfx painSound;
-        private State meleeState;
-        private State missileState;
-        private State deathState;
-        private State xdeathState;
+        private MobjState meleeState;
+        private MobjState missileState;
+        private MobjState deathState;
+        private MobjState xdeathState;
         private Sfx deathSound;
         private int speed;
         private Fixed radius;
@@ -26,23 +26,23 @@ namespace ManagedDoom
         private int damage;
         private Sfx activeSound;
         private MobjFlags flags;
-        private State raiseState;
+        private MobjState raiseState;
 
         public MobjInfo(
             int doomEdNum,
-            State spawnState,
+            MobjState spawnState,
             int spawnHealth,
-            State seeState,
+            MobjState seeState,
             Sfx seeSound,
             int reactionTime,
             Sfx attackSound,
-            State painState,
+            MobjState painState,
             int painChance,
             Sfx painSound,
-            State meleeState,
-            State missileState,
-            State deathState,
-            State xdeathState,
+            MobjState meleeState,
+            MobjState missileState,
+            MobjState deathState,
+            MobjState xdeathState,
             Sfx deathSound,
             int speed,
             Fixed radius,
@@ -51,7 +51,7 @@ namespace ManagedDoom
             int damage,
             Sfx activeSound,
             MobjFlags flags,
-            State raiseState)
+            MobjState raiseState)
         {
             this.doomEdNum = doomEdNum;
             this.spawnState = spawnState;
@@ -79,19 +79,19 @@ namespace ManagedDoom
         }
 
         public int DoomEdNum => doomEdNum;
-        public State SpawnState => spawnState;
+        public MobjState SpawnState => spawnState;
         public int SpawnHealth => spawnHealth;
-        public State SeeState => seeState;
+        public MobjState SeeState => seeState;
         public Sfx SeeSound => seeSound;
         public int ReactionTime => reactionTime;
         public Sfx AttackSound => attackSound;
-        public State PainState => painState;
+        public MobjState PainState => painState;
         public int PainChance => painChance;
         public Sfx PainSound => painSound;
-        public State MeleeState => meleeState;
-        public State MissileState => missileState;
-        public State DeathState => deathState;
-        public State XdeathState => xdeathState;
+        public MobjState MeleeState => meleeState;
+        public MobjState MissileState => missileState;
+        public MobjState DeathState => deathState;
+        public MobjState XdeathState => xdeathState;
         public Sfx DeathSound => deathSound;
         public int Speed => speed;
         public Fixed Radius => radius;
@@ -100,6 +100,6 @@ namespace ManagedDoom
         public int Damage => damage;
         public Sfx ActiveSound => activeSound;
         public MobjFlags Flags => flags;
-        public State Raisestate => raiseState;
+        public MobjState Raisestate => raiseState;
     }
 }

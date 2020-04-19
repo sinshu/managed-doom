@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public enum State
+    public enum MobjState
     {
         Null,
         Lightdone,

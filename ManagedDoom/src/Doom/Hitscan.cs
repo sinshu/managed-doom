@@ -376,7 +376,7 @@ namespace ManagedDoom
             // don't make punches spark on the wall
             if (attackrange == World.MELEERANGE)
             {
-                th.SetState(State.Puff3);
+                th.SetState(MobjState.Puff3);
             }
         }
 
@@ -399,11 +399,11 @@ namespace ManagedDoom
 
             if (damage <= 12 && damage >= 9)
             {
-                th.SetState(State.Blood2);
+                th.SetState(MobjState.Blood2);
             }
             else if (damage < 9)
             {
-                th.SetState(State.Blood3);
+                th.SetState(MobjState.Blood3);
             }
         }
 

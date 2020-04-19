@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public enum Skill
+    public enum GameSkill
     {
         Baby,
         Easy,

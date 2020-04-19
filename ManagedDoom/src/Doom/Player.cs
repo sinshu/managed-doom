@@ -153,7 +153,7 @@ namespace ManagedDoom
             Ammo[(int)AmmoType.Clip] = 50;
             for (var i = 0; i < (int)AmmoType.Count; i++)
             {
-                MaxAmmo[i] = AmmoInfo.Max[i];
+                MaxAmmo[i] = DoomInfo.AmmoInfos.Max[i];
             }
 
             // don't do anything immediately

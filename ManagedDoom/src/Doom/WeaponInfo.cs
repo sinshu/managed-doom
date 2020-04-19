@@ -5,19 +5,19 @@ namespace ManagedDoom
     public sealed class WeaponInfo
     {
         public AmmoType Ammo;
-        public State UpState;
-        public State DownState;
-        public State ReadyState;
-        public State AttackState;
-        public State FlashState;
+        public MobjState UpState;
+        public MobjState DownState;
+        public MobjState ReadyState;
+        public MobjState AttackState;
+        public MobjState FlashState;
 
         public WeaponInfo(
             AmmoType ammo,
-            State upState,
-            State downState,
-            State readyState,
-            State attackState,
-            State flashState)
+            MobjState upState,
+            MobjState downState,
+            MobjState readyState,
+            MobjState attackState,
+            MobjState flashState)
         {
             Ammo = ammo;
             UpState = upState;

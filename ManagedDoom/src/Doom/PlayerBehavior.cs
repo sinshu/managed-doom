@@ -132,9 +132,9 @@ namespace ManagedDoom
             }
 
             if ((cmd.ForwardMove != 0 || cmd.SideMove != 0)
-                && player.Mobj.State == DoomInfo.States[(int)State.Play])
+                && player.Mobj.State == DoomInfo.States[(int)MobjState.Play])
             {
-                player.Mobj.SetState(State.PlayRun1);
+                player.Mobj.SetState(MobjState.PlayRun1);
             }
         }
 
@@ -536,13 +536,13 @@ namespace ManagedDoom
         //
         // P_SetPsprite
         //
-        public void P_SetPsprite(Player player, PlayerSprite position, State stnum)
+        public void P_SetPsprite(Player player, PlayerSprite position, MobjState stnum)
         {
             var psp = player.PSprites[(int)position];
 
             do
             {
-                if (stnum == State.Null)
+                if (stnum == MobjState.Null)
                 {
                     // object removed itself
                     psp.State = null;
@@ -588,7 +588,7 @@ namespace ManagedDoom
             {
                 var psp = player.PSprites[i];
 
-                StateDef state;
+                MobjStateDef state;
                 // a null state means not active
                 if ((state = psp.State) != null)
                 {

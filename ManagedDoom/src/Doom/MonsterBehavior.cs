@@ -617,7 +617,7 @@ namespace ManagedDoom
             if ((actor.Flags & MobjFlags.JustAttacked) != 0)
             {
                 actor.Flags &= ~MobjFlags.JustAttacked;
-                if (world.Options.Skill != Skill.Nightmare
+                if (world.Options.Skill != GameSkill.Nightmare
                     && !world.Options.FastMonsters)
                 {
                     P_NewChaseDir(actor);
@@ -643,7 +643,7 @@ namespace ManagedDoom
             // check for missile attack
             if (actor.Info.MissileState != 0)
             {
-                if (world.Options.Skill < Skill.Nightmare
+                if (world.Options.Skill < GameSkill.Nightmare
                     && !world.Options.FastMonsters && actor.MoveCount != 0)
                 {
                     goto nomissile;
@@ -1081,7 +1081,7 @@ namespace ManagedDoom
                 return true;
             }
 
-            if (thing.Info.Raisestate == State.Null)
+            if (thing.Info.Raisestate == MobjState.Null)
             {
                 // monster doesn't have a raise state
                 return true;
@@ -1147,7 +1147,7 @@ namespace ManagedDoom
                             FaceTarget(actor);
                             actor.Target = temp;
 
-                            actor.SetState(State.VileHeal1);
+                            actor.SetState(MobjState.VileHeal1);
                             world.StartSound(corpsehit, Sfx.SLOP);
                             var info = corpsehit.Info;
 

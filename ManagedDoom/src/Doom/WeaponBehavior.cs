@@ -21,14 +21,14 @@ namespace ManagedDoom
             var pb = world.PlayerBehavior;
 
             // get out of attack state
-            if (player.Mobj.State == DoomInfo.States[(int)State.PlayAtk1]
-                || player.Mobj.State == DoomInfo.States[(int)State.PlayAtk2])
+            if (player.Mobj.State == DoomInfo.States[(int)MobjState.PlayAtk1]
+                || player.Mobj.State == DoomInfo.States[(int)MobjState.PlayAtk2])
             {
-                player.Mobj.SetState(State.Play);
+                player.Mobj.SetState(MobjState.Play);
             }
 
             if (player.ReadyWeapon == WeaponType.Chainsaw
-                && psp.State == DoomInfo.States[(int)State.Saw])
+                && psp.State == DoomInfo.States[(int)MobjState.Saw])
             {
                 world.StartSound(player.Mobj, Sfx.SAWIDL);
             }
@@ -253,7 +253,7 @@ namespace ManagedDoom
                 return;
             }
 
-            player.Mobj.SetState(State.PlayAtk1);
+            player.Mobj.SetState(MobjState.PlayAtk1);
             var newstate = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].AttackState;
             world.PlayerBehavior.P_SetPsprite(player, PlayerSprite.Weapon, newstate);
             P_NoiseAlert(player.Mobj, player.Mobj);
@@ -286,7 +286,7 @@ namespace ManagedDoom
             if (player.Health == 0)
             {
                 // Player is dead, so keep the weapon off screen.
-                pb.P_SetPsprite(player, PlayerSprite.Weapon, State.Null);
+                pb.P_SetPsprite(player, PlayerSprite.Weapon, MobjState.Null);
                 return;
             }
 
@@ -453,7 +453,7 @@ namespace ManagedDoom
         {
             world.StartSound(player.Mobj, Sfx.PISTOL);
 
-            player.Mobj.SetState(State.PlayAtk2);
+            player.Mobj.SetState(MobjState.PlayAtk2);
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
             world.PlayerBehavior.P_SetPsprite(player,
@@ -472,7 +472,7 @@ namespace ManagedDoom
         public void FireShotgun(Player player)
         {
             world.StartSound(player.Mobj, Sfx.SHOTGN);
-            player.Mobj.SetState(State.PlayAtk2);
+            player.Mobj.SetState(MobjState.PlayAtk2);
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
@@ -506,14 +506,14 @@ namespace ManagedDoom
                 return;
             }
 
-            player.Mobj.SetState(State.PlayAtk2);
+            player.Mobj.SetState(MobjState.PlayAtk2);
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
             world.PlayerBehavior.P_SetPsprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState
-                + psp.State.Number - DoomInfo.States[(int)State.Chain1].Number);
+                + psp.State.Number - DoomInfo.States[(int)MobjState.Chain1].Number);
 
             P_BulletSlope(player.Mobj);
 
@@ -526,7 +526,7 @@ namespace ManagedDoom
         public void FireShotgun2(Player player)
         {
             world.StartSound(player.Mobj, Sfx.DSHTGN);
-            player.Mobj.SetState(State.PlayAtk2);
+            player.Mobj.SetState(MobjState.PlayAtk2);
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] -= 2;
 
@@ -581,7 +581,7 @@ namespace ManagedDoom
         //
         public void GunFlash(Player player)
         {
-            player.Mobj.SetState(State.PlayAtk2);
+            player.Mobj.SetState(MobjState.PlayAtk2);
             world.PlayerBehavior.P_SetPsprite(
                 player,
                 PlayerSprite.Flash,

@@ -661,9 +661,9 @@ namespace ManagedDoom
                 && (player == null || (player.Cmd.ForwardMove == 0 && player.Cmd.SideMove == 0)))
             {
                 // If in a walking frame, stop moving.
-                if (player != null && (player.Mobj.State.Number - (int)State.PlayRun1) < 4)
+                if (player != null && (player.Mobj.State.Number - (int)MobjState.PlayRun1) < 4)
                 {
-                    player.Mobj.SetState(State.Play);
+                    player.Mobj.SetState(MobjState.Play);
                 }
 
                 thing.MomX = Fixed.Zero;

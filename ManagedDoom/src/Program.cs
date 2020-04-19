@@ -29,7 +29,7 @@ namespace ManagedDoom
                 //var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
 
                 var options = new GameOptions();
-                options.Skill = Skill.Hard;
+                options.Skill = GameSkill.Hard;
                 options.GameMode = GameMode.Commercial;
                 options.Episode = 1;
                 options.Map = 1;

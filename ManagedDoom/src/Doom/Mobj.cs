@@ -50,7 +50,7 @@ namespace ManagedDoom
         public MobjInfo Info; // &mobjinfo[mobj->type]
 
         public int Tics; // state tic counter
-        public StateDef State;
+        public MobjStateDef State;
         public MobjFlags Flags;
         public int Health;
 
@@ -146,7 +146,7 @@ namespace ManagedDoom
                 }
 
                 var options = world.Options;
-                if (!(options.Skill == Skill.Nightmare || options.RespawnMonsters))
+                if (!(options.Skill == GameSkill.Nightmare || options.RespawnMonsters))
                 {
                     return;
                 }
@@ -172,17 +172,17 @@ namespace ManagedDoom
             }
         }
 
-        public bool SetState(State state)
+        public bool SetState(MobjState state)
         {
             var ta = world.ThingAllocation;
 
-            StateDef st;
+            MobjStateDef st;
 
             do
             {
-                if (state == ManagedDoom.State.Null)
+                if (state == MobjState.Null)
                 {
-                    State = DoomInfo.States[(int)ManagedDoom.State.Null];
+                    State = DoomInfo.States[(int)MobjState.Null];
                     ta.RemoveMobj(this);
                     return false;
                 }
@@ -207,13 +207,13 @@ namespace ManagedDoom
             return true;
         }
 
-        private int GetTics(StateDef state)
+        private int GetTics(MobjStateDef state)
         {
             var options = world.Options;
-            if (options.FastMonsters || options.Skill == Skill.Nightmare)
+            if (options.FastMonsters || options.Skill == GameSkill.Nightmare)
             {
-                if ((int)ManagedDoom.State.SargRun1 <= state.Number
-                    && state.Number <= (int)ManagedDoom.State.SargPain2)
+                if ((int)MobjState.SargRun1 <= state.Number
+                    && state.Number <= (int)MobjState.SargPain2)
                 {
                     return state.Tics >> 1;
                 }

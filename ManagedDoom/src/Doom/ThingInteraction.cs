@@ -161,7 +161,7 @@ namespace ManagedDoom
 			}
 
 			var player = target.Player;
-			if (player != null && world.Options.Skill == Skill.Baby)
+			if (player != null && world.Options.Skill == GameSkill.Baby)
 			{
 				// take half damage in trainer mode
 				damage >>= 1;
@@ -294,7 +294,7 @@ namespace ManagedDoom
 				target.Target = source;
 				target.Threshold = BASETHRESHOLD;
 				if (target.State == DoomInfo.States[(int)target.Info.SpawnState]
-					&& target.Info.SeeState != State.Null)
+					&& target.Info.SeeState != MobjState.Null)
 				{
 					target.SetState(target.Info.SeeState);
 				}

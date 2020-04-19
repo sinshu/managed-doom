@@ -4,7 +4,7 @@ namespace ManagedDoom
 {
     public sealed class PlayerSpriteDef
     {
-        public StateDef State;
+        public MobjStateDef State;
         public int Tics;
         public Fixed Sx;
         public Fixed Sy;
