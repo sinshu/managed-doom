@@ -1001,7 +1001,8 @@ namespace ManagedDoom
 					&& activeplats[i].Status == PlatformState.InStasis)
 				{
 					activeplats[i].Status = activeplats[i].Oldstatus;
-					activeplats[i].Active = true;
+					//activeplats[i].Active = true;
+					activeplats[i].ThinkerState = ThinkerState.Active;
 				}
 			}
 		}
@@ -1016,7 +1017,8 @@ namespace ManagedDoom
 				{
 					activeplats[j].Oldstatus = activeplats[j].Status;
 					activeplats[j].Status = PlatformState.InStasis;
-					activeplats[j].Active = false;
+					//activeplats[j].Active = false;
+					activeplats[j].ThinkerState = ThinkerState.InStasis;
 				}
 			}
 		}
@@ -1603,7 +1605,8 @@ namespace ManagedDoom
 					&& (activeceilings[i].Direction == 0))
 				{
 					activeceilings[i].Direction = activeceilings[i].OldDirection;
-					activeceilings[i].Active = true;
+					//activeceilings[i].Active = true;
+					activeceilings[i].ThinkerState = ThinkerState.Active;
 				}
 			}
 		}
@@ -1625,7 +1628,8 @@ namespace ManagedDoom
 					&& (activeceilings[i].Direction != 0))
 				{
 					activeceilings[i].OldDirection = activeceilings[i].Direction;
-					activeceilings[i].Active = false;
+					//activeceilings[i].Active = false;
+					activeceilings[i].ThinkerState = ThinkerState.InStasis;
 					activeceilings[i].Direction = 0; // in-stasis
 					rtn = true;
 				}

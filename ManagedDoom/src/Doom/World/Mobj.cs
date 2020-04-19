@@ -101,7 +101,7 @@ namespace ManagedDoom
                 world.ThingMovement.XYMovement(this);
 
                 // FIXME: decent NOP/NULL/Nil function pointer please.
-                if (Removed)
+                if (ThinkerState == ThinkerState.Removed)
                 {
                     // mobj was removed
                     return;
@@ -113,7 +113,7 @@ namespace ManagedDoom
                 world.ThingMovement.ZMovement(this);
 
                 // FIXME: decent NOP/NULL/Nil function pointer please.
-                if (Removed)
+                if (ThinkerState == ThinkerState.Removed)
                 {
                     // mobj was removed
                     return;

@@ -28,7 +28,7 @@ namespace ManagedDoom
 
         public void Remove(Thinker thinker)
         {
-            thinker.Removed = true;
+            thinker.ThinkerState = ThinkerState.Removed;
         }
 
         public void Run()
@@ -36,7 +36,7 @@ namespace ManagedDoom
             var current = cap.Next;
             while (current != cap)
             {
-                if (current.Removed)
+                if (current.ThinkerState == ThinkerState.Removed)
                 {
                     // Time to remove it.
                     current.Next.Prev = current.Prev;
@@ -45,7 +45,7 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    if (current.Active)
+                    if (current.ThinkerState == ThinkerState.Active)
                     {
                         current.Run();
                     }
@@ -81,7 +81,7 @@ namespace ManagedDoom
                     {
                         return false;
                     }
-                    else if (!current.Removed)
+                    else if (current.ThinkerState != ThinkerState.Removed)
                     {
                         return true;
                     }
