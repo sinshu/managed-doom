@@ -273,26 +273,26 @@ namespace ManagedDoom
         {
             if (power == PowerType.Invulnerability)
             {
-                player.Powers[(int)power] = PowerDuration.Invulnerability;
+                player.Powers[(int)power] = DoomInfo.PowerDuration.Invulnerability;
                 return true;
             }
 
             if (power == PowerType.Invisibility)
             {
-                player.Powers[(int)power] = PowerDuration.Invisibility;
+                player.Powers[(int)power] = DoomInfo.PowerDuration.Invisibility;
                 player.Mobj.Flags |= MobjFlags.Shadow;
                 return true;
             }
 
             if (power == PowerType.Infrared)
             {
-                player.Powers[(int)power] = PowerDuration.Infrared;
+                player.Powers[(int)power] = DoomInfo.PowerDuration.Infrared;
                 return true;
             }
 
             if (power == PowerType.IronFeet)
             {
-                player.Powers[(int)power] = PowerDuration.IronFeet;
+                player.Powers[(int)power] = DoomInfo.PowerDuration.IronFeet;
                 return true;
             }
 
