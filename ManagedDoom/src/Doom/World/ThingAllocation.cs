@@ -27,10 +27,20 @@ namespace ManagedDoom
             */
 
             // check for players specially
-            if ((int)mthing.Type <= 4)
+            if (mthing.Type <= 4)
             {
+                var number = mthing.Type - 1;
+
+                // This check is neccesary in Plutonia MAP12,
+                // which contains an unknown thing with type 0.
+                if (number < 0)
+                {
+                    return;
+                }
+
                 // save spots for respawning in network games
-                //playerstarts[mthing->type - 1] = *mthing;
+                world.PlayerStarts[number] = mthing;
+
                 if (world.Options.Deathmatch == 0)
                 {
                     SpawnPlayer(mthing);
@@ -149,16 +159,9 @@ namespace ManagedDoom
         // Most of the player structure stays unchanged
         //  between levels.
         //
-        private void SpawnPlayer(Thing mthing)
+        public void SpawnPlayer(Thing mthing)
         {
-            var number = (int)mthing.Type - 1;
-
-            // This check is neccesary in Plutonia MAP12,
-            // which contains an unknown thing with type 0.
-            if (number < 0)
-            {
-                return;
-            }
+            var number = mthing.Type - 1;
 
             // not playing?
             if (!world.Players[number].InGame)
@@ -166,11 +169,11 @@ namespace ManagedDoom
                 return;
             }
 
-            var p = world.Players[(int)mthing.Type - 1];
+            var p = world.Players[number];
 
             if (p.PlayerState == PlayerState.Reborn)
             {
-                world.Players[(int)mthing.Type - 1].Reborn();
+                world.Players[number].Reborn();
             }
 
             var x = mthing.X;
@@ -179,7 +182,7 @@ namespace ManagedDoom
             var mobj = SpawnMobj(x, y, z, MobjType.Player);
 
             // set color translations for player sprites
-            if ((int)mthing.Type > 1)
+            if (number > 1)
             {
                 //mobj->flags |= (mthing->type - 1) << MF_TRANSSHIFT;
             }

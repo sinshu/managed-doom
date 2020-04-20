@@ -20,9 +20,10 @@ namespace ManagedDoom
 
         public int levelTime = 0;
 
-
         private Thinkers thinkers;
         private Specials specials;
+
+        private Thing[] playerStarts;
 
         private ThingAllocation thingAllocation;
         private ThingMovement thingMovement;
@@ -53,6 +54,8 @@ namespace ManagedDoom
 
             thinkers = new Thinkers(this);
             specials = new Specials(this);
+
+            playerStarts = new Thing[Player.MaxPlayerCount];
 
             thingAllocation = new ThingAllocation(this);
             thingMovement = new ThingMovement(this);
@@ -262,6 +265,8 @@ namespace ManagedDoom
 
         public Thinkers Thinkers => thinkers;
         public Specials Specials => specials;
+
+        public Thing[] PlayerStarts => playerStarts;
 
         public ThingAllocation ThingAllocation => thingAllocation;
         public ThingMovement ThingMovement => thingMovement;

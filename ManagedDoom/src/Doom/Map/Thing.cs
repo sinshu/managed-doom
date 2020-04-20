@@ -72,7 +72,13 @@ namespace ManagedDoom
         public Fixed X => x;
         public Fixed Y => y;
         public Angle Angle => angle;
-        public int Type => type;
+
+        public int Type
+        {
+            get => type;
+            set => type = value;
+        }
+
         public ThingFlags Flags => flags;
     }
 }

@@ -8,7 +8,7 @@ namespace ManagedDoom
     {
         private const int slowTurnTics = 6;
 
-        private static readonly Fixed[] forwardmove =
+        public static readonly Fixed[] forwardmove =
         {
             new Fixed(0x19), new Fixed(0x32)
         };
