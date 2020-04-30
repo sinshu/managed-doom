@@ -13,7 +13,7 @@ namespace ManagedDoom
         private int me;
 
         // specifies current state
-        private IntermissionState state;
+        public IntermissionState state;
 
         // contains information passed into intermission
         private IntermissionInfo wbs;
@@ -102,9 +102,6 @@ namespace ManagedDoom
                     WI_updateNoState();
                     break;
             }
-
-
-            UpdateStats();
 
             Console.WriteLine(bcnt + ": " + cnt_kills[0] + ", " + cnt_items[0] + ", " + cnt_secret[0] + ", " + cnt_time);
 
@@ -327,7 +324,7 @@ namespace ManagedDoom
 
 
         public IntermissionInfo Wbs => wbs;
-
+        public GameOptions Options => options;
 
 
 

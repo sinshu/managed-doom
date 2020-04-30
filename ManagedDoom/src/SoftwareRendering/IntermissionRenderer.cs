@@ -66,7 +66,32 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Render(Intermission intermission)
         {
-            DrawStats(intermission);
+            var im = intermission;
+            switch (im.state)
+            {
+                case IntermissionState.StatCount:
+                    if (im.Options.Deathmatch != 0)
+                    {
+                        // WI_drawDeathmatchStats();
+                    }
+                    else if (im.Options.NetGame)
+                    {
+                        // WI_drawNetgameStats();
+                    }
+                    else
+                    {
+                        DrawStats(im);
+                    }
+                    break;
+
+                case IntermissionState.ShowNextLoc:
+                    WI_drawShowNextLoc(im);
+                    break;
+
+                case IntermissionState.NoState:
+                    WI_drawNoState(im);
+                    break;
+            }
         }
 
         private void DrawStats(Intermission intermission)
@@ -102,6 +127,55 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
+        private void WI_drawNoState(Intermission im)
+        {
+            //snl_pointeron = true;
+            WI_drawShowNextLoc(im);
+        }
+
+        private void WI_drawShowNextLoc(Intermission im)
+        {
+            DrawPatch(patches.Background, 0, 0);
+
+            // draw animated background
+            //WI_drawAnimatedBack();
+
+            if (im.Options.GameMode != GameMode.Commercial)
+            {
+                if (im.Wbs.Epsd > 2)
+                {
+                    //WI_drawEL();
+                    return;
+                }
+
+                var last = (im.Wbs.Last == 8) ? im.Wbs.Next - 1 : im.Wbs.Last;
+
+                // draw a splat on taken cities.
+                for (var i = 0; i <= last; i++)
+                {
+                    //WI_drawOnLnode(i, &splat);
+                }
+
+                // splat the secret level?
+                if (im.Wbs.DidSecret)
+                {
+                    //WI_drawOnLnode(8, &splat);
+                }
+
+                // draw flashing ptr
+                //if (snl_pointeron)
+                {
+                    //WI_drawOnLnode(wbs->next, yah);
+                }
+            }
+
+            // draws which level you are entering..
+            if ((im.Options.GameMode != GameMode.Commercial) || im.Wbs.Next != 30)
+            {
+                WI_drawEL(im);
+            }
+        }
+
         // Draws "<Levelname> Finished!"
         private void WI_drawLF(Intermission intermission)
         {
@@ -121,6 +195,28 @@ namespace ManagedDoom.SoftwareRendering
                 patches.Finished,
                 (320 - patches.Finished.Width) / 2, y);
         }
+
+        // Draws "Entering <LevelName>"
+        private void WI_drawEL(Intermission im)
+        {
+            int y = WI_TITLEY;
+
+            // draw "Entering"
+            DrawPatch(
+                patches.Entering,
+                (320 - patches.Entering.Width) / 2, y);
+
+            // draw level
+            y += (5 * patches.LevelNames[im.Wbs.Next].Height) / 4;
+
+            DrawPatch(
+                patches.LevelNames[im.Wbs.Next],
+                (320 - patches.LevelNames[im.Wbs.Next].Width) / 2, y);
+        }
+
+
+
+
 
         //
         // Draws a number.
