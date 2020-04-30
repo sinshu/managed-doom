@@ -17,11 +17,12 @@ namespace ManagedDoom.SoftwareRendering
 
         public void DrawPatch(Patch patch, int x, int y, int scale)
         {
-            var drawX = x;
+            var drawX = x + scale * patch.LeftOffset;
+            var drawY = y - scale * patch.TopOffset;
             var drawWidth = scale * patch.Width;
 
             var i = 0;
-            var frac = Fixed.One / (2 * scale);
+            var frac = Fixed.One / scale - Fixed.Epsilon;
             var step = Fixed.One / scale;
 
             if (drawX < 0)
@@ -39,7 +40,7 @@ namespace ManagedDoom.SoftwareRendering
 
             for (; i < drawWidth; i++)
             {
-                DrawColumn(patch.Columns[frac.ToIntFloor()], drawX + i, y, scale);
+                DrawColumn(patch.Columns[frac.ToIntFloor()], drawX + i, drawY, scale);
                 frac += step;
             }
         }
@@ -59,7 +60,7 @@ namespace ManagedDoom.SoftwareRendering
 
                 var i = 0;
                 var p = height * x + drawY;
-                var frac = Fixed.One / (2 * scale);
+                var frac = Fixed.One / scale - Fixed.Epsilon;
 
                 if (drawY < 0)
                 {
