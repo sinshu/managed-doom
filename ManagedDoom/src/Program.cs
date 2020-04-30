@@ -24,21 +24,15 @@ namespace ManagedDoom
             using (var window = new RenderWindow(new VideoMode(640, 400), "Managed Doom", style))
             using (var resource = new CommonResource("DOOM2.WAD"))
             using (var renderer = new SoftwareRendering.SfmlRenderer(window, resource, true))
-            using (var audio = new SfmlAudio(resource.Wad))
+            //using (var audio = new SfmlAudio(resource.Wad))
             {
-                //var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
-
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
                 options.GameMode = GameMode.Commercial;
                 options.Episode = 1;
                 options.Map = 1;
 
-                var world = new World(resource, options, players);
-                //var world = new World(resource, demo.Options, demo.Players);
-
-                renderer.BindWorld(world);
-                audio.BindWorld(world);
+                var game = new DoomGame(resource, options);
 
                 window.Closed += (sender, e) => window.Close();
                 window.SetFramerateLimit(35);
@@ -51,16 +45,9 @@ namespace ManagedDoom
                 {
                     window.DispatchEvents();
 
-                    if (Keyboard.IsKeyPressed(Keyboard.Key.O)) world.Players[0].Cheats |= CheatFlags.NoClip;
-                    if (Keyboard.IsKeyPressed(Keyboard.Key.P)) world.Players[0].Cheats &= ~CheatFlags.NoClip;
-
-                    UserInput.BuildTicCmd(world.Players[0].Cmd);
-                    //demo.ReadCmd();
-                    world.Update();
-
-                    //Console.WriteLine(world.levelTime + ": " + world.GetMobjHash().ToString("x8") + ", " + world.GetSectorHash().ToString("x8"));
-
-                    renderer.Render();
+                    UserInput.BuildTicCmd(game.Players[0].Cmd);
+                    game.Update();
+                    renderer.Render(game);
 
                     count++;
                     var curr = sw.Elapsed;

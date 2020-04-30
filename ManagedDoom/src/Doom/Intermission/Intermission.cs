@@ -38,8 +38,11 @@ namespace ManagedDoom
 
         private int sp_state;
 
-        public Intermission(IntermissionInfo wbs, GameOptions options)
+        private Player[] players;
+
+        public Intermission(Player[] players, IntermissionInfo wbs, GameOptions options)
         {
+            this.players = players;
             this.wbs = wbs;
             this.options = options;
 
@@ -64,12 +67,46 @@ namespace ManagedDoom
             // WI_initAnimatedBack();
         }
 
-        public void Update()
+        private bool end = false;
+
+        public bool Update()
         {
             // counter for general background animation
             bcnt++;
 
+            WI_checkForAccelerate();
+
+
+            switch (state)
+            {
+                case IntermissionState.StatCount:
+                    if (options.Deathmatch != 0)
+                    {
+                        //WI_updateDeathmatchStats();
+                    }
+                    else if (options.NetGame)
+                    {
+                        //WI_updateNetgameStats();
+                    }
+                    else
+                    {
+                        UpdateStats();
+                    }
+                    break;
+
+                case IntermissionState.ShowNextLoc:
+                    WI_updateShowNextLoc();
+                    break;
+
+                case IntermissionState.NoState:
+                    WI_updateNoState();
+                    break;
+            }
+
+
             UpdateStats();
+
+            return end;
         }
 
         private void UpdateStats()
@@ -190,6 +227,37 @@ namespace ManagedDoom
             }
         }
 
+        private void WI_updateShowNextLoc()
+        {
+            //WI_updateAnimatedBack();
+
+            if (--cnt == 0 || acceleratestage)
+            {
+                WI_initNoState();
+            }
+            else
+            {
+                //snl_pointeron = (cnt & 31) < 20;
+            }
+        }
+
+        private void WI_updateNoState()
+        {
+
+            //WI_updateAnimatedBack();
+
+            if (--cnt == 0)
+            {
+                //WI_End();
+                //G_WorldDone();
+                end = true;
+            }
+        }
+
+
+
+
+
         private void WI_initNoState()
         {
             state = IntermissionState.NoState;
@@ -209,7 +277,42 @@ namespace ManagedDoom
         }
 
 
+        private void WI_checkForAccelerate()
+        {
+            // check for button presses to skip delays
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                var player = players[i];
+                if (player.InGame)
+                {
+                    if ((player.Cmd.Buttons & TicCmdButtons.Attack) != 0)
+                    {
+                        if (!player.AttackDown)
+                        {
+                            acceleratestage = true;
+                        }
+                        player.AttackDown = true;
+                    }
+                    else
+                    {
+                        player.AttackDown = false;
+                    }
 
+                    if ((player.Cmd.Buttons & TicCmdButtons.Use) != 0)
+                    {
+                        if (!player.UseDown)
+                        {
+                            acceleratestage = true;
+                        }
+                        player.UseDown = true;
+                    }
+                    else
+                    {
+                        player.UseDown = false;
+                    }
+                }
+            }
+        }
 
         private void StartSound(Sfx sfx)
         {

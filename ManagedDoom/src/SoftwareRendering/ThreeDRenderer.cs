@@ -500,6 +500,7 @@ namespace ManagedDoom.SoftwareRendering
 
         private int validCount;
 
+        /*
         public void BindWorld(World world)
         {
             this.world = world;
@@ -509,9 +510,12 @@ namespace ManagedDoom.SoftwareRendering
         {
             world = null;
         }
+        */
 
         public void Render(Player player)
         {
+            world = player.Mobj.World;
+
             viewX = player.Mobj.X;
             viewY = player.Mobj.Y;
             viewZ = player.ViewZ;

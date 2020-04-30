@@ -17,6 +17,7 @@ namespace ManagedDoom
 
         public int totalKills = 0;
         public int totalItems = 0;
+        public int totalSecrets = 0;
 
         public int levelTime = 0;
 
@@ -40,6 +41,7 @@ namespace ManagedDoom
         private MonsterBehavior monsterBehavior;
         private LightingChange lightingChange;
 
+        private GameAction gameAction;
 
         public World(CommonResource resorces, GameOptions options, Player[] players)
         {
@@ -78,8 +80,10 @@ namespace ManagedDoom
             SpawnSpecials();
         }
 
-        public void Update()
+        public GameAction Update()
         {
+            gameAction = GameAction.Nothing;
+
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (Players[i].InGame)
@@ -92,6 +96,8 @@ namespace ManagedDoom
             specials.Update();
 
             levelTime++;
+
+            return gameAction;
         }
 
         private void LoadThings()
@@ -230,6 +236,12 @@ namespace ManagedDoom
                         break;
                 }
             }
+        }
+
+        public void G_ExitLevel()
+        {
+            //secretexit = false;
+            gameAction = GameAction.Completed;
         }
 
 

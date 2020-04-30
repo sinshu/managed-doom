@@ -51,8 +51,6 @@ namespace ManagedDoom.SoftwareRendering
 
         private int scale;
 
-        public Intermission Intermission;
-
         public IntermissionRenderer(CommonPatches patches, DrawScreen screen)
         {
             this.screen = screen;
@@ -66,14 +64,14 @@ namespace ManagedDoom.SoftwareRendering
             screen.DrawPatch(patch, scale * x, scale * y, scale);
         }
 
-        public void Render()
+        public void Render(Intermission intermission)
         {
-            DrawStats();
+            DrawStats(intermission);
         }
 
-        private void DrawStats()
+        private void DrawStats(Intermission intermission)
         {
-            var im = Intermission;
+            var im = intermission;
 
             // line height
             var lh = (3 * patches.Numbers[0].Height) / 2;
@@ -83,7 +81,7 @@ namespace ManagedDoom.SoftwareRendering
             // draw animated background
             //WI_drawAnimatedBack();
 
-            WI_drawLF();
+            WI_drawLF(im);
 
             DrawPatch(patches.Kills, SP_STATSX, SP_STATSY);
             WI_drawPercent(320 - SP_STATSX, SP_STATSY, im.cnt_kills[0]);
@@ -105,9 +103,9 @@ namespace ManagedDoom.SoftwareRendering
         }
 
         // Draws "<Levelname> Finished!"
-        private void WI_drawLF()
+        private void WI_drawLF(Intermission intermission)
         {
-            var wbs = Intermission.Wbs;
+            var wbs = intermission.Wbs;
 
             var y = WI_TITLEY;
 

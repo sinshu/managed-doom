@@ -4,6 +4,8 @@ namespace ManagedDoom
 {
 	public sealed class DoomGame
 	{
+		private CommonResource resource;
+
 		private Player[] players;
 		private World world;
 		private Intermission intermission;
@@ -15,19 +17,35 @@ namespace ManagedDoom
 		private int gametic;
 
 		private GameOptions options;
-		private GameState gameState;
+		public GameState gameState;
+		private GameMode gameMode;
 
 		private bool paused;
 
-		public DoomGame(GameOptions options)
+		private int levelstarttic;
+
+		private IntermissionInfo wminfo;
+
+		private PlayerIntermissionInfo[] plrs;
+
+		private bool secretexit;
+
+		public DoomGame(CommonResource resource, GameOptions options)
 		{
+			this.resource = resource;
+
 			players = new Player[Player.MaxPlayerCount];
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
 				players[i] = new Player(i);
 			}
+			players[0].InGame = true;
 
 			this.options = options;
+
+			gameAction = GameAction.NewGame;
+
+			wminfo = new IntermissionInfo();
 		}
 
 		public void Update()
@@ -37,7 +55,7 @@ namespace ManagedDoom
 			{
 				if (players[i].InGame && players[i].PlayerState == PlayerState.Reborn)
 				{
-					//G_DoReborn(i);
+					G_DoReborn(i);
 				}
 			}
 
@@ -47,10 +65,10 @@ namespace ManagedDoom
 				switch (gameAction)
 				{
 					case GameAction.LoadLevel:
-						//G_DoLoadLevel();
+						G_DoLoadLevel();
 						break;
 					case GameAction.NewGame:
-						//G_DoNewGame();
+						G_DoNewGame();
 						break;
 					case GameAction.LoadGame:
 						//G_DoLoadGame();
@@ -62,7 +80,7 @@ namespace ManagedDoom
 						//G_DoPlayDemo();
 						break;
 					case GameAction.Completed:
-						//G_DoCompleted();
+						G_DoCompleted();
 						break;
 					case GameAction.Victory:
 						//F_StartFinale();
@@ -167,14 +185,18 @@ namespace ManagedDoom
 			switch (gameState)
 			{
 				case GameState.Level:
-					world.Update();
+					gameAction = world.Update();
 					//ST_Ticker();
 					//AM_Ticker();
 					//HU_Ticker();
 					break;
 
 				case GameState.Intermission:
-					//WI_Ticker();
+					var end = intermission.Update();
+					if (end)
+					{
+						G_DoWorldDone();
+					}
 					break;
 
 				case GameState.Finale:
@@ -308,5 +330,422 @@ namespace ManagedDoom
 			return true;
 		}
 
+
+
+
+
+
+		private void G_DoLoadLevel()
+		{
+			/*
+			// Set the sky map.
+			// First thing, we have a dummy sky texture name,
+			//  a flat. The data is in the WAD only because
+			//  we look for an actual index, instead of simply
+			//  setting one.
+			skyflatnum = R_FlatNumForName(SKYFLATNAME);
+
+			// DOOM determines the sky texture to be used
+			// depending on the current episode, and the game version.
+			if ((gamemode == commercial)
+			 || (gamemode == pack_tnt)
+			 || (gamemode == pack_plut))
+			{
+				skytexture = R_TextureNumForName("SKY3");
+				if (gamemap < 12)
+					skytexture = R_TextureNumForName("SKY1");
+				else
+					if (gamemap < 21)
+					skytexture = R_TextureNumForName("SKY2");
+			}
+			*/
+
+			// for time calculation
+			levelstarttic = gametic;
+
+			/*
+			if (wipegamestate == GS_LEVEL)
+			{
+				// force a wipe
+				wipegamestate = -1;
+			}
+			*/
+
+			gameState = GameState.Level;
+
+			for (var i = 0; i < Player.MaxPlayerCount; i++)
+			{
+				if (players[i].InGame && players[i].PlayerState == PlayerState.Dead)
+				{
+					players[i].PlayerState = PlayerState.Reborn;
+				}
+				Array.Clear(players[i].Frags, 0, players[i].Frags.Length);
+			}
+
+			// P_SetupLevel(gameepisode, gamemap, 0, gameskill);
+			world = new World(resource, options, players);
+
+			// view the guy you are playing
+			// displayplayer = consoleplayer;
+
+			// starttime = I_GetTime();
+			gameAction = GameAction.Nothing;
+			// Z_CheckHeap();
+
+			// clear cmd building stuff
+			/*
+			memset(gamekeydown, 0, sizeof(gamekeydown));
+			joyxmove = joyymove = 0;
+			mousex = mousey = 0;
+			sendpause = sendsave = paused = false;
+			memset(mousebuttons, 0, sizeof(mousebuttons));
+			memset(joybuttons, 0, sizeof(joybuttons));
+			*/
+		}
+
+
+
+		private void G_DoNewGame()
+		{
+			demoplayback = false;
+			//netdemo = false;
+			//netgame = false;
+			//deathmatch = false;
+			players[1].InGame = players[2].InGame = players[3].InGame = false;
+			//respawnparm = false;
+			//fastparm = false;
+			//nomonsters = false;
+			//consoleplayer = 0;
+			//G_InitNew(d_skill, d_episode, d_map);
+			G_InitNew(GameSkill.Medium, 1, 1);
+			gameAction = GameAction.Nothing;
+		}
+
+
+		private void G_InitNew(GameSkill skill, int episode, int map)
+		{
+			if (paused)
+			{
+				paused = false;
+				//S_ResumeSound();
+			}
+
+
+			if (skill > GameSkill.Nightmare)
+			{
+				skill = GameSkill.Nightmare;
+			}
+
+			// This was quite messy with SPECIAL and commented parts.
+			// Supposedly hacks to make the latest edition work.
+			// It might not work properly.
+			if (episode < 1)
+			{
+				episode = 1;
+			}
+
+			if (gameMode == GameMode.Retail)
+			{
+				if (episode > 4)
+				{
+					episode = 4;
+				}
+			}
+			else if (gameMode == GameMode.Shareware)
+			{
+				if (episode > 1)
+				{
+					// only start episode 1 on shareware
+					episode = 1;
+				}
+			}
+			else
+			{
+				if (episode > 3)
+				{
+					episode = 3;
+				}
+			}
+
+
+
+			if (map < 1)
+			{
+				map = 1;
+			}
+
+			if ((map > 9) && (gameMode != GameMode.Commercial))
+			{
+				map = 9;
+			}
+
+			//M_ClearRandom();
+
+			/*
+			if (skill == sk_nightmare || respawnparm)
+			{
+				respawnmonsters = true;
+			}
+			else
+			{
+				respawnmonsters = false;
+			}
+			*/
+
+			// force players to be initialized upon first level load         
+			for (var i = 0; i < Player.MaxPlayerCount; i++)
+			{
+				players[i].PlayerState = PlayerState.Reborn;
+			}
+
+			//usergame = true; // will be set false if a demo 
+			//paused = false;
+			demoplayback = false;
+			//automapactive = false;
+			//viewactive = true;
+			//gameepisode = episode;
+			//gamemap = map;
+			//gameskill = skill;
+
+			//viewactive = true;
+
+			/*
+			// set the sky map for the episode
+			if (gamemode == commercial)
+			{
+				skytexture = R_TextureNumForName("SKY3");
+				if (gamemap < 12)
+					skytexture = R_TextureNumForName("SKY1");
+				else
+					if (gamemap < 21)
+					skytexture = R_TextureNumForName("SKY2");
+			}
+			else
+			{
+				switch (episode)
+				{
+					case 1:
+						skytexture = R_TextureNumForName("SKY1");
+						break;
+					case 2:
+						skytexture = R_TextureNumForName("SKY2");
+						break;
+					case 3:
+						skytexture = R_TextureNumForName("SKY3");
+						break;
+					case 4: // Special Edition sky
+						skytexture = R_TextureNumForName("SKY4");
+						break;
+				}
+			}
+			*/
+
+			G_DoLoadLevel();
+		}
+
+
+
+
+
+		private void G_DoCompleted()
+		{
+			gameAction = GameAction.Nothing;
+
+			for (var i = 0; i < Player.MaxPlayerCount; i++)
+			{
+				if (players[i].InGame)
+				{
+					// take away cards and stuff
+					G_PlayerFinishLevel(i);
+				}
+			}
+
+			/*
+			if (automapactive)
+			{
+				AM_Stop();
+			}
+			*/
+
+			if (gameMode != GameMode.Commercial)
+			{
+				switch (options.Map)
+				{
+					case 8:
+						gameAction = GameAction.Victory;
+						return;
+					case 9:
+						for (var i = 0; i < Player.MaxPlayerCount; i++)
+						{
+							players[i].DidSecret = true;
+						}
+						break;
+				}
+			}
+
+			//#if 0  Hmmm - why?
+			if ((options.Map == 8) && (gameMode != GameMode.Commercial))
+			{
+				// victory 
+				gameAction = GameAction.Victory;
+				return;
+			}
+
+			if ((options.Map == 9) && (gameMode != GameMode.Commercial))
+			{
+				// exit secret level 
+				for (var i = 0; i < Player.MaxPlayerCount; i++)
+				{
+					players[i].DidSecret = true;
+				}
+			}
+			//#endif
+
+			wminfo.DidSecret = players[options.ConsolePlayer].DidSecret;
+			wminfo.Epsd = options.Episode - 1;
+			wminfo.Last = options.Map - 1;
+
+			// wminfo.next is 0 biased, unlike gamemap
+			if (gameMode == GameMode.Commercial)
+			{
+				if (secretexit)
+				{
+					switch (options.Map)
+					{
+						case 15:
+							wminfo.Next = 30;
+							break;
+						case 31:
+							wminfo.Next = 31;
+							break;
+					}
+				}
+				else
+				{
+					switch (options.Map)
+					{
+						case 31:
+						case 32:
+							wminfo.Next = 15;
+							break;
+						default:
+							wminfo.Next = options.Map;
+							break;
+					}
+				}
+			}
+			else
+			{
+				if (secretexit)
+				{
+					// go to secret level 
+					wminfo.Next = 8;
+				}
+				else if (options.Map == 9)
+				{
+					// returning from secret level 
+					switch (options.Episode)
+					{
+						case 1:
+							wminfo.Next = 3;
+							break;
+						case 2:
+							wminfo.Next = 5;
+							break;
+						case 3:
+							wminfo.Next = 6;
+							break;
+						case 4:
+							wminfo.Next = 2;
+							break;
+					}
+				}
+				else
+				{
+					// go to next level
+					wminfo.Next = options.Map;
+				}
+			}
+
+			wminfo.maxKills = world.totalKills;
+			wminfo.maxItems = world.totalItems;
+			wminfo.maxSecret = world.totalSecrets;
+			wminfo.maxFrags = 0;
+			if (gameMode == GameMode.Commercial)
+			{
+				wminfo.ParTime = 35 * 30; //cpars[gamemap - 1];
+			}
+			else
+			{
+				wminfo.ParTime = 35 * 30; //pars[gameepisode][gamemap];
+			}
+			wminfo.PNum = options.ConsolePlayer;
+
+			for (var i = 0; i < Player.MaxPlayerCount; i++)
+			{
+				wminfo.Plyr[i].InGame = players[i].InGame;
+				wminfo.Plyr[i].Skills = players[i].KillCount;
+				wminfo.Plyr[i].SItems = players[i].ItemCount;
+				wminfo.Plyr[i].SSecret = players[i].SecretCount;
+				wminfo.Plyr[i].STime = world.levelTime;
+				Array.Copy(players[i].Frags, wminfo.Plyr[i].Frags, Player.MaxPlayerCount);
+			}
+
+			gameState = GameState.Intermission;
+			//viewactive = false;
+			//automapactive = false;
+
+			/*
+			if (statcopy)
+			{
+				memcpy(statcopy, &wminfo, sizeof(wminfo));
+			}
+			*/
+
+			//WI_Start(&wminfo);
+			intermission = new Intermission(players, wminfo, options);
+		}
+
+
+
+
+		//
+		// G_PlayerFinishLevel
+		// Can when a player completes a level.
+		//
+		private void G_PlayerFinishLevel(int player)
+		{
+			var p = players[player];
+			Array.Clear(p.Powers, 0, p.Powers.Length);
+			Array.Clear(p.Cards, 0, p.Cards.Length);
+
+			// cancel invisibility
+			p.Mobj.Flags &= ~MobjFlags.Shadow;
+
+			// cancel gun flashes
+			p.ExtraLight = 0;
+
+			// cancel ir gogles
+			p.FixedColorMap = 0;
+
+			// no palette changes
+			p.DamageCount = 0;
+			p.BonusCount = 0;
+		}
+
+		private void G_DoWorldDone()
+		{
+			gameState = GameState.Level;
+			options.Map = wminfo.Next + 1;
+			G_DoLoadLevel();
+			gameAction = GameAction.Nothing;
+			//viewactive = true;
+		}
+
+
+
+		public Player[] Players => players;
+		public World World => world;
+		public Intermission Intermission => intermission;
 	}
 }

@@ -32,8 +32,6 @@ namespace ManagedDoom.SoftwareRendering
         private ThreeDRenderer threeD;
         private IntermissionRenderer intermission;
 
-        private World world;
-
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
         {
             sfmlWindow = window;
@@ -98,6 +96,7 @@ namespace ManagedDoom.SoftwareRendering
             return colors;
         }
 
+        /*
         public void BindWorld(World world)
         {
             this.world = world;
@@ -109,16 +108,18 @@ namespace ManagedDoom.SoftwareRendering
         {
             threeD.UnbindWorld();
         }
+        */
 
-        //private int cnt = -35;
-
-        public void Render()
+        public void Render(DoomGame game)
         {
-            threeD.Render(world.Players[0]);
-
-            //cnt++;
-
-            //intermission.DrawPatch(patches.Numbers[0], cnt, 0, 7);
+            if (game.gameState == GameState.Level)
+            {
+                threeD.Render(game.World.Players[0]);
+            }
+            else if (game.gameState == GameState.Intermission)
+            {
+                intermission.Render(game.Intermission);
+            }
 
             var screenData = screen.Data;
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
@@ -136,8 +137,7 @@ namespace ManagedDoom.SoftwareRendering
 
         public void IntermissionRenderTest(Intermission im)
         {
-            intermission.Intermission = im;
-            intermission.Render();
+            intermission.Render(im);
 
             var screenData = screen.Data;
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
