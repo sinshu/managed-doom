@@ -30,16 +30,11 @@ namespace ManagedDoom
 
 		private bool secretexit;
 
-		public DoomGame(CommonResource resource, GameOptions options)
+		public DoomGame(Player[] players, CommonResource resource, GameOptions options)
 		{
 			this.resource = resource;
 
-			players = new Player[Player.MaxPlayerCount];
-			for (var i = 0; i < Player.MaxPlayerCount; i++)
-			{
-				players[i] = new Player(i);
-			}
-			players[0].InGame = true;
+			this.players = players;
 
 			this.options = options;
 
@@ -48,7 +43,7 @@ namespace ManagedDoom
 			wminfo = new IntermissionInfo();
 		}
 
-		public void Update()
+		public void Update(TicCmd[] cmds)
 		{
 			// do player reborns if needed
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -107,7 +102,7 @@ namespace ManagedDoom
 				{
 					var cmd = players[i].Cmd;
 
-					//memcpy(cmd, &netcmds[i][buf], sizeof(ticcmd_t));
+					cmd.CopyFrom(cmds[i]);
 
 					if (demoplayback)
 					{
@@ -417,7 +412,7 @@ namespace ManagedDoom
 			//nomonsters = false;
 			//consoleplayer = 0;
 			//G_InitNew(d_skill, d_episode, d_map);
-			G_InitNew(GameSkill.Medium, 1, 1);
+			G_InitNew(options.Skill, options.Episode, options.Map);
 			gameAction = GameAction.Nothing;
 		}
 

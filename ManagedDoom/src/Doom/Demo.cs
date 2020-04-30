@@ -9,7 +9,6 @@ namespace ManagedDoom
         private byte[] data;
 
         private GameOptions options;
-        private Player[] players;
 
         public Demo(byte[] data)
         {
@@ -32,16 +31,10 @@ namespace ManagedDoom
             options.NoMonsters = data[p++] != 0;
             options.ConsolePlayer = data[p++];
 
-            players = new Player[Player.MaxPlayerCount];
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
-            {
-                players[i] = new Player(i);
-                players[i].PlayerState = PlayerState.Reborn;
-            }
-            players[0].InGame = data[p++] != 0;
-            players[1].InGame = data[p++] != 0;
-            players[2].InGame = data[p++] != 0;
-            players[3].InGame = data[p++] != 0;
+            options.PlayerInGame[0] = data[p++] != 0;
+            options.PlayerInGame[1] = data[p++] != 0;
+            options.PlayerInGame[2] = data[p++] != 0;
+            options.PlayerInGame[3] = data[p++] != 0;
         }
 
         public Demo(string fileName)
@@ -49,7 +42,7 @@ namespace ManagedDoom
         {
         }
 
-        public bool ReadCmd()
+        public bool ReadCmd(TicCmd[] cmds)
         {
             if (data[p] == 0x80)
             {
@@ -58,9 +51,9 @@ namespace ManagedDoom
 
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                if (players[i].InGame)
+                if (options.PlayerInGame[i])
                 {
-                    var cmd = players[i].Cmd;
+                    var cmd = cmds[i];
                     cmd.ForwardMove = (sbyte)data[p++];
                     cmd.SideMove = (sbyte)data[p++];
                     cmd.AngleTurn = (short)(data[p++] << 8);
@@ -72,6 +65,5 @@ namespace ManagedDoom
         }
 
         public GameOptions Options => options;
-        public Player[] Players => players;
     }
 }

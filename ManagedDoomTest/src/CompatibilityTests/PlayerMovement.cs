@@ -15,14 +15,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\player_movement_test.wad"))
             {
                 var demo = new Demo(@"data\player_movement_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -43,14 +45,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\thing_collision_test.wad"))
             {
                 var demo = new Demo(@"data\thing_collision_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -71,14 +75,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\autoaim_test.wad"))
             {
                 var demo = new Demo(@"data\autoaim_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }

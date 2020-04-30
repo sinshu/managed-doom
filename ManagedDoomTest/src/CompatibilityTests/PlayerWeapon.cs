@@ -15,14 +15,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\punch_test.wad"))
             {
                 var demo = new Demo(@"data\punch_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -43,14 +45,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\chainsaw_test.wad"))
             {
                 var demo = new Demo(@"data\chainsaw_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -71,14 +75,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\shotgun_test.wad"))
             {
                 var demo = new Demo(@"data\shotgun_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -99,14 +105,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\supershotgun_test.wad"))
             {
                 var demo = new Demo(@"data\supershotgun_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -127,14 +135,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\chaingun_test.wad"))
             {
                 var demo = new Demo(@"data\chaingun_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -155,14 +165,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\rocket_test.wad"))
             {
                 var demo = new Demo(@"data\rocket_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -183,14 +195,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\plasma_test.wad"))
             {
                 var demo = new Demo(@"data\plasma_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -211,14 +225,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\bfg_test.wad"))
             {
                 var demo = new Demo(@"data\bfg_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -239,14 +255,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\sky_shoot_test.wad"))
             {
                 var demo = new Demo(@"data\sky_shoot_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastHash = 0;
                 var aggHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }

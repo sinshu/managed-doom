@@ -15,14 +15,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\teleporter_test.wad"))
             {
                 var demo = new Demo(@"data\teleporter_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -43,7 +45,9 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\localdoor_test.wad"))
             {
                 var demo = new Demo(@"data\localdoor_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -52,7 +56,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }
@@ -77,7 +81,9 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\platform_test.wad"))
             {
                 var demo = new Demo(@"data\platform_test.lmp");
-                var world = new World(resource, demo.Options, demo.Players);
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options, players);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -86,7 +92,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 while (true)
                 {
-                    if (!demo.ReadCmd())
+                    if (!demo.ReadCmd(cmds))
                     {
                         break;
                     }

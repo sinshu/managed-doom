@@ -20,5 +20,15 @@ namespace ManagedDoom
             ChatChar = 0;
             Buttons = 0;
         }
+
+        public void CopyFrom(TicCmd cmd)
+        {
+            ForwardMove = cmd.ForwardMove;
+            SideMove = cmd.SideMove;
+            AngleTurn = cmd.AngleTurn;
+            Consistancy = cmd.Consistancy;
+            ChatChar = cmd.ChatChar;
+            Buttons = cmd.Buttons;
+        }
     }
 }

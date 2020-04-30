@@ -13,10 +13,11 @@ namespace ManagedDoom
         static void Main(string[] args)
         {
             var players = new Player[Player.MaxPlayerCount];
+            var cmds = new TicCmd[Player.MaxPlayerCount];
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
                 players[i] = new Player(i);
-                players[i].PlayerState = PlayerState.Reborn;
+                cmds[i] = new TicCmd();
             }
             players[0].InGame = true;
 
@@ -32,7 +33,10 @@ namespace ManagedDoom
                 options.Episode = 1;
                 options.Map = 1;
 
-                var game = new DoomGame(resource, options);
+                //var demo = new Demo("multi_level_test.lmp");
+                //options = demo.Options;
+
+                var game = new DoomGame(players, resource, options);
 
                 window.Closed += (sender, e) => window.Close();
                 window.SetFramerateLimit(35);
@@ -45,8 +49,10 @@ namespace ManagedDoom
                 {
                     window.DispatchEvents();
 
-                    UserInput.BuildTicCmd(game.Players[0].Cmd);
-                    game.Update();
+                    UserInput.BuildTicCmd(cmds[0]);
+                    //demo.ReadCmd(cmds);
+
+                    game.Update(cmds);
                     renderer.Render(game);
 
                     count++;
