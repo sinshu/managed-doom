@@ -61,6 +61,8 @@ namespace ManagedDoom
                 }
             }
 
+            //Console.Write("*");
+
             return true;
         }
 

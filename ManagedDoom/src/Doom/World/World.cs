@@ -50,7 +50,7 @@ namespace ManagedDoom
 
             map = new Map(resorces, options);
 
-            random = new DoomRandom();
+            random = options.Random;
 
             validCount = 0;
 
@@ -74,6 +74,19 @@ namespace ManagedDoom
             monsterBehavior = new MonsterBehavior(this);
             lightingChange = new LightingChange(this);
 
+            /*
+            totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
+            wminfo.partime = 180;
+            for (i = 0; i < MAXPLAYERS; i++)
+            {
+                players[i].killcount = players[i].secretcount
+                    = players[i].itemcount = 0;
+            }
+
+            // Initial height of PointOfView
+            // will be set by player think.
+            players[consoleplayer].viewz = 1;
+            */
 
             LoadThings();
 
@@ -96,6 +109,10 @@ namespace ManagedDoom
             specials.Update();
 
             levelTime++;
+
+            var mobjHash = DoomDebug.GetMobjHash(this);
+            var sectorHash = DoomDebug.GetSectorHash(this);
+            //Console.WriteLine(levelTime + ": " + mobjHash.ToString("x8") + ", " + sectorHash.ToString("x8"));
 
             return gameAction;
         }

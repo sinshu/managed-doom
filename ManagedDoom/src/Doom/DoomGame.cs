@@ -474,7 +474,7 @@ namespace ManagedDoom
 				map = 9;
 			}
 
-			//M_ClearRandom();
+			options.Random.Clear();
 
 			/*
 			if (skill == sk_nightmare || respawnparm)
