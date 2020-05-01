@@ -742,6 +742,7 @@ namespace ManagedDoom
 
 
 		public Player[] Players => players;
+		public GameOptions Options => options;
 		public World World => world;
 		public Intermission Intermission => intermission;
 	}

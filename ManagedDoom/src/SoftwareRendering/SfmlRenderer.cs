@@ -114,7 +114,7 @@ namespace ManagedDoom.SoftwareRendering
         {
             if (game.gameState == GameState.Level)
             {
-                threeD.Render(game.World.Players[0]);
+                threeD.Render(game.World.Players[game.Options.ConsolePlayer]);
             }
             else if (game.gameState == GameState.Intermission)
             {
