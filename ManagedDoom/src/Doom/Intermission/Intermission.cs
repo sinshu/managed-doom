@@ -103,7 +103,7 @@ namespace ManagedDoom
                     break;
             }
 
-            Console.WriteLine(bcnt + ": " + cnt_kills[0] + ", " + cnt_items[0] + ", " + cnt_secret[0] + ", " + cnt_time);
+            //Console.WriteLine(bcnt + ": " + cnt_kills[0] + ", " + cnt_items[0] + ", " + cnt_secret[0] + ", " + cnt_time);
 
             return end;
         }
