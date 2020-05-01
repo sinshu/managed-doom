@@ -74,19 +74,21 @@ namespace ManagedDoom
             monsterBehavior = new MonsterBehavior(this);
             lightingChange = new LightingChange(this);
 
-            /*
-            totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
-            wminfo.partime = 180;
-            for (i = 0; i < MAXPLAYERS; i++)
+            totalKills = 0;
+            totalItems = 0;
+            totalSecrets = 0;
+            options.wminfo.maxFrags = 0;
+            options.wminfo.ParTime = 180;
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                players[i].killcount = players[i].secretcount
-                    = players[i].itemcount = 0;
+                players[i].KillCount = 0;
+                players[i].SecretCount = 0;
+                players[i].ItemCount = 0;
             }
 
             // Initial height of PointOfView
             // will be set by player think.
-            players[consoleplayer].viewz = 1;
-            */
+            players[consoleplayer].ViewZ = new Fixed(1);
 
             LoadThings();
 

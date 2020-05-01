@@ -19,5 +19,6 @@ namespace ManagedDoom
 
         public DoomRandom Random = new DoomRandom();
         public int GameTic = 0;
+        public IntermissionInfo wminfo = new IntermissionInfo();
     }
 }

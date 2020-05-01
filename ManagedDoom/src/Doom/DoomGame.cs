@@ -24,10 +24,6 @@ namespace ManagedDoom
 
 		private int levelstarttic;
 
-		private IntermissionInfo wminfo;
-
-		private PlayerIntermissionInfo[] plrs;
-
 		private bool secretexit;
 
 		public DoomGame(Player[] players, CommonResource resource, GameOptions options)
@@ -39,8 +35,6 @@ namespace ManagedDoom
 			this.options = options;
 
 			gameAction = GameAction.NewGame;
-
-			wminfo = new IntermissionInfo();
 		}
 
 		public void Update(TicCmd[] cmds)
@@ -598,6 +592,8 @@ namespace ManagedDoom
 			}
 			//#endif
 
+			var wminfo = options.wminfo;
+
 			wminfo.DidSecret = players[options.ConsolePlayer].DidSecret;
 			wminfo.Epsd = options.Episode - 1;
 			wminfo.Last = options.Map - 1;
@@ -733,7 +729,7 @@ namespace ManagedDoom
 		private void G_DoWorldDone()
 		{
 			gameState = GameState.Level;
-			options.Map = wminfo.Next + 1;
+			options.Map = options.wminfo.Next + 1;
 			G_DoLoadLevel();
 			gameAction = GameAction.Nothing;
 			//viewactive = true;
