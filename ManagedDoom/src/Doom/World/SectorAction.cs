@@ -1720,5 +1720,48 @@ namespace ManagedDoom
 			}
 			return rtn;
 		}
+
+
+
+		//
+		// Spawn a door that closes after 30 seconds
+		//
+		public void P_SpawnDoorCloseIn30(Sector sec)
+		{
+			var door = ThinkerPool.RentVlDoor(world);
+
+			world.Thinkers.Add(door);
+
+			sec.SpecialData = door;
+			sec.Special = 0;
+
+			door.Sector = sec;
+			door.Direction = 0;
+			door.Type = VlDoorType.Normal;
+			door.Speed = VDOORSPEED;
+			door.TopCountDown = 30 * 35;
+		}
+
+		//
+		// Spawn a door that opens after 5 minutes
+		//
+		public void P_SpawnDoorRaiseIn5Mins(Sector sec)
+		{
+			var door = ThinkerPool.RentVlDoor(world);
+
+			world.Thinkers.Add(door);
+
+			sec.SpecialData = door;
+			sec.Special = 0;
+
+			door.Sector = sec;
+			door.Direction = 2;
+			door.Type = VlDoorType.RaiseIn5Mins;
+			door.Speed = VDOORSPEED;
+			door.TopHeight = FindLowestCeilingSurrounding(sec);
+			door.TopHeight -= Fixed.FromInt(4);
+			door.TopWait = VDOORWAIT;
+			door.TopCountDown = 5 * 60 * 35;
+		}
 	}
 }

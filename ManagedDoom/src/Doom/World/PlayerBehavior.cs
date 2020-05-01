@@ -402,8 +402,9 @@ namespace ManagedDoom
 
                     if (player.Health <= 10)
                     {
-                        //G_ExitLevel();
+                        world.G_ExitLevel();
                     }
+
                     break;
 
                 default:

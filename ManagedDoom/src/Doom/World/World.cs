@@ -225,12 +225,12 @@ namespace ManagedDoom
                         break;
                     case 9:
                         // SECRET SECTOR
-                        //totalsecret++;
+                        totalSecrets++;
                         break;
 
                     case 10:
                         // DOOR CLOSE IN 30 SECONDS
-                        //P_SpawnDoorCloseIn30(sector);
+                        sectorAction.P_SpawnDoorCloseIn30(sector);
                         break;
 
                     case 12:
@@ -245,7 +245,7 @@ namespace ManagedDoom
 
                     case 14:
                         // DOOR RAISE IN 5 MINUTES
-                        //P_SpawnDoorRaiseIn5Mins(sector, i);
+                        sectorAction.P_SpawnDoorRaiseIn5Mins(sector);
                         break;
 
                     case 17:
