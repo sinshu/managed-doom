@@ -18,5 +18,6 @@ namespace ManagedDoom
         public bool[] PlayerInGame = new bool[Player.MaxPlayerCount];
 
         public DoomRandom Random = new DoomRandom();
+        public int GameTic = 0;
     }
 }

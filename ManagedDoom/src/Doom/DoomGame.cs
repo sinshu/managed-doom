@@ -202,6 +202,8 @@ namespace ManagedDoom
 					//D_PageTicker();
 					break;
 			}
+
+			options.GameTic++;
 		}
 
 

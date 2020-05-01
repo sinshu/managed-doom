@@ -481,6 +481,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
 
                     world.Update();
+                    world.Options.GameTic++; // To avoid desync due to revenant missile.
                     lastHash = DoomDebug.GetMobjHash(world);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }

@@ -1302,9 +1302,7 @@ namespace ManagedDoom
 
         public void Tracer(Mobj actor)
         {
-            // Using leveltime here is a temporal cope.
-            // This should cause desync in multi-level demos.
-            if ((world.levelTime & 3) != 0)
+            if ((world.Options.GameTic & 3) != 0)
             {
                 return;
             }
