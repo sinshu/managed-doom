@@ -5,6 +5,18 @@ namespace ManagedDoom
 {
     public sealed class CommonPatches
     {
+        private Patch statusBar;
+        private Patch[] tallNumbers;
+        private Patch[] shortNumbers;
+        private Patch tallPercent;
+        private Patch[] keys;
+
+
+
+
+
+
+
         // background (map of levels).
         private Patch background;
         private Patch[] mapPictures;
@@ -67,6 +79,24 @@ namespace ManagedDoom
 
         public CommonPatches(Wad wad)
         {
+            statusBar = Patch.FromWad("STBAR", wad);
+            tallNumbers = new Patch[10];
+            shortNumbers = new Patch[10];
+            for (var i = 0; i < 10; i++)
+            {
+                tallNumbers[i] = Patch.FromWad("STTNUM" + i, wad);
+                shortNumbers[i] = Patch.FromWad("STYSNUM" + i, wad);
+            }
+            tallPercent = Patch.FromWad("STTPRCNT", wad);
+            keys = new Patch[(int)CardType.Count];
+            for (var i = 0; i < keys.Length; i++)
+            {
+                keys[i] = Patch.FromWad("STKEYS" + i, wad);
+            }
+
+
+
+
             if (wad.GameMode == GameMode.Commercial)
             {
                 background = Patch.FromWad("INTERPIC", wad);
@@ -156,6 +186,21 @@ namespace ManagedDoom
 
             Console.WriteLine("All patches are OK.");
         }
+
+
+
+
+
+        public Patch StatusBar => statusBar;
+        public Patch[] TallNumbers => tallNumbers;
+        public Patch[] ShortNumbers => shortNumbers;
+        public Patch TallPercent => tallPercent;
+        public Patch[] Keys => keys;
+
+
+
+
+
 
         public Patch Background => background;
         public IReadOnlyList<Patch> MapPictures => mapPictures;

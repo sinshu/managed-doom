@@ -33,7 +33,9 @@ namespace ManagedDoom.SoftwareRendering
             InitSpriteRendering();
             InitWeaponRendering();
 
-            ResetWindow(0, 0, screen.Width, screen.Height);
+            var windowWidth = screen.Width;
+            var windowHeight = screen.Height - 32 * (screen.Width / 320);
+            ResetWindow(0, 0, windowWidth, windowHeight);
             ResetWallRendering();
             ResetPlaneRendering();
             ResetSkyRendering();

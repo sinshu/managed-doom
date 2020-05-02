@@ -30,6 +30,7 @@ namespace ManagedDoom.SoftwareRendering
         private SFML.Graphics.RenderStates sfmlStates;
 
         private ThreeDRenderer threeD;
+        private StatusBarRenderer statusBar;
         private IntermissionRenderer intermission;
 
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
@@ -77,6 +78,7 @@ namespace ManagedDoom.SoftwareRendering
             sfmlStates = new RenderStates(BlendMode.None);
 
             threeD = new ThreeDRenderer(resource, screen);
+            statusBar = new StatusBarRenderer(resource.Patches, screen);
             intermission = new IntermissionRenderer(resource.Patches, screen);
         }
 
@@ -114,7 +116,9 @@ namespace ManagedDoom.SoftwareRendering
         {
             if (game.gameState == GameState.Level)
             {
-                threeD.Render(game.World.Players[game.Options.ConsolePlayer]);
+                var player = game.World.Players[game.Options.ConsolePlayer];
+                threeD.Render(player);
+                statusBar.Render(player);
             }
             else if (game.gameState == GameState.Intermission)
             {
