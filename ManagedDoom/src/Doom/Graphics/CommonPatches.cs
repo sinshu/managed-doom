@@ -8,6 +8,7 @@ namespace ManagedDoom
         private Patch statusBar;
         private Patch[] tallNumbers;
         private Patch[] shortNumbers;
+        private Patch tallMinus;
         private Patch tallPercent;
         private Patch[] keys;
 
@@ -87,6 +88,7 @@ namespace ManagedDoom
                 tallNumbers[i] = Patch.FromWad("STTNUM" + i, wad);
                 shortNumbers[i] = Patch.FromWad("STYSNUM" + i, wad);
             }
+            tallMinus = Patch.FromWad("STTMINUS", wad);
             tallPercent = Patch.FromWad("STTPRCNT", wad);
             keys = new Patch[(int)CardType.Count];
             for (var i = 0; i < keys.Length; i++)
@@ -194,6 +196,7 @@ namespace ManagedDoom
         public Patch StatusBar => statusBar;
         public Patch[] TallNumbers => tallNumbers;
         public Patch[] ShortNumbers => shortNumbers;
+        public Patch TallMinus => tallMinus;
         public Patch TallPercent => tallPercent;
         public Patch[] Keys => keys;
 
