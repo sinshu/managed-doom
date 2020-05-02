@@ -7,6 +7,7 @@ namespace ManagedDoom
     {
         // background (map of levels).
         private Patch background;
+        private Patch[] mapPictures;
 
         // "Kills", "Scrt", "Items", "Frags"
         private Patch kills;
@@ -66,7 +67,26 @@ namespace ManagedDoom
 
         public CommonPatches(Wad wad)
         {
-            background = Patch.FromWad("INTERPIC", wad);
+            if (wad.GameMode == GameMode.Commercial)
+            {
+                background = Patch.FromWad("INTERPIC", wad);
+            }
+            else
+            {
+                mapPictures = new Patch[3];
+                for (var e = 0; e < 3; e++)
+                {
+                    var patchName = "WIMAP" + e;
+                    if (wad.GetLumpNumber(patchName) != -1)
+                    {
+                        mapPictures[e] = Patch.FromWad(patchName, wad);
+                    }
+                }
+                if (wad.GetLumpNumber("INTERPIC") != -1)
+                {
+                    background = Patch.FromWad("INTERPIC", wad);
+                }
+            }
 
             kills = Patch.FromWad("WIOSTK", wad);
             secret = Patch.FromWad("WIOSTS", wad);
@@ -138,6 +158,7 @@ namespace ManagedDoom
         }
 
         public Patch Background => background;
+        public IReadOnlyList<Patch> MapPictures => mapPictures;
 
         public Patch Kills => kills;
         public Patch Secret => secret;

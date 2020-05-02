@@ -75,7 +75,7 @@ namespace ManagedDoom
 						//F_StartFinale();
 						break;
 					case GameAction.WorldDone:
-						//G_DoWorldDone();
+						G_DoWorldDone();
 						break;
 					case GameAction.ScreenShot:
 						//M_ScreenShot();
@@ -184,7 +184,7 @@ namespace ManagedDoom
 					var end = intermission.Update();
 					if (end)
 					{
-						G_DoWorldDone();
+						G_WorldDone();
 					}
 					break;
 
@@ -726,6 +726,38 @@ namespace ManagedDoom
 			p.BonusCount = 0;
 		}
 
+		//
+		// G_WorldDone 
+		//
+		private void G_WorldDone()
+		{
+			gameAction = GameAction.WorldDone;
+
+			if (secretexit)
+			{
+				players[options.ConsolePlayer].DidSecret = true;
+			}
+
+			if (gameMode == GameMode.Commercial)
+			{
+				/*
+				switch (options.Map)
+				{
+					case 15:
+					case 31:
+						if (!secretexit)
+							break;
+					case 6:
+					case 11:
+					case 20:
+					case 30:
+						F_StartFinale();
+						break;
+				}
+				*/
+			}
+		}
+
 		private void G_DoWorldDone()
 		{
 			gameState = GameState.Level;
@@ -734,6 +766,7 @@ namespace ManagedDoom
 			gameAction = GameAction.Nothing;
 			//viewactive = true;
 		}
+
 
 
 

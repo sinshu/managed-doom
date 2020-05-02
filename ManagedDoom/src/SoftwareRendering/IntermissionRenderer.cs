@@ -94,14 +94,34 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
+        private void DrawBackground(Intermission intermission)
+        {
+            if (intermission.Options.GameMode == GameMode.Commercial)
+            {
+                DrawPatch(patches.Background, 0, 0);
+            }
+            else
+            {
+                var e = intermission.Options.Episode - 1;
+                if (e < patches.MapPictures.Count)
+                {
+                    DrawPatch(patches.MapPictures[e], 0, 0);
+                }
+                else
+                {
+                    DrawPatch(patches.Background, 0, 0);
+                }
+            }
+        }
+
         private void DrawStats(Intermission intermission)
         {
+            DrawBackground(intermission);
+
             var im = intermission;
 
             // line height
             var lh = (3 * patches.Numbers[0].Height) / 2;
-
-            DrawPatch(patches.Background, 0, 0);
 
             // draw animated background
             //WI_drawAnimatedBack();
@@ -135,7 +155,7 @@ namespace ManagedDoom.SoftwareRendering
 
         private void WI_drawShowNextLoc(Intermission im)
         {
-            DrawPatch(patches.Background, 0, 0);
+            DrawBackground(im);
 
             // draw animated background
             //WI_drawAnimatedBack();
