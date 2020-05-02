@@ -62,7 +62,7 @@ namespace ManagedDoom
         private Patch[] bp;
 
         // Name graphics of each level (centered)
-        private Patch[] lnames;
+        private Patch[][] lnames;
 
         public CommonPatches(Wad wad)
         {
@@ -101,12 +101,37 @@ namespace ManagedDoom
             bstar = Patch.FromWad("STFDEAD0", wad);
 
 
-
-
-            lnames = new Patch[32];
-            for (var i = 0; i < 32; i++)
+            if (wad.GameMode == GameMode.Commercial)
             {
-                lnames[i] = Patch.FromWad("CWILV" + i.ToString("00"), wad);
+                var numMaps = 32;
+                lnames = new Patch[1][];
+                lnames[0] = new Patch[numMaps];
+                for (var i = 0; i < numMaps; i++)
+                {
+                    lnames[0][i] = Patch.FromWad("CWILV" + i.ToString("00"), wad);
+                }
+            }
+            else
+            {
+                var numEpisodes = 4;
+                var numMaps = 9;
+                lnames = new Patch[numEpisodes][];
+                for (var e = 0; e < numEpisodes; e++)
+                {
+                    lnames[e] = new Patch[numMaps];
+                    for (var m = 0; m < numMaps; m++)
+                    {
+                        var patchName = "WILV" + e + m;
+                        if (wad.GetLumpNumber(patchName) != -1)
+                        {
+                            lnames[e][m] = Patch.FromWad(patchName, wad);
+                        }
+                    }
+                }
+
+                youAreHere1 = Patch.FromWad("WIURH0", wad);
+                youAreHere2 = Patch.FromWad("WIURH1", wad);
+                splat = Patch.FromWad("WISPLAT", wad);
             }
 
             Console.WriteLine("All patches are OK.");
@@ -142,6 +167,6 @@ namespace ManagedDoom
         public Patch Star => star;
         public Patch BStar => BStar;
 
-        public IReadOnlyList<Patch> LevelNames => lnames;
+        public IReadOnlyList<IReadOnlyList<Patch>> LevelNames => lnames;
     }
 }

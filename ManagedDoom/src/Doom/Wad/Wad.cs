@@ -10,6 +10,7 @@ namespace ManagedDoom
         private List<string> names;
         private List<Stream> streams;
         private List<LumpInfo> lumpInfos;
+        private GameMode gameMode;
 
         public Wad(params string[] fileNames)
         {
@@ -28,6 +29,8 @@ namespace ManagedDoom
             {
                 ExceptionDispatchInfo.Capture(e).Throw();
             }
+
+            gameMode = GetGameMode(names);
         }
 
         private void AddFile(string fileName)
@@ -133,7 +136,28 @@ namespace ManagedDoom
             streams.Clear();
         }
 
+        private static GameMode GetGameMode(IReadOnlyList<string> names)
+        {
+            foreach (var name in names)
+            {
+                switch (name.ToLower())
+                {
+                    case "doom2":
+                        return GameMode.Commercial;
+                    case "doomu":
+                        return GameMode.Retail;
+                    case "doom":
+                        return GameMode.Registered;
+                    case "doom1":
+                        return GameMode.Shareware;
+                }
+            }
+
+            return GameMode.Indetermined;
+        }
+
         public IReadOnlyList<string> Names => names;
         public IReadOnlyList<LumpInfo> LumpInfos => lumpInfos;
+        public GameMode GameMode => gameMode;
     }
 }

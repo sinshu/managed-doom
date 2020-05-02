@@ -29,7 +29,7 @@ namespace ManagedDoom
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
-                options.GameMode = GameMode.Commercial;
+                options.GameMode = resource.Wad.GameMode;
                 options.Episode = 1;
                 options.Map = 1;
 

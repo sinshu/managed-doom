@@ -180,16 +180,21 @@ namespace ManagedDoom.SoftwareRendering
         private void WI_drawLF(Intermission intermission)
         {
             var wbs = intermission.Wbs;
-
             var y = WI_TITLEY;
+
+            var e = 0;
+            if (intermission.Options.GameMode != GameMode.Commercial)
+            {
+                e = intermission.Options.Episode - 1;
+            }
 
             // draw <LevelName> 
             DrawPatch(
-                patches.LevelNames[wbs.Last],
-                (320 - patches.LevelNames[wbs.Last].Width) / 2, y);
+                patches.LevelNames[e][wbs.Last],
+                (320 - patches.LevelNames[e][wbs.Last].Width) / 2, y);
 
             // draw "Finished!"
-            y += (5 * patches.LevelNames[wbs.Last].Height) / 4;
+            y += (5 * patches.LevelNames[e][wbs.Last].Height) / 4;
 
             DrawPatch(
                 patches.Finished,
@@ -201,17 +206,23 @@ namespace ManagedDoom.SoftwareRendering
         {
             int y = WI_TITLEY;
 
+            var e = 0;
+            if (im.Options.GameMode != GameMode.Commercial)
+            {
+                e = im.Options.Episode - 1;
+            }
+
             // draw "Entering"
             DrawPatch(
                 patches.Entering,
                 (320 - patches.Entering.Width) / 2, y);
 
             // draw level
-            y += (5 * patches.LevelNames[im.Wbs.Next].Height) / 4;
+            y += (5 * patches.LevelNames[e][im.Wbs.Next].Height) / 4;
 
             DrawPatch(
-                patches.LevelNames[im.Wbs.Next],
-                (320 - patches.LevelNames[im.Wbs.Next].Width) / 2, y);
+                patches.LevelNames[e][im.Wbs.Next],
+                (320 - patches.LevelNames[e][im.Wbs.Next].Width) / 2, y);
         }
 
 
