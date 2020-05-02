@@ -220,11 +220,6 @@ namespace ManagedDoom.SoftwareRendering
             // draw the new number
             while (num != 0 && numdigits-- != 0)
             {
-                // This line is added to make "100" natural.
-                // Without this line, "1" is too far from "00".
-                // Why the original version seems natural without this?
-                w = n.Patches[num % 10].Width;
-
                 x -= w;
                 screen.DrawPatch(n.Patches[num % 10], scale * x, scale * n.Y, scale);
                 num /= 10;

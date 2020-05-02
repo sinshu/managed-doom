@@ -17,7 +17,7 @@ namespace ManagedDoom.SoftwareRendering
 
         public void DrawPatch(Patch patch, int x, int y, int scale)
         {
-            var drawX = x + scale * patch.LeftOffset;
+            var drawX = x - scale * patch.LeftOffset;
             var drawY = y - scale * patch.TopOffset;
             var drawWidth = scale * patch.Width;
 
