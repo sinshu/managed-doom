@@ -59,7 +59,7 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [ ] Music
 
 - __Other things__
-    * [ ] Status bar
+    * [x] Status bar
     * [ ] Automap
     * [ ] Title screen
     * [ ] Intermission screen
