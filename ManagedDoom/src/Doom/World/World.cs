@@ -40,6 +40,7 @@ namespace ManagedDoom
         private WeaponBehavior weaponBehavior;
         private MonsterBehavior monsterBehavior;
         private LightingChange lightingChange;
+        private StatusBar statusBar;
 
         private GameAction gameAction;
 
@@ -73,6 +74,7 @@ namespace ManagedDoom
             weaponBehavior = new WeaponBehavior(this);
             monsterBehavior = new MonsterBehavior(this);
             lightingChange = new LightingChange(this);
+            statusBar = new StatusBar(this);
 
             totalKills = 0;
             totalItems = 0;
@@ -109,6 +111,7 @@ namespace ManagedDoom
 
             thinkers.Run();
             specials.Update();
+            statusBar.Update();
 
             levelTime++;
 
@@ -313,6 +316,7 @@ namespace ManagedDoom
         public WeaponBehavior WeaponBehavior => weaponBehavior;
         public MonsterBehavior MonsterBehavior => monsterBehavior;
         public LightingChange LightingChange => lightingChange;
+        public StatusBar StatusBar => statusBar;
 
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);

@@ -219,29 +219,23 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        public void Render(Player player)
+        public void Render(StatusBar statusBar, Player player)
         {
             screen.DrawPatch(patches.StatusBar, 0, scale * (200 - 32), scale);
 
             if (DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo != AmmoType.NoAmmo)
             {
-                wReady.Number = player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo];
-                DrawNumber(wReady);
+                var num = player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo];
+                DrawNumber(wReady, num);
             }
 
-            wHealth.NumberWidget.Number = player.Health;
-            DrawPercent(wHealth);
-
-            wArmor.NumberWidget.Number = player.ArmorPoints;
-            DrawPercent(wArmor);
+            DrawPercent(wHealth, player.Health);
+            DrawPercent(wArmor, player.ArmorPoints);
 
             for (var i = 0; i < (int)AmmoType.Count; i++)
             {
-                wAmmo[i].Number = player.Ammo[i];
-                DrawNumber(wAmmo[i]);
-
-                wMaxAmmo[i].Number = player.MaxAmmo[i];
-                DrawNumber(wMaxAmmo[i]);
+                DrawNumber(wAmmo[i], player.Ammo[i]);
+                DrawNumber(wMaxAmmo[i], player.MaxAmmo[i]);
             }
 
             screen.DrawPatch(
@@ -251,27 +245,25 @@ namespace ManagedDoom.SoftwareRendering
                 scale);
             for (var i = 0; i < wArms.Length; i++)
             {
-                wArms[i].Number = player.WeaponOwned[i + 1] ? 1 : 0;
-                DrawMultIcon(wArms[i]);
+                DrawMultIcon(wArms[i], player.WeaponOwned[i + 1] ? 1 : 0);
             }
 
             screen.DrawPatch(
-                patches.Faces[1],
+                patches.Faces[statusBar.Face],
                 scale * ST_FACESX,
                 scale * ST_FACESY,
                 scale);
         }
 
-        private void DrawNumber(NumberWidget n)
+        private void DrawNumber(NumberWidget widget, int num)
         {
-            var numdigits = n.Width;
-            var num = n.Number;
+            var numdigits = widget.Width;
 
-            var w = n.Patches[0].Width;
-            var h = n.Patches[0].Height;
-            var x = n.X;
+            var w = widget.Patches[0].Width;
+            var h = widget.Patches[0].Height;
+            var x = widget.X;
 
-            var neg = n.Number < 0;
+            var neg = num < 0;
 
             if (neg)
             {
@@ -288,7 +280,7 @@ namespace ManagedDoom.SoftwareRendering
             }
 
             // clear the area
-            x = n.X - numdigits * w;
+            x = widget.X - numdigits * w;
 
             /*
             if (n.Y - ST_Y < 0)
@@ -305,30 +297,30 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            x = n.X;
+            x = widget.X;
 
             // in the special case of 0, you draw 0
             if (num == 0)
             {
-                screen.DrawPatch(n.Patches[0], scale * (x - w), scale * n.Y, scale);
+                screen.DrawPatch(widget.Patches[0], scale * (x - w), scale * widget.Y, scale);
             }
 
             // draw the new number
             while (num != 0 && numdigits-- != 0)
             {
                 x -= w;
-                screen.DrawPatch(n.Patches[num % 10], scale * x, scale * n.Y, scale);
+                screen.DrawPatch(widget.Patches[num % 10], scale * x, scale * widget.Y, scale);
                 num /= 10;
             }
 
             // draw a minus sign if necessary
             if (neg)
             {
-                screen.DrawPatch(patches.TallMinus, scale * (x - 8), scale * n.Y, scale);
+                screen.DrawPatch(patches.TallMinus, scale * (x - 8), scale * widget.Y, scale);
             }
         }
 
-        private void DrawPercent(PercentWidget per)
+        private void DrawPercent(PercentWidget per, int num)
         {
             screen.DrawPatch(
                 per.Patch,
@@ -336,13 +328,13 @@ namespace ManagedDoom.SoftwareRendering
                 scale * per.NumberWidget.Y,
                 scale);
 
-            DrawNumber(per.NumberWidget);
+            DrawNumber(per.NumberWidget, num);
         }
 
-        private void DrawMultIcon(MultIconWidget mi)
+        private void DrawMultIcon(MultIconWidget mi, int num)
         {
             screen.DrawPatch(
-                mi.Patches[mi.Number],
+                mi.Patches[num],
                 scale * mi.X,
                 scale * mi.Y,
                 scale);
@@ -355,7 +347,6 @@ namespace ManagedDoom.SoftwareRendering
             public int X;
             public int Y;
             public int Width;
-            public int Number;
             public Patch[] Patches;
         }
 
@@ -369,7 +360,6 @@ namespace ManagedDoom.SoftwareRendering
         {
             public int X;
             public int Y;
-            public int Number;
             public Patch[] Patches;
         }
     }

@@ -118,7 +118,7 @@ namespace ManagedDoom.SoftwareRendering
             {
                 var player = game.World.Players[game.Options.ConsolePlayer];
                 threeD.Render(player);
-                statusBar.Render(player);
+                statusBar.Render(game.World.StatusBar, player);
             }
             else if (game.gameState == GameState.Intermission)
             {
