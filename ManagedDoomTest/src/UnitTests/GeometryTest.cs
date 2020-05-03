@@ -172,11 +172,12 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void PointInSubsectorE1M1()
         {
-            using (var wad = new Wad(WadPath.Doom1))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
             {
-                var flats = new FlatLookup(wad, true);
-                var textures = new TextureLookup(wad, true);
-                var map = new Map(wad, textures, flats, new GameOptions());
+                var options = new GameOptions();
+                var players = DoomTest.GetDefaultPlayers();
+                var world = new World(resource, options, players);
+                var map = new Map(resource, world);
 
                 var ok = 0;
                 var count = 0;
@@ -224,11 +225,12 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void PointInSubsectorMap01()
         {
-            using (var wad = new Wad(WadPath.Doom2))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
-                var flats = new FlatLookup(wad, true);
-                var textures = new TextureLookup(wad, true);
-                var map = new Map(wad, textures, flats, new GameOptions());
+                var options = new GameOptions();
+                var players = DoomTest.GetDefaultPlayers();
+                var world = new World(resource, options, players);
+                var map = new Map(resource, world);
 
                 var ok = 0;
                 var count = 0;

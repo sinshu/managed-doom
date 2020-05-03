@@ -14,11 +14,12 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void LoadE1M1()
         {
-            using (var wad = new Wad(WadPath.Doom1))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
             {
-                var flats = new FlatLookup(wad, true);
-                var textures = new TextureLookup(wad, true);
-                var map = new Map(wad, textures, flats, new GameOptions());
+                var options = new GameOptions();
+                var players = DoomTest.GetDefaultPlayers();
+                var world = new World(resource, options, players);
+                var map = new Map(resource, world);
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());
                 var mapMaxX = map.Lines.Max(line => Fixed.Max(line.Vertex1.X, line.Vertex2.X).ToDouble());
@@ -62,11 +63,12 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void LoadMap01()
         {
-            using (var wad = new Wad(WadPath.Doom2))
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
-                var flats = new FlatLookup(wad, true);
-                var textures = new TextureLookup(wad, true);
-                var map = new Map(wad, textures, flats, new GameOptions());
+                var options = new GameOptions();
+                var players = DoomTest.GetDefaultPlayers();
+                var world = new World(resource, options, players);
+                var map = new Map(resource, world);
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());
                 var mapMaxX = map.Lines.Max(line => Fixed.Max(line.Vertex1.X, line.Vertex2.X).ToDouble());
