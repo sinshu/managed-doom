@@ -124,6 +124,9 @@ namespace ManagedDoom.SoftwareRendering
         private PercentWidget wHealth;
         private PercentWidget wArmor;
 
+        private NumberWidget[] wAmmo;
+        private NumberWidget[] wMaxAmmo;
+
         public StatusBarRenderer(CommonPatches patches, DrawScreen screen)
         {
             this.screen = screen;
@@ -150,6 +153,57 @@ namespace ManagedDoom.SoftwareRendering
             wArmor.NumberWidget.X = ST_ARMORX;
             wArmor.NumberWidget.Y = ST_ARMORY;
             wArmor.Patch = patches.TallPercent;
+
+            wAmmo = new NumberWidget[(int)AmmoType.Count];
+            wMaxAmmo = new NumberWidget[(int)AmmoType.Count];
+
+            wAmmo[0] = new NumberWidget();
+            wAmmo[0].Patches = patches.ShortNumbers;
+            wAmmo[0].Width = ST_AMMO0WIDTH;
+            wAmmo[0].X = ST_AMMO0X;
+            wAmmo[0].Y = ST_AMMO0Y;
+
+            wAmmo[1] = new NumberWidget();
+            wAmmo[1].Patches = patches.ShortNumbers;
+            wAmmo[1].Width = ST_AMMO1WIDTH;
+            wAmmo[1].X = ST_AMMO1X;
+            wAmmo[1].Y = ST_AMMO1Y;
+
+            wAmmo[2] = new NumberWidget();
+            wAmmo[2].Patches = patches.ShortNumbers;
+            wAmmo[2].Width = ST_AMMO2WIDTH;
+            wAmmo[2].X = ST_AMMO2X;
+            wAmmo[2].Y = ST_AMMO2Y;
+
+            wAmmo[3] = new NumberWidget();
+            wAmmo[3].Patches = patches.ShortNumbers;
+            wAmmo[3].Width = ST_AMMO3WIDTH;
+            wAmmo[3].X = ST_AMMO3X;
+            wAmmo[3].Y = ST_AMMO3Y;
+
+            wMaxAmmo[0] = new NumberWidget();
+            wMaxAmmo[0].Patches = patches.ShortNumbers;
+            wMaxAmmo[0].Width = ST_MAXAMMO0WIDTH;
+            wMaxAmmo[0].X = ST_MAXAMMO0X;
+            wMaxAmmo[0].Y = ST_MAXAMMO0Y;
+
+            wMaxAmmo[1] = new NumberWidget();
+            wMaxAmmo[1].Patches = patches.ShortNumbers;
+            wMaxAmmo[1].Width = ST_MAXAMMO1WIDTH;
+            wMaxAmmo[1].X = ST_MAXAMMO1X;
+            wMaxAmmo[1].Y = ST_MAXAMMO1Y;
+
+            wMaxAmmo[2] = new NumberWidget();
+            wMaxAmmo[2].Patches = patches.ShortNumbers;
+            wMaxAmmo[2].Width = ST_MAXAMMO2WIDTH;
+            wMaxAmmo[2].X = ST_MAXAMMO2X;
+            wMaxAmmo[2].Y = ST_MAXAMMO2Y;
+
+            wMaxAmmo[3] = new NumberWidget();
+            wMaxAmmo[3].Patches = patches.ShortNumbers;
+            wMaxAmmo[3].Width = ST_MAXAMMO3WIDTH;
+            wMaxAmmo[3].X = ST_MAXAMMO3X;
+            wMaxAmmo[3].Y = ST_MAXAMMO3Y;
         }
 
         public void Render(Player player)
@@ -164,6 +218,15 @@ namespace ManagedDoom.SoftwareRendering
 
             wArmor.NumberWidget.Number = player.ArmorPoints;
             DrawPercent(wArmor);
+
+            for (var i = 0; i < (int)AmmoType.Count; i++)
+            {
+                wAmmo[i].Number = player.Ammo[i];
+                DrawNumber(wAmmo[i]);
+
+                wMaxAmmo[i].Number = player.MaxAmmo[i];
+                DrawNumber(wMaxAmmo[i]);
+            }
         }
 
         private void DrawNumber(NumberWidget n)
