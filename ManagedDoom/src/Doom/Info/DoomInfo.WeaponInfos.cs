@@ -13,7 +13,8 @@ namespace ManagedDoom
                 MobjState.Punchdown,
                 MobjState.Punch,
                 MobjState.Punch1,
-                MobjState.Null),
+                MobjState.Null
+            ),
 
             // pistol
             new WeaponInfo(
@@ -22,7 +23,8 @@ namespace ManagedDoom
                 MobjState.Pistoldown,
                 MobjState.Pistol,
                 MobjState.Pistol1,
-                MobjState.Pistolflash),
+                MobjState.Pistolflash
+            ),
 
             // shotgun
             new WeaponInfo(
@@ -31,7 +33,8 @@ namespace ManagedDoom
                 MobjState.Sgundown,
                 MobjState.Sgun,
                 MobjState.Sgun1,
-                MobjState.Sgunflash1),
+                MobjState.Sgunflash1
+            ),
 
             // chaingun
             new WeaponInfo(
@@ -40,7 +43,8 @@ namespace ManagedDoom
                 MobjState.Chaindown,
                 MobjState.Chain,
                 MobjState.Chain1,
-                MobjState.Chainflash1),
+                MobjState.Chainflash1
+            ),
 
             // missile launcher
             new WeaponInfo(
@@ -49,7 +53,8 @@ namespace ManagedDoom
                 MobjState.Missiledown,
                 MobjState.Missile,
                 MobjState.Missile1,
-                MobjState.Missileflash1),
+                MobjState.Missileflash1
+            ),
 
             // plasma rifle
             new WeaponInfo(
@@ -58,7 +63,8 @@ namespace ManagedDoom
                 MobjState.Plasmadown,
                 MobjState.Plasma,
                 MobjState.Plasma1,
-                MobjState.Plasmaflash1),
+                MobjState.Plasmaflash1
+            ),
 
             // bfg 9000
             new WeaponInfo(
@@ -67,7 +73,8 @@ namespace ManagedDoom
                 MobjState.Bfgdown,
                 MobjState.Bfg,
                 MobjState.Bfg1,
-                MobjState.Bfgflash1),
+                MobjState.Bfgflash1
+            ),
 
             // chainsaw
             new WeaponInfo(
@@ -76,7 +83,8 @@ namespace ManagedDoom
                 MobjState.Sawdown,
                 MobjState.Saw,
                 MobjState.Saw1,
-                MobjState.Null),
+                MobjState.Null
+            ),
 
             // // super shotgun
             new WeaponInfo(
@@ -85,7 +93,8 @@ namespace ManagedDoom
                 MobjState.Dsgundown,
                 MobjState.Dsgun,
                 MobjState.Dsgun1,
-                MobjState.Dsgunflash1)
+                MobjState.Dsgunflash1
+            )
         };
     }
 }

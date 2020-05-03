@@ -111,7 +111,8 @@ namespace ManagedDoom.SoftwareRendering
         private static readonly int ST_DETHX = 109;
         private static readonly int ST_DETHY = 191;
 
-
+        public static readonly int ST_FACESX = 143;
+        public static readonly int ST_FACESY = 168;
 
 
 
@@ -126,6 +127,8 @@ namespace ManagedDoom.SoftwareRendering
 
         private NumberWidget[] wAmmo;
         private NumberWidget[] wMaxAmmo;
+
+        private MultIconWidget[] wArms;
 
         public StatusBarRenderer(CommonPatches patches, DrawScreen screen)
         {
@@ -204,14 +207,27 @@ namespace ManagedDoom.SoftwareRendering
             wMaxAmmo[3].Width = ST_MAXAMMO3WIDTH;
             wMaxAmmo[3].X = ST_MAXAMMO3X;
             wMaxAmmo[3].Y = ST_MAXAMMO3Y;
+
+            // weapons owned
+            wArms = new MultIconWidget[6];
+            for (var i = 0; i < wArms.Length; i++)
+            {
+                wArms[i] = new MultIconWidget();
+                wArms[i].X = ST_ARMSX + (i % 3) * ST_ARMSXSPACE;
+                wArms[i].Y = ST_ARMSY + (i / 3) * ST_ARMSYSPACE;
+                wArms[i].Patches = patches.Arms[i];
+            }
         }
 
         public void Render(Player player)
         {
             screen.DrawPatch(patches.StatusBar, 0, scale * (200 - 32), scale);
 
-            wReady.Number = player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo];
-            DrawNumber(wReady);
+            if (DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo != AmmoType.NoAmmo)
+            {
+                wReady.Number = player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo];
+                DrawNumber(wReady);
+            }
 
             wHealth.NumberWidget.Number = player.Health;
             DrawPercent(wHealth);
@@ -227,6 +243,23 @@ namespace ManagedDoom.SoftwareRendering
                 wMaxAmmo[i].Number = player.MaxAmmo[i];
                 DrawNumber(wMaxAmmo[i]);
             }
+
+            screen.DrawPatch(
+                patches.ArmsBg,
+                scale * ST_ARMSBGX,
+                scale * ST_ARMSBGY,
+                scale);
+            for (var i = 0; i < wArms.Length; i++)
+            {
+                wArms[i].Number = player.WeaponOwned[i + 1] ? 1 : 0;
+                DrawMultIcon(wArms[i]);
+            }
+
+            screen.DrawPatch(
+                patches.Faces[1],
+                scale * ST_FACESX,
+                scale * ST_FACESY,
+                scale);
         }
 
         private void DrawNumber(NumberWidget n)
@@ -306,6 +339,15 @@ namespace ManagedDoom.SoftwareRendering
             DrawNumber(per.NumberWidget);
         }
 
+        private void DrawMultIcon(MultIconWidget mi)
+        {
+            screen.DrawPatch(
+                mi.Patches[mi.Number],
+                scale * mi.X,
+                scale * mi.Y,
+                scale);
+        }
+
 
 
         private class NumberWidget
@@ -321,6 +363,14 @@ namespace ManagedDoom.SoftwareRendering
         {
             public NumberWidget NumberWidget = new NumberWidget();
             public Patch Patch;
+        }
+
+        private class MultIconWidget
+        {
+            public int X;
+            public int Y;
+            public int Number;
+            public Patch[] Patches;
         }
     }
 }

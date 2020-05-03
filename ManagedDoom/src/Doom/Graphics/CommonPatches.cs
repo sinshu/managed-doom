@@ -11,7 +11,9 @@ namespace ManagedDoom
         private Patch tallMinus;
         private Patch tallPercent;
         private Patch[] keys;
-
+        private Patch armsBg;
+        private Patch[][] arms;
+        private Patch[] faces;
 
 
 
@@ -95,8 +97,32 @@ namespace ManagedDoom
             {
                 keys[i] = Patch.FromWad("STKEYS" + i, wad);
             }
+            armsBg = Patch.FromWad("STARMS", wad);
+            arms = new Patch[6][];
+            for (var i = 0; i < 6; i++)
+            {
+                var num = i + 2;
+                arms[i] = new Patch[2];
+                arms[i][0] = Patch.FromWad("STGNUM" + num, wad);
+                arms[i][1] = shortNumbers[num];
+            }
 
-
+            faces = new Patch[DoomInfo.FaceInfos.ST_NUMFACES];
+            var facenum = 0;
+            for (var i = 0; i < DoomInfo.FaceInfos.ST_NUMPAINFACES; i++)
+            {
+                for (var j = 0; j < DoomInfo.FaceInfos.ST_NUMSTRAIGHTFACES; j++)
+                {
+                    faces[facenum++] = Patch.FromWad("STFST" + i + j, wad);
+                }
+                faces[facenum++] = Patch.FromWad("STFTR" + i + "0", wad);
+                faces[facenum++] = Patch.FromWad("STFTL" + i + "0", wad);
+                faces[facenum++] = Patch.FromWad("STFOUCH" + i, wad);
+                faces[facenum++] = Patch.FromWad("STFEVL" + i, wad);
+                faces[facenum++] = Patch.FromWad("STFKILL" + i, wad);
+            }
+            faces[facenum++] = Patch.FromWad("STFGOD0", wad);
+            faces[facenum++] = Patch.FromWad("STFDEAD0", wad);
 
 
             if (wad.GameMode == GameMode.Commercial)
@@ -199,7 +225,9 @@ namespace ManagedDoom
         public Patch TallMinus => tallMinus;
         public Patch TallPercent => tallPercent;
         public Patch[] Keys => keys;
-
+        public Patch ArmsBg => armsBg;
+        public Patch[][] Arms => arms;
+        public Patch[] Faces => faces;
 
 
 

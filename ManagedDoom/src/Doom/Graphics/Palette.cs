@@ -35,7 +35,7 @@ namespace ManagedDoom
 
         public static double CorrectionCurve(double x)
         {
-            return Math.Pow(x, 0.9);
+            return Math.Pow(x, 0.95);
         }
 
         public byte[] Data => data;
