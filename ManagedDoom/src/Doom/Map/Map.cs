@@ -9,6 +9,8 @@ namespace ManagedDoom
         private TextureLookup textures;
         private FlatLookup flats;
 
+        private World world;
+
         private Vertex[] vertices;
         private Sector[] sectors;
         private SideDef[] sides;
@@ -22,15 +24,18 @@ namespace ManagedDoom
 
         private Texture skyTexture;
 
-        public Map(CommonResource resorces, GameOptions options)
-            : this(resorces.Wad, resorces.Textures, resorces.Flats, options)
+        public Map(CommonResource resorces, World world)
+            : this(resorces.Wad, resorces.Textures, resorces.Flats, world)
         {
         }
 
-        public Map(Wad wad, TextureLookup textures, FlatLookup flats, GameOptions options)
+        public Map(Wad wad, TextureLookup textures, FlatLookup flats, World world)
         {
             this.textures = textures;
             this.flats = flats;
+            this.world = world;
+
+            var options = world.Options;
 
             string name;
             if (wad.Names.Contains("doom") || wad.Names.Contains("doom1"))
@@ -64,6 +69,17 @@ namespace ManagedDoom
             var sectorLines = new List<LineDef>();
             var bbox = new Fixed[4];
 
+            foreach (var line in lines)
+            {
+                if (line.Special != 0)
+                {
+                    var mo = new DegenMobj(world);
+                    mo.X = (line.Vertex1.X + line.Vertex2.X) / 2;
+                    mo.Y = (line.Vertex1.Y + line.Vertex2.Y) / 2;
+                    line.SoundOrigin = mo;
+                }
+            }
+
             foreach (var sector in sectors)
             {
                 sectorLines.Clear();
@@ -82,7 +98,7 @@ namespace ManagedDoom
                 sector.Lines = sectorLines.ToArray();
 
                 // set the degenmobj_t to the middle of the bounding box
-                sector.SoundOrigin = new DegenMobj(null);
+                sector.SoundOrigin = new DegenMobj(world);
                 sector.SoundOrigin.X = (bbox[Box.Right] + bbox[Box.Left]) / 2;
                 sector.SoundOrigin.Y = (bbox[Box.Top] + bbox[Box.Bottom]) / 2;
 

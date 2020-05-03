@@ -375,6 +375,7 @@ namespace ManagedDoom
 
 			// P_SetupLevel(gameepisode, gamemap, 0, gameskill);
 			world = new World(resource, options, players);
+			world.Audio = audio;
 
 			// view the guy you are playing
 			// displayplayer = consoleplayer;
@@ -774,5 +775,16 @@ namespace ManagedDoom
 		public GameOptions Options => options;
 		public World World => world;
 		public Intermission Intermission => intermission;
+
+
+
+
+		private SfmlAudio audio;
+
+		public SfmlAudio Audio
+		{
+			get => audio;
+			set => audio = value;
+		}
 	}
 }

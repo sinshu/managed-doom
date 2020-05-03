@@ -25,7 +25,7 @@ namespace ManagedDoom
             using (var window = new RenderWindow(new VideoMode(640, 400), "Managed Doom", style))
             using (var resource = new CommonResource("DOOM2.WAD"))
             using (var renderer = new SoftwareRendering.SfmlRenderer(window, resource, true))
-            //using (var audio = new SfmlAudio(resource.Wad))
+            using (var audio = new SfmlAudio(resource.Wad))
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
@@ -37,6 +37,7 @@ namespace ManagedDoom
                 //options = demo.Options;
 
                 var game = new DoomGame(players, resource, options);
+                game.Audio = audio;
 
                 window.Closed += (sender, e) => window.Close();
                 window.SetFramerateLimit(35);

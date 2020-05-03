@@ -49,7 +49,7 @@ namespace ManagedDoom
             Options = options;
             Players = players;
 
-            map = new Map(resorces, options);
+            map = new Map(resorces, this);
 
             random = options.Random;
 

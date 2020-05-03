@@ -15,8 +15,6 @@ namespace ManagedDoom
         private Mobj[] sources;
         private float[] priorities;
 
-        private World world;
-
         public SfmlAudio(Wad wad)
         {
             buffers = new SoundBuffer[DoomInfo.SfxNames.Length];
@@ -74,25 +72,6 @@ namespace ManagedDoom
             {
                 channels[i] = new Sound();
             }
-        }
-
-        public void BindWorld(World world)
-        {
-            this.world = world;
-            world.Audio = this;
-        }
-
-        public void UnbindWorld()
-        {
-            StopAll();
-
-            for (var i = 0; i < sources.Length; i++)
-            {
-                sources[i] = null;
-            }
-
-            world.Audio = null;
-            world = null;
         }
 
         public void StartSound(Mobj mobj, Sfx sfx)
@@ -153,6 +132,7 @@ namespace ManagedDoom
 
         private void SetParam(Sound sound, Mobj mobj)
         {
+            var world = mobj.World;
             var player = world.Players[world.Options.ConsolePlayer].Mobj;
             var x = (mobj.X - player.X).ToDouble();
             var y = (mobj.Y - player.Y).ToDouble();

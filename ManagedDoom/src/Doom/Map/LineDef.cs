@@ -82,14 +82,6 @@ namespace ManagedDoom
 
             FrontSector = side0?.Sector;
             BackSector = side1?.Sector;
-
-            if (Special != 0)
-            {
-                var mo = new DegenMobj(null);
-                mo.X = (vertex1.X + vertex2.X) / 2;
-                mo.Y = (vertex1.Y + vertex2.Y) / 2;
-                SoundOrigin = mo;
-            }
         }
 
         public static LineDef FromData(byte[] data, int offset, Vertex[] vertices, SideDef[] sides)
