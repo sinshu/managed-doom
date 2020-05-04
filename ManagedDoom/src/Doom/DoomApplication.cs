@@ -89,7 +89,7 @@ namespace ManagedDoom
             {
                 var de = new DoomEvent();
                 de.Type = EventType.KeyDown;
-                de.Data1 = (int)e.Code;
+                de.Data1 = KeyMap.ToDoomKeyCode(e.Code);
                 events.Add(de);
             }
         }
@@ -100,7 +100,7 @@ namespace ManagedDoom
             {
                 var de = new DoomEvent();
                 de.Type = EventType.KeyUp;
-                de.Data1 = (int)e.Code;
+                de.Data1 = KeyMap.ToDoomKeyCode(e.Code);
                 events.Add(de);
             }
         }
