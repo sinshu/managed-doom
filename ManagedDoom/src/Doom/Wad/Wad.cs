@@ -143,6 +143,8 @@ namespace ManagedDoom
                 switch (name.ToLower())
                 {
                     case "doom2":
+                    case "plutonia":
+                    case "tnt":
                         return GameMode.Commercial;
                     case "doomu":
                         return GameMode.Retail;
