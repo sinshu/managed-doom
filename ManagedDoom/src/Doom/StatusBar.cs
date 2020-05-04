@@ -48,6 +48,20 @@ namespace ManagedDoom
 			random = new DoomRandom();
 		}
 
+		public void Reset()
+		{
+			st_oldhealth = -1;
+			st_facecount = 0;
+			st_faceindex = 0;
+			lastattackdown = -1;
+			priority = 0;
+			oldhealth = -1;
+			Array.Copy(
+				world.Players[world.Options.ConsolePlayer].WeaponOwned,
+				oldweaponsowned,
+				DoomInfo.WeaponInfos.Length);
+		}
+
 		public void Update()
 		{
 			//st_clock++;

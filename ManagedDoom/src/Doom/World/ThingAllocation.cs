@@ -212,15 +212,13 @@ namespace ManagedDoom
                 }
             }
 
-            /*
-            if (mthing->type - 1 == consoleplayer)
+            if (mthing.Type - 1 == world.Options.ConsolePlayer)
             {
                 // wake up the status bar
-                ST_Start();
+                world.StatusBar.Reset();
                 // wake up the heads up text
-                HU_Start();
+                //HU_Start();
             }
-            */
         }
 
         public Mobj SpawnMobj(Fixed x, Fixed y, Fixed z, MobjType type)
