@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using SFML.Graphics;
-using SFML.System;
 using SFML.Window;
 using ManagedDoom.SoftwareRendering;
 
@@ -18,6 +18,8 @@ namespace ManagedDoom
         private TicCmd[] cmds;
         private GameOptions options;
         private DoomGame game;
+
+        private List<DoomEvent> events;
 
         public DoomApplication()
         {
@@ -50,7 +52,13 @@ namespace ManagedDoom
                 game = new DoomGame(players, resource, options);
                 game.Audio = audio;
 
+                events = new List<DoomEvent>();
+
                 window.Closed += (sender, e) => window.Close();
+
+                window.KeyPressed += KeyPressed;
+                window.KeyReleased += KeyReleased;
+
                 window.SetFramerateLimit(35);
             }
             catch (Exception e)
@@ -73,6 +81,28 @@ namespace ManagedDoom
             UserInput.BuildTicCmd(cmds[0]);
             game.Update(cmds);
             renderer.Render(game);
+        }
+
+        private void KeyPressed(object sender, KeyEventArgs e)
+        {
+            if (events.Count < 64)
+            {
+                var de = new DoomEvent();
+                de.Type = EventType.KeyDown;
+                de.Data1 = (int)e.Code;
+                events.Add(de);
+            }
+        }
+
+        private void KeyReleased(object sender, KeyEventArgs e)
+        {
+            if (events.Count < 64)
+            {
+                var de = new DoomEvent();
+                de.Type = EventType.KeyUp;
+                de.Data1 = (int)e.Code;
+                events.Add(de);
+            }
         }
 
         public void Dispose()
