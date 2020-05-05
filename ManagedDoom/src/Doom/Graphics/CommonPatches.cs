@@ -14,7 +14,7 @@ namespace ManagedDoom
         private Patch armsBg;
         private Patch[][] arms;
         private Patch[] faces;
-
+        private Patch[] faceBacks;
 
 
 
@@ -105,6 +105,11 @@ namespace ManagedDoom
                 arms[i] = new Patch[2];
                 arms[i][0] = Patch.FromWad("STGNUM" + num, wad);
                 arms[i][1] = shortNumbers[num];
+            }
+            faceBacks = new Patch[Player.MaxPlayerCount];
+            for (var i = 0; i < faceBacks.Length; i++)
+            {
+                faceBacks[i] = Patch.FromWad("STFB" + i, wad);
             }
 
             faces = new Patch[DoomInfo.FaceInfos.ST_NUMFACES];
@@ -228,7 +233,7 @@ namespace ManagedDoom
         public Patch ArmsBg => armsBg;
         public Patch[][] Arms => arms;
         public Patch[] Faces => faces;
-
+        public Patch[] FaceBacks => faceBacks;
 
 
 

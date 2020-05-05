@@ -114,7 +114,8 @@ namespace ManagedDoom.SoftwareRendering
         public static readonly int ST_FACESX = 143;
         public static readonly int ST_FACESY = 168;
 
-
+        public static readonly int ST_FX = 143;
+        public static readonly int ST_FY = 169;
 
         private DrawScreen screen;
         private CommonPatches patches;
@@ -248,6 +249,14 @@ namespace ManagedDoom.SoftwareRendering
                 DrawMultIcon(wArms[i], player.WeaponOwned[i + 1] ? 1 : 0);
             }
 
+            if (player.Mobj.World.Options.NetGame)
+            {
+                screen.DrawPatch(
+                    patches.FaceBacks[player.Number],
+                    scale * ST_FX,
+                    scale * ST_FY,
+                    scale);
+            }
             screen.DrawPatch(
                 patches.Faces[statusBar.Face],
                 scale * ST_FACESX,
