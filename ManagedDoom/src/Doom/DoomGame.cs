@@ -216,26 +216,26 @@ namespace ManagedDoom
 			{
 				// respawn at the start
 
-				// first dissasociate the corpse 
+				// first dissasociate the corpse
 				players[playernum].Mobj.Player = null;
 
-				// spawn at random spot if in death match 
+				// spawn at random spot if in death match
 				if (options.Deathmatch != 0)
 				{
-					//G_DeathMatchSpawnPlayer(playernum);
+					world.G_DeathMatchSpawnPlayer(playernum);
 					return;
 				}
 
-				if (G_CheckSpot(playernum, world.PlayerStarts[playernum]))
+				if (world.G_CheckSpot(playernum, world.PlayerStarts[playernum]))
 				{
 					world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playernum]);
 					return;
 				}
 
-				// try to spawn at one of the other players spots 
+				// try to spawn at one of the other players spots
 				for (var i = 0; i < Player.MaxPlayerCount; i++)
 				{
-					if (G_CheckSpot(playernum, world.PlayerStarts[i]))
+					if (world.G_CheckSpot(playernum, world.PlayerStarts[i]))
 					{
 						// fake as other player
 						world.PlayerStarts[i].Type = playernum + 1;
@@ -262,64 +262,7 @@ namespace ManagedDoom
 
 
 
-		private static readonly int BODYQUESIZE = 32;
-		private Mobj[] bodyque = new Mobj[BODYQUESIZE];
-		private int bodyqueslot;
-
-		//
-		// G_CheckSpot  
-		// Returns false if the player cannot be respawned
-		// at the given mapthing_t spot  
-		// because something is occupying it 
-		//
-		private bool G_CheckSpot(int playernum, Thing mthing)
-		{
-			if (players[playernum].Mobj == null)
-			{
-				// first spawn of level, before corpses
-				for (var i = 0; i < playernum; i++)
-				{
-					if (players[i].Mobj.X == mthing.X && players[i].Mobj.Y == mthing.Y)
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-
-			var x = mthing.X;
-			var y = mthing.Y;
-
-			if (!world.ThingMovement.CheckPosition(players[playernum].Mobj, x, y))
-			{
-				return false;
-			}
-
-			// flush an old corpse if needed 
-			if (bodyqueslot >= BODYQUESIZE)
-			{
-				world.ThingAllocation.RemoveMobj(bodyque[bodyqueslot % BODYQUESIZE]);
-			}
-			bodyque[bodyqueslot % BODYQUESIZE] = players[playernum].Mobj;
-			bodyqueslot++;
-
-			// spawn a teleport fog 
-			var ss = Geometry.PointInSubsector(x, y, world.Map);
-			var an = mthing.Angle;
-
-			var mo = world.ThingAllocation.SpawnMobj(
-				x + 20 * Trig.Cos(an), y + 20 * Trig.Sin(an),
-				ss.Sector.FloorHeight,
-				MobjType.Tfog);
-
-			if (players[options.ConsolePlayer].ViewZ != new Fixed(1))
-			{
-				// don't start sound on first frame
-				world.StartSound(mo, Sfx.TELEPT);
-			}
-
-			return true;
-		}
+		
 
 
 
@@ -403,7 +346,7 @@ namespace ManagedDoom
 			//netdemo = false;
 			//netgame = false;
 			//deathmatch = false;
-			players[1].InGame = players[2].InGame = players[3].InGame = false;
+			//players[1].InGame = players[2].InGame = players[3].InGame = false;
 			//respawnparm = false;
 			//fastparm = false;
 			//nomonsters = false;

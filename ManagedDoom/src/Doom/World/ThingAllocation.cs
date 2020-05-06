@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ManagedDoom
 {
@@ -6,25 +7,26 @@ namespace ManagedDoom
     {
         private World world;
 
+        private List<Thing> deathmatchStarts;
+
         public ThingAllocation(World world)
         {
             this.world = world;
+
+            deathmatchStarts = new List<Thing>();
         }
 
         public void SpawnMapThing(Thing mthing)
         {
-            /*
             // count deathmatch start positions
-            if (mthing->type == 11)
+            if (mthing.Type == 11)
             {
-                if (deathmatch_p < &deathmatchstarts[10])
+                if (deathmatchStarts.Count < 10)
                 {
-                    memcpy(deathmatch_p, mthing, sizeof(*mthing));
-                    deathmatch_p++;
+                    deathmatchStarts.Add(mthing);
                 }
                 return;
             }
-            */
 
             // check for players specially
             if (mthing.Type <= 4)
@@ -461,5 +463,8 @@ namespace ManagedDoom
 
             P_CheckMissileSpawn(th);
         }
+
+
+        public IReadOnlyList<Thing> DeathmatchStarts => deathmatchStarts;
     }
 }

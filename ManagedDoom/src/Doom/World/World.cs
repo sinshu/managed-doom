@@ -24,8 +24,6 @@ namespace ManagedDoom
         private Thinkers thinkers;
         private Specials specials;
 
-        private Thing[] playerStarts;
-
         private ThingAllocation thingAllocation;
         private ThingMovement thingMovement;
         private ThingInteraction thingInteraction;
@@ -42,6 +40,9 @@ namespace ManagedDoom
         private LightingChange lightingChange;
         private StatusBar statusBar;
 
+        private Thing[] playerStarts;
+        private Thing[] deathmatchStarts;
+
         private GameAction gameAction;
 
         public World(CommonResource resorces, GameOptions options, Player[] players)
@@ -57,8 +58,6 @@ namespace ManagedDoom
 
             thinkers = new Thinkers(this);
             specials = new Specials(this);
-
-            playerStarts = new Thing[Player.MaxPlayerCount];
 
             thingAllocation = new ThingAllocation(this);
             thingMovement = new ThingMovement(this);
@@ -92,7 +91,22 @@ namespace ManagedDoom
             // will be set by player think.
             players[consoleplayer].ViewZ = new Fixed(1);
 
+            playerStarts = new Thing[Player.MaxPlayerCount];
+
             LoadThings();
+
+            // if deathmatch, randomly spawn the active players
+            if (options.Deathmatch != 0)
+            {
+                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                {
+                    if (players[i].InGame)
+                    {
+                        players[i].Mobj = null;
+                        G_DeathMatchSpawnPlayer(i);
+                    }
+                }
+            }
 
             SpawnSpecials();
         }
@@ -162,7 +176,98 @@ namespace ManagedDoom
 
                 ta.SpawnMapThing(mt);
             }
+
+            deathmatchStarts = ta.DeathmatchStarts.ToArray();
         }
+
+
+        private static readonly int BODYQUESIZE = 32;
+        private Mobj[] bodyque = new Mobj[BODYQUESIZE];
+        private int bodyqueslot;
+
+        //
+        // G_CheckSpot  
+        // Returns false if the player cannot be respawned
+        // at the given mapthing_t spot  
+        // because something is occupying it 
+        //
+        public bool G_CheckSpot(int playernum, Thing mthing)
+        {
+            if (Players[playernum].Mobj == null)
+            {
+                // first spawn of level, before corpses
+                for (var i = 0; i < playernum; i++)
+                {
+                    if (Players[i].Mobj.X == mthing.X && Players[i].Mobj.Y == mthing.Y)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            var x = mthing.X;
+            var y = mthing.Y;
+
+            if (!thingMovement.CheckPosition(Players[playernum].Mobj, x, y))
+            {
+                return false;
+            }
+
+            // flush an old corpse if needed 
+            if (bodyqueslot >= BODYQUESIZE)
+            {
+                thingAllocation.RemoveMobj(bodyque[bodyqueslot % BODYQUESIZE]);
+            }
+            bodyque[bodyqueslot % BODYQUESIZE] = Players[playernum].Mobj;
+            bodyqueslot++;
+
+            // spawn a teleport fog 
+            var ss = Geometry.PointInSubsector(x, y, map);
+            var an = mthing.Angle;
+
+            var mo = thingAllocation.SpawnMobj(
+                x + 20 * Trig.Cos(an), y + 20 * Trig.Sin(an),
+                ss.Sector.FloorHeight,
+                MobjType.Tfog);
+
+            if (Players[Options.ConsolePlayer].ViewZ != new Fixed(1))
+            {
+                // don't start sound on first frame
+                StartSound(mo, Sfx.TELEPT);
+            }
+
+            return true;
+        }
+
+        //
+        // G_DeathMatchSpawnPlayer 
+        // Spawns a player at one of the random death match spots 
+        // called at level load and each death 
+        //
+        public void G_DeathMatchSpawnPlayer(int playernum)
+        {
+            var selections = deathmatchStarts.Length;
+            if (selections < 4)
+            {
+                throw new Exception("Only " + selections + " deathmatch spots, 4 required");
+            }
+
+            for (var j = 0; j < 20; j++)
+            {
+                var i = random.Next() % selections;
+                if (G_CheckSpot(playernum, deathmatchStarts[i]))
+                {
+                    deathmatchStarts[i].Type = playernum + 1;
+                    thingAllocation.SpawnPlayer(deathmatchStarts[i]);
+                    return;
+                }
+            }
+
+            // no good spot, so the player will probably get stuck 
+            thingAllocation.SpawnPlayer(playerStarts[playernum]);
+        }
+
 
 
         private void SpawnSpecials()
@@ -260,6 +365,7 @@ namespace ManagedDoom
             }
         }
 
+
         public void G_ExitLevel()
         {
             //secretexit = false;
@@ -300,8 +406,6 @@ namespace ManagedDoom
         public Thinkers Thinkers => thinkers;
         public Specials Specials => specials;
 
-        public Thing[] PlayerStarts => playerStarts;
-
         public ThingAllocation ThingAllocation => thingAllocation;
         public ThingMovement ThingMovement => thingMovement;
         public ThingInteraction ThingInteraction => thingInteraction;
@@ -318,6 +422,8 @@ namespace ManagedDoom
         public LightingChange LightingChange => lightingChange;
         public StatusBar StatusBar => statusBar;
 
+        public Thing[] PlayerStarts => playerStarts;
+        public Thing[] DeathmatchStarts => deathmatchStarts;
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);
         public static readonly Fixed MELEERANGE = Fixed.FromInt(64);
