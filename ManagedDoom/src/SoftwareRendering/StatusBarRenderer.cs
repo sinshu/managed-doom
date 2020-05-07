@@ -131,6 +131,8 @@ namespace ManagedDoom.SoftwareRendering
 
         private MultIconWidget[] wArms;
 
+        private NumberWidget wFrags;
+
         public StatusBarRenderer(CommonPatches patches, DrawScreen screen)
         {
             this.screen = screen;
@@ -218,6 +220,12 @@ namespace ManagedDoom.SoftwareRendering
                 wArms[i].Y = ST_ARMSY + (i / 3) * ST_ARMSYSPACE;
                 wArms[i].Patches = patches.Arms[i];
             }
+
+            wFrags = new NumberWidget();
+            wFrags.Patches = patches.TallNumbers;
+            wFrags.Width = ST_FRAGSWIDTH;
+            wFrags.X = ST_FRAGSX;
+            wFrags.Y = ST_FRAGSY;
         }
 
         public void Render(StatusBar statusBar, Player player)
@@ -239,29 +247,41 @@ namespace ManagedDoom.SoftwareRendering
                 DrawNumber(wMaxAmmo[i], player.MaxAmmo[i]);
             }
 
-            screen.DrawPatch(
-                patches.ArmsBg,
-                scale * ST_ARMSBGX,
-                scale * ST_ARMSBGY,
-                scale);
-            for (var i = 0; i < wArms.Length; i++)
-            {
-                DrawMultIcon(wArms[i], player.WeaponOwned[i + 1] ? 1 : 0);
-            }
-
-            if (player.Mobj.World.Options.NetGame)
+            if (player.Mobj.World.Options.Deathmatch == 0)
             {
                 screen.DrawPatch(
-                    patches.FaceBacks[player.Number],
-                    scale * ST_FX,
-                    scale * ST_FY,
+                    patches.ArmsBg,
+                    scale * ST_ARMSBGX,
+                    scale * ST_ARMSBGY,
+                    scale);
+                for (var i = 0; i < wArms.Length; i++)
+                {
+                    DrawMultIcon(wArms[i], player.WeaponOwned[i + 1] ? 1 : 0);
+                }
+
+                if (player.Mobj.World.Options.NetGame)
+                {
+                    screen.DrawPatch(
+                        patches.FaceBacks[player.Number],
+                        scale * ST_FX,
+                        scale * ST_FY,
+                        scale);
+                }
+                screen.DrawPatch(
+                    patches.Faces[statusBar.Face],
+                    scale * ST_FACESX,
+                    scale * ST_FACESY,
                     scale);
             }
-            screen.DrawPatch(
-                patches.Faces[statusBar.Face],
-                scale * ST_FACESX,
-                scale * ST_FACESY,
-                scale);
+            else
+            {
+                var sum = 0;
+                for (var i = 0; i < player.Frags.Length; i++)
+                {
+                    sum += player.Frags[i];
+                }
+                DrawNumber(wFrags, sum);
+            }
         }
 
         private void DrawNumber(NumberWidget widget, int num)
