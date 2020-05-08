@@ -14,5 +14,6 @@ namespace ManagedDoomTest
         public static readonly string Plutonia = "PLUTONIA.WAD";
 
         public static readonly string Requiem = "REQUIEM.WAD";
+        public static readonly string TntBlood = "TNTBLOOD.WAD";
     }
 }

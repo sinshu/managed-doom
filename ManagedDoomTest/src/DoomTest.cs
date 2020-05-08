@@ -20,5 +20,17 @@ namespace ManagedDoomTest
 
             return players;
         }
+
+        public static Player[] GetDefaultPlayers(GameOptions options)
+        {
+            var players = new Player[Player.MaxPlayerCount];
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                players[i] = new Player(i);
+                players[i].InGame = options.PlayerInGame[i];
+            }
+
+            return players;
+        }
     }
 }

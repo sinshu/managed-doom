@@ -184,9 +184,9 @@ namespace ManagedDoom
             var mobj = SpawnMobj(x, y, z, MobjType.Player);
 
             // set color translations for player sprites
-            if (number > 1)
+            if (number >= 1)
             {
-                //mobj->flags |= (mthing->type - 1) << MF_TRANSSHIFT;
+                mobj.Flags |= (MobjFlags)((mthing.Type - 1) << (int)MobjFlags.TransShift);
             }
             mobj.Angle = mthing.Angle;
             mobj.Player = p;

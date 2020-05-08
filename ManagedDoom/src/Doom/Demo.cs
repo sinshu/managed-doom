@@ -35,6 +35,19 @@ namespace ManagedDoom
             options.PlayerInGame[1] = data[p++] != 0;
             options.PlayerInGame[2] = data[p++] != 0;
             options.PlayerInGame[3] = data[p++] != 0;
+
+            var playerCount = 0;
+            foreach (var inGame in options.PlayerInGame)
+            {
+                if (inGame)
+                {
+                    playerCount++;
+                }
+            }
+            if (playerCount >= 2)
+            {
+                options.NetGame = true;
+            }
         }
 
         public Demo(string fileName)
