@@ -153,12 +153,8 @@ namespace ManagedDoomTest.CompatibilityTests
                     }
                 }
 
-                // Player respawn fog in deathmatch seems to be spawned at a bit wrong position in the original version.
-                // However, this behavior is not easy to reproduce in the current C# codebase.
-                // So the strict check below for the compatibility is turned off.
-
                 Assert.AreEqual(0xa8343166u, (uint)lastMobjHash);
-                // Assert.AreEqual(0xd1d5c433u, (uint)aggMobjHash);
+                Assert.AreEqual(0xd1d5c433u, (uint)aggMobjHash);
                 Assert.AreEqual(0x9e70ce46u, (uint)lastSectorHash);
                 Assert.AreEqual(0x71eb6e2cu, (uint)aggSectorHash);
             }

@@ -224,10 +224,43 @@ namespace ManagedDoom
 
             // spawn a teleport fog 
             var ss = Geometry.PointInSubsector(x, y, map);
-            var an = mthing.Angle;
+
+            var an = (Angle.Ang45.Data >> Trig.AngleToFineShift) * ((int)Math.Round(mthing.Angle.ToDegree()) / 45);
+
+            Fixed xa;
+            Fixed ya;
+
+            switch (an)
+            {
+                case 4096:  // -4096:
+                    xa = Trig.Tan(2048);    // finecosine[-4096]
+                    ya = Trig.Tan(0);       // finesine[-4096]
+                    break;
+                case 5120:  // -3072:
+                    xa = Trig.Tan(3072);    // finecosine[-3072]
+                    ya = Trig.Tan(1024);    // finesine[-3072]
+                    break;
+                case 6144:  // -2048:
+                    xa = Trig.Sin(0);          // finecosine[-2048]
+                    ya = Trig.Tan(2048);    // finesine[-2048]
+                    break;
+                case 7168:  // -1024:
+                    xa = Trig.Sin(1024);       // finecosine[-1024]
+                    ya = Trig.Tan(3072);    // finesine[-1024]
+                    break;
+                case 0:
+                case 1024:
+                case 2048:
+                case 3072:
+                    xa = Trig.Cos((int)an);
+                    ya = Trig.Sin((int)an);
+                    break;
+                default:
+                    throw new Exception("G_CheckSpot: unexpected angle " + an);
+            }
 
             var mo = thingAllocation.SpawnMobj(
-                x + 20 * Trig.Cos(an), y + 20 * Trig.Sin(an),
+                x + 20 * xa, y + 20 * ya,
                 ss.Sector.FloorHeight,
                 MobjType.Tfog);
 
