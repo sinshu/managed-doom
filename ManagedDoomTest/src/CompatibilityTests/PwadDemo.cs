@@ -158,5 +158,77 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0x71eb6e2cu, (uint)aggSectorHash);
             }
         }
+
+        [TestMethod]
+        public void TntBloodDemo2()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.TntBlood))
+            {
+                var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
+                var players = DoomTest.GetDefaultPlayers(demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(players, resource, demo.Options);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd(cmds))
+                    {
+                        break;
+                    }
+
+                    game.Update(cmds);
+                    lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    lastSectorHash = DoomDebug.GetSectorHash(game.World);
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0x6fde0422u, (uint)lastMobjHash);
+                Assert.AreEqual(0xbae1086eu, (uint)aggMobjHash);
+                Assert.AreEqual(0x9708f97du, (uint)lastSectorHash);
+                Assert.AreEqual(0xfc771056u, (uint)aggSectorHash);
+            }
+        }
+
+        [TestMethod]
+        public void TntBloodDemo3()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.TntBlood))
+            {
+                var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
+                var players = DoomTest.GetDefaultPlayers(demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(players, resource, demo.Options);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd(cmds))
+                    {
+                        break;
+                    }
+
+                    game.Update(cmds);
+                    lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    lastSectorHash = DoomDebug.GetSectorHash(game.World);
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0x9d24c7d8u, (uint)lastMobjHash);
+                Assert.AreEqual(0xd37240f4u, (uint)aggMobjHash);
+                Assert.AreEqual(0xf3f4db97u, (uint)lastSectorHash);
+                Assert.AreEqual(0xa0acc43eu, (uint)aggSectorHash);
+            }
+        }
     }
 }
