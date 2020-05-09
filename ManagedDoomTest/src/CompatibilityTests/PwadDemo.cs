@@ -140,17 +140,16 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 while (true)
                 {
-                    demo.ReadCmd(cmds);
+                    if (!demo.ReadCmd(cmds))
+                    {
+                        break;
+                    }
+
                     game.Update(cmds);
                     lastMobjHash = DoomDebug.GetMobjHash(game.World);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
                     lastSectorHash = DoomDebug.GetSectorHash(game.World);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
-
-                    if (game.World.levelTime == 8190)
-                    {
-                        break;
-                    }
                 }
 
                 Assert.AreEqual(0xa8343166u, (uint)lastMobjHash);

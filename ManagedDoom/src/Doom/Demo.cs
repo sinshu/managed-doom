@@ -10,6 +10,8 @@ namespace ManagedDoom
 
         private GameOptions options;
 
+        private int playerCount;
+
         public Demo(byte[] data)
         {
             p = 0;
@@ -36,7 +38,7 @@ namespace ManagedDoom
             options.PlayerInGame[2] = data[p++] != 0;
             options.PlayerInGame[3] = data[p++] != 0;
 
-            var playerCount = 0;
+            playerCount = 0;
             foreach (var inGame in options.PlayerInGame)
             {
                 if (inGame)
@@ -57,7 +59,17 @@ namespace ManagedDoom
 
         public bool ReadCmd(TicCmd[] cmds)
         {
+            if (p == data.Length)
+            {
+                return false;
+            }
+
             if (data[p] == 0x80)
+            {
+                return false;
+            }
+
+            if (p + 4 * playerCount > data.Length)
             {
                 return false;
             }
@@ -73,8 +85,6 @@ namespace ManagedDoom
                     cmd.Buttons = data[p++];
                 }
             }
-
-            //Console.Write("*");
 
             return true;
         }
