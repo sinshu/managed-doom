@@ -2,11 +2,11 @@
 
 namespace ManagedDoom
 {
-    public sealed class Thing
+    public sealed class MapThing
     {
         public const int DataSize = 10;
 
-        public static Thing Empty = new Thing(
+        public static MapThing Empty = new MapThing(
             Fixed.Zero,
             Fixed.Zero,
             Angle.Ang0,
@@ -18,7 +18,7 @@ namespace ManagedDoom
         private int type;
         private ThingFlags flags;
 
-        public Thing(
+        public MapThing(
             Fixed x,
             Fixed y,
             Angle angle,
@@ -32,7 +32,7 @@ namespace ManagedDoom
             this.flags = flags;
         }
 
-        public static Thing FromData(byte[] data, int offset)
+        public static MapThing FromData(byte[] data, int offset)
         {
             var x = BitConverter.ToInt16(data, offset);
             var y = BitConverter.ToInt16(data, offset + 2);
@@ -40,7 +40,7 @@ namespace ManagedDoom
             var type = BitConverter.ToInt16(data, offset + 6);
             var flags = BitConverter.ToInt16(data, offset + 8);
 
-            return new Thing(
+            return new MapThing(
                 Fixed.FromInt(x),
                 Fixed.FromInt(y),
                 new Angle(ManagedDoom.Angle.Ang45.Data * (uint)(angle / 45)),
@@ -48,7 +48,7 @@ namespace ManagedDoom
                 (ThingFlags)flags);
         }
 
-        public static Thing[] FromWad(Wad wad, int lump)
+        public static MapThing[] FromWad(Wad wad, int lump)
         {
             var length = wad.GetLumpSize(lump);
             if (length % DataSize != 0)
@@ -58,7 +58,7 @@ namespace ManagedDoom
 
             var data = wad.ReadLump(lump);
             var count = length / DataSize;
-            var things = new Thing[count];
+            var things = new MapThing[count];
 
             for (var i = 0; i < count; i++)
             {

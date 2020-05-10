@@ -40,8 +40,8 @@ namespace ManagedDoom
         private LightingChange lightingChange;
         private StatusBar statusBar;
 
-        private Thing[] playerStarts;
-        private Thing[] deathmatchStarts;
+        private MapThing[] playerStarts;
+        private MapThing[] deathmatchStarts;
 
         private GameAction gameAction;
 
@@ -90,8 +90,6 @@ namespace ManagedDoom
             // Initial height of PointOfView
             // will be set by player think.
             players[consoleplayer].ViewZ = new Fixed(1);
-
-            playerStarts = new Thing[Player.MaxPlayerCount];
 
             LoadThings();
 
@@ -177,6 +175,7 @@ namespace ManagedDoom
                 ta.SpawnMapThing(mt);
             }
 
+            playerStarts = ta.PlayerStarts.ToArray();
             deathmatchStarts = ta.DeathmatchStarts.ToArray();
         }
 
@@ -191,7 +190,7 @@ namespace ManagedDoom
         // at the given mapthing_t spot  
         // because something is occupying it 
         //
-        public bool G_CheckSpot(int playernum, Thing mthing)
+        public bool G_CheckSpot(int playernum, MapThing mthing)
         {
             if (Players[playernum].Mobj == null)
             {
@@ -455,8 +454,8 @@ namespace ManagedDoom
         public LightingChange LightingChange => lightingChange;
         public StatusBar StatusBar => statusBar;
 
-        public Thing[] PlayerStarts => playerStarts;
-        public Thing[] DeathmatchStarts => deathmatchStarts;
+        public MapThing[] PlayerStarts => playerStarts;
+        public MapThing[] DeathmatchStarts => deathmatchStarts;
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);
         public static readonly Fixed MELEERANGE = Fixed.FromInt(64);

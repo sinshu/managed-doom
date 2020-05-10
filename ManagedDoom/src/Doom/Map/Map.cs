@@ -18,7 +18,7 @@ namespace ManagedDoom
         private Seg[] segs;
         private Subsector[] subsectors;
         private Node[] nodes;
-        private Thing[] things;
+        private MapThing[] things;
         private BlockMap blockMap;
         private Reject reject;
 
@@ -55,7 +55,7 @@ namespace ManagedDoom
             segs = Seg.FromWad(wad, map + 5, vertices, lines);
             subsectors = Subsector.FromWad(wad, map + 6, segs);
             nodes = Node.FromWad(wad, map + 7, subsectors);
-            things = Thing.FromWad(wad, map + 1);
+            things = MapThing.FromWad(wad, map + 1);
             blockMap = BlockMap.FromWad(wad, map + 10, lines);
             reject = Reject.FromWad(wad, map + 9, sectors);
 
@@ -157,7 +157,7 @@ namespace ManagedDoom
         public Seg[] Segs => segs;
         public Subsector[] Subsectors => subsectors;
         public Node[] Nodes => nodes;
-        public Thing[] Things => things;
+        public MapThing[] Things => things;
         public BlockMap BlockMap => blockMap;
         public Reject Reject => reject;
         public Texture SkyTexture => skyTexture;

@@ -7,59 +7,62 @@ namespace ManagedDoom
     {
         private World world;
 
-        private List<Thing> deathmatchStarts;
+        private MapThing[] playerStarts;
+        private List<MapThing> deathmatchStarts;
+
 
         public ThingAllocation(World world)
         {
             this.world = world;
 
-            deathmatchStarts = new List<Thing>();
+            playerStarts = new MapThing[Player.MaxPlayerCount];
+            deathmatchStarts = new List<MapThing>();
         }
 
-        public void SpawnMapThing(Thing mthing)
+
+        public void SpawnMapThing(MapThing mt)
         {
             // count deathmatch start positions
-            if (mthing.Type == 11)
+            if (mt.Type == 11)
             {
                 if (deathmatchStarts.Count < 10)
                 {
-                    deathmatchStarts.Add(mthing);
+                    deathmatchStarts.Add(mt);
                 }
+
                 return;
             }
 
-            // check for players specially
-            if (mthing.Type <= 4)
+            // Check for players specially.
+            if (mt.Type <= 4)
             {
-                var number = mthing.Type - 1;
+                var playerNumber = mt.Type - 1;
 
                 // This check is neccesary in Plutonia MAP12,
                 // which contains an unknown thing with type 0.
-                if (number < 0)
+                if (playerNumber < 0)
                 {
                     return;
                 }
 
-                // save spots for respawning in network games
-                world.PlayerStarts[number] = mthing;
+                // Save spots for respawning in network games.
+                playerStarts[playerNumber] = mt;
 
                 if (world.Options.Deathmatch == 0)
                 {
-                    SpawnPlayer(mthing);
+                    SpawnPlayer(mt);
                 }
 
                 return;
             }
 
-            // The code below must be removed later
-            // when the player related code above is correctly implemented.
-            if (mthing.Type == 11 || mthing.Type <= 4)
+            if (mt.Type == 11 || mt.Type <= 4)
             {
                 return;
             }
 
-            // check for apropriate skill level
-            if (!world.Options.NetGame && ((int)mthing.Flags & 16) != 0)
+            // Check for apropriate skill level.
+            if (!world.Options.NetGame && ((int)mt.Flags & 16) != 0)
             {
                 return;
             }
@@ -78,16 +81,16 @@ namespace ManagedDoom
                 bit = 1 << ((int)world.Options.Skill - 1);
             }
 
-            if (((int)mthing.Flags & bit) == 0)
+            if (((int)mt.Flags & bit) == 0)
             {
                 return;
             }
 
+            // Find which type to spawn.
             int i;
-            // find which type to spawn
             for (i = 0; i < DoomInfo.MobjInfos.Length; i++)
             {
-                if (mthing.Type == DoomInfo.MobjInfos[i].DoomEdNum)
+                if (mt.Type == DoomInfo.MobjInfos[i].DoomEdNum)
                 {
                     break;
                 }
@@ -99,23 +102,22 @@ namespace ManagedDoom
             }
 
             // don't spawn keycards and players in deathmatch
-            if (world.Options.Deathmatch != 0
-                && (DoomInfo.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
+            if (world.Options.Deathmatch != 0 &&
+                (DoomInfo.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
             {
                 return;
             }
 
             // don't spawn any monsters if -nomonsters
-            if (world.Options.NoMonsters
-                && (i == (int)MobjType.Skull
-                    || (DoomInfo.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
+            if (world.Options.NoMonsters && (i == (int)MobjType.Skull ||
+                (DoomInfo.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
             {
                 return;
             }
 
-            // spawn it
-            Fixed x = mthing.X;
-            Fixed y = mthing.Y;
+            // Spawn it.
+            Fixed x = mt.X;
+            Fixed y = mt.Y;
             Fixed z;
             if ((DoomInfo.MobjInfos[i].Flags & MobjFlags.SpawnCeiling) != 0)
             {
@@ -128,7 +130,7 @@ namespace ManagedDoom
 
             var mobj = SpawnMobj(x, y, z, (MobjType)i);
 
-            mobj.SpawnPoint = mthing;
+            mobj.SpawnPoint = mt;
 
             if (mobj.Tics > 0)
             {
@@ -145,83 +147,79 @@ namespace ManagedDoom
                 world.totalItems++;
             }
 
-            // mobj->angle = ANG45 * (mthing->angle/45);
-            mobj.Angle = mthing.Angle;
+            mobj.Angle = mt.Angle;
 
-            if ((mthing.Flags & ThingFlags.Ambush) != 0)
+            if ((mt.Flags & ThingFlags.Ambush) != 0)
             {
                 mobj.Flags |= MobjFlags.Ambush;
             }
         }
 
 
-        //
-        // P_SpawnPlayer
-        // Called when a player is spawned on the level.
-        // Most of the player structure stays unchanged
-        //  between levels.
-        //
-        public void SpawnPlayer(Thing mthing)
+        public void SpawnPlayer(MapThing mt)
         {
-            var number = mthing.Type - 1;
+            var playerNumber = mt.Type - 1;
 
-            // not playing?
-            if (!world.Players[number].InGame)
+            // Not playing?
+            if (!world.Players[playerNumber].InGame)
             {
                 return;
             }
 
-            var p = world.Players[number];
+            var player = world.Players[playerNumber];
 
-            if (p.PlayerState == PlayerState.Reborn)
+            if (player.PlayerState == PlayerState.Reborn)
             {
-                world.Players[number].Reborn();
+                world.Players[playerNumber].Reborn();
             }
 
-            var x = mthing.X;
-            var y = mthing.Y;
+            var x = mt.X;
+            var y = mt.Y;
             var z = Mobj.OnFloorZ;
             var mobj = SpawnMobj(x, y, z, MobjType.Player);
 
-            // set color translations for player sprites
-            if (number >= 1)
+            // Set color translations for player sprites.
+            if (playerNumber >= 1)
             {
-                mobj.Flags |= (MobjFlags)((mthing.Type - 1) << (int)MobjFlags.TransShift);
+                mobj.Flags |= (MobjFlags)((mt.Type - 1) << (int)MobjFlags.TransShift);
             }
-            mobj.Angle = mthing.Angle;
-            mobj.Player = p;
-            mobj.Health = p.Health;
 
-            p.Mobj = mobj;
-            p.PlayerState = PlayerState.Live;
-            p.Refire = 0;
-            p.Message = null;
-            p.DamageCount = 0;
-            p.BonusCount = 0;
-            p.ExtraLight = 0;
-            p.FixedColorMap = 0;
-            p.ViewHeight = Player.VIEWHEIGHT;
+            mobj.Angle = mt.Angle;
+            mobj.Player = player;
+            mobj.Health = player.Health;
 
-            // setup gun psprite
-            world.PlayerBehavior.SetupPsprites(p);
+            player.Mobj = mobj;
+            player.PlayerState = PlayerState.Live;
+            player.Refire = 0;
+            player.Message = null;
+            player.DamageCount = 0;
+            player.BonusCount = 0;
+            player.ExtraLight = 0;
+            player.FixedColorMap = 0;
+            player.ViewHeight = Player.VIEWHEIGHT;
 
-            // give all cards in death match mode
+            // Setup gun psprite.
+            world.PlayerBehavior.SetupPsprites(player);
+
+            // Give all cards in death match mode.
             if (world.Options.Deathmatch != 0)
             {
                 for (var i = 0; i < (int)CardType.Count; i++)
                 {
-                    p.Cards[i] = true;
+                    player.Cards[i] = true;
                 }
             }
 
-            if (mthing.Type - 1 == world.Options.ConsolePlayer)
+            if (mt.Type - 1 == world.Options.ConsolePlayer)
             {
-                // wake up the status bar
+                // Wake up the status bar.
                 world.StatusBar.Reset();
-                // wake up the heads up text
-                //HU_Start();
+
+                // Wake up the heads up text.
+                // HU_Start();
             }
         }
+
 
         public Mobj SpawnMobj(Fixed x, Fixed y, Fixed z, MobjType type)
         {
@@ -245,8 +243,8 @@ namespace ManagedDoom
 
             mobj.LastLook = world.Random.Next() % Player.MaxPlayerCount;
 
-            // do not set the state with P_SetMobjState,
-            // because action routines can not be called yet
+            // Do not set the state with P_SetMobjState,
+            // because action routines can not be called yet.
             var st = DoomInfo.States[(int)info.SpawnState];
 
             mobj.State = st;
@@ -254,7 +252,7 @@ namespace ManagedDoom
             mobj.Sprite = st.Sprite;
             mobj.Frame = st.Frame;
 
-            // set subsector and/or block links
+            // Set subsector and/or block links.
             world.ThingMovement.SetThingPosition(mobj);
 
             mobj.FloorZ = mobj.Subsector.Sector.FloorHeight;
@@ -273,8 +271,6 @@ namespace ManagedDoom
                 mobj.Z = z;
             }
 
-            //mobj->thinker.function.acp1 = (actionf_p1)P_MobjThinker;
-
             world.Thinkers.Add(mobj);
 
             return mobj;
@@ -284,10 +280,10 @@ namespace ManagedDoom
         {
             var tm = world.ThingMovement;
 
-            if ((mobj.Flags & MobjFlags.Special) != 0
-                && (mobj.Flags & MobjFlags.Dropped) == 0
-                && (mobj.Type != MobjType.Inv)
-                && (mobj.Type != MobjType.Ins))
+            if ((mobj.Flags & MobjFlags.Special) != 0 &&
+                (mobj.Flags & MobjFlags.Dropped) == 0 &&
+                (mobj.Type != MobjType.Inv) &&
+                (mobj.Type != MobjType.Ins))
             {
                 //itemrespawnque[iquehead] = mobj->spawnpoint;
                 //itemrespawntime[iquehead] = leveltime;
@@ -298,85 +294,79 @@ namespace ManagedDoom
                 //    iquetail = (iquetail + 1) & (ITEMQUESIZE - 1);
             }
 
-            // unlink from sector and block lists
+            // Unlink from sector and block lists.
             tm.UnsetThingPosition(mobj);
 
-            // stop any playing sound
+            // Stop any playing sound.
             world.StopSound(mobj);
 
-            // free block
+            // Free block.
             world.Thinkers.Remove(mobj);
         }
 
 
-
-        //
-        // P_CheckMissileSpawn
-        // Moves the missile forward a bit
-        //  and possibly explodes it right there.
-        //
-        public void P_CheckMissileSpawn(Mobj th)
+        public void CheckMissileSpawn(Mobj missile)
         {
             var tm = world.ThingMovement;
             var ti = world.ThingInteraction;
 
-            th.Tics -= world.Random.Next() & 3;
-            if (th.Tics < 1)
+            missile.Tics -= world.Random.Next() & 3;
+            if (missile.Tics < 1)
             {
-                th.Tics = 1;
+                missile.Tics = 1;
             }
 
             // move a little forward so an angle can
             // be computed if it immediately explodes
-            th.X += new Fixed(th.MomX.Data >> 1);
-            th.Y += new Fixed(th.MomY.Data >> 1);
-            th.Z += new Fixed(th.MomZ.Data >> 1);
+            missile.X += new Fixed(missile.MomX.Data >> 1);
+            missile.Y += new Fixed(missile.MomY.Data >> 1);
+            missile.Z += new Fixed(missile.MomZ.Data >> 1);
 
-            if (!tm.TryMove(th, th.X, th.Y))
+            if (!tm.TryMove(missile, missile.X, missile.Y))
             {
-                ti.ExplodeMissile(th);
+                ti.ExplodeMissile(missile);
             }
         }
 
 
-        //
-        // P_SpawnMissile
-        //
         public Mobj SpawnMissile(Mobj source, Mobj dest, MobjType type)
         {
-            var th = SpawnMobj(
+            var missile = SpawnMobj(
                 source.X,
                 source.Y,
-                source.Z + new Fixed(4 * 8 * Fixed.FracUnit), type);
+                source.Z + Fixed.FromInt(32), type);
 
-            if (th.Info.SeeSound != 0)
+            if (missile.Info.SeeSound != 0)
             {
-                world.StartSound(th, th.Info.SeeSound);
+                world.StartSound(missile, missile.Info.SeeSound);
             }
 
-            // where it came from
-            th.Target = source;
+            // Where it came from?
+            missile.Target = source;
 
-            var an = Geometry.PointToAngle(
+            var angle = Geometry.PointToAngle(
                 source.X,
                 source.Y,
                 dest.X,
                 dest.Y);
 
-            // fuzzy player
+            // Fuzzy player.
             if ((dest.Flags & MobjFlags.Shadow) != 0)
             {
-                an += new Angle((world.Random.Next() - world.Random.Next()) << 20);
+                var random = world.Random;
+                angle += new Angle((random.Next() - random.Next()) << 20);
             }
 
-            var speed = GetMissileSpeed(th.Type);
+            var speed = GetMissileSpeed(missile.Type);
 
-            th.Angle = an;
-            //an >>= ANGLETOFINESHIFT;
-            th.MomX = new Fixed(speed) * Trig.Cos(an); // finecosine[an]);
-            th.MomY = new Fixed(speed) * Trig.Sin(an); // finesine[an]);
+            missile.Angle = angle;
+            missile.MomX = new Fixed(speed) * Trig.Cos(angle);
+            missile.MomY = new Fixed(speed) * Trig.Sin(angle);
 
-            var dist = Geometry.AproxDistance(dest.X - source.X, dest.Y - source.Y);
+            var dist = Geometry.AproxDistance(
+                dest.X - source.X,
+                dest.Y - source.Y);
+
             dist = dist / speed;
 
             if (dist.Data < 1)
@@ -384,11 +374,11 @@ namespace ManagedDoom
                 dist = new Fixed(1);
             }
 
-            th.MomZ = new Fixed((dest.Z - source.Z).Data / dist.Data);
+            missile.MomZ = new Fixed((dest.Z - source.Z).Data / dist.Data);
 
-            P_CheckMissileSpawn(th);
+            CheckMissileSpawn(missile);
 
-            return th;
+            return missile;
         }
 
         private int GetMissileSpeed(MobjType type)
@@ -412,59 +402,53 @@ namespace ManagedDoom
         }
 
 
-
-
-        //
-        // P_SpawnPlayerMissile
-        // Tries to aim at a nearby monster
-        //
         public void SpawnPlayerMissile(Mobj source, MobjType type)
         {
             var hs = world.Hitscan;
 
-            // see which target is to be aimed at
-            var an = source.Angle;
-            var slope = hs.AimLineAttack(source, an, Fixed.FromInt(16 * 64));
+            // See which target is to be aimed at.
+            var angle = source.Angle;
+            var slope = hs.AimLineAttack(source, angle, Fixed.FromInt(16 * 64));
 
             if (hs.linetarget == null)
             {
-                an += new Angle(1 << 26);
-                slope = hs.AimLineAttack(source, an, Fixed.FromInt(16 * 64));
+                angle += new Angle(1 << 26);
+                slope = hs.AimLineAttack(source, angle, Fixed.FromInt(16 * 64));
 
                 if (hs.linetarget == null)
                 {
-                    an -= new Angle(2 << 26);
-                    slope = hs.AimLineAttack(source, an, Fixed.FromInt(16 * 64));
+                    angle -= new Angle(2 << 26);
+                    slope = hs.AimLineAttack(source, angle, Fixed.FromInt(16 * 64));
                 }
 
                 if (hs.linetarget == null)
                 {
-                    an = source.Angle;
+                    angle = source.Angle;
                     slope = Fixed.Zero;
                 }
             }
 
             var x = source.X;
             var y = source.Y;
-            var z = source.Z + Fixed.FromInt(4 * 8);
+            var z = source.Z + Fixed.FromInt(32);
 
-            var th = SpawnMobj(x, y, z, type);
+            var missile = SpawnMobj(x, y, z, type);
 
-            if (th.Info.SeeSound != 0)
+            if (missile.Info.SeeSound != 0)
             {
-                world.StartSound(th, th.Info.SeeSound);
+                world.StartSound(missile, missile.Info.SeeSound);
             }
 
-            th.Target = source;
-            th.Angle = an;
-            th.MomX = new Fixed(th.Info.Speed) * Trig.Cos(an);
-            th.MomY = new Fixed(th.Info.Speed) * Trig.Sin(an);
-            th.MomZ = new Fixed(th.Info.Speed) * slope;
+            missile.Target = source;
+            missile.Angle = angle;
+            missile.MomX = new Fixed(missile.Info.Speed) * Trig.Cos(angle);
+            missile.MomY = new Fixed(missile.Info.Speed) * Trig.Sin(angle);
+            missile.MomZ = new Fixed(missile.Info.Speed) * slope;
 
-            P_CheckMissileSpawn(th);
+            CheckMissileSpawn(missile);
         }
 
-
-        public IReadOnlyList<Thing> DeathmatchStarts => deathmatchStarts;
+        public IReadOnlyList<MapThing> PlayerStarts => playerStarts;
+        public IReadOnlyList<MapThing> DeathmatchStarts => deathmatchStarts;
     }
 }

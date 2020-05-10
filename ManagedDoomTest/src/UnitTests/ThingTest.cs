@@ -17,7 +17,7 @@ namespace ManagedDoomTest.UnitTests
             using (var wad = new Wad(WadPath.Doom1))
             {
                 var map = wad.GetLumpNumber("E1M1");
-                var things = Thing.FromWad(wad, map + 1);
+                var things = MapThing.FromWad(wad, map + 1);
 
                 Assert.AreEqual(143, things.Length);
 
@@ -47,7 +47,7 @@ namespace ManagedDoomTest.UnitTests
             using (var wad = new Wad(WadPath.Doom2))
             {
                 var map = wad.GetLumpNumber("MAP01");
-                var things = Thing.FromWad(wad, map + 1);
+                var things = MapThing.FromWad(wad, map + 1);
 
                 Assert.AreEqual(69, things.Length);
 

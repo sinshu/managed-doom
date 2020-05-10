@@ -78,7 +78,7 @@ namespace ManagedDoom
         public int LastLook;
 
         // For nightmare respawn.
-        public Thing SpawnPoint;
+        public MapThing SpawnPoint;
 
         // Thing being chased/attacked for tracers.
         public Mobj Tracer;
@@ -233,14 +233,14 @@ namespace ManagedDoom
         //
         private void NightmareRespawn()
         {
-            Thing sp;
+            MapThing sp;
             if (SpawnPoint != null)
             {
                 sp = SpawnPoint;
             }
             else
             {
-                sp = Thing.Empty;
+                sp = MapThing.Empty;
             }
 
             var x = sp.X;
