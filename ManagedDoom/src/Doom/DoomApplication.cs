@@ -19,6 +19,8 @@ namespace ManagedDoom
         private GameOptions options;
         private DoomGame game;
 
+        private DoomMenu menu;
+
         private List<DoomEvent> events;
 
         public DoomApplication()

@@ -242,16 +242,16 @@ namespace ManagedDoom
                     return true;
                 }
 
-                if (tm.hitSpecialCount == 0)
+                if (tm.crossedSpecialCount == 0)
                 {
                     return false;
                 }
 
                 actor.MoveDir = Direction.None;
                 var good = false;
-                while (tm.hitSpecialCount-- > 0)
+                while (tm.crossedSpecialCount-- > 0)
                 {
-                    var ld = tm.hitSpecialLines[tm.hitSpecialCount];
+                    var ld = tm.crossedSpecials[tm.crossedSpecialCount];
                     // if the special is not a door
                     // that can be opened,
                     // return false

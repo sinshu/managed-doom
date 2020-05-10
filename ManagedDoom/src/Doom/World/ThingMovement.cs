@@ -17,9 +17,9 @@ namespace ManagedDoom
 
         public static readonly Fixed FloatSpeed = Fixed.FromInt(4);
 
-        private static readonly int maxSpecialCross = 16;
-        private static readonly Fixed MaxMove = Fixed.FromInt(30);
-        private static readonly Fixed Gravity = Fixed.One;
+        private static readonly int maxSpecialCrossCount = 16;
+        private static readonly Fixed maxMove = Fixed.FromInt(30);
+        private static readonly Fixed gravity = Fixed.One;
 
         private Mobj currentThing;
         private MobjFlags currentFlags;
@@ -34,8 +34,8 @@ namespace ManagedDoom
 
         private LineDef currentCeilingLine;
 
-        public int hitSpecialCount;
-        public LineDef[] hitSpecialLines;
+        public int crossedSpecialCount;
+        public LineDef[] crossedSpecials;
 
         private Func<LineDef, bool> checkLineFunc;
         private Func<Mobj, bool> checkThingFunc;
@@ -44,9 +44,7 @@ namespace ManagedDoom
         private void InitThingMovement()
         {
             currentBox = new Fixed[4];
-
-            hitSpecialLines = new LineDef[maxSpecialCross];
-
+            crossedSpecials = new LineDef[maxSpecialCrossCount];
             checkLineFunc = CheckLine;
             checkThingFunc = CheckThing;
         }
@@ -158,10 +156,10 @@ namespace ManagedDoom
         {
             var mc = world.MapCollision;
 
-            if (currentBox[Box.Right] <= line.BboxLeft
-                || currentBox[Box.Left] >= line.BboxRight
-                || currentBox[Box.Top] <= line.BboxBottom
-                || currentBox[Box.Bottom] >= line.BboxTop)
+            if (currentBox[Box.Right] <= line.BboxLeft ||
+                currentBox[Box.Left] >= line.BboxRight ||
+                currentBox[Box.Top] <= line.BboxBottom ||
+                currentBox[Box.Bottom] >= line.BboxTop)
             {
                 return true;
             }
@@ -172,15 +170,14 @@ namespace ManagedDoom
             }
 
             // A line has been hit.
-
-            // The moving thing's destination position will cross
-            // the given line.
+            //
+            // The moving thing's destination position will cross the given line.
             // If this should not be allowed, return false.
-            // If the line is special, keep track of it
-            // to process later if the move is proven ok.
-            // NOTE: specials are NOT sorted by order,
-            // so two special lines that are only 8 pixels apart
-            // could be crossed in either order.
+            // If the line is special, keep track of it to process later if the move is proven ok.
+            //
+            // NOTE:
+            //     specials are NOT sorted by order, so two special lines that are only 8 pixels
+            //     apart could be crossed in either order.
 
             if (line.BackSector == null)
             {
@@ -223,11 +220,11 @@ namespace ManagedDoom
                 currentDropoffZ = mc.LowFloor;
             }
 
-            // If contacted a special line, add it to the list
+            // If contacted a special line, add it to the list.
             if (line.Special != 0)
             {
-                hitSpecialLines[hitSpecialCount] = line;
-                hitSpecialCount++;
+                crossedSpecials[crossedSpecialCount] = line;
+                crossedSpecialCount++;
             }
 
             return true;
@@ -241,9 +238,9 @@ namespace ManagedDoom
                 return true;
             }
 
-            var blockdist = thing.Radius + currentThing.Radius;
+            var blockDist = thing.Radius + currentThing.Radius;
 
-            if (Fixed.Abs(thing.X - currentX) >= blockdist || Fixed.Abs(thing.Y - currentY) >= blockdist)
+            if (Fixed.Abs(thing.X - currentX) >= blockDist || Fixed.Abs(thing.Y - currentY) >= blockDist)
             {
                 // Didn't hit it.
                 return true;
@@ -270,7 +267,6 @@ namespace ManagedDoom
                 // Stop moving.
                 return false;
             }
-
 
             // Missiles can hit other things.
             if ((currentThing.Flags & MobjFlags.Missile) != 0)
@@ -337,30 +333,6 @@ namespace ManagedDoom
         }
 
 
-        //
-        // P_CheckPosition
-        // This is purely informative, nothing is modified
-        // (except things picked up).
-        // 
-        // in:
-        //  a mobj_t (can be valid or invalid)
-        //  a position to be checked
-        //   (doesn't need to be related to the mobj_t->x,y)
-        //
-        // during:
-        //  special things are touched if MF_PICKUP
-        //  early out on solid lines?
-        //
-        // out:
-        //  newsubsec
-        //  floorz
-        //  ceilingz
-        //  tmdropoffz
-        //   the lowest point contacted
-        //   (monsters won't move to a dropoff)
-        //  speciallines[]
-        //  numspeciallines
-        //
         public bool CheckPosition(Mobj thing, Fixed x, Fixed y)
         {
             var map = world.Map;
@@ -381,16 +353,14 @@ namespace ManagedDoom
 
             currentCeilingLine = null;
 
-            // The base floor / ceiling is from the subsector
-            // that contains the point.
-            // Any contacted lines the step closer together
-            // will adjust them.
+            // The base floor / ceiling is from the subsector that contains the point.
+            // Any contacted lines the step closer together will adjust them.
             currentFloorZ = currentDropoffZ = newsubsec.Sector.FloorHeight;
             currentCeilingZ = newsubsec.Sector.CeilingHeight;
 
             var validCount = world.GetNewValidCount();
 
-            hitSpecialCount = 0;
+            crossedSpecialCount = 0;
 
             if ((currentFlags & MobjFlags.NoClip) != 0)
             {
@@ -398,10 +368,9 @@ namespace ManagedDoom
             }
 
             // Check things first, possibly picking things up.
-            // The bounding box is extended by MAXRADIUS
-            // because mobj_ts are grouped into mapblocks
-            // based on their origin point, and can overlap
-            // into adjacent blocks by up to MAXRADIUS units.
+            // The bounding box is extended by MaxThingRadius because mobj_ts are grouped into
+            // mapblocks based on their origin point, and can overlap into adjacent blocks by up
+            // to MAXRADIUS units.
             {
                 var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConstants.MaxThingRadius);
                 var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConstants.MaxThingRadius);
@@ -443,11 +412,8 @@ namespace ManagedDoom
         }
 
 
-        //
-        // P_TryMove
-        // Attempt to move to a new position,
-        // crossing special lines unless MF_TELEPORT is set.
-        //
+        // Attempt to move to a new position, crossing special lines unless MobjFlags.Teleport is
+        // set.
         public bool TryMove(Mobj thing, Fixed x, Fixed y)
         {
             floatOk = false;
@@ -506,10 +472,10 @@ namespace ManagedDoom
             // If any special lines were hit, do the effect.
             if ((thing.Flags & (MobjFlags.Teleport | MobjFlags.NoClip)) == 0)
             {
-                while (hitSpecialCount-- > 0)
+                while (crossedSpecialCount-- > 0)
                 {
                     // See if the line was crossed.
-                    var line = hitSpecialLines[hitSpecialCount];
+                    var line = crossedSpecials[crossedSpecialCount];
                     var newSide = Geometry.PointOnLineSide(thing.X, thing.Y, line);
                     var oldSide = Geometry.PointOnLineSide(oldx, oldy, line);
                     if (newSide != oldSide)
@@ -526,9 +492,6 @@ namespace ManagedDoom
         }
 
 
-        //
-        // P_XYMovement  
-        //
         private static readonly Fixed stopSpeed = new Fixed(0x1000);
         private static readonly Fixed friction = new Fixed(0xe800);
 
@@ -550,22 +513,22 @@ namespace ManagedDoom
 
             var player = thing.Player;
 
-            if (thing.MomX > MaxMove)
+            if (thing.MomX > maxMove)
             {
-                thing.MomX = MaxMove;
+                thing.MomX = maxMove;
             }
-            else if (thing.MomX < -MaxMove)
+            else if (thing.MomX < -maxMove)
             {
-                thing.MomX = -MaxMove;
+                thing.MomX = -maxMove;
             }
 
-            if (thing.MomY > MaxMove)
+            if (thing.MomY > maxMove)
             {
-                thing.MomY = MaxMove;
+                thing.MomY = maxMove;
             }
-            else if (thing.MomY < -MaxMove)
+            else if (thing.MomY < -maxMove)
             {
-                thing.MomY = -MaxMove;
+                thing.MomY = -maxMove;
             }
 
             var moveX = thing.MomX;
@@ -576,7 +539,7 @@ namespace ManagedDoom
                 Fixed pMoveX;
                 Fixed pMoveY;
 
-                if (moveX > MaxMove / 2 || moveY > MaxMove / 2)
+                if (moveX > maxMove / 2 || moveY > maxMove / 2)
                 {
                     pMoveX = thing.X + moveX / 2;
                     pMoveY = thing.Y + moveY / 2;
@@ -600,9 +563,9 @@ namespace ManagedDoom
                     else if ((thing.Flags & MobjFlags.Missile) != 0)
                     {
                         // Explode a missile.
-                        if (currentCeilingLine != null
-                            && currentCeilingLine.BackSector != null
-                            && currentCeilingLine.BackSector.CeilingFlat == world.Map.SkyFlatNumber)
+                        if (currentCeilingLine != null &&
+                            currentCeilingLine.BackSector != null &&
+                            currentCeilingLine.BackSector.CeilingFlat == world.Map.SkyFlatNumber)
                         {
                             // Hack to prevent missiles exploding against the sky.
                             // Does not handle sky floors.
@@ -642,10 +605,10 @@ namespace ManagedDoom
             if ((thing.Flags & MobjFlags.Corpse) != 0)
             {
                 // Do not stop sliding if halfway off a step with some momentum.
-                if (thing.MomX > Fixed.One / 4
-                    || thing.MomX < -Fixed.One / 4
-                    || thing.MomY > Fixed.One / 4
-                    || thing.MomY < -Fixed.One / 4)
+                if (thing.MomX > Fixed.One / 4 ||
+                    thing.MomX < -Fixed.One / 4 ||
+                    thing.MomY > Fixed.One / 4 ||
+                    thing.MomY < -Fixed.One / 4)
                 {
                     if (thing.FloorZ != thing.Subsector.Sector.FloorHeight)
                     {
@@ -654,11 +617,11 @@ namespace ManagedDoom
                 }
             }
 
-            if (thing.MomX > -stopSpeed
-                && thing.MomX < stopSpeed
-                && thing.MomY > -stopSpeed
-                && thing.MomY < stopSpeed
-                && (player == null || (player.Cmd.ForwardMove == 0 && player.Cmd.SideMove == 0)))
+            if (thing.MomX > -stopSpeed &&
+                thing.MomX < stopSpeed &&
+                thing.MomY > -stopSpeed &&
+                thing.MomY < stopSpeed &&
+                (player == null || (player.Cmd.ForwardMove == 0 && player.Cmd.SideMove == 0)))
             {
                 // If in a walking frame, stop moving.
                 if (player != null && (player.Mobj.State.Number - (int)MobjState.PlayRun1) < 4)
@@ -677,9 +640,6 @@ namespace ManagedDoom
         }
 
 
-        //
-        // P_ZMovement
-        //
         public void ZMovement(Mobj thing)
         {
             // Check for smooth step up.
@@ -751,7 +711,7 @@ namespace ManagedDoom
 
                 if (thing.MomZ < Fixed.Zero)
                 {
-                    if (thing.Player != null && thing.MomZ < -Gravity * 8)
+                    if (thing.Player != null && thing.MomZ < -gravity * 8)
                     {
                         // Squat down.
                         // Decrease viewheight for a moment
@@ -768,8 +728,6 @@ namespace ManagedDoom
                 // See lost soul bouncing comment above. We need this here for bug
                 // compatibility with original Doom2 v1.9 - if a soul is charging and
                 // hit by a raising floor this incorrectly reverses its Y momentum.
-                //
-
                 if (!correctLostSoulBounce && (thing.Flags & MobjFlags.SkullFly) != 0)
                 {
                     thing.MomZ = -thing.MomZ;
@@ -785,11 +743,11 @@ namespace ManagedDoom
             {
                 if (thing.MomZ == Fixed.Zero)
                 {
-                    thing.MomZ = -Gravity * 2;
+                    thing.MomZ = -gravity * 2;
                 }
                 else
                 {
-                    thing.MomZ -= Gravity;
+                    thing.MomZ -= gravity;
                 }
             }
 
@@ -849,11 +807,6 @@ namespace ManagedDoom
         }
 
 
-        //
-        // P_HitSlideLine
-        // Adjusts the xmove / ymove
-        // so that the next move will slide along the wall.
-        //
         private void HitSlideLine(LineDef line)
         {
             if (line.SlopeType == SlopeType.Horizontal)
@@ -892,9 +845,6 @@ namespace ManagedDoom
         }
 
 
-        //
-        // PTR_SlideTraverse
-        //
         private bool SlideTraverse(Intercept intercept)
         {
             var mc = world.MapCollision;
@@ -957,15 +907,6 @@ namespace ManagedDoom
         }
 
 
-        //
-        // P_SlideMove
-        // The momx / momy move is bad, so try to slide
-        // along a wall.
-        // Find the first line hit, move flush to it,
-        // and slide along it
-        //
-        // This is a kludgy mess.
-        //
         private void SlideMove(Mobj thing)
         {
             var pt = world.PathTraversal;
@@ -1086,12 +1027,6 @@ namespace ManagedDoom
         }
 
 
-
-
-
-
-
-
         //
         // TELEPORT MOVE
         // 
@@ -1103,9 +1038,7 @@ namespace ManagedDoom
             stompThingFunc = StompThing;
         }
 
-        //
-        // PIT_StompThing
-        //
+
         private bool StompThing(Mobj thing)
         {
             if ((thing.Flags & MobjFlags.Shootable) == 0)
@@ -1118,17 +1051,17 @@ namespace ManagedDoom
             var dy = Fixed.Abs(thing.Y - currentY);
             if (dx >= blockDist || dy >= blockDist)
             {
-                // didn't hit it
+                // Didn't hit it.
                 return true;
             }
 
-            // don't clip against self
+            // Don't clip against self.
             if (thing == currentThing)
             {
                 return true;
             }
 
-            // monsters don't stomp things except on boss level
+            // Monsters don't stomp things except on boss level.
             if (currentThing.Player == null && world.Options.Map != 30)
             {
                 return false;
@@ -1139,12 +1072,9 @@ namespace ManagedDoom
             return true;
         }
 
-        //
-        // P_TeleportMove
-        //
         public bool TeleportMove(Mobj thing, Fixed x, Fixed y)
         {
-            // kill anything occupying the position
+            // Kill anything occupying the position.
             currentThing = thing;
             currentFlags = thing.Flags;
 
@@ -1160,18 +1090,16 @@ namespace ManagedDoom
 
             currentCeilingLine = null;
 
-            // The base floor/ceiling is from the subsector
-            // that contains the point.
-            // Any contacted lines the step closer together
-            // will adjust them.
+            // The base floor/ceiling is from the subsector that contains the point.
+            // Any contacted lines the step closer together will adjust them.
             currentFloorZ = currentDropoffZ = ss.Sector.FloorHeight;
             currentCeilingZ = ss.Sector.CeilingHeight;
 
             var validcount = world.GetNewValidCount();
 
-            hitSpecialCount = 0;
+            crossedSpecialCount = 0;
 
-            // stomp on any things contacted
+            // Stomp on any things contacted.
             var bm = world.Map.BlockMap;
             var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConstants.MaxThingRadius);
             var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConstants.MaxThingRadius);
