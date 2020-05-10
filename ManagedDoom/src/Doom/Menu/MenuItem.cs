@@ -5,7 +5,7 @@ namespace ManagedDoom
     public sealed class MenuItem
     {
         // 0 = no cursor here, 1 = ok, 2 = arrows ok
-        public short Status;
+        public int Status;
 
         public string Name;
 
@@ -17,5 +17,13 @@ namespace ManagedDoom
 
         // hotkey in menu
         public char AlphaKey;
+
+        public MenuItem(int status, string name, Action<int> routine, char alphaKey)
+        {
+            Status = status;
+            Name = name;
+            Routine = routine;
+            AlphaKey = alphaKey;
+        }
     }
 }

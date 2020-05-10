@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ManagedDoom
 {
-    public sealed class Menu
+    public sealed class MenuDef
     {
         // # of menu items
         public int NumItems;
 
         // previous menu
-        public Menu PrevMenu;
+        public MenuDef PrevMenu;
 
         // menu items
-        public MenuItem MenuItems;
+        public List<MenuItem> MenuItems = new List<MenuItem>();
 
         // draw routine
         public Action Routine;
