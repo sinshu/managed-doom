@@ -13,9 +13,9 @@ namespace ManagedDoom
 			InitRadiusAttack();
 		}
 
-		//
-		// KillMobj
-		//
+
+
+
 		public void KillMobj(Mobj source, Mobj target)
 		{
 			target.Flags &= ~(MobjFlags.Shootable | MobjFlags.Float | MobjFlags.SkullFly);
@@ -141,8 +141,8 @@ namespace ManagedDoom
 				damage >>= 1;
 			}
 
-			// Some close combat weapons should not inflict thrust and push the victim out of reach,
-			// thus kick away unless using the chainsaw.
+			// Some close combat weapons should not inflict thrust and
+			// push the victim out of reach, thus kick away unless using the chainsaw.
 			var notChainsawAttack =
 				source == null ||
 				source.Player == null ||
@@ -231,7 +231,7 @@ namespace ManagedDoom
 				}
 			}
 
-			// Do the damage	.
+			// Do the damage.
 			target.Health -= damage;
 			if (target.Health <= 0)
 			{
@@ -252,7 +252,8 @@ namespace ManagedDoom
 			target.ReactionTime = 0;
 
 			if ((target.Threshold == 0 || target.Type == MobjType.Vile) &&
-				source != null && source != target &&
+				source != null &&
+				source != target &&
 				source.Type != MobjType.Vile)
 			{
 				// If not intent on another player, chase after this one.
@@ -265,6 +266,7 @@ namespace ManagedDoom
 				}
 			}
 		}
+
 
 		public void ExplodeMissile(Mobj thing)
 		{
@@ -288,16 +290,20 @@ namespace ManagedDoom
 		}
 
 
+
+
 		private Mobj bombSource;
 		private Mobj bombSpot;
 		private int bombDamage;
 
 		private Func<Mobj, bool> radiusAttackFunc;
 
+
 		private void InitRadiusAttack()
 		{
 			radiusAttackFunc = RadiusAttack;
 		}
+
 
 		private bool RadiusAttack(Mobj thing)
 		{
@@ -338,14 +344,18 @@ namespace ManagedDoom
 			return true;
 		}
 
+
 		public void RadiusAttack(Mobj spot, Mobj source, int damage)
 		{
 			var bm = world.Map.BlockMap;
+
 			var dist = Fixed.FromInt(damage + GameConstants.MaxThingRadius.Data);
+
 			var blockY1 = bm.GetBlockY(spot.Y - dist);
 			var blockY2 = bm.GetBlockY(spot.Y + dist);
 			var blockX1 = bm.GetBlockX(spot.X - dist);
 			var blockX2 = bm.GetBlockX(spot.X + dist);
+
 			bombSpot = spot;
 			bombSource = source;
 			bombDamage = damage;

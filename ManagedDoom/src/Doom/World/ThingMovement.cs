@@ -284,10 +284,10 @@ namespace ManagedDoom
                     return true;
                 }
 
-                if (currentThing.Target != null
-                    && (currentThing.Target.Type == thing.Type
-                        || (currentThing.Target.Type == MobjType.Knight && thing.Type == MobjType.Bruiser)
-                        || (currentThing.Target.Type == MobjType.Bruiser && thing.Type == MobjType.Knight)))
+                if (currentThing.Target != null &&
+                        (currentThing.Target.Type == thing.Type ||
+                        (currentThing.Target.Type == MobjType.Knight && thing.Type == MobjType.Bruiser) ||
+                        (currentThing.Target.Type == MobjType.Bruiser && thing.Type == MobjType.Knight)))
                 {
                     // Don't hit same species as originator.
                     if (thing == currentThing.Target)
@@ -370,7 +370,7 @@ namespace ManagedDoom
             // Check things first, possibly picking things up.
             // The bounding box is extended by MaxThingRadius because mobj_ts are grouped into
             // mapblocks based on their origin point, and can overlap into adjacent blocks by up
-            // to MAXRADIUS units.
+            // to MaxThingRadius units.
             {
                 var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConstants.MaxThingRadius);
                 var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConstants.MaxThingRadius);
@@ -412,8 +412,8 @@ namespace ManagedDoom
         }
 
 
-        // Attempt to move to a new position, crossing special lines unless MobjFlags.Teleport is
-        // set.
+        // Attempt to move to a new position, crossing special lines unless
+        // MobjFlags.Teleport is set.
         public bool TryMove(Mobj thing, Fixed x, Fixed y)
         {
             floatOk = false;
@@ -714,8 +714,7 @@ namespace ManagedDoom
                     if (thing.Player != null && thing.MomZ < -gravity * 8)
                     {
                         // Squat down.
-                        // Decrease viewheight for a moment
-                        // after hitting the ground (hard),
+                        // Decrease viewheight for a moment after hitting the ground (hard),
                         // and utter appropriate sound.
                         thing.Player.DeltaViewHeight = new Fixed(thing.MomZ.Data >> 3);
                         world.StartSound(thing, Sfx.OOF);
@@ -784,10 +783,7 @@ namespace ManagedDoom
 
 
 
-        //
-        // SLIDE MOVE
-        // Allows the player to slide along any angled walls.
-        //
+
         private Fixed bestSlideFrac;
         private Fixed secondSlideFrac;
 
@@ -851,7 +847,7 @@ namespace ManagedDoom
 
             if (intercept.Line == null)
             {
-                throw new Exception("PTR_SlideTraverse: not a line?");
+                throw new Exception("ThingMovement.SlideTraverse: Not a line?");
             }
 
             var line = intercept.Line;
@@ -891,8 +887,7 @@ namespace ManagedDoom
             // This line doesn't block movement.
             return true;
 
-        // The line does block movement,
-        // see if it is closer than best so far.
+        // The line does block movement, see if it is closer than best so far.
         isBlocking:
             if (intercept.Frac < bestSlideFrac)
             {
@@ -1027,9 +1022,7 @@ namespace ManagedDoom
         }
 
 
-        //
-        // TELEPORT MOVE
-        // 
+
 
         private Func<Mobj, bool> stompThingFunc;
 
@@ -1117,8 +1110,7 @@ namespace ManagedDoom
                 }
             }
 
-            // the move is ok,
-            // so link the thing into its new position
+            // the move is ok, so link the thing into its new position
             UnsetThingPosition(thing);
 
             thing.FloorZ = currentFloorZ;
