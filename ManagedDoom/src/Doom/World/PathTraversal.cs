@@ -8,13 +8,14 @@ namespace ManagedDoom
 
         private Intercept[] intercepts;
         private int interceptCount;
-        private DivLine tempDiv;
-        private DivLine trace;
-        private bool earlyOut;
-        //private PathTraverseFlags ptflags;
 
-        private Func<LineDef, bool> addLineIntercepts;
-        private Func<Mobj, bool> addThingIntercepts;
+        private bool earlyOut;
+
+        private DivLine target;
+        private DivLine trace;
+
+        private Func<LineDef, bool> lineInterceptFunc;
+        private Func<Mobj, bool> thingInterceptFunc;
 
         public PathTraversal(World world)
         {
@@ -26,76 +27,79 @@ namespace ManagedDoom
                 intercepts[i] = new Intercept();
             }
 
+            target = new DivLine();
             trace = new DivLine();
-            tempDiv = new DivLine();
 
-            addLineIntercepts = PIT_AddLineIntercepts;
-            addThingIntercepts = PIT_AddThingIntercepts;
+            lineInterceptFunc = AddLineIntercepts;
+            thingInterceptFunc = AddThingIntercepts;
         }
 
-        private bool PIT_AddLineIntercepts(LineDef ld)
+
+        private bool AddLineIntercepts(LineDef line)
         {
             int s1;
             int s2;
 
-            // avoid precision problems with two routines
-            if (trace.Dx > Fixed.FromInt(16)
-             || trace.Dy > Fixed.FromInt(16)
-             || trace.Dx < -Fixed.FromInt(16)
-             || trace.Dy < -Fixed.FromInt(16))
+            // Avoid precision problems with two routines.
+            if (trace.Dx > Fixed.FromInt(16) ||
+                trace.Dy > Fixed.FromInt(16) ||
+                trace.Dx < -Fixed.FromInt(16) ||
+                trace.Dy < -Fixed.FromInt(16))
             {
-                s1 = Geometry.PointOnDivLineSide(ld.Vertex1.X, ld.Vertex1.Y, trace);
-                s2 = Geometry.PointOnDivLineSide(ld.Vertex2.X, ld.Vertex2.Y, trace);
+                s1 = Geometry.PointOnDivLineSide(line.Vertex1.X, line.Vertex1.Y, trace);
+                s2 = Geometry.PointOnDivLineSide(line.Vertex2.X, line.Vertex2.Y, trace);
             }
             else
             {
-                s1 = Geometry.PointOnLineSide(trace.X, trace.Y, ld);
-                s2 = Geometry.PointOnLineSide(trace.X + trace.Dx, trace.Y + trace.Dy, ld);
+                s1 = Geometry.PointOnLineSide(trace.X, trace.Y, line);
+                s2 = Geometry.PointOnLineSide(trace.X + trace.Dx, trace.Y + trace.Dy, line);
             }
 
             if (s1 == s2)
             {
-                // line isn't crossed
+                // Line isn't crossed.
                 return true;
             }
 
-            // hit the line
-            tempDiv.MakeFrom(ld);
-            var frac = P_InterceptVector(trace, tempDiv);
+            // Hit the line.
+            target.MakeFrom(line);
+
+            var frac = InterceptVector(trace, target);
 
             if (frac < Fixed.Zero)
             {
-                // behind source
+                // Behind source.
                 return true;
             }
 
-            // try to early out the check
-            if (earlyOut && frac < Fixed.One && ld.BackSector == null)
+            // Try to early out the check.
+            if (earlyOut && frac < Fixed.One && line.BackSector == null)
             {
-                // stop checking
+                // Stop checking.
                 return false;
             }
 
             intercepts[interceptCount].Frac = frac;
-            intercepts[interceptCount].Line = ld;
+            intercepts[interceptCount].Line = line;
             intercepts[interceptCount].Thing = null;
             interceptCount++;
 
-            // continue
+            // Continue.
             return true;
         }
 
-        private bool PIT_AddThingIntercepts(Mobj thing)
+
+        private bool AddThingIntercepts(Mobj thing)
         {
-            var tracepositive = (trace.Dx.Data ^ trace.Dy.Data) > 0;
+            var tracePositive = (trace.Dx.Data ^ trace.Dy.Data) > 0;
 
             Fixed x1;
             Fixed y1;
             Fixed x2;
             Fixed y2;
 
-            // check a corner to corner crossection for hit
-            if (tracepositive)
+            // Check a corner to corner crossection for hit.
+            if (tracePositive)
             {
                 x1 = thing.X - thing.Radius;
                 y1 = thing.Y + thing.Radius;
@@ -117,20 +121,20 @@ namespace ManagedDoom
 
             if (s1 == s2)
             {
-                // line isn't crossed
+                // Line isn't crossed.
                 return true;
             }
 
-            tempDiv.X = x1;
-            tempDiv.Y = y1;
-            tempDiv.Dx = x2 - x1;
-            tempDiv.Dy = y2 - y1;
+            target.X = x1;
+            target.Y = y1;
+            target.Dx = x2 - x1;
+            target.Dy = y2 - y1;
 
-            var frac = P_InterceptVector(trace, tempDiv);
+            var frac = InterceptVector(trace, target);
 
             if (frac < Fixed.Zero)
             {
-                // behind source
+                // Behind source.
                 return true;
             }
 
@@ -139,13 +143,16 @@ namespace ManagedDoom
             intercepts[interceptCount].Thing = thing;
             interceptCount++;
 
-            // keep going
+            // Keep going.
             return true;
         }
 
-        private Fixed P_InterceptVector(DivLine v2, DivLine v1)
+
+        private Fixed InterceptVector(DivLine v2, DivLine v1)
         {
-            var den = new Fixed(v1.Dy.Data >> 8) * v2.Dx - new Fixed(v1.Dx.Data >> 8) * v2.Dy;
+            var den =
+                new Fixed(v1.Dy.Data >> 8) * v2.Dx -
+                new Fixed(v1.Dx.Data >> 8) * v2.Dy;
 
             if (den == Fixed.Zero)
             {
@@ -153,70 +160,71 @@ namespace ManagedDoom
             }
 
             var num =
-            new Fixed((v1.X - v2.X).Data >> 8) * v1.Dy
-            + new Fixed((v2.Y - v1.Y).Data >> 8) * v1.Dx;
+                new Fixed((v1.X - v2.X).Data >> 8) * v1.Dy +
+                new Fixed((v2.Y - v1.Y).Data >> 8) * v1.Dx;
 
             var frac = num / den;
 
             return frac;
         }
 
-        private bool P_TraverseIntercepts(Func<Intercept, bool> func, Fixed maxfrac)
+
+        private bool TraverseIntercepts(Func<Intercept, bool> func, Fixed maxFrac)
         {
             var count = interceptCount;
 
-            Intercept ic = null;
+            Intercept intercept = null;
 
             while (count-- > 0)
             {
                 var dist = Fixed.MaxValue;
-                for (var scan = 0; scan < interceptCount; scan++)
+                for (var i = 0; i < interceptCount; i++)
                 {
-                    if (intercepts[scan].Frac < dist)
+                    if (intercepts[i].Frac < dist)
                     {
-                        dist = intercepts[scan].Frac;
-                        ic = intercepts[scan];
+                        dist = intercepts[i].Frac;
+                        intercept = intercepts[i];
                     }
                 }
 
-                if (dist > maxfrac)
+                if (dist > maxFrac)
                 {
-                    // checked everything in range
+                    // Checked everything in range.
                     return true;
                 }
 
-                if (!func(ic))
+                if (!func(intercept))
                 {
-                    // don't bother going farther
+                    // Don't bother going farther.
                     return false;
                 }
 
-                ic.Frac = Fixed.MaxValue;
+                intercept.Frac = Fixed.MaxValue;
             }
 
-            // everything was traversed
+            // Everything was traversed.
             return true;
         }
 
         public bool PathTraverse(Fixed x1, Fixed y1, Fixed x2, Fixed y2, PathTraverseFlags flags, Func<Intercept, bool> trav)
         {
-            var bm = world.Map.BlockMap;
-
             earlyOut = (flags & PathTraverseFlags.EarlyOut) != 0;
 
             var validCount = world.GetNewValidCount();
+
+            var bm = world.Map.BlockMap;
 
             interceptCount = 0;
 
             if (((x1 - bm.OriginX).Data & (BlockMap.MapBlockSize.Data - 1)) == 0)
             {
-                // don't side exactly on a line
+                // Don't side exactly on a line.
                 x1 += Fixed.One;
             }
 
             if (((y1 - bm.OriginY).Data & (BlockMap.MapBlockSize.Data - 1)) == 0)
             {
-                // don't side exactly on a line
+                // Don't side exactly on a line.
                 y1 += Fixed.One;
             }
 
@@ -228,112 +236,111 @@ namespace ManagedDoom
             x1 -= bm.OriginX;
             y1 -= bm.OriginY;
 
-            var xt1 = x1.Data >> BlockMap.MapBlockShift;
-            var yt1 = y1.Data >> BlockMap.MapBlockShift;
+            var blockX1 = x1.Data >> BlockMap.MapBlockShift;
+            var blockY1 = y1.Data >> BlockMap.MapBlockShift;
 
             x2 -= bm.OriginX;
             y2 -= bm.OriginY;
 
-            var xt2 = x2.Data >> BlockMap.MapBlockShift;
-            var yt2 = y2.Data >> BlockMap.MapBlockShift;
+            var blockX2 = x2.Data >> BlockMap.MapBlockShift;
+            var blockY2 = y2.Data >> BlockMap.MapBlockShift;
 
-            Fixed xstep;
-            Fixed ystep;
+            Fixed stepX;
+            Fixed stepY;
 
             Fixed partial;
 
-            int mapxstep;
-            int mapystep;
+            int blockStepX;
+            int blockStepY;
 
-            if (xt2 > xt1)
+            if (blockX2 > blockX1)
             {
-                mapxstep = 1;
+                blockStepX = 1;
                 partial = new Fixed(Fixed.FracUnit - ((x1.Data >> BlockMap.MapBToFrac) & (Fixed.FracUnit - 1)));
-                ystep = (y2 - y1) / Fixed.Abs(x2 - x1);
+                stepY = (y2 - y1) / Fixed.Abs(x2 - x1);
             }
-            else if (xt2 < xt1)
+            else if (blockX2 < blockX1)
             {
-                mapxstep = -1;
+                blockStepX = -1;
                 partial = new Fixed((x1.Data >> BlockMap.MapBToFrac) & (Fixed.FracUnit - 1));
-                ystep = (y2 - y1) / Fixed.Abs(x2 - x1);
+                stepY = (y2 - y1) / Fixed.Abs(x2 - x1);
             }
             else
             {
-                mapxstep = 0;
+                blockStepX = 0;
                 partial = Fixed.One;
-                ystep = Fixed.FromInt(256);
+                stepY = Fixed.FromInt(256);
             }
 
-            var yintercept = new Fixed(y1.Data >> BlockMap.MapBToFrac) + (partial * ystep);
+            var interceptY = new Fixed(y1.Data >> BlockMap.MapBToFrac) + (partial * stepY);
 
 
-            if (yt2 > yt1)
+            if (blockY2 > blockY1)
             {
-                mapystep = 1;
+                blockStepY = 1;
                 partial = new Fixed(Fixed.FracUnit - ((y1.Data >> BlockMap.MapBToFrac) & (Fixed.FracUnit - 1)));
-                xstep = (x2 - x1) / Fixed.Abs(y2 - y1);
+                stepX = (x2 - x1) / Fixed.Abs(y2 - y1);
             }
-            else if (yt2 < yt1)
+            else if (blockY2 < blockY1)
             {
-                mapystep = -1;
+                blockStepY = -1;
                 partial = new Fixed((y1.Data >> BlockMap.MapBToFrac) & (Fixed.FracUnit - 1));
-                xstep = (x2 - x1) / Fixed.Abs(y2 - y1);
+                stepX = (x2 - x1) / Fixed.Abs(y2 - y1);
             }
             else
             {
-                mapystep = 0;
+                blockStepY = 0;
                 partial = Fixed.One;
-                xstep = Fixed.FromInt(256);
+                stepX = Fixed.FromInt(256);
             }
 
-            var xintercept = new Fixed(x1.Data >> BlockMap.MapBToFrac) + (partial * xstep);
+            var interceptX = new Fixed(x1.Data >> BlockMap.MapBToFrac) + (partial * stepX);
 
             // Step through map blocks.
-            // Count is present to prevent a round off error
-            // from skipping the break.
-            var mapx = xt1;
-            var mapy = yt1;
+            // Count is present to prevent a round off error from skipping the break.
+            var bx = blockX1;
+            var by = blockY1;
 
             for (var count = 0; count < 64; count++)
             {
                 if ((flags & PathTraverseFlags.AddLines) != 0)
                 {
-                    if (!bm.IterateLines(mapx, mapy, addLineIntercepts, validCount))
+                    if (!bm.IterateLines(bx, by, lineInterceptFunc, validCount))
                     {
-                        // early out
+                        // Early out.
                         return false;
                     }
                 }
 
                 if ((flags & PathTraverseFlags.AddThings) != 0)
                 {
-                    if (!bm.IterateThings(mapx, mapy, addThingIntercepts))
+                    if (!bm.IterateThings(bx, by, thingInterceptFunc))
                     {
-                        // early out
+                        // Early out.
                         return false;
                     }
                 }
 
-                if (mapx == xt2 && mapy == yt2)
+                if (bx == blockX2 && by == blockY2)
                 {
                     break;
                 }
 
-                if ((yintercept.Data >> Fixed.FracBits) == mapy)
+                if ((interceptY.ToIntFloor()) == by)
                 {
-                    yintercept += ystep;
-                    mapx += mapxstep;
+                    interceptY += stepY;
+                    bx += blockStepX;
                 }
-                else if ((xintercept.Data >> Fixed.FracBits) == mapx)
+                else if ((interceptX.ToIntFloor()) == bx)
                 {
-                    xintercept += xstep;
-                    mapy += mapystep;
+                    interceptX += stepX;
+                    by += blockStepY;
                 }
 
             }
 
-            // go through the sorted list
-            return P_TraverseIntercepts(trav, Fixed.One);
+            // Go through the sorted list.
+            return TraverseIntercepts(trav, Fixed.One);
         }
 
 
