@@ -318,8 +318,8 @@ namespace ManagedDoom
             currentAimSlope = slope;
             currentDamage = damage;
 
-            var targetX = shooter.X + (range.Data >> Fixed.FracBits) * Trig.Cos(angle);
-            var targetY = shooter.Y + (range.Data >> Fixed.FracBits) * Trig.Sin(angle);          
+            var targetX = shooter.X + range.ToIntFloor() * Trig.Cos(angle);
+            var targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);          
 
             world.PathTraversal.PathTraverse(
                 shooter.X, shooter.Y,
