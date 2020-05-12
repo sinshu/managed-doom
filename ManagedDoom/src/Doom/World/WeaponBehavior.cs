@@ -6,6 +6,8 @@ namespace ManagedDoom
     {
         private World world;
 
+        private Fixed bulletslope;
+
         public WeaponBehavior(World world)
         {
             this.world = world;
@@ -332,14 +334,14 @@ namespace ManagedDoom
             hs.LineAttack(player.Mobj, angle, World.MELEERANGE, slope, damage);
 
             // turn to face target
-            if (hs.linetarget != null)
+            if (hs.LineTarget != null)
             {
                 world.StartSound(player.Mobj, Sfx.PUNCH);
                 player.Mobj.Angle = Geometry.PointToAngle(
                     player.Mobj.X,
                     player.Mobj.Y,
-                    hs.linetarget.X,
-                    hs.linetarget.Y);
+                    hs.LineTarget.X,
+                    hs.LineTarget.Y);
             }
         }
 
@@ -355,7 +357,7 @@ namespace ManagedDoom
             var slope = hs.AimLineAttack(player.Mobj, angle, World.MELEERANGE + new Fixed(1));
             hs.LineAttack(player.Mobj, angle, World.MELEERANGE + new Fixed(1), slope, damage);
 
-            if (hs.linetarget == null)
+            if (hs.LineTarget == null)
             {
                 world.StartSound(player.Mobj, Sfx.SAWFUL);
                 return;
@@ -365,7 +367,7 @@ namespace ManagedDoom
             // turn to face target
             angle = Geometry.PointToAngle(
                 player.Mobj.X, player.Mobj.Y,
-                hs.linetarget.X, hs.linetarget.Y);
+                hs.LineTarget.X, hs.LineTarget.Y);
             if (angle - player.Mobj.Angle > Angle.Ang180)
             {
                 // The cast to int is necessary to prevent demo desync. Why?
@@ -416,16 +418,16 @@ namespace ManagedDoom
 
             // see which target is to be aimed at
             var an = mo.Angle;
-            hs.bulletslope = hs.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
+            bulletslope = hs.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
 
-            if (hs.linetarget == null)
+            if (hs.LineTarget == null)
             {
                 an += new Angle(1 << 26);
-                hs.bulletslope = hs.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
-                if (hs.linetarget == null)
+                bulletslope = hs.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
+                if (hs.LineTarget == null)
                 {
                     an -= new Angle(2 << 26);
-                    hs.bulletslope = hs.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
+                    bulletslope = hs.AimLineAttack(mo, an, new Fixed(16 * 64 * Fixed.FracUnit));
                 }
             }
         }
@@ -445,7 +447,7 @@ namespace ManagedDoom
                 angle += new Angle((world.Random.Next() - world.Random.Next()) << 18);
             }
 
-            hs.LineAttack(mo, angle, World.MISSILERANGE, hs.bulletslope, damage);
+            hs.LineAttack(mo, angle, World.MISSILERANGE, bulletslope, damage);
         }
 
 
@@ -547,7 +549,7 @@ namespace ManagedDoom
                     player.Mobj,
                     angle,
                     World.MISSILERANGE,
-                    hs.bulletslope + new Fixed((world.Random.Next() - world.Random.Next()) << 5),
+                    bulletslope + new Fixed((world.Random.Next() - world.Random.Next()) << 5),
                     damage);
             }
         }
@@ -656,15 +658,15 @@ namespace ManagedDoom
                 //  of the missile
                 hs.AimLineAttack(mo.Target, an, Fixed.FromInt(16 * 64));
 
-                if (hs.linetarget == null)
+                if (hs.LineTarget == null)
                 {
                     continue;
                 }
 
                 world.ThingAllocation.SpawnMobj(
-                    hs.linetarget.X,
-                    hs.linetarget.Y,
-                    hs.linetarget.Z + new Fixed(hs.linetarget.Height.Data >> 2),
+                    hs.LineTarget.X,
+                    hs.LineTarget.Y,
+                    hs.LineTarget.Z + new Fixed(hs.LineTarget.Height.Data >> 2),
                     MobjType.Extrabfg);
 
                 var damage = 0;
@@ -674,7 +676,7 @@ namespace ManagedDoom
                 }
 
                 world.ThingInteraction.DamageMobj(
-                    hs.linetarget, mo.Target, mo.Target, damage);
+                    hs.LineTarget, mo.Target, mo.Target, damage);
             }
         }
     }

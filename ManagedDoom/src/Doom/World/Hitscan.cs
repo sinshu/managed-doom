@@ -10,215 +10,202 @@ namespace ManagedDoom
         {
             this.world = world;
 
-
+            aimTraverseFunc = AimTraverse;
+            shootTraverseFunc = ShootTraverse;
         }
 
-        //
-        // P_LineAttack
-        //
-
-        // who got hit (or NULL)
-        public Mobj linetarget;
-
-        private Mobj shootthing;
-
-        // Height if not aiming up or down
-        // ???: use slope for monsters?
-        private Fixed shootz;
-
-        private int la_damage;
-        private Fixed attackrange;
-
-        private Fixed aimslope;
-
-        // slopes to top and bottom of target
-        private Fixed topslope;
-        private Fixed bottomslope;
+        private Func<Intercept, bool> aimTraverseFunc;
+        private Func<Intercept, bool> shootTraverseFunc;
 
 
+        // Who got hit (or null).
+        private Mobj lineTarget;
+
+        private Mobj currentShooter;
+        private Fixed currentShooterZ;
+
+        private Fixed currentRange;
+        private Fixed currentAimSlope;
+        private int currentDamage;
+
+        // Slopes to top and bottom of target.
+        private Fixed topSlope;
+        private Fixed bottomSlope;
 
 
-        //
-        // PTR_AimTraverse
-        // Sets linetaget and aimslope when a target is aimed at.
-        //
-        private bool PTR_AimTraverse(Intercept ic)
+        private bool AimTraverse(Intercept intercept)
         {
-            var mc = world.MapCollision;
-
-            if (ic.Line != null)
+            if (intercept.Line != null)
             {
-                var li = ic.Line;
+                var line = intercept.Line;
 
-                if ((li.Flags & LineFlags.TwoSided) == 0)
+                if ((line.Flags & LineFlags.TwoSided) == 0)
                 {
-                    // stop
+                    // Stop.
                     return false;
                 }
 
+                var mc = world.MapCollision;
+
                 // Crosses a two sided line.
-                // A two sided line will restrict
-                // the possible target ranges.
-                mc.LineOpening(li);
+                // A two sided line will restrict the possible target ranges.
+                mc.LineOpening(line);
 
                 if (mc.OpenBottom >= mc.OpenTop)
                 {
-                    // stop
+                    // Stop.
                     return false;
                 }
 
-                var dist = attackrange * ic.Frac;
+                var dist = currentRange * intercept.Frac;
 
-                if (li.FrontSector.FloorHeight != li.BackSector.FloorHeight)
+                if (line.FrontSector.FloorHeight != line.BackSector.FloorHeight)
                 {
-                    var slope = (mc.OpenBottom - shootz) / dist;
-                    if (slope > bottomslope)
+                    var slope = (mc.OpenBottom - currentShooterZ) / dist;
+                    if (slope > bottomSlope)
                     {
-                        bottomslope = slope;
+                        bottomSlope = slope;
                     }
                 }
 
-                if (li.FrontSector.CeilingHeight != li.BackSector.CeilingHeight)
+                if (line.FrontSector.CeilingHeight != line.BackSector.CeilingHeight)
                 {
-                    var slope = (mc.OpenTop - shootz) / dist;
-                    if (slope < topslope)
+                    var slope = (mc.OpenTop - currentShooterZ) / dist;
+                    if (slope < topSlope)
                     {
-                        topslope = slope;
+                        topSlope = slope;
                     }
                 }
 
-                if (topslope <= bottomslope)
+                if (topSlope <= bottomSlope)
                 {
-                    // stop
+                    // Stop.
                     return false;
                 }
 
-                // shot continues
+                // Shot continues.
                 return true;
             }
 
-            // shoot a thing
-            var th = ic.Thing;
-            if (th == shootthing)
+            // Shoot a thing.
+            var thing = intercept.Thing;
+            if (thing == currentShooter)
             {
-                // can't shoot self
+                // Can't shoot self.
                 return true;
             }
 
             {
-                if ((th.Flags & MobjFlags.Shootable) == 0)
+                if ((thing.Flags & MobjFlags.Shootable) == 0)
                 {
-                    // corpse or something
+                    // Corpse or something.
                     return true;
                 }
 
-                // check angles to see if the thing can be aimed at
-                var dist = attackrange * ic.Frac;
-                var thingtopslope = (th.Z + th.Height - shootz) / dist;
+                // Check angles to see if the thing can be aimed at.
+                var dist = currentRange * intercept.Frac;
+                var thingTopSlope = (thing.Z + thing.Height - currentShooterZ) / dist;
 
-                if (thingtopslope < bottomslope)
+                if (thingTopSlope < bottomSlope)
                 {
-                    // shot over the thing
+                    // Shot over the thing.
                     return true;
                 }
 
-                var thingbottomslope = (th.Z - shootz) / dist;
+                var thingBottomSlope = (thing.Z - currentShooterZ) / dist;
 
-                if (thingbottomslope > topslope)
+                if (thingBottomSlope > topSlope)
                 {
-                    // shot under the thing
+                    // Shot under the thing.
                     return true;
                 }
 
-                // this thing can be hit!
-                if (thingtopslope > topslope)
+                // This thing can be hit!
+                if (thingTopSlope > topSlope)
                 {
-                    thingtopslope = topslope;
+                    thingTopSlope = topSlope;
                 }
 
-                if (thingbottomslope < bottomslope)
+                if (thingBottomSlope < bottomSlope)
                 {
-                    thingbottomslope = bottomslope;
+                    thingBottomSlope = bottomSlope;
                 }
 
-                aimslope = (thingtopslope + thingbottomslope) / 2;
-                linetarget = th;
+                currentAimSlope = (thingTopSlope + thingBottomSlope) / 2;
+                lineTarget = thing;
 
-                // don't go any farther
+                // Don't go any farther.
                 return false;
             }
         }
 
 
-
-
-        //
-        // PTR_ShootTraverse
-        //
-        private bool PTR_ShootTraverse(Intercept ic)
+        private bool ShootTraverse(Intercept intercept)
         {
-            var pt = world.PathTraversal;
-            var mc = world.MapCollision;
             var mi = world.MapInteraction;
+            var pt = world.PathTraversal;
 
-            if (ic.Line != null)
+            if (intercept.Line != null)
             {
-                var li = ic.Line;
+                var line = intercept.Line;
 
-                if (li.Special != 0)
+                if (line.Special != 0)
                 {
-                    mi.ShootSpecialLine(shootthing, li);
+                    mi.ShootSpecialLine(currentShooter, line);
                 }
 
-                if ((li.Flags & LineFlags.TwoSided) == 0)
+                if ((line.Flags & LineFlags.TwoSided) == 0)
                 {
-                    goto hitline;
+                    goto hitLine;
                 }
 
-                // crosses a two sided line
-                mc.LineOpening(li);
+                var mc = world.MapCollision;
 
-                var dist = attackrange * ic.Frac;
+                // Crosses a two sided line.
+                mc.LineOpening(line);
 
-                if (li.FrontSector.FloorHeight != li.BackSector.FloorHeight)
+                var dist = currentRange * intercept.Frac;
+
+                if (line.FrontSector.FloorHeight != line.BackSector.FloorHeight)
                 {
-                    var slope = (mc.OpenBottom - shootz) / dist;
-                    if (slope > aimslope)
+                    var slope = (mc.OpenBottom - currentShooterZ) / dist;
+                    if (slope > currentAimSlope)
                     {
-                        goto hitline;
+                        goto hitLine;
                     }
                 }
 
-                if (li.FrontSector.CeilingHeight != li.BackSector.CeilingHeight)
+                if (line.FrontSector.CeilingHeight != line.BackSector.CeilingHeight)
                 {
-                    var slope = (mc.OpenTop - shootz) / dist;
-                    if (slope < aimslope)
+                    var slope = (mc.OpenTop - currentShooterZ) / dist;
+                    if (slope < currentAimSlope)
                     {
-                        goto hitline;
+                        goto hitLine;
                     }
                 }
 
-                // shot continues
+                // Shot continues.
                 return true;
 
-            // hit line
-            hitline:
-                // position a bit closer
-                var frac = ic.Frac - Fixed.FromInt(4) / attackrange;
+            // Hit line.
+            hitLine:
+
+                // Position a bit closer.
+                var frac = intercept.Frac - Fixed.FromInt(4) / currentRange;
                 var x = pt.Trace.X + pt.Trace.Dx * frac;
                 var y = pt.Trace.Y + pt.Trace.Dy * frac;
-                var z = shootz + aimslope * (frac * attackrange);
+                var z = currentShooterZ + currentAimSlope * (frac * currentRange);
 
-                if (li.FrontSector.CeilingFlat == world.Map.SkyFlatNumber)
+                if (line.FrontSector.CeilingFlat == world.Map.SkyFlatNumber)
                 {
-                    // don't shoot the sky!
-                    if (z > li.FrontSector.CeilingHeight)
+                    // Don't shoot the sky!
+                    if (z > line.FrontSector.CeilingHeight)
                     {
                         return false;
                     }
 
-                    // it's a sky hack wall
-                    if (li.BackSector != null && li.BackSector.CeilingFlat == world.Map.SkyFlatNumber)
+                    // It's a sky hack wall.
+                    if (line.BackSector != null && line.BackSector.CeilingFlat == world.Map.SkyFlatNumber)
                     {
                         return false;
                     }
@@ -227,190 +214,172 @@ namespace ManagedDoom
                 // Spawn bullet puffs.
                 SpawnPuff(x, y, z);
 
-                // don't go any farther
+                // Don't go any farther.
                 return false;
             }
 
-            // shoot a thing
-            var th = ic.Thing;
-            if (th == shootthing)
             {
-                // can't shoot self
-                return true;
-            }
-
-            {
-                if ((th.Flags & MobjFlags.Shootable) == 0)
+                // Shoot a thing.
+                var thing = intercept.Thing;
+                if (thing == currentShooter)
                 {
-                    // corpse or something
+                    // Can't shoot self.
                     return true;
                 }
 
-                // check angles to see if the thing can be aimed at
-                var dist = attackrange * ic.Frac;
-                var thingtopslope = (th.Z + th.Height - shootz) / dist;
-
-                if (thingtopslope < aimslope)
+                if ((thing.Flags & MobjFlags.Shootable) == 0)
                 {
-                    // shot over the thing
+                    // Corpse or something.
                     return true;
                 }
 
-                var thingbottomslope = (th.Z - shootz) / dist;
+                // Check angles to see if the thing can be aimed at.
+                var dist = currentRange * intercept.Frac;
+                var thingTopSlope = (thing.Z + thing.Height - currentShooterZ) / dist;
 
-                if (thingbottomslope > aimslope)
+                if (thingTopSlope < currentAimSlope)
                 {
-                    // shot under the thing
+                    // Shot over the thing.
                     return true;
                 }
 
-                // hit thing
-                // position a bit closer
-                var frac = ic.Frac - Fixed.FromInt(10) / attackrange;
+                var thingBottomSlope = (thing.Z - currentShooterZ) / dist;
+
+                if (thingBottomSlope > currentAimSlope)
+                {
+                    // Shot under the thing.
+                    return true;
+                }
+
+                // Hit thing.
+                // Position a bit closer.
+                var frac = intercept.Frac - Fixed.FromInt(10) / currentRange;
 
                 var x = pt.Trace.X + pt.Trace.Dx * frac;
                 var y = pt.Trace.Y + pt.Trace.Dy * frac;
-                var z = shootz + aimslope * (frac * attackrange);
+                var z = currentShooterZ + currentAimSlope * (frac * currentRange);
 
-                // Spawn bullet puffs or blod spots,
-                // depending on target type.
-                if ((ic.Thing.Flags & MobjFlags.NoBlood) != 0)
+                // Spawn bullet puffs or blod spots, depending on target type.
+                if ((intercept.Thing.Flags & MobjFlags.NoBlood) != 0)
                 {
                     SpawnPuff(x, y, z);
                 }
                 else
                 {
-                    SpawnBlood(x, y, z, la_damage);
+                    SpawnBlood(x, y, z, currentDamage);
                 }
 
-                if (la_damage != 0)
+                if (currentDamage != 0)
                 {
-                    world.ThingInteraction.DamageMobj(th, shootthing, shootthing, la_damage);
+                    world.ThingInteraction.DamageMobj(thing, currentShooter, currentShooter, currentDamage);
                 }
 
-                // don't go any farther
+                // Don't go any farther.
                 return false;
             }
         }
 
 
-        //
-        // P_AimLineAttack
-        //
-        public Fixed AimLineAttack(Mobj t1, Angle angle, Fixed distance)
+        public Fixed AimLineAttack(Mobj shooter, Angle angle, Fixed range)
         {
-            var pt = world.PathTraversal;
+            currentShooter = shooter;
+            currentShooterZ = shooter.Z + new Fixed((shooter.Height.Data >> 1) + 8 * Fixed.FracUnit);
+            currentRange = range;
 
-            //angle >>= ANGLETOFINESHIFT;
-            shootthing = t1;
+            var targetX = shooter.X + range.ToIntFloor() * Trig.Cos(angle);
+            var targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);        
 
-            var x2 = t1.X + (distance.Data >> Fixed.FracBits) * Trig.Cos(angle); // finecosine[angle];
-            var y2 = t1.Y + (distance.Data >> Fixed.FracBits) * Trig.Sin(angle); // finesine[angle];
-            shootz = t1.Z + new Fixed((t1.Height.Data >> 1) + 8 * Fixed.FracUnit);
+            // Can't shoot outside view angles.
+            topSlope = new Fixed(100 * Fixed.FracUnit / 160);
+            bottomSlope = new Fixed(-100 * Fixed.FracUnit / 160);
 
-            // can't shoot outside view angles
-            topslope = new Fixed(100 * Fixed.FracUnit / 160);
-            bottomslope = new Fixed(-100 * Fixed.FracUnit / 160);
+            lineTarget = null;
 
-            attackrange = distance;
-            linetarget = null;
-
-            pt.PathTraverse(t1.X, t1.Y,
-                x2, y2,
+            world.PathTraversal.PathTraverse(
+                shooter.X, shooter.Y,
+                targetX, targetY,
                 PathTraverseFlags.AddLines | PathTraverseFlags.AddThings,
-                ic => PTR_AimTraverse(ic));
+                aimTraverseFunc);
 
-            if (linetarget != null)
+            if (lineTarget != null)
             {
-                return aimslope;
+                return currentAimSlope;
             }
 
             return Fixed.Zero;
         }
 
 
-        //
-        // P_LineAttack
-        // If damage == 0, it is just a test trace
-        // that will leave linetarget set.
-        //
-        public void LineAttack(
-            Mobj t1,
-            Angle angle,
-            Fixed distance,
-            Fixed slope,
-            int damage)
+        public void LineAttack(Mobj shooter, Angle angle, Fixed range, Fixed slope, int damage)
         {
-            var pt = world.PathTraversal;
+            currentShooter = shooter;
+            currentShooterZ = shooter.Z + new Fixed((shooter.Height.Data >> 1) + 8 * Fixed.FracUnit);
+            currentRange = range;
+            currentAimSlope = slope;
+            currentDamage = damage;
 
-            //angle >>= ANGLETOFINESHIFT;
-            shootthing = t1;
-            la_damage = damage;
-            var x2 = t1.X + (distance.Data >> Fixed.FracBits) * Trig.Cos(angle); // finecosine[angle];
-            var y2 = t1.Y + (distance.Data >> Fixed.FracBits) * Trig.Sin(angle); // finesine[angle];
-            shootz = t1.Z + new Fixed((t1.Height.Data >> 1) + 8 * Fixed.FracUnit);
-            attackrange = distance;
-            aimslope = slope;
+            var targetX = shooter.X + (range.Data >> Fixed.FracBits) * Trig.Cos(angle);
+            var targetY = shooter.Y + (range.Data >> Fixed.FracBits) * Trig.Sin(angle);          
 
-            pt.PathTraverse(t1.X, t1.Y,
-                x2, y2,
+            world.PathTraversal.PathTraverse(
+                shooter.X, shooter.Y,
+                targetX, targetY,
                 PathTraverseFlags.AddLines | PathTraverseFlags.AddThings,
-                ic => PTR_ShootTraverse(ic));
+                shootTraverseFunc);
         }
-
 
 
         public void SpawnPuff(Fixed x, Fixed y, Fixed z)
         {
-            z += new Fixed((world.Random.Next() - world.Random.Next()) << 10);
+            var random = world.Random;
 
-            var th = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Puff);
-            th.MomZ = Fixed.One;
-            th.Tics -= world.Random.Next() & 3;
+            z += new Fixed((random.Next() - random.Next()) << 10);
 
-            if (th.Tics < 1)
+            var thing = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Puff);
+            thing.MomZ = Fixed.One;
+            thing.Tics -= random.Next() & 3;
+
+            if (thing.Tics < 1)
             {
-                th.Tics = 1;
+                thing.Tics = 1;
             }
 
-            // don't make punches spark on the wall
-            if (attackrange == World.MELEERANGE)
+            // Don't make punches spark on the wall.
+            if (currentRange == World.MELEERANGE)
             {
-                th.SetState(MobjState.Puff3);
+                thing.SetState(MobjState.Puff3);
             }
         }
 
 
-
-        //
-        // P_SpawnBlood
-        // 
         public void SpawnBlood(Fixed x, Fixed y, Fixed z, int damage)
         {
-            z += new Fixed((world.Random.Next() - world.Random.Next()) << 10);
-            var th = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Blood);
-            th.MomZ = Fixed.FromInt(2);
-            th.Tics -= world.Random.Next() & 3;
+            var random = world.Random;
 
-            if (th.Tics < 1)
+            z += new Fixed((random.Next() - random.Next()) << 10);
+
+            var thing = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Blood);
+            thing.MomZ = Fixed.FromInt(2);
+            thing.Tics -= random.Next() & 3;
+
+            if (thing.Tics < 1)
             {
-                th.Tics = 1;
+                thing.Tics = 1;
             }
 
             if (damage <= 12 && damage >= 9)
             {
-                th.SetState(MobjState.Blood2);
+                thing.SetState(MobjState.Blood2);
             }
             else if (damage < 9)
             {
-                th.SetState(MobjState.Blood3);
+                thing.SetState(MobjState.Blood3);
             }
         }
 
 
-        public Fixed bulletslope;
-
-        public Fixed BottomSlope => bottomslope;
-        public Fixed TopSlope => topslope;
+        public Mobj LineTarget => lineTarget;
+        public Fixed BottomSlope => bottomSlope;
+        public Fixed TopSlope => topSlope;
     }
 }

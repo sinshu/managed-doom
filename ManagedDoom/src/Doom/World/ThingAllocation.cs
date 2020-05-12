@@ -410,18 +410,18 @@ namespace ManagedDoom
             var angle = source.Angle;
             var slope = hs.AimLineAttack(source, angle, Fixed.FromInt(16 * 64));
 
-            if (hs.linetarget == null)
+            if (hs.LineTarget == null)
             {
                 angle += new Angle(1 << 26);
                 slope = hs.AimLineAttack(source, angle, Fixed.FromInt(16 * 64));
 
-                if (hs.linetarget == null)
+                if (hs.LineTarget == null)
                 {
                     angle -= new Angle(2 << 26);
                     slope = hs.AimLineAttack(source, angle, Fixed.FromInt(16 * 64));
                 }
 
-                if (hs.linetarget == null)
+                if (hs.LineTarget == null)
                 {
                     angle = source.Angle;
                     slope = Fixed.Zero;
