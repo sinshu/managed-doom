@@ -286,6 +286,26 @@ namespace ManagedDoomTest.UnitTests
         }
 
         [TestMethod]
+        public void Bitshift()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 100; i++)
+            {
+                var a = random.Next(666666) - 333333;
+                var b = random.Next(16);
+                var c = a << b;
+                var d = a >> b;
+
+                var fa = new Fixed(a);
+                var fc = fa << b;
+                var fd = fa >> b;
+
+                Assert.AreEqual(c, fc.Data);
+                Assert.AreEqual(d, fd.Data);
+            }
+        }
+
+        [TestMethod]
         public void Comparison()
         {
             var random = new Random(666);

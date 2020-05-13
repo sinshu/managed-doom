@@ -132,6 +132,18 @@ namespace ManagedDoom
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Fixed operator <<(Fixed a, int b)
+        {
+            return new Fixed(a.data << b);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Fixed operator >>(Fixed a, int b)
+        {
+            return new Fixed(a.data >> b);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Fixed a, Fixed b)
         {
             return a.data == b.data;
