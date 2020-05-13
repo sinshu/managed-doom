@@ -283,15 +283,15 @@ namespace ManagedDoom
         public Fixed AimLineAttack(Mobj shooter, Angle angle, Fixed range)
         {
             currentShooter = shooter;
-            currentShooterZ = shooter.Z + new Fixed((shooter.Height.Data >> 1) + 8 * Fixed.FracUnit);
+            currentShooterZ = shooter.Z + (shooter.Height >> 1) + Fixed.FromInt(8);
             currentRange = range;
 
             var targetX = shooter.X + range.ToIntFloor() * Trig.Cos(angle);
             var targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);        
 
             // Can't shoot outside view angles.
-            topSlope = new Fixed(100 * Fixed.FracUnit / 160);
-            bottomSlope = new Fixed(-100 * Fixed.FracUnit / 160);
+            topSlope = Fixed.FromInt(100) / 160;
+            bottomSlope = Fixed.FromInt(-100) / 160;
 
             lineTarget = null;
 
@@ -313,7 +313,7 @@ namespace ManagedDoom
         public void LineAttack(Mobj shooter, Angle angle, Fixed range, Fixed slope, int damage)
         {
             currentShooter = shooter;
-            currentShooterZ = shooter.Z + new Fixed((shooter.Height.Data >> 1) + 8 * Fixed.FracUnit);
+            currentShooterZ = shooter.Z + (shooter.Height >> 1) + Fixed.FromInt(8);
             currentRange = range;
             currentAimSlope = slope;
             currentDamage = damage;
