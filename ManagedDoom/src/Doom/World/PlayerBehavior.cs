@@ -11,10 +11,7 @@ namespace ManagedDoom
             this.world = world;
         }
 
-        //
-        // P_Thrust
-        // Moves the given origin along a given angle.
-        //
+
         public void Thrust(Player player, Angle angle, Fixed move)
         {
             player.Mobj.MomX += move * Trig.Cos(angle);
@@ -23,34 +20,30 @@ namespace ManagedDoom
 
 
 
-        private static readonly Fixed MAXBOB = new Fixed(0x100000);
+        private static readonly Fixed maxBob = new Fixed(0x100000);
 
-        private bool onground;
+        private bool onGround;
 
-        //
-        // P_CalcHeight
-        // Calculate the walking / running height adjustment
-        //
+
         public void CalcHeight(Player player)
         {
-            // Regular movement bobbing
-            // (needs to be calculated for gun swing
-            // even if not on ground)
-            // OPTIMIZE: tablify angle
-            // Note: a LUT allows for effects
-            //  like a ramp with low health.
-            player.Bob =
-                player.Mobj.MomX * player.Mobj.MomX
-                + player.Mobj.MomY * player.Mobj.MomY;
+            // Regular movement bobbing.
+            // It needs to be calculated for gun swing even if not on ground.
+            //
+            // OPTIMIZE:
+            //     Tablify angle.
+            //
+            // Note:
+            //     A LUT allows for effects like a ramp with low health.
 
-            player.Bob = new Fixed(player.Bob.Data >> 2);
-
-            if (player.Bob > MAXBOB)
+            player.Bob = player.Mobj.MomX * player.Mobj.MomX + player.Mobj.MomY * player.Mobj.MomY;
+            player.Bob >>= 2;
+            if (player.Bob > maxBob)
             {
-                player.Bob = MAXBOB;
+                player.Bob = maxBob;
             }
 
-            if ((player.Cheats & CheatFlags.NoMomentum) != 0 || !onground)
+            if ((player.Cheats & CheatFlags.NoMomentum) != 0 || !onGround)
             {
                 player.ViewZ = player.Mobj.Z + Player.VIEWHEIGHT;
 
@@ -65,9 +58,10 @@ namespace ManagedDoom
             }
 
             var angle = (Trig.FineAngleCount / 20 * world.levelTime) & Trig.FineMask;
+
             var bob = (player.Bob / 2) * Trig.Sin(angle);
 
-            // move viewheight
+            // Move viewheight.
             if (player.PlayerState == PlayerState.Live)
             {
                 player.ViewHeight += player.DeltaViewHeight;
@@ -108,47 +102,37 @@ namespace ManagedDoom
         }
 
 
-        //
-        // P_MovePlayer
-        //
         public void MovePlayer(Player player)
         {
             var cmd = player.Cmd;
 
             player.Mobj.Angle += new Angle(cmd.AngleTurn << 16);
 
-            // Do not let the player control movement
-            //  if not onground.
-            onground = (player.Mobj.Z <= player.Mobj.FloorZ);
+            // Do not let the player control movement if not onground.
+            onGround = (player.Mobj.Z <= player.Mobj.FloorZ);
 
-            if (cmd.ForwardMove != 0 && onground)
+            if (cmd.ForwardMove != 0 && onGround)
             {
                 Thrust(player, player.Mobj.Angle, new Fixed(cmd.ForwardMove * 2048));
             }
 
-            if (cmd.SideMove != 0 && onground)
+            if (cmd.SideMove != 0 && onGround)
             {
                 Thrust(player, player.Mobj.Angle - Angle.Ang90, new Fixed(cmd.SideMove * 2048));
             }
 
-            if ((cmd.ForwardMove != 0 || cmd.SideMove != 0)
-                && player.Mobj.State == DoomInfo.States[(int)MobjState.Play])
+            if ((cmd.ForwardMove != 0 || cmd.SideMove != 0) &&
+                player.Mobj.State == DoomInfo.States[(int)MobjState.Play])
             {
                 player.Mobj.SetState(MobjState.PlayRun1);
             }
         }
 
 
-
-
-
-
-        //
-        // P_PlayerThink
-        //
         public void PlayerThink(Player player)
         {
-            // fixme: do this in the cheat code
+            // FIXME:
+            //     Do this in the cheat code.
             if ((player.Cheats & CheatFlags.NoClip) != 0)
             {
                 player.Mobj.Flags |= MobjFlags.NoClip;
@@ -158,7 +142,7 @@ namespace ManagedDoom
                 player.Mobj.Flags &= ~MobjFlags.NoClip;
             }
 
-            // chain saw run forward
+            // Chain saw run forward.
             var cmd = player.Cmd;
             if ((player.Mobj.Flags & MobjFlags.JustAttacked) != 0)
             {
@@ -168,7 +152,6 @@ namespace ManagedDoom
                 player.Mobj.Flags &= ~MobjFlags.JustAttacked;
             }
 
-
             if (player.PlayerState == PlayerState.Dead)
             {
                 DeathThink(player);
@@ -176,8 +159,7 @@ namespace ManagedDoom
             }
 
             // Move around.
-            // Reactiontime is used to prevent movement
-            //  for a bit after a teleport.
+            // Reactiontime is used to prevent movement for a bit after a teleport.
             if (player.Mobj.ReactionTime > 0)
             {
                 player.Mobj.ReactionTime--;
@@ -204,42 +186,38 @@ namespace ManagedDoom
 
             if ((cmd.Buttons & TicCmdButtons.Change) != 0)
             {
-                // The actual changing of the weapon is done
-                //  when the weapon psprite can do it
-                //  (read: not in the middle of an attack).
-                var newweapon = (cmd.Buttons & TicCmdButtons.WeaponMask) >> TicCmdButtons.WeaponShift;
+                // The actual changing of the weapon is done when the weapon psprite can do it.
+                // Not in the middle of an attack.
+                var newWeapon = (cmd.Buttons & TicCmdButtons.WeaponMask) >> TicCmdButtons.WeaponShift;
 
-                if (newweapon == (int)WeaponType.Fist
-                    && player.WeaponOwned[(int)WeaponType.Chainsaw]
-                    && !(player.ReadyWeapon == WeaponType.Chainsaw
-                    && player.Powers[(int)PowerType.Strength] != 0))
+                if (newWeapon == (int)WeaponType.Fist &&
+                    player.WeaponOwned[(int)WeaponType.Chainsaw] &&
+                    !(player.ReadyWeapon == WeaponType.Chainsaw && player.Powers[(int)PowerType.Strength] != 0))
                 {
-                    newweapon = (int)WeaponType.Chainsaw;
+                    newWeapon = (int)WeaponType.Chainsaw;
                 }
 
-                if ((world.Options.GameMode == GameMode.Commercial)
-                    && newweapon == (int)WeaponType.Shotgun
-                    && player.WeaponOwned[(int)WeaponType.SuperShotgun]
-                    && player.ReadyWeapon != WeaponType.SuperShotgun)
+                if ((world.Options.GameMode == GameMode.Commercial) &&
+                    newWeapon == (int)WeaponType.Shotgun &&
+                    player.WeaponOwned[(int)WeaponType.SuperShotgun] &&
+                    player.ReadyWeapon != WeaponType.SuperShotgun)
                 {
-                    newweapon = (int)WeaponType.SuperShotgun;
+                    newWeapon = (int)WeaponType.SuperShotgun;
                 }
 
-                if (player.WeaponOwned[newweapon]
-                    && newweapon != (int)player.ReadyWeapon)
+                if (player.WeaponOwned[newWeapon] &&
+                    newWeapon != (int)player.ReadyWeapon)
                 {
-                    // Do not go to plasma or BFG in shareware,
-                    // even if cheated.
-                    if ((newweapon != (int)WeaponType.Plasma
-                        && newweapon != (int)WeaponType.Bfg)
-                        || (world.Options.GameMode != GameMode.Shareware))
+                    // Do not go to plasma or BFG in shareware, even if cheated.
+                    if ((newWeapon != (int)WeaponType.Plasma && newWeapon != (int)WeaponType.Bfg) ||
+                        (world.Options.GameMode != GameMode.Shareware))
                     {
-                        player.PendingWeapon = (WeaponType)newweapon;
+                        player.PendingWeapon = (WeaponType)newWeapon;
                     }
                 }
             }
 
-            // check for use
+            // Check for use.
             if ((cmd.Buttons & TicCmdButtons.Use) != 0)
             {
                 if (!player.UseDown)
@@ -300,8 +278,8 @@ namespace ManagedDoom
             // Handling colormaps.
             if (player.Powers[(int)PowerType.Invulnerability] > 0)
             {
-                if (player.Powers[(int)PowerType.Invulnerability] > 4 * 32
-                    || (player.Powers[(int)PowerType.Invulnerability] & 8) != 0)
+                if (player.Powers[(int)PowerType.Invulnerability] > 4 * 32 ||
+                    (player.Powers[(int)PowerType.Invulnerability] & 8) != 0)
                 {
                     player.FixedColorMap = 0; // INVERSECOLORMAP;
                 }
@@ -312,10 +290,10 @@ namespace ManagedDoom
             }
             else if (player.Powers[(int)PowerType.Infrared] > 0)
             {
-                if (player.Powers[(int)PowerType.Infrared] > 4 * 32
-                    || (player.Powers[(int)PowerType.Infrared] & 8) != 0)
+                if (player.Powers[(int)PowerType.Infrared] > 4 * 32 ||
+                    (player.Powers[(int)PowerType.Infrared] & 8) != 0)
                 {
-                    // almost full bright
+                    // Almost full bright.
                     player.FixedColorMap = 1;
                 }
                 else
@@ -329,11 +307,7 @@ namespace ManagedDoom
             }
         }
 
-        //
-        // P_PlayerInSpecialSector
-        // Called every tic frame
-        //  that the player origin is in a special sector
-        //
+
         private void PlayerInSpecialSector(Player player)
         {
             var sector = player.Mobj.Subsector.Sector;
@@ -408,24 +382,18 @@ namespace ManagedDoom
                     break;
 
                 default:
-                    throw new Exception("P_PlayerInSpecialSector: unknown special " + (int)sector.Special);
+                    throw new Exception("Unknown sector special: " + (int)sector.Special);
             }
         }
 
 
-
-        //
-        // P_DeathThink
-        // Fall on your face when dying.
-        // Decrease POV height to floor height.
-        //
-        private static Angle ANG5 = new Angle(Angle.Ang90.Data / 18);
+        private static Angle ang5 = new Angle(Angle.Ang90.Data / 18);
 
         private void DeathThink(Player player)
         {
             P_MovePsprites(player);
 
-            // fall to the ground
+            // Fall to the ground.
             if (player.ViewHeight > Fixed.FromInt(6))
             {
                 player.ViewHeight -= Fixed.One;
@@ -437,23 +405,20 @@ namespace ManagedDoom
             }
 
             player.DeltaViewHeight = Fixed.Zero;
-            var onground = (player.Mobj.Z <= player.Mobj.FloorZ);
+            onGround = (player.Mobj.Z <= player.Mobj.FloorZ);
             CalcHeight(player);
 
             if (player.Attacker != null && player.Attacker != player.Mobj)
             {
                 var angle = Geometry.PointToAngle(
-                    player.Mobj.X,
-                    player.Mobj.Y,
-                    player.Attacker.X,
-                    player.Attacker.Y);
+                    player.Mobj.X, player.Mobj.Y,
+                    player.Attacker.X, player.Attacker.Y);
 
                 var delta = angle - player.Mobj.Angle;
 
-                if (delta < ANG5 || delta.Data > (-ANG5).Data)
+                if (delta < ang5 || delta.Data > (-ang5).Data)
                 {
-                    // Looking at killer,
-                    //  so fade damage flash down.
+                    // Looking at killer, so fade damage flash down.
                     player.Mobj.Angle = angle;
 
                     if (player.DamageCount > 0)
@@ -463,11 +428,11 @@ namespace ManagedDoom
                 }
                 else if (delta < Angle.Ang180)
                 {
-                    player.Mobj.Angle += ANG5;
+                    player.Mobj.Angle += ang5;
                 }
                 else
                 {
-                    player.Mobj.Angle -= ANG5;
+                    player.Mobj.Angle -= ang5;
                 }
             }
             else if (player.DamageCount > 0)
@@ -482,20 +447,15 @@ namespace ManagedDoom
         }
 
 
-
-        //
-        // P_SetupPsprites
-        // Called at start of level for each player.
-        //
         public void SetupPsprites(Player player)
         {
-            // remove all psprites
+            // Remove all psprites.
             for (var i = 0; i < (int)PlayerSprite.Count; i++)
             {
                 player.PSprites[i].State = null;
             }
 
-            // spawn the gun
+            // Spawn the gun.
             player.PendingWeapon = player.ReadyWeapon;
             P_BringUpWeapon(player);
         }
