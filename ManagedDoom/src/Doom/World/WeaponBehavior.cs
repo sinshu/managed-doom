@@ -4,6 +4,12 @@ namespace ManagedDoom
 {
     public sealed class WeaponBehavior
     {
+        public static readonly Fixed RaiseSpeed = Fixed.FromInt(6);
+        public static readonly Fixed LowerSpeed = Fixed.FromInt(6);
+
+        public static readonly Fixed WeaponTop = Fixed.FromInt(32);
+        public static readonly Fixed WeaponBottom = Fixed.FromInt(128);
+
         private static readonly int bfgCells = 40;
 
         private World world;
@@ -47,7 +53,7 @@ namespace ManagedDoom
                 // Change weapon.
                 // Pending weapon should allready be validated.
                 var newState = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState;
-                pb.P_SetPsprite(player, PlayerSprite.Weapon, newState);
+                pb.SetPlayerSprite(player, PlayerSprite.Weapon, newState);
                 return;
             }
 
@@ -73,7 +79,7 @@ namespace ManagedDoom
             psp.Sx = Fixed.One + player.Bob * Trig.Cos(angle);
 
             angle &= Trig.FineAngleCount / 2 - 1;
-            psp.Sy = PlayerBehavior.WEAPONTOP + player.Bob * Trig.Sin(angle);
+            psp.Sy = WeaponTop + player.Bob * Trig.Sin(angle);
         }
 
 
@@ -159,7 +165,7 @@ namespace ManagedDoom
             } while (player.PendingWeapon == WeaponType.NoChange);
 
             // Now set appropriate weapon overlay.
-            world.PlayerBehavior.P_SetPsprite(
+            world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Weapon,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState);
@@ -244,7 +250,7 @@ namespace ManagedDoom
             player.Mobj.SetState(MobjState.PlayAtk1);
 
             var newState = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].AttackState;
-            world.PlayerBehavior.P_SetPsprite(player, PlayerSprite.Weapon, newState);
+            world.PlayerBehavior.SetPlayerSprite(player, PlayerSprite.Weapon, newState);
 
             NoiseAlert(player.Mobj, player.Mobj);
         }
@@ -252,10 +258,10 @@ namespace ManagedDoom
 
         public void Lower(Player player, PlayerSpriteDef psp)
         {
-            psp.Sy += PlayerBehavior.LOWERSPEED;
+            psp.Sy += LowerSpeed;
 
             // Is already down.
-            if (psp.Sy < PlayerBehavior.WEAPONBOTTOM)
+            if (psp.Sy < WeaponBottom)
             {
                 return;
             }
@@ -263,7 +269,7 @@ namespace ManagedDoom
             // Player is dead.
             if (player.PlayerState == PlayerState.Dead)
             {
-                psp.Sy = PlayerBehavior.WEAPONBOTTOM;
+                psp.Sy = WeaponBottom;
 
                 // don't bring weapon back up
                 return;
@@ -276,31 +282,31 @@ namespace ManagedDoom
             if (player.Health == 0)
             {
                 // Player is dead, so keep the weapon off screen.
-                pb.P_SetPsprite(player, PlayerSprite.Weapon, MobjState.Null);
+                pb.SetPlayerSprite(player, PlayerSprite.Weapon, MobjState.Null);
                 return;
             }
 
             player.ReadyWeapon = player.PendingWeapon;
 
-            pb.P_BringUpWeapon(player);
+            pb.BringUpWeapon(player);
         }
 
 
         public void Raise(Player player, PlayerSpriteDef psp)
         {
-            psp.Sy -= PlayerBehavior.RAISESPEED;
+            psp.Sy -= RaiseSpeed;
 
-            if (psp.Sy > PlayerBehavior.WEAPONTOP)
+            if (psp.Sy > WeaponTop)
             {
                 return;
             }
 
-            psp.Sy = PlayerBehavior.WEAPONTOP;
+            psp.Sy = WeaponTop;
 
             // The weapon has been raised all the way, so change to the ready state.
             var newState = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].ReadyState;
 
-            world.PlayerBehavior.P_SetPsprite(player, PlayerSprite.Weapon, newState);
+            world.PlayerBehavior.SetPlayerSprite(player, PlayerSprite.Weapon, newState);
         }
 
 
@@ -341,14 +347,14 @@ namespace ManagedDoom
 
             var random = world.Random;
 
-            var angle = player.Mobj.Angle;
-            angle += new Angle((random.Next() - random.Next()) << 18);
+            var attackAngle = player.Mobj.Angle;
+            attackAngle += new Angle((random.Next() - random.Next()) << 18);
 
             var hs = world.Hitscan;
 
             // Use meleerange + 1 se the puff doesn't skip the flash.
-            var slope = hs.AimLineAttack(player.Mobj, angle, World.MELEERANGE + new Fixed(1));
-            hs.LineAttack(player.Mobj, angle, World.MELEERANGE + new Fixed(1), slope, damage);
+            var slope = hs.AimLineAttack(player.Mobj, attackAngle, World.MELEERANGE + new Fixed(1));
+            hs.LineAttack(player.Mobj, attackAngle, World.MELEERANGE + new Fixed(1), slope, damage);
 
             if (hs.LineTarget == null)
             {
@@ -359,16 +365,16 @@ namespace ManagedDoom
             world.StartSound(player.Mobj, Sfx.SAWHIT);
 
             // Turn to face target.
-            angle = Geometry.PointToAngle(
+            var targetAngle = Geometry.PointToAngle(
                 player.Mobj.X, player.Mobj.Y,
                 hs.LineTarget.X, hs.LineTarget.Y);
 
-            if (angle - player.Mobj.Angle > Angle.Ang180)
+            if (targetAngle - player.Mobj.Angle > Angle.Ang180)
             {
                 // The cast to int below is necessary to prevent demo desync. Why?
-                if ((int)(angle - player.Mobj.Angle).Data < -Angle.Ang90.Data / 20)
+                if ((int)(targetAngle - player.Mobj.Angle).Data < -Angle.Ang90.Data / 20)
                 {
-                    player.Mobj.Angle = angle + Angle.Ang90 / 21;
+                    player.Mobj.Angle = targetAngle + Angle.Ang90 / 21;
                 }
                 else
                 {
@@ -377,9 +383,9 @@ namespace ManagedDoom
             }
             else
             {
-                if (angle - player.Mobj.Angle > Angle.Ang90 / 20)
+                if (targetAngle - player.Mobj.Angle > Angle.Ang90 / 20)
                 {
-                    player.Mobj.Angle = angle - Angle.Ang90 / 21;
+                    player.Mobj.Angle = targetAngle - Angle.Ang90 / 21;
                 }
                 else
                 {
@@ -457,7 +463,7 @@ namespace ManagedDoom
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.PlayerBehavior.P_SetPsprite(
+            world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
@@ -482,7 +488,7 @@ namespace ManagedDoom
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.PlayerBehavior.P_SetPsprite(
+            world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
@@ -515,7 +521,7 @@ namespace ManagedDoom
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.PlayerBehavior.P_SetPsprite(
+            world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState +
@@ -535,7 +541,7 @@ namespace ManagedDoom
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] -= 2;
 
-            world.PlayerBehavior.P_SetPsprite(
+            world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
@@ -589,7 +595,7 @@ namespace ManagedDoom
         {
             player.Mobj.SetState(MobjState.PlayAtk2);
 
-            world.PlayerBehavior.P_SetPsprite(
+            world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
@@ -608,7 +614,7 @@ namespace ManagedDoom
         {
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.PlayerBehavior.P_SetPsprite(
+            world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState + (world.Random.Next() & 1));

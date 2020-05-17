@@ -93,7 +93,7 @@ namespace ManagedDoom
         public int ColorMap;
 
         // Overlay view sprites (gun, etc).
-        public PlayerSpriteDef[] PSprites;
+        public PlayerSpriteDef[] PlayerSprites;
 
         // True if secret level has been done.
         public bool DidSecret;
@@ -113,10 +113,10 @@ namespace ManagedDoom
             Ammo = new int[(int)WeaponType.Count];
             MaxAmmo = new int[(int)WeaponType.Count];
 
-            PSprites = new PlayerSpriteDef[(int)PlayerSprite.Count];
-            for (var i = 0; i < PSprites.Length; i++)
+            PlayerSprites = new PlayerSpriteDef[(int)PlayerSprite.Count];
+            for (var i = 0; i < PlayerSprites.Length; i++)
             {
-                PSprites[i] = new PlayerSpriteDef();
+                PlayerSprites[i] = new PlayerSpriteDef();
             }
         }
 
@@ -177,7 +177,7 @@ namespace ManagedDoom
 
             ColorMap = 0;
 
-            foreach (var psp in PSprites)
+            foreach (var psp in PlayerSprites)
             {
                 psp.Clear();
             }

@@ -147,7 +147,7 @@ namespace ManagedDoom
             if ((player.Mobj.Flags & MobjFlags.JustAttacked) != 0)
             {
                 cmd.AngleTurn = 0;
-                cmd.ForwardMove = 0xc800 / 512;
+                cmd.ForwardMove = 0xC800 / 512;
                 cmd.SideMove = 0;
                 player.Mobj.Flags &= ~MobjFlags.JustAttacked;
             }
@@ -232,7 +232,7 @@ namespace ManagedDoom
             }
 
             // cycle psprites
-            P_MovePsprites(player);
+            MovePlayerSprites(player);
 
             // Counters, time dependend power ups.
 
@@ -349,8 +349,7 @@ namespace ManagedDoom
                 // SUPER HELLSLIME DAMAGE
                 case 4:
                     // STROBE HURT
-                    if (player.Powers[(int)PowerType.IronFeet] == 0
-                        || (world.Random.Next() < 5))
+                    if (player.Powers[(int)PowerType.IronFeet] == 0 || (world.Random.Next() < 5))
                     {
                         if ((world.levelTime & 0x1f) == 0)
                         {
@@ -391,7 +390,7 @@ namespace ManagedDoom
 
         private void DeathThink(Player player)
         {
-            P_MovePsprites(player);
+            MovePlayerSprites(player);
 
             // Fall to the ground.
             if (player.ViewHeight > Fixed.FromInt(6))
@@ -452,29 +451,16 @@ namespace ManagedDoom
             // Remove all psprites.
             for (var i = 0; i < (int)PlayerSprite.Count; i++)
             {
-                player.PSprites[i].State = null;
+                player.PlayerSprites[i].State = null;
             }
 
             // Spawn the gun.
             player.PendingWeapon = player.ReadyWeapon;
-            P_BringUpWeapon(player);
+            BringUpWeapon(player);
         }
 
 
-        public static readonly Fixed LOWERSPEED = Fixed.FromInt(6);
-        public static readonly Fixed RAISESPEED = Fixed.FromInt(6);
-
-        public static readonly Fixed WEAPONBOTTOM = Fixed.FromInt(128);
-        public static readonly Fixed WEAPONTOP = Fixed.FromInt(32);
-
-
-        //
-        // P_BringUpWeapon
-        // Starts bringing the pending weapon up
-        // from the bottom of the screen.
-        // Uses player
-        //
-        public void P_BringUpWeapon(Player player)
+        public void BringUpWeapon(Player player)
         {
             if (player.PendingWeapon == WeaponType.NoChange)
             {
@@ -486,37 +472,35 @@ namespace ManagedDoom
                 world.StartSound(player.Mobj, Sfx.SAWUP);
             }
 
-            var newstate = DoomInfo.WeaponInfos[(int)player.PendingWeapon].UpState;
+            var newState = DoomInfo.WeaponInfos[(int)player.PendingWeapon].UpState;
 
             player.PendingWeapon = WeaponType.NoChange;
-            player.PSprites[(int)PlayerSprite.Weapon].Sy = WEAPONBOTTOM;
+            player.PlayerSprites[(int)PlayerSprite.Weapon].Sy = WeaponBehavior.WeaponBottom;
 
-            P_SetPsprite(player, PlayerSprite.Weapon, newstate);
+            SetPlayerSprite(player, PlayerSprite.Weapon, newState);
         }
 
-        //
-        // P_SetPsprite
-        //
-        public void P_SetPsprite(Player player, PlayerSprite position, MobjState stnum)
+
+        public void SetPlayerSprite(Player player, PlayerSprite position, MobjState stnum)
         {
-            var psp = player.PSprites[(int)position];
+            var psp = player.PlayerSprites[(int)position];
 
             do
             {
                 if (stnum == MobjState.Null)
                 {
-                    // object removed itself
+                    // Object removed itself.
                     psp.State = null;
                     break;
                 }
 
                 var state = DoomInfo.States[(int)stnum];
                 psp.State = state;
-                psp.Tics = state.Tics; // could be 0
+                psp.Tics = state.Tics; // Could be 0.
 
                 if (state.Misc1 != 0)
                 {
-                    // coordinate set
+                    // Coordinate set.
                     psp.Sx = Fixed.FromInt(state.Misc1);
                     psp.Sy = Fixed.FromInt(state.Misc2);
                 }
@@ -535,50 +519,43 @@ namespace ManagedDoom
                 stnum = psp.State.Next;
 
             } while (psp.Tics == 0);
-            // an initial state of 0 could cycle through
+            // An initial state of 0 could cycle through.
         }
 
 
-        //
-        // P_MovePsprites
-        // Called every tic by player thinking routine.
-        //
-        private void P_MovePsprites(Player player)
+        private void MovePlayerSprites(Player player)
         {
             for (var i = 0; i < (int)PlayerSprite.Count; i++)
             {
-                var psp = player.PSprites[i];
+                var psp = player.PlayerSprites[i];
 
                 MobjStateDef state;
-                // a null state means not active
+
+                // A null state means not active.
                 if ((state = psp.State) != null)
                 {
-                    // drop tic count and possibly change state
+                    // Drop tic count and possibly change state.
 
-                    // a -1 tic count never changes
+                    // A -1 tic count never changes.
                     if (psp.Tics != -1)
                     {
                         psp.Tics--;
                         if (psp.Tics == 0)
                         {
-                            P_SetPsprite(player, (PlayerSprite)i, psp.State.Next);
+                            SetPlayerSprite(player, (PlayerSprite)i, psp.State.Next);
                         }
                     }
                 }
             }
 
-            player.PSprites[(int)PlayerSprite.Flash].Sx = player.PSprites[(int)PlayerSprite.Weapon].Sx;
-            player.PSprites[(int)PlayerSprite.Flash].Sy = player.PSprites[(int)PlayerSprite.Weapon].Sy;
+            player.PlayerSprites[(int)PlayerSprite.Flash].Sx = player.PlayerSprites[(int)PlayerSprite.Weapon].Sx;
+            player.PlayerSprites[(int)PlayerSprite.Flash].Sy = player.PlayerSprites[(int)PlayerSprite.Weapon].Sy;
         }
 
 
-        //
-        // P_DropWeapon
-        // Player died, so put the weapon away.
-        //
         public void DropWeapon(Player player)
         {
-            P_SetPsprite(
+            SetPlayerSprite(
                 player,
                 PlayerSprite.Weapon,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState);
@@ -590,11 +567,9 @@ namespace ManagedDoom
             // Default death sound.
             var sound = Sfx.PLDETH;
 
-            if ((world.Options.GameMode == GameMode.Commercial)
-                && (mo.Health < -50))
+            if ((world.Options.GameMode == GameMode.Commercial) && (mo.Health < -50))
             {
-                // IF THE PLAYER DIES
-                // LESS THAN -50% WITHOUT GIBBING
+                // If the player dies less than -50% without gibbing.
                 sound = Sfx.PDIEHI;
             }
 

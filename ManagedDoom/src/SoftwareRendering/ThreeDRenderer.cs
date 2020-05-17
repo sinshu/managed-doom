@@ -2529,7 +2529,7 @@ namespace ManagedDoom.SoftwareRendering
             // add all active psprites
             for (var i = 0; i < (int)PlayerSprite.Count; i++)
             {
-                var psp = player.PSprites[i];
+                var psp = player.PlayerSprites[i];
                 if (psp.State != null)
                 {
                     if ((psp.State.Frame & 0x8000) == 0)
