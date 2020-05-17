@@ -6,50 +6,38 @@ namespace ManagedDoom
 	{
 		private World world;
 
-		// eye z of looker
-		private Fixed sightzstart;
+		// Eye z of looker.
+		private Fixed sightZStart;
+		private Fixed bottomSlope;
+		private Fixed topSlope;
 
-		// from t1 to t2
-		private DivLine strace;
-		private Fixed t2x;
-		private Fixed t2y;
+		// From looker to target.
+		private DivLine trace;
+		private Fixed targetX;
+		private Fixed targetY;
 
-		private int[] sightcounts;
-
-		private Fixed bottomslope;
-		private Fixed topslope;
-
-		private DivLine tempDiv;
+		private DivLine occluder;
 
 		public VisibilityCheck(World world)
 		{
 			this.world = world;
 
+			trace = new DivLine();
 
-			strace = new DivLine();
-			sightcounts = new int[2];
-
-			tempDiv = new DivLine();
+			occluder = new DivLine();
 		}
 
-		//
-		// P_InterceptVector2
-		// Returns the fractional intercept point
-		// along the first divline.
-		// This is only called by the addthings and addlines traversers.
-		//
-		private Fixed P_InterceptVector2(DivLine v2, DivLine v1)
+
+		private Fixed InterceptVector(DivLine v2, DivLine v1)
 		{
-			var den = new Fixed(v1.Dy.Data >> 8) * v2.Dx - new Fixed(v1.Dx.Data >> 8) * v2.Dy;
+			var den = (v1.Dy >> 8) * v2.Dx - (v1.Dx >> 8) * v2.Dy;
 
 			if (den == Fixed.Zero)
 			{
 				return Fixed.Zero;
 			}
 
-			var num =
-			new Fixed((v1.X - v2.X).Data >> 8) * v1.Dy
-			+ new Fixed((v2.Y - v1.Y).Data >> 8) * v1.Dx;
+			var num = ((v1.X - v2.X) >> 8) * v1.Dy + ((v2.Y - v1.Y) >> 8) * v1.Dx;
 
 			var frac = num / den;
 
@@ -57,80 +45,66 @@ namespace ManagedDoom
 		}
 
 
-		//
-		// P_CrossSubsector
-		// Returns true
-		//  if strace crosses the given subsector successfully.
-		//
-		public bool CrossSubsector(int num, int validcount)
+		private bool CrossSubsector(int num, int validCount)
 		{
-			var pt = world.PathTraversal;
-
 			var map = world.Map;
+			var subsectors = map.Subsectors[num];
+			var count = subsectors.SegCount;
 
-			var sub = map.Subsectors[num];
-
-			// check lines
-			var count = sub.SegCount;
-
+			// Check lines.
 			for (var i = 0; i < count; i++)
 			{
-				var seg = map.Segs[sub.FirstSeg + i];
+				var seg = map.Segs[subsectors.FirstSeg + i];
 				var line = seg.LineDef;
 
-				// allready checked other side?
-				if (line.ValidCount == validcount)
+				// Allready checked other side?
+				if (line.ValidCount == validCount)
 				{
 					continue;
 				}
 
-				line.ValidCount = validcount;
+				line.ValidCount = validCount;
 
 				var v1 = line.Vertex1;
 				var v2 = line.Vertex2;
-				var s1 = Geometry.DivLineSide(v1.X, v1.Y, strace);
-				var s2 = Geometry.DivLineSide(v2.X, v2.Y, strace);
+				var s1 = Geometry.DivLineSide(v1.X, v1.Y, trace);
+				var s2 = Geometry.DivLineSide(v2.X, v2.Y, trace);
 
-				// line isn't crossed?
+				// Line isn't crossed?
 				if (s1 == s2)
 				{
 					continue;
 				}
 
+				occluder.MakeFrom(line);
+				s1 = Geometry.DivLineSide(trace.X, trace.Y, occluder);
+				s2 = Geometry.DivLineSide(targetX, targetY, occluder);
 
-				tempDiv.X = v1.X;
-				tempDiv.Y = v1.Y;
-				tempDiv.Dx = v2.X - v1.X;
-				tempDiv.Dy = v2.Y - v1.Y;
-				s1 = Geometry.DivLineSide(strace.X, strace.Y, tempDiv);
-				s2 = Geometry.DivLineSide(t2x, t2y, tempDiv);
-
-				// line isn't crossed?
+				// Line isn't crossed?
 				if (s1 == s2)
 				{
 					continue;
 				}
 
-				// stop because it is not two sided anyway
-				// might do this after updating validcount?
+				// Stop because it is not two sided anyway.
+				// Might do this after updating validcount?
 				if ((line.Flags & LineFlags.TwoSided) == 0)
 				{
 					return false;
 				}
 
-				// crosses a two sided line
+				// Crosses a two sided line.
 				var front = seg.FrontSector;
 				var back = seg.BackSector;
 
-				// no wall to block sight with?
-				if (front.FloorHeight == back.FloorHeight
-					&& front.CeilingHeight == back.CeilingHeight)
+				// No wall to block sight with?
+				if (front.FloorHeight == back.FloorHeight &&
+					front.CeilingHeight == back.CeilingHeight)
 				{
 					continue;
 				}
 
-				// possible occluder
-				// because of ceiling height differences
+				// Possible occluder because of ceiling height differences.
 				Fixed openTop;
 				if (front.CeilingHeight < back.CeilingHeight)
 				{
@@ -141,7 +115,7 @@ namespace ManagedDoom
 					openTop = back.CeilingHeight;
 				}
 
-				// because of ceiling height differences
+				// Because of ceiling height differences.
 				Fixed openBottom;
 				if (front.FloorHeight > back.FloorHeight)
 				{
@@ -152,51 +126,46 @@ namespace ManagedDoom
 					openBottom = back.FloorHeight;
 				}
 
-				// quick test for totally closed doors
+				// Quick test for totally closed doors.
 				if (openBottom >= openTop)
 				{
-					// stop
+					// Stop.
 					return false;
 				}
 
-				var frac = P_InterceptVector2(strace, tempDiv);
+				var frac = InterceptVector(trace, occluder);
 
 				if (front.FloorHeight != back.FloorHeight)
 				{
-					var slope = (openBottom - sightzstart) / frac;
-					if (slope > bottomslope)
+					var slope = (openBottom - sightZStart) / frac;
+					if (slope > bottomSlope)
 					{
-						bottomslope = slope;
+						bottomSlope = slope;
 					}
 				}
 
 				if (front.CeilingHeight != back.CeilingHeight)
 				{
-					var slope = (openTop - sightzstart) / frac;
-					if (slope < topslope)
+					var slope = (openTop - sightZStart) / frac;
+					if (slope < topSlope)
 					{
-						topslope = slope;
+						topSlope = slope;
 					}
 				}
 
-				if (topslope <= bottomslope)
+				if (topSlope <= bottomSlope)
 				{
-					// stop
+					// Stop.
 					return false;
 				}
 			}
 
-			// passed the subsector ok
+			// Passed the subsector ok.
 			return true;
 		}
 
 
-		//
-		// P_CrossBSPNode
-		// Returns true
-		//  if strace crosses the given node successfully.
-		//
-		public bool CrossBSPNode(int bspnum, int validCount)
+		private bool CrossBSPNode(int bspnum, int validCount)
 		{
 			if (Node.IsSubsector(bspnum))
 			{
@@ -212,11 +181,11 @@ namespace ManagedDoom
 
 			var bsp = world.Map.Nodes[bspnum];
 
-			// decide which side the start point is on
-			var side = Geometry.DivLineSide(strace.X, strace.Y, bsp);
+			// Decide which side the start point is on.
+			var side = Geometry.DivLineSide(trace.X, trace.Y, bsp);
 			if (side == 2)
 			{
-				// an "on" should cross both sides
+				// An "on" should cross both sides.
 				side = 0;
 			}
 
@@ -226,55 +195,46 @@ namespace ManagedDoom
 				return false;
 			}
 
-			// the partition plane is crossed here
-			if (side == Geometry.DivLineSide(t2x, t2y, bsp))
+			// The partition plane is crossed here.
+			if (side == Geometry.DivLineSide(targetX, targetY, bsp))
 			{
-				// the line doesn't touch the other side
+				// The line doesn't touch the other side.
 				return true;
 			}
 
-			// cross the ending side		
+			// Cross the ending side.
 			return CrossBSPNode(bsp.Children[side ^ 1], validCount);
 		}
 
 
-		//
-		// P_CheckSight
-		// Returns true
-		//  if a straight line between t1 and t2 is unobstructed.
-		// Uses REJECT.
-		//
-		public bool CheckSight(Mobj t1, Mobj t2)
+		public bool CheckSight(Mobj looker, Mobj target)
 		{
-			var pt = world.PathTraversal;
 			var map = world.Map;
 
 			// First check for trivial rejection.
 			// Check in REJECT table.
-			if (map.Reject.Check(t1.Subsector.Sector, t2.Subsector.Sector))
+			if (map.Reject.Check(looker.Subsector.Sector, target.Subsector.Sector))
 			{
-				sightcounts[0]++;
-
-				// can't possibly be connected
+				// Can't possibly be connected.
 				return false;
 			}
 
 			// An unobstructed LOS is possible.
 			// Now look from eyes of t1 to any part of t2.
-			sightcounts[1]++;
 
-			sightzstart = t1.Z + t1.Height - new Fixed(t1.Height.Data >> 2);
-			topslope = (t2.Z + t2.Height) - sightzstart;
-			bottomslope = (t2.Z) - sightzstart;
+			sightZStart = looker.Z + looker.Height - (looker.Height >> 2);
+			topSlope = (target.Z + target.Height) - sightZStart;
+			bottomSlope = (target.Z) - sightZStart;
 
-			strace.X = t1.X;
-			strace.Y = t1.Y;
-			t2x = t2.X;
-			t2y = t2.Y;
-			strace.Dx = t2.X - t1.X;
-			strace.Dy = t2.Y - t1.Y;
+			trace.X = looker.X;
+			trace.Y = looker.Y;
+			trace.Dx = target.X - looker.X;
+			trace.Dy = target.Y - looker.Y;
 
-			// the head node is the last node output
+			targetX = target.X;
+			targetY = target.Y;
+
+			// The head node is the last node output.
 			return CrossBSPNode(map.Nodes.Length - 1, world.GetNewValidCount());
 		}
 	}

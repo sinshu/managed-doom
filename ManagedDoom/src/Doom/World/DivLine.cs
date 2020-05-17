@@ -9,12 +9,12 @@ namespace ManagedDoom
         public Fixed Dx;
         public Fixed Dy;
 
-        public void MakeFrom(LineDef li)
+        public void MakeFrom(LineDef line)
         {
-            X = li.Vertex1.X;
-            Y = li.Vertex1.Y;
-            Dx = li.Dx;
-            Dy = li.Dy;
+            X = line.Vertex1.X;
+            Y = line.Vertex1.Y;
+            Dx = line.Dx;
+            Dy = line.Dy;
         }
     }
 }

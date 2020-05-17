@@ -481,42 +481,42 @@ namespace ManagedDoom
         }
 
 
-        public void SetPlayerSprite(Player player, PlayerSprite position, MobjState stnum)
+        public void SetPlayerSprite(Player player, PlayerSprite position, MobjState state)
         {
             var psp = player.PlayerSprites[(int)position];
 
             do
             {
-                if (stnum == MobjState.Null)
+                if (state == MobjState.Null)
                 {
                     // Object removed itself.
                     psp.State = null;
                     break;
                 }
 
-                var state = DoomInfo.States[(int)stnum];
-                psp.State = state;
-                psp.Tics = state.Tics; // Could be 0.
+                var stateDef = DoomInfo.States[(int)state];
+                psp.State = stateDef;
+                psp.Tics = stateDef.Tics; // Could be 0.
 
-                if (state.Misc1 != 0)
+                if (stateDef.Misc1 != 0)
                 {
                     // Coordinate set.
-                    psp.Sx = Fixed.FromInt(state.Misc1);
-                    psp.Sy = Fixed.FromInt(state.Misc2);
+                    psp.Sx = Fixed.FromInt(stateDef.Misc1);
+                    psp.Sy = Fixed.FromInt(stateDef.Misc2);
                 }
 
                 // Call action routine.
                 // Modified handling.
-                if (state.PlayerAction != null)
+                if (stateDef.PlayerAction != null)
                 {
-                    state.PlayerAction(world, player, psp);
+                    stateDef.PlayerAction(world, player, psp);
                     if (psp.State == null)
                     {
                         break;
                     }
                 }
 
-                stnum = psp.State.Next;
+                state = psp.State.Next;
 
             } while (psp.Tics == 0);
             // An initial state of 0 could cycle through.
@@ -529,10 +529,10 @@ namespace ManagedDoom
             {
                 var psp = player.PlayerSprites[i];
 
-                MobjStateDef state;
+                MobjStateDef stateDef;
 
                 // A null state means not active.
-                if ((state = psp.State) != null)
+                if ((stateDef = psp.State) != null)
                 {
                     // Drop tic count and possibly change state.
 
@@ -562,18 +562,18 @@ namespace ManagedDoom
         }
 
 
-        public void PlayerScream(Mobj mo)
+        public void PlayerScream(Mobj player)
         {
             // Default death sound.
             var sound = Sfx.PLDETH;
 
-            if ((world.Options.GameMode == GameMode.Commercial) && (mo.Health < -50))
+            if ((world.Options.GameMode == GameMode.Commercial) && (player.Health < -50))
             {
                 // If the player dies less than -50% without gibbing.
                 sound = Sfx.PDIEHI;
             }
 
-            world.StartSound(mo, sound);
+            world.StartSound(player, sound);
         }
     }
 }
