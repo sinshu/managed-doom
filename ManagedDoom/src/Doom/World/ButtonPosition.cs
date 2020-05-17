@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public enum ButtonWhere
+    public enum ButtonPosition
     {
         Top,
         Middle,

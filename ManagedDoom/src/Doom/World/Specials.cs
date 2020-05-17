@@ -53,7 +53,7 @@ namespace ManagedDoom
 
                     if (useAgain)
                     {
-                        StartButton(line, ButtonWhere.Top, switchList[i], BUTTONTIME);
+                        StartButton(line, ButtonPosition.Top, switchList[i], BUTTONTIME);
                     }
 
                     return;
@@ -67,7 +67,7 @@ namespace ManagedDoom
 
                         if (useAgain)
                         {
-                            StartButton(line, ButtonWhere.Middle, switchList[i], BUTTONTIME);
+                            StartButton(line, ButtonPosition.Middle, switchList[i], BUTTONTIME);
                         }
 
                         return;
@@ -81,7 +81,7 @@ namespace ManagedDoom
 
                             if (useAgain)
                             {
-                                StartButton(line, ButtonWhere.Bottom, switchList[i], BUTTONTIME);
+                                StartButton(line, ButtonPosition.Bottom, switchList[i], BUTTONTIME);
                             }
 
                             return;
@@ -91,7 +91,7 @@ namespace ManagedDoom
             }
         }
 
-        private void StartButton(LineDef line, ButtonWhere w, int texture, int time)
+        private void StartButton(LineDef line, ButtonPosition w, int texture, int time)
         {
             // See if button is already pressed
             for (var i = 0; i < MAXBUTTONS; i++)
@@ -107,7 +107,7 @@ namespace ManagedDoom
                 if (buttonList[i].Timer == 0)
                 {
                     buttonList[i].Line = line;
-                    buttonList[i].Where = w;
+                    buttonList[i].Position = w;
                     buttonList[i].Texture = texture;
                     buttonList[i].Timer = time;
                     buttonList[i].SoundOrigin = line.SoundOrigin;
@@ -184,17 +184,17 @@ namespace ManagedDoom
                     buttonList[i].Timer--;
                     if (buttonList[i].Timer == 0)
                     {
-                        switch (buttonList[i].Where)
+                        switch (buttonList[i].Position)
                         {
-                            case ButtonWhere.Top:
+                            case ButtonPosition.Top:
                                 buttonList[i].Line.Side0.TopTexture = buttonList[i].Texture;
                                 break;
 
-                            case ButtonWhere.Middle:
+                            case ButtonPosition.Middle:
                                 buttonList[i].Line.Side0.MiddleTexture = buttonList[i].Texture;
                                 break;
 
-                            case ButtonWhere.Bottom:
+                            case ButtonPosition.Bottom:
                                 buttonList[i].Line.Side0.BottomTexture = buttonList[i].Texture;
                                 break;
                         }

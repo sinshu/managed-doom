@@ -5,7 +5,7 @@ namespace ManagedDoom
     public sealed class Button
     {
         public LineDef Line;
-        public ButtonWhere Where;
+        public ButtonPosition Position;
         public int Texture;
         public int Timer;
         public Mobj SoundOrigin;
@@ -13,7 +13,7 @@ namespace ManagedDoom
         public void Clear()
         {
             Line = null;
-            Where = 0;
+            Position = 0;
             Texture = 0;
             Timer = 0;
             SoundOrigin = null;

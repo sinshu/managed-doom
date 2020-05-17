@@ -22,7 +22,7 @@ namespace ManagedDoom
 
         public void SpawnMapThing(MapThing mt)
         {
-            // count deathmatch start positions
+            // Count deathmatch start positions.
             if (mt.Type == 11)
             {
                 if (deathmatchStarts.Count < 10)
@@ -101,14 +101,14 @@ namespace ManagedDoom
                 throw new Exception("P_SpawnMapThing: Unknown type!");
             }
 
-            // don't spawn keycards and players in deathmatch
+            // Don't spawn keycards and players in deathmatch.
             if (world.Options.Deathmatch != 0 &&
                 (DoomInfo.MobjInfos[i].Flags & MobjFlags.NotDeathmatch) != 0)
             {
                 return;
             }
 
-            // don't spawn any monsters if -nomonsters
+            // Don't spawn any monsters if -nomonsters.
             if (world.Options.NoMonsters && (i == (int)MobjType.Skull ||
                 (DoomInfo.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
             {
@@ -276,6 +276,7 @@ namespace ManagedDoom
             return mobj;
         }
 
+
         public void RemoveMobj(Mobj mobj)
         {
             var tm = world.ThingMovement;
@@ -307,24 +308,20 @@ namespace ManagedDoom
 
         public void CheckMissileSpawn(Mobj missile)
         {
-            var tm = world.ThingMovement;
-            var ti = world.ThingInteraction;
-
             missile.Tics -= world.Random.Next() & 3;
             if (missile.Tics < 1)
             {
                 missile.Tics = 1;
             }
 
-            // move a little forward so an angle can
-            // be computed if it immediately explodes
-            missile.X += new Fixed(missile.MomX.Data >> 1);
-            missile.Y += new Fixed(missile.MomY.Data >> 1);
-            missile.Z += new Fixed(missile.MomZ.Data >> 1);
+            // Move a little forward so an angle can be computed if it immediately explodes.
+            missile.X += (missile.MomX >> 1);
+            missile.Y += (missile.MomY >> 1);
+            missile.Z += (missile.MomZ >> 1);
 
-            if (!tm.TryMove(missile, missile.X, missile.Y))
+            if (!world.ThingMovement.TryMove(missile, missile.X, missile.Y))
             {
-                ti.ExplodeMissile(missile);
+                world.ThingInteraction.ExplodeMissile(missile);
             }
         }
 
@@ -345,10 +342,8 @@ namespace ManagedDoom
             missile.Target = source;
 
             var angle = Geometry.PointToAngle(
-                source.X,
-                source.Y,
-                dest.X,
-                dest.Y);
+                source.X, source.Y,
+                dest.X, dest.Y);
 
             // Fuzzy player.
             if ((dest.Flags & MobjFlags.Shadow) != 0)
@@ -367,19 +362,20 @@ namespace ManagedDoom
                 dest.X - source.X,
                 dest.Y - source.Y);
 
-            dist = dist / speed;
-
-            if (dist.Data < 1)
+            var num = (dest.Z - source.Z).Data;
+            var den = (dist / speed).Data;
+            if (den < 1)
             {
-                dist = new Fixed(1);
+                den = 1;
             }
 
-            missile.MomZ = new Fixed((dest.Z - source.Z).Data / dist.Data);
+            missile.MomZ = new Fixed(num / den);
 
             CheckMissileSpawn(missile);
 
             return missile;
         }
+
 
         private int GetMissileSpeed(MobjType type)
         {

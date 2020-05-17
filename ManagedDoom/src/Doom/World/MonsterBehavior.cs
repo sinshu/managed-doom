@@ -6,31 +6,24 @@ namespace ManagedDoom
     {
         private World world;
 
+
         public MonsterBehavior(World world)
         {
             this.world = world;
         }
 
+
         public void Fall(Mobj actor)
         {
-            // actor is on ground, it can be walked over
+            // Actor is on ground, it can be walked over.
             actor.Flags &= ~MobjFlags.Solid;
-
-            // So change this if corpse objects
-            // are meant to be obstacles.
         }
 
 
-        //
-        // P_LookForPlayers
-        // If allaround is false, only look 180 degrees in front.
-        // Returns true if a player is targeted.
-        //
-        private bool P_LookForPlayers(Mobj actor, bool allaround)
+        private bool LookForPlayers(Mobj actor, bool allAround)
         {
-            var sector = actor.Subsector.Sector;
+            var count = 0;
 
-            var c = 0;
             var stop = (actor.LastLook - 1) & 3;
 
             for (; ; actor.LastLook = (actor.LastLook + 1) & 3)
@@ -40,9 +33,9 @@ namespace ManagedDoom
                     continue;
                 }
 
-                if (c++ == 2 || actor.LastLook == stop)
+                if (count++ == 2 || actor.LastLook == stop)
                 {
-                    // done looking
+                    // Done looking.
                     return false;
                 }
 
@@ -50,34 +43,32 @@ namespace ManagedDoom
 
                 if (player.Health <= 0)
                 {
-                    // dead
+                    // Player is dead.
                     continue;
                 }
 
                 if (!world.VisibilityCheck.CheckSight(actor, player.Mobj))
                 {
-                    // out of sight
+                    // Out of sight.
                     continue;
                 }
 
-                if (!allaround)
+                if (!allAround)
                 {
-                    var an = Geometry.PointToAngle(
-                        actor.X,
-                        actor.Y,
-                        player.Mobj.X,
-                        player.Mobj.Y) - actor.Angle;
+                    var angle = Geometry.PointToAngle(
+                        actor.X, actor.Y,
+                        player.Mobj.X, player.Mobj.Y) - actor.Angle;
 
-                    if (an > Angle.Ang90 && an < Angle.Ang270)
+                    if (angle > Angle.Ang90 && angle < Angle.Ang270)
                     {
                         var dist = Geometry.AproxDistance(
                             player.Mobj.X - actor.X,
                             player.Mobj.Y - actor.Y);
 
-                        // if real close, react anyway
+                        // If real close, react anyway.
                         if (dist > World.MELEERANGE)
                         {
-                            // behind back
+                            // Behind back.
                             continue;
                         }
                     }
@@ -92,34 +83,35 @@ namespace ManagedDoom
 
         public void Look(Mobj actor)
         {
-            // any shot will wake up
+            // Any shot will wake up.
             actor.Threshold = 0;
-            var targ = actor.Subsector.Sector.SoundTarget;
 
-            if (targ != null && (targ.Flags & MobjFlags.Shootable) != 0)
+            var target = actor.Subsector.Sector.SoundTarget;
+
+            if (target != null && (target.Flags & MobjFlags.Shootable) != 0)
             {
-                actor.Target = targ;
+                actor.Target = target;
 
                 if ((actor.Flags & MobjFlags.Ambush) != 0)
                 {
                     if (world.VisibilityCheck.CheckSight(actor, actor.Target))
                     {
-                        goto seeyou;
+                        goto seeYou;
                     }
                 }
                 else
                 {
-                    goto seeyou;
+                    goto seeYou;
                 }
             }
 
-            if (!P_LookForPlayers(actor, false))
+            if (!LookForPlayers(actor, false))
             {
                 return;
             }
 
-        // go into chase state
-        seeyou:
+        // Go into chase state.
+        seeYou:
             if (actor.Info.SeeSound != 0)
             {
                 int sound;
@@ -144,7 +136,7 @@ namespace ManagedDoom
 
                 if (actor.Type == MobjType.Spider || actor.Type == MobjType.Cyborg)
                 {
-                    // full volume
+                    // Full volume.
                     world.StartSound(null, (Sfx)sound);
                 }
                 else
@@ -157,29 +149,7 @@ namespace ManagedDoom
         }
 
 
-
-        //
-        // P_NewChaseDir related LUT.
-        //
-        private static readonly Direction[] opposite =
-        {
-            Direction.west, Direction.Southwest, Direction.South, Direction.Southeast,
-            Direction.East, Direction.Northeast, Direction.North, Direction.Northwest,
-            Direction.None
-        };
-
-        private static readonly Direction[] diags =
-        {
-            Direction.Northwest, Direction.Northeast, Direction.Southwest, Direction.Southeast
-        };
-
-
-        //
-        // P_Move
-        // Move in the current direction,
-        // returns false if the move is blocked.
-        //
-        private static readonly Fixed[] xspeed =
+        private static readonly Fixed[] xSpeed =
         {
             new Fixed(Fixed.FracUnit),
             new Fixed(47000),
@@ -191,7 +161,7 @@ namespace ManagedDoom
             new Fixed(47000)
         };
 
-        private static readonly Fixed[] yspeed =
+        private static readonly Fixed[] ySpeed =
         {
             new Fixed(0),
             new Fixed(47000),
@@ -203,10 +173,8 @@ namespace ManagedDoom
             new Fixed(-47000)
         };
 
-        private bool P_Move(Mobj actor)
+        private bool Move(Mobj actor)
         {
-            var tm = world.ThingMovement;
-
             if (actor.MoveDir == Direction.None)
             {
                 return false;
@@ -217,17 +185,19 @@ namespace ManagedDoom
                 throw new Exception("Weird actor->movedir!");
             }
 
-            var tryx = actor.X + actor.Info.Speed * xspeed[(int)actor.MoveDir];
-            var tryy = actor.Y + actor.Info.Speed * yspeed[(int)actor.MoveDir];
+            var tryX = actor.X + actor.Info.Speed * xSpeed[(int)actor.MoveDir];
+            var tryY = actor.Y + actor.Info.Speed * ySpeed[(int)actor.MoveDir];
 
-            var try_ok = tm.TryMove(actor, tryx, tryy);
+            var tm = world.ThingMovement;
 
-            if (!try_ok)
+            var tryOk = tm.TryMove(actor, tryX, tryY);
+
+            if (!tryOk)
             {
-                // open any specials
+                // Open any specials.
                 if ((actor.Flags & MobjFlags.Float) != 0 && tm.FloatOk)
                 {
-                    // must adjust height
+                    // Must adjust height.
                     if (actor.Z < tm.CurrentFloorZ)
                     {
                         actor.Z += ThingMovement.FloatSpeed;
@@ -251,11 +221,10 @@ namespace ManagedDoom
                 var good = false;
                 while (tm.crossedSpecialCount-- > 0)
                 {
-                    var ld = tm.crossedSpecials[tm.crossedSpecialCount];
-                    // if the special is not a door
-                    // that can be opened,
-                    // return false
-                    if (world.MapInteraction.UseSpecialLine(actor, ld, 0))
+                    var line = tm.crossedSpecials[tm.crossedSpecialCount];
+                    // If the special is not a door that can be opened,
+                    // return false.
+                    if (world.MapInteraction.UseSpecialLine(actor, line, 0))
                     {
                         good = true;
                     }
@@ -267,7 +236,6 @@ namespace ManagedDoom
                 actor.Flags &= ~MobjFlags.InFloat;
             }
 
-
             if ((actor.Flags & MobjFlags.Float) == 0)
             {
                 actor.Z = actor.FloorZ;
@@ -276,20 +244,9 @@ namespace ManagedDoom
             return true;
         }
 
-        //
-        // TryWalk
-        // Attempts to move actor on
-        // in its current (ob->moveangle) direction.
-        // If blocked by either a wall or an actor
-        // returns FALSE
-        // If move is either clear or blocked only by a door,
-        // returns TRUE and sets...
-        // If a door is in the way,
-        // an OpenDoor call is made to start it opening.
-        //
-        private bool P_TryWalk(Mobj actor)
+        private bool TryWalk(Mobj actor)
         {
-            if (!P_Move(actor))
+            if (!Move(actor))
             {
                 return false;
             }
@@ -299,121 +256,133 @@ namespace ManagedDoom
             return true;
         }
 
-        private readonly Direction[] d = new Direction[3];
 
+        private static readonly Direction[] opposite =
+        {
+            Direction.west, Direction.Southwest, Direction.South, Direction.Southeast,
+            Direction.East, Direction.Northeast, Direction.North, Direction.Northwest,
+            Direction.None
+        };
 
-        private void P_NewChaseDir(Mobj actor)
+        private static readonly Direction[] diags =
+        {
+            Direction.Northwest, Direction.Northeast, Direction.Southwest, Direction.Southeast
+        };
+
+        private readonly Direction[] choices = new Direction[3];
+
+        private void NewChaseDir(Mobj actor)
         {
             if (actor.Target == null)
             {
-                throw new Exception("P_NewChaseDir: called with no target");
+                throw new Exception("Called with no target.");
             }
 
-            var olddir = actor.MoveDir;
-            var turnaround = opposite[(int)olddir];
+            var oldDir = actor.MoveDir;
+            var turnAround = opposite[(int)oldDir];
 
-            var deltax = actor.Target.X - actor.X;
-            var deltay = actor.Target.Y - actor.Y;
+            var deltaX = actor.Target.X - actor.X;
+            var deltaY = actor.Target.Y - actor.Y;
 
-            if (deltax > Fixed.FromInt(10))
+            if (deltaX > Fixed.FromInt(10))
             {
-                d[1] = Direction.East;
+                choices[1] = Direction.East;
             }
-            else if (deltax < Fixed.FromInt(-10))
+            else if (deltaX < Fixed.FromInt(-10))
             {
-                d[1] = Direction.west;
+                choices[1] = Direction.west;
             }
             else
             {
-                d[1] = Direction.None;
+                choices[1] = Direction.None;
             }
 
-            if (deltay < Fixed.FromInt(-10))
+            if (deltaY < Fixed.FromInt(-10))
             {
-                d[2] = Direction.South;
+                choices[2] = Direction.South;
             }
-            else if (deltay > Fixed.FromInt(10))
+            else if (deltaY > Fixed.FromInt(10))
             {
-                d[2] = Direction.North;
+                choices[2] = Direction.North;
             }
             else
             {
-                d[2] = Direction.None;
+                choices[2] = Direction.None;
             }
 
-            // try direct route
-            if (d[1] != Direction.None && d[2] != Direction.None)
+            // Try direct route.
+            if (choices[1] != Direction.None && choices[2] != Direction.None)
             {
-                var a = (deltay < Fixed.Zero) ? 1 : 0;
-                var b = (deltax > Fixed.Zero) ? 1 : 0;
+                var a = (deltaY < Fixed.Zero) ? 1 : 0;
+                var b = (deltaX > Fixed.Zero) ? 1 : 0;
                 actor.MoveDir = diags[(a << 1) + b];
-                if (actor.MoveDir != turnaround && P_TryWalk(actor))
+
+                if (actor.MoveDir != turnAround && TryWalk(actor))
                 {
                     return;
                 }
             }
 
-            // try other directions
-            if (world.Random.Next() > 200
-                || Fixed.Abs(deltay) > Fixed.Abs(deltax))
+            // Try other directions.
+            if (world.Random.Next() > 200 || Fixed.Abs(deltaY) > Fixed.Abs(deltaX))
             {
-                var tdir = d[1];
-                d[1] = d[2];
-                d[2] = tdir;
+                var temp = choices[1];
+                choices[1] = choices[2];
+                choices[2] = temp;
             }
 
-            if (d[1] == turnaround)
+            if (choices[1] == turnAround)
             {
-                d[1] = Direction.None;
+                choices[1] = Direction.None;
             }
 
-            if (d[2] == turnaround)
+            if (choices[2] == turnAround)
             {
-                d[2] = Direction.None;
+                choices[2] = Direction.None;
             }
 
-            if (d[1] != Direction.None)
+            if (choices[1] != Direction.None)
             {
-                actor.MoveDir = d[1];
-                if (P_TryWalk(actor))
+                actor.MoveDir = choices[1];
+
+                if (TryWalk(actor))
                 {
-                    // either moved forward or attacked
+                    // Either moved forward or attacked.
                     return;
                 }
             }
 
-            if (d[2] != Direction.None)
+            if (choices[2] != Direction.None)
             {
-                actor.MoveDir = d[2];
+                actor.MoveDir = choices[2];
 
-                if (P_TryWalk(actor))
-                {
-                    return;
-                }
-            }
-
-            // there is no direct path to the player,
-            // so pick another direction.
-            if (olddir != Direction.None)
-            {
-                actor.MoveDir = olddir;
-
-                if (P_TryWalk(actor))
+                if (TryWalk(actor))
                 {
                     return;
                 }
             }
 
-            // randomly determine direction of search
+            // There is no direct path to the player, so pick another direction.
+            if (oldDir != Direction.None)
+            {
+                actor.MoveDir = oldDir;
+
+                if (TryWalk(actor))
+                {
+                    return;
+                }
+            }
+
+            // Randomly determine direction of search.
             if ((world.Random.Next() & 1) != 0)
             {
-                for (var tdir = (int)Direction.East; tdir <= (int)Direction.Southeast; tdir++)
+                for (var dir = (int)Direction.East; dir <= (int)Direction.Southeast; dir++)
                 {
-                    if ((Direction)tdir != turnaround)
+                    if ((Direction)dir != turnAround)
                     {
-                        actor.MoveDir = (Direction)tdir;
+                        actor.MoveDir = (Direction)dir;
 
-                        if (P_TryWalk(actor))
+                        if (TryWalk(actor))
                         {
                             return;
                         }
@@ -422,13 +391,13 @@ namespace ManagedDoom
             }
             else
             {
-                for (var tdir = (int)Direction.Southeast; tdir != ((int)Direction.East - 1); tdir--)
+                for (var dir = (int)Direction.Southeast; dir != ((int)Direction.East - 1); dir--)
                 {
-                    if ((Direction)tdir != turnaround)
+                    if ((Direction)dir != turnAround)
                     {
-                        actor.MoveDir = (Direction)tdir;
+                        actor.MoveDir = (Direction)dir;
 
-                        if (P_TryWalk(actor))
+                        if (TryWalk(actor))
                         {
                             return;
                         }
@@ -436,34 +405,33 @@ namespace ManagedDoom
                 }
             }
 
-            if (turnaround != Direction.None)
+            if (turnAround != Direction.None)
             {
-                actor.MoveDir = turnaround;
-                if (P_TryWalk(actor))
+                actor.MoveDir = turnAround;
+
+                if (TryWalk(actor))
                 {
                     return;
                 }
             }
 
-            // can not move
+            // Can not move.
             actor.MoveDir = Direction.None;
         }
 
 
-        //
-        // P_CheckMeleeRange
-        //
-        private bool P_CheckMeleeRange(Mobj actor)
+        private bool CheckMeleeRange(Mobj actor)
         {
             if (actor.Target == null)
             {
                 return false;
             }
 
-            var pl = actor.Target;
-            var dist = Geometry.AproxDistance(pl.X - actor.X, pl.Y - actor.Y);
+            var target = actor.Target;
 
-            if (dist >= World.MELEERANGE - Fixed.FromInt(20) + pl.Info.Radius)
+            var dist = Geometry.AproxDistance(target.X - actor.X, target.Y - actor.Y);
+
+            if (dist >= World.MELEERANGE - Fixed.FromInt(20) + target.Info.Radius)
             {
                 return false;
             }
@@ -477,10 +445,7 @@ namespace ManagedDoom
         }
 
 
-        //
-        // P_CheckMissileRange
-        //
-        private bool P_CheckMissileRange(Mobj actor)
+        private bool CheckMissileRange(Mobj actor)
         {
             if (!world.VisibilityCheck.CheckSight(actor, actor.Target))
             {
@@ -489,70 +454,71 @@ namespace ManagedDoom
 
             if ((actor.Flags & MobjFlags.JustHit) != 0)
             {
-                // the target just hit the enemy,
-                // so fight back!
+                // The target just hit the enemy, so fight back!
                 actor.Flags &= ~MobjFlags.JustHit;
+
                 return true;
             }
 
             if (actor.ReactionTime > 0)
             {
-                // do not attack yet
+                // Do not attack yet
                 return false;
             }
 
-            // OPTIMIZE: get this from a global checksight
+            // OPTIMIZE:
+            //     Get this from a global checksight.
             var dist = Geometry.AproxDistance(
                 actor.X - actor.Target.X,
                 actor.Y - actor.Target.Y) - Fixed.FromInt(64);
 
             if (actor.Info.MeleeState == 0)
             {
-                // no melee attack, so fire more
+                // No melee attack, so fire more.
                 dist -= Fixed.FromInt(128);
             }
 
-            dist = new Fixed(dist.Data >> 16);
+            var attackDist = dist.Data >> 16;
 
             if (actor.Type == MobjType.Vile)
             {
-                if (dist.Data > 14 * 64)
+                if (attackDist > 14 * 64)
                 {
-                    // too far away
+                    // Too far away.
                     return false;
                 }
             }
 
             if (actor.Type == MobjType.Undead)
             {
-                if (dist.Data < 196)
+                if (attackDist < 196)
                 {
-                    // close for fist attack
+                    // Close for fist attack.
                     return false;
                 }
 
-                dist = new Fixed(dist.Data >> 1);
+                attackDist >>= 1;
             }
 
 
-            if (actor.Type == MobjType.Cyborg
-                || actor.Type == MobjType.Spider
-                || actor.Type == MobjType.Skull)
+            if (actor.Type == MobjType.Cyborg ||
+                actor.Type == MobjType.Spider ||
+                actor.Type == MobjType.Skull)
             {
-                dist = new Fixed(dist.Data >> 1);
+                attackDist >>= 1;
             }
 
-            if (dist.Data > 200)
+            if (attackDist > 200)
             {
-                dist = new Fixed(200);
+                attackDist = 200;
             }
 
-            if (actor.Type == MobjType.Cyborg && dist.Data > 160)
+            if (actor.Type == MobjType.Cyborg && attackDist > 160)
             {
-                dist = new Fixed(160);
+                attackDist = 160;
             }
 
-            if (world.Random.Next() < dist.Data)
+            if (world.Random.Next() < attackDist)
             {
                 return false;
             }
@@ -568,11 +534,10 @@ namespace ManagedDoom
                 actor.ReactionTime--;
             }
 
-            // modify target threshold
+            // Modify target threshold.
             if (actor.Threshold > 0)
             {
-                if (actor.Target == null
-                    || actor.Target.Health <= 0)
+                if (actor.Target == null || actor.Target.Health <= 0)
                 {
                     actor.Threshold = 0;
                 }
@@ -582,10 +547,11 @@ namespace ManagedDoom
                 }
             }
 
-            // turn towards movement direction if not there yet
+            // Turn towards movement direction if not there yet.
             if ((int)actor.MoveDir < 8)
             {
                 actor.Angle = new Angle((int)actor.Angle.Data & (7 << 29));
+
                 var delta = (int)(actor.Angle - new Angle((int)actor.MoveDir << 29)).Data;
 
                 if (delta > 0)
@@ -598,13 +564,12 @@ namespace ManagedDoom
                 }
             }
 
-            if (actor.Target == null
-                || (actor.Target.Flags & MobjFlags.Shootable) == 0)
+            if (actor.Target == null || (actor.Target.Flags & MobjFlags.Shootable) == 0)
             {
-                // look for a new target
-                if (P_LookForPlayers(actor, true))
+                // Look for a new target.
+                if (LookForPlayers(actor, true))
                 {
-                    // got a new target
+                    // Got a new target.
                     return;
                 }
 
@@ -613,22 +578,22 @@ namespace ManagedDoom
                 return;
             }
 
-            // do not attack twice in a row
+            // Do not attack twice in a row.
             if ((actor.Flags & MobjFlags.JustAttacked) != 0)
             {
                 actor.Flags &= ~MobjFlags.JustAttacked;
-                if (world.Options.Skill != GameSkill.Nightmare
-                    && !world.Options.FastMonsters)
+
+                if (world.Options.Skill != GameSkill.Nightmare &&
+                    !world.Options.FastMonsters)
                 {
-                    P_NewChaseDir(actor);
+                    NewChaseDir(actor);
                 }
 
                 return;
             }
 
-            // check for melee attack
-            if (actor.Info.MeleeState != 0
-                && P_CheckMeleeRange(actor))
+            // Check for melee attack.
+            if (actor.Info.MeleeState != 0 && CheckMeleeRange(actor))
             {
                 if (actor.Info.AttackSound != 0)
                 {
@@ -640,18 +605,19 @@ namespace ManagedDoom
                 return;
             }
 
-            // check for missile attack
+            // Check for missile attack.
             if (actor.Info.MissileState != 0)
             {
-                if (world.Options.Skill < GameSkill.Nightmare
-                    && !world.Options.FastMonsters && actor.MoveCount != 0)
+                if (world.Options.Skill < GameSkill.Nightmare &&
+                    !world.Options.FastMonsters &&
+                    actor.MoveCount != 0)
                 {
-                    goto nomissile;
+                    goto noMissile;
                 }
 
-                if (!P_CheckMissileRange(actor))
+                if (!CheckMissileRange(actor))
                 {
-                    goto nomissile;
+                    goto noMissile;
                 }
 
                 actor.SetState(actor.Info.MissileState);
@@ -660,30 +626,31 @@ namespace ManagedDoom
                 return;
             }
 
-        // ?
-        nomissile:
-            // possibly choose another target
-            if (world.Options.NetGame
-                && actor.Threshold == 0
-                && !world.VisibilityCheck.CheckSight(actor, actor.Target))
+        noMissile:
+            // Possibly choose another target.
+            if (world.Options.NetGame &&
+                actor.Threshold == 0 &&
+                !world.VisibilityCheck.CheckSight(actor, actor.Target))
             {
-                if (P_LookForPlayers(actor, true))
-                    return; // got a new target
+                if (LookForPlayers(actor, true))
+                {
+                    // Got a new target.
+                    return;
+                }
             }
 
-            // chase towards player
-            if (--actor.MoveCount < 0 || !P_Move(actor))
+            // Chase towards player.
+            if (--actor.MoveCount < 0 || !Move(actor))
             {
-                P_NewChaseDir(actor);
+                NewChaseDir(actor);
             }
 
-            // make active sound
+            // Make active sound.
             if (actor.Info.ActiveSound != 0 && world.Random.Next() < 3)
             {
                 world.StartSound(actor, actor.Info.ActiveSound);
             }
         }
-
 
 
         public void FaceTarget(Mobj actor)
@@ -696,14 +663,14 @@ namespace ManagedDoom
             actor.Flags &= ~MobjFlags.Ambush;
 
             actor.Angle = Geometry.PointToAngle(
-                actor.X,
-                actor.Y,
-                actor.Target.X,
-                actor.Target.Y);
+                actor.X, actor.Y,
+                actor.Target.X, actor.Target.Y);
+
+            var random = world.Random;
 
             if ((actor.Target.Flags & MobjFlags.Shadow) != 0)
             {
-                actor.Angle += new Angle((world.Random.Next() - world.Random.Next()) << 21);
+                actor.Angle += new Angle((random.Next() - random.Next()) << 21);
             }
         }
 
@@ -716,14 +683,19 @@ namespace ManagedDoom
             }
 
             FaceTarget(actor);
+
             var angle = actor.Angle;
             var slope = world.Hitscan.AimLineAttack(actor, angle, World.MISSILERANGE);
 
             world.StartSound(actor, Sfx.PISTOL);
-            angle += new Angle((world.Random.Next() - world.Random.Next()) << 20);
-            var damage = ((world.Random.Next() % 5) + 1) * 3;
+
+            var random = world.Random;
+            angle += new Angle((random.Next() - random.Next()) << 20);
+            var damage = ((random.Next() % 5) + 1) * 3;
+
             world.Hitscan.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
         }
+
 
         public void SPosAttack(Mobj actor)
         {
@@ -733,17 +705,23 @@ namespace ManagedDoom
             }
 
             world.StartSound(actor, Sfx.SHOTGN);
+
             FaceTarget(actor);
-            var bangle = actor.Angle;
-            var slope = world.Hitscan.AimLineAttack(actor, bangle, World.MISSILERANGE);
+
+            var center = actor.Angle;
+            var slope = world.Hitscan.AimLineAttack(actor, center, World.MISSILERANGE);
+
+            var random = world.Random;
 
             for (var i = 0; i < 3; i++)
             {
-                var angle = bangle + new Angle((world.Random.Next() - world.Random.Next()) << 20);
-                var damage = ((world.Random.Next() % 5) + 1) * 3;
+                var angle = center + new Angle((random.Next() - random.Next()) << 20);
+                var damage = ((random.Next() % 5) + 1) * 3;
+
                 world.Hitscan.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
             }
         }
+
 
         public void CPosAttack(Mobj actor)
         {
@@ -753,18 +731,23 @@ namespace ManagedDoom
             }
 
             world.StartSound(actor, Sfx.SHOTGN);
-            FaceTarget(actor);
-            var bangle = actor.Angle;
-            var slope = world.Hitscan.AimLineAttack(actor, bangle, World.MISSILERANGE);
 
-            var angle = bangle + new Angle((world.Random.Next() - world.Random.Next()) << 20);
-            var damage = ((world.Random.Next() % 5) + 1) * 3;
+            FaceTarget(actor);
+
+            var center = actor.Angle;
+            var slope = world.Hitscan.AimLineAttack(actor, center, World.MISSILERANGE);
+
+            var random = world.Random;
+            var angle = center + new Angle((random.Next() - random.Next()) << 20);
+            var damage = ((random.Next() % 5) + 1) * 3;
+
             world.Hitscan.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
         }
 
+
         public void CPosRefire(Mobj actor)
         {
-            // keep firing unless target got out of sight
+            // Keep firing unless target got out of sight.
             FaceTarget(actor);
 
             if (world.Random.Next() < 40)
@@ -772,13 +755,14 @@ namespace ManagedDoom
                 return;
             }
 
-            if (actor.Target == null
-                || actor.Target.Health <= 0
-                || !world.VisibilityCheck.CheckSight(actor, actor.Target))
+            if (actor.Target == null ||
+                actor.Target.Health <= 0 ||
+                !world.VisibilityCheck.CheckSight(actor, actor.Target))
             {
                 actor.SetState(actor.Info.SeeState);
             }
         }
+
 
         public void Pain(Mobj actor)
         {
@@ -787,6 +771,7 @@ namespace ManagedDoom
                 world.StartSound(actor, actor.Info.PainSound);
             }
         }
+
 
         public void Scream(Mobj actor)
         {
@@ -825,6 +810,7 @@ namespace ManagedDoom
             }
         }
 
+
         public void XScream(Mobj actor)
         {
             world.StartSound(actor, Sfx.SLOP);
@@ -839,17 +825,21 @@ namespace ManagedDoom
             }
 
             FaceTarget(actor);
-            if (P_CheckMeleeRange(actor))
+
+            if (CheckMeleeRange(actor))
             {
                 world.StartSound(actor, Sfx.CLAW);
+
                 var damage = (world.Random.Next() % 8 + 1) * 3;
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
+
                 return;
             }
 
-            // launch a missile
+            // Launch a missile.
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Troopshot);
         }
+
 
         public void SargAttack(Mobj actor)
         {
@@ -859,12 +849,14 @@ namespace ManagedDoom
             }
 
             FaceTarget(actor);
-            if (P_CheckMeleeRange(actor))
+
+            if (CheckMeleeRange(actor))
             {
                 var damage = ((world.Random.Next() % 10) + 1) * 4;
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
             }
         }
+
 
         public void HeadAttack(Mobj actor)
         {
@@ -874,16 +866,19 @@ namespace ManagedDoom
             }
 
             FaceTarget(actor);
-            if (P_CheckMeleeRange(actor))
+
+            if (CheckMeleeRange(actor))
             {
                 var damage = (world.Random.Next() % 6 + 1) * 10;
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
+
                 return;
             }
 
-            // launch a missile
+            // Launch a missile.
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Headshot);
         }
+
 
         public void BruisAttack(Mobj actor)
         {
@@ -892,26 +887,22 @@ namespace ManagedDoom
                 return;
             }
 
-            if (P_CheckMeleeRange(actor))
+            if (CheckMeleeRange(actor))
             {
                 world.StartSound(actor, Sfx.CLAW);
+
                 var damage = (world.Random.Next() % 8 + 1) * 10;
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
+
                 return;
             }
 
-            // launch a missile
+            // Launch a missile.
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Bruisershot);
         }
 
 
-
-
-
-
-
-
-        private static readonly Fixed SKULLSPEED = Fixed.FromInt(20);
+        private static readonly Fixed skullSpeed = Fixed.FromInt(20);
 
         public void SkullAttack(Mobj actor)
         {
@@ -921,26 +912,30 @@ namespace ManagedDoom
             }
 
             var dest = actor.Target;
+
             actor.Flags |= MobjFlags.SkullFly;
 
             world.StartSound(actor, actor.Info.AttackSound);
-            FaceTarget(actor);
-            var an = actor.Angle; // >> ANGLETOFINESHIFT;
-            actor.MomX = SKULLSPEED * Trig.Cos(an);
-            actor.MomY = SKULLSPEED * Trig.Sin(an);
-            var dist = Geometry.AproxDistance(dest.X - actor.X, dest.Y - actor.Y);
-            dist = new Fixed(dist.Data / SKULLSPEED.Data);
 
-            if (dist.Data < 1)
+            FaceTarget(actor);
+
+            var angle = actor.Angle;
+            actor.MomX = skullSpeed * Trig.Cos(angle);
+            actor.MomY = skullSpeed * Trig.Sin(angle);
+
+            var dist = Geometry.AproxDistance(dest.X - actor.X, dest.Y - actor.Y);
+
+            var num = (dest.Z + (dest.Height >> 1) - actor.Z).Data;
+            var den = dist.Data / skullSpeed.Data;
+            if (den < 1)
             {
-                dist = new Fixed(1);
+                den = 1;
             }
-            actor.MomZ = new Fixed((dest.Z + new Fixed(dest.Height.Data >> 1) - actor.Z).Data / dist.Data);
+
+            actor.MomZ = new Fixed(num / den);
         }
 
-        //
-        // A_Explode
-        //
+
         public void Explode(Mobj thingy)
         {
             world.ThingInteraction.RadiusAttack(thingy, thingy.Target, 128);
@@ -1121,8 +1116,8 @@ namespace ManagedDoom
             if (actor.MoveDir != Direction.None)
             {
                 // check for corpses to raise
-                viletryx = actor.X + actor.Info.Speed * xspeed[(int)actor.MoveDir];
-                viletryy = actor.Y + actor.Info.Speed * yspeed[(int)actor.MoveDir];
+                viletryx = actor.X + actor.Info.Speed * xSpeed[(int)actor.MoveDir];
+                viletryy = actor.Y + actor.Info.Speed * ySpeed[(int)actor.MoveDir];
 
                 var bm = world.Map.BlockMap;
                 var maxRadius = GameConstants.MaxThingRadius * 2;
@@ -1404,7 +1399,7 @@ namespace ManagedDoom
 
             FaceTarget(actor);
 
-            if (P_CheckMeleeRange(actor))
+            if (CheckMeleeRange(actor))
             {
                 var damage = ((world.Random.Next() % 10) + 1) * 6;
                 world.StartSound(actor, Sfx.SKEPCH);
