@@ -942,67 +942,69 @@ namespace ManagedDoom
         }
 
 
-
-
-        private static readonly Angle FATSPREAD = new Angle(Angle.Ang90.Data / 8);
-
         public void FatRaise(Mobj actor)
         {
             FaceTarget(actor);
+
             world.StartSound(actor, Sfx.MANATK);
         }
 
+
+        private static readonly Angle fatSpread = Angle.Ang90 / 8;
+
         public void FatAttack1(Mobj actor)
         {
-            var ta = world.ThingAllocation;
-
             FaceTarget(actor);
 
-            // Change direction  to ...
-            actor.Angle += FATSPREAD;
+            var ta = world.ThingAllocation;
+
+            // Change direction to...
+            actor.Angle += fatSpread;
             ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
 
-            var mo = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
-            mo.Angle += FATSPREAD;
-            var an = mo.Angle; // >> ANGLETOFINESHIFT;
-            mo.MomX = new Fixed(mo.Info.Speed) * Trig.Cos(an);
-            mo.MomY = new Fixed(mo.Info.Speed) * Trig.Sin(an);
+            var missile = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            missile.Angle += fatSpread;
+            var angle = missile.Angle;
+            missile.MomX = new Fixed(missile.Info.Speed) * Trig.Cos(angle);
+            missile.MomY = new Fixed(missile.Info.Speed) * Trig.Sin(angle);
         }
+
 
         public void FatAttack2(Mobj actor)
         {
-            var ta = world.ThingAllocation;
-
             FaceTarget(actor);
 
+            var ta = world.ThingAllocation;
+
             // Now here choose opposite deviation.
-            actor.Angle -= FATSPREAD;
+            actor.Angle -= fatSpread;
             ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
 
-            var mo = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
-            mo.Angle -= new Angle(FATSPREAD.Data * 2);
-            var an = mo.Angle; // >> ANGLETOFINESHIFT;
-            mo.MomX = new Fixed(mo.Info.Speed) * Trig.Cos(an);
-            mo.MomY = new Fixed(mo.Info.Speed) * Trig.Sin(an);
+            var missile = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            missile.Angle -= fatSpread * 2;
+            var angle = missile.Angle;
+            missile.MomX = new Fixed(missile.Info.Speed) * Trig.Cos(angle);
+            missile.MomY = new Fixed(missile.Info.Speed) * Trig.Sin(angle);
         }
+
 
         public void FatAttack3(Mobj actor)
         {
-            var ta = world.ThingAllocation;
-
             FaceTarget(actor);
 
-            var mo = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
-            mo.Angle -= new Angle(FATSPREAD.Data / 2);
-            var an = mo.Angle; // >> ANGLETOFINESHIFT;
-            mo.MomX = new Fixed(mo.Info.Speed) * Trig.Cos(an);
-            mo.MomY = new Fixed(mo.Info.Speed) * Trig.Sin(an);
+            var ta = world.ThingAllocation;
 
-            mo = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
-            mo.Angle += new Angle(FATSPREAD.Data / 2);
-            an = mo.Angle; // >> ANGLETOFINESHIFT;
-            mo.MomX = new Fixed(mo.Info.Speed) * Trig.Cos(an);
-            mo.MomY = new Fixed(mo.Info.Speed) * Trig.Sin(an);
+            var missile1 = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            missile1.Angle -= fatSpread / 2;
+            var angle1 = missile1.Angle;
+            missile1.MomX = new Fixed(missile1.Info.Speed) * Trig.Cos(angle1);
+            missile1.MomY = new Fixed(missile1.Info.Speed) * Trig.Sin(angle1);
+
+            var missile2 = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            missile2.Angle += fatSpread / 2;
+            var angle2 = missile2.Angle;
+            missile2.MomX = new Fixed(missile2.Info.Speed) * Trig.Cos(angle2);
+            missile2.MomY = new Fixed(missile2.Info.Speed) * Trig.Sin(angle2);
         }
 
 
