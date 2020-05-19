@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace ManagedDoom
 {
@@ -10,6 +11,8 @@ namespace ManagedDoom
         public MonsterBehavior(World world)
         {
             this.world = world;
+
+            InitVile();
         }
 
 
@@ -1008,17 +1011,17 @@ namespace ManagedDoom
         }
 
 
-
-
         public void BabyMetal(Mobj mo)
         {
             world.StartSound(mo, Sfx.BSPWLK);
+
             Chase(mo);
         }
 
+
         public void SpidRefire(Mobj actor)
         {
-            // keep firing unless target got out of sight
+            // Keep firing unless target got out of sight.
             FaceTarget(actor);
 
             if (world.Random.Next() < 10)
@@ -1026,13 +1029,14 @@ namespace ManagedDoom
                 return;
             }
 
-            if (actor.Target == null
-                || actor.Target.Health <= 0
-                || !world.VisibilityCheck.CheckSight(actor, actor.Target))
+            if (actor.Target == null ||
+                actor.Target.Health <= 0 ||
+                !world.VisibilityCheck.CheckSight(actor, actor.Target))
             {
                 actor.SetState(actor.Info.SeeState);
             }
         }
+
 
         public void BspiAttack(Mobj actor)
         {
@@ -1043,116 +1047,110 @@ namespace ManagedDoom
 
             FaceTarget(actor);
 
-            // launch a missile
+            // Launch a missile.
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Arachplaz);
         }
 
 
+        private Func<Mobj, bool> vileCheckFunc;
+        private Mobj vileTargetCorpse;
+        private Fixed vileTryX;
+        private Fixed vileTryY;
 
+        private void InitVile()
+        {
+            vileCheckFunc = VileCheck;
+        }
 
-
-
-
-
-
-        //
-        // PIT_VileCheck
-        // Detect a corpse that could be raised.
-        //
-        private Mobj corpsehit;
-        private Mobj vileobj;
-        private Fixed viletryx;
-        private Fixed viletryy;
-
-        private bool PIT_VileCheck(Mobj thing)
+        private bool VileCheck(Mobj thing)
         {
             if ((thing.Flags & MobjFlags.Corpse) == 0)
             {
-                // not a monster
+                // Not a monster.
                 return true;
             }
 
             if (thing.Tics != -1)
             {
-                // not lying still yet
+                // Not lying still yet.
                 return true;
             }
 
             if (thing.Info.Raisestate == MobjState.Null)
             {
-                // monster doesn't have a raise state
+                // Monster doesn't have a raise state.
                 return true;
             }
 
-            var maxdist = thing.Info.Radius + DoomInfo.MobjInfos[(int)MobjType.Vile].Radius;
+            var maxDist = thing.Info.Radius + DoomInfo.MobjInfos[(int)MobjType.Vile].Radius;
 
-            if (Fixed.Abs(thing.X - viletryx) > maxdist
-                || Fixed.Abs(thing.Y - viletryy) > maxdist)
+            if (Fixed.Abs(thing.X - vileTryX) > maxDist ||
+                Fixed.Abs(thing.Y - vileTryY) > maxDist)
             {
-                // not actually touching
+                // Not actually touching.
                 return true;
             }
 
-            corpsehit = thing;
-            corpsehit.MomX = corpsehit.MomY = Fixed.Zero;
-            corpsehit.Height = new Fixed(corpsehit.Height.Data << 2);
-            var check = world.ThingMovement.CheckPosition(corpsehit, corpsehit.X, corpsehit.Y);
-            corpsehit.Height = new Fixed(corpsehit.Height.Data >> 2);
+            vileTargetCorpse = thing;
+            vileTargetCorpse.MomX = vileTargetCorpse.MomY = Fixed.Zero;
+            vileTargetCorpse.Height <<= 2;
+
+            var check = world.ThingMovement.CheckPosition(
+                vileTargetCorpse,
+                vileTargetCorpse.X,
+                vileTargetCorpse.Y);
+
+            vileTargetCorpse.Height >>= 2;
 
             if (!check)
             {
-                // doesn't fit here
+                // Doesn't fit here.
                 return true;
             }
 
-            // got one, so stop checking
+            // Got one, so stop checking.
             return false;
         }
 
-        //
-        // A_VileChase
-        // Check for ressurecting a body
-        //
+
         public void VileChase(Mobj actor)
         {
             if (actor.MoveDir != Direction.None)
             {
-                // check for corpses to raise
-                viletryx = actor.X + actor.Info.Speed * xSpeed[(int)actor.MoveDir];
-                viletryy = actor.Y + actor.Info.Speed * ySpeed[(int)actor.MoveDir];
+                // Check for corpses to raise.
+                vileTryX = actor.X + actor.Info.Speed * xSpeed[(int)actor.MoveDir];
+                vileTryY = actor.Y + actor.Info.Speed * ySpeed[(int)actor.MoveDir];
 
                 var bm = world.Map.BlockMap;
-                var maxRadius = GameConstants.MaxThingRadius * 2;
-                var blockX1 = bm.GetBlockX(viletryx - maxRadius);
-                var blockX2 = bm.GetBlockX(viletryx + maxRadius);
-                var blockY1 = bm.GetBlockY(viletryy - maxRadius);
-                var blockY2 = bm.GetBlockY(viletryy + maxRadius);
 
-                vileobj = actor;
+                var maxRadius = GameConstants.MaxThingRadius * 2;
+                var blockX1 = bm.GetBlockX(vileTryX - maxRadius);
+                var blockX2 = bm.GetBlockX(vileTryX + maxRadius);
+                var blockY1 = bm.GetBlockY(vileTryY - maxRadius);
+                var blockY2 = bm.GetBlockY(vileTryY + maxRadius);
+
                 for (var bx = blockX1; bx <= blockX2; bx++)
                 {
                     for (var by = blockY1; by <= blockY2; by++)
                     {
-                        // Call PIT_VileCheck to check
-                        // whether object is a corpse
-                        // that canbe raised.
-                        if (!bm.IterateThings(bx, by, mo => PIT_VileCheck(mo)))
+                        // Call VileCheck to check whether object is a corpse that canbe raised.
+                        if (!bm.IterateThings(bx, by, vileCheckFunc))
                         {
-                            // got one!
+                            // Got one!
                             var temp = actor.Target;
-                            actor.Target = corpsehit;
+                            actor.Target = vileTargetCorpse;
                             FaceTarget(actor);
                             actor.Target = temp;
-
                             actor.SetState(MobjState.VileHeal1);
-                            world.StartSound(corpsehit, Sfx.SLOP);
-                            var info = corpsehit.Info;
 
-                            corpsehit.SetState(info.Raisestate);
-                            corpsehit.Height = new Fixed(corpsehit.Height.Data << 2);
-                            corpsehit.Flags = info.Flags;
-                            corpsehit.Health = info.SpawnHealth;
-                            corpsehit.Target = null;
+                            world.StartSound(vileTargetCorpse, Sfx.SLOP);
+
+                            var info = vileTargetCorpse.Info;
+                            vileTargetCorpse.SetState(info.Raisestate);
+                            vileTargetCorpse.Height <<= 2;
+                            vileTargetCorpse.Flags = info.Flags;
+                            vileTargetCorpse.Health = info.SpawnHealth;
+                            vileTargetCorpse.Target = null;
 
                             return;
                         }
@@ -1164,53 +1162,55 @@ namespace ManagedDoom
             Chase(actor);
         }
 
-        //
-        // A_VileStart
-        //
+
         public void VileStart(Mobj actor)
         {
             world.StartSound(actor, Sfx.VILATK);
         }
 
+
         public void StartFire(Mobj actor)
         {
             world.StartSound(actor, Sfx.FLAMST);
+
             Fire(actor);
         }
+
 
         public void FireCrackle(Mobj actor)
         {
             world.StartSound(actor, Sfx.FLAME);
+
             Fire(actor);
         }
+
 
         public void Fire(Mobj actor)
         {
             var dest = actor.Tracer;
+
             if (dest == null)
             {
                 return;
             }
 
-            // don't move it if the vile lost sight
+            // Don't move it if the vile lost sight.
             if (!world.VisibilityCheck.CheckSight(actor.Target, dest))
             {
                 return;
             }
 
-            var an = dest.Angle; // >> ANGLETOFINESHIFT;
-
             world.ThingMovement.UnsetThingPosition(actor);
-            actor.X = dest.X + Fixed.FromInt(24) * Trig.Cos(an);
-            actor.Y = dest.Y + Fixed.FromInt(24) * Trig.Sin(an);
+
+            var angle = dest.Angle;
+            actor.X = dest.X + Fixed.FromInt(24) * Trig.Cos(angle);
+            actor.Y = dest.Y + Fixed.FromInt(24) * Trig.Sin(angle);
             actor.Z = dest.Z;
+
             world.ThingMovement.SetThingPosition(actor);
         }
 
-        //
-        // A_VileTarget
-        // Spawn the hellfire
-        //
+
         public void VileTarget(Mobj actor)
         {
             if (actor.Target == null)
@@ -1223,7 +1223,8 @@ namespace ManagedDoom
             var fog = world.ThingAllocation.SpawnMobj(
                 actor.Target.X,
                 actor.Target.X,
-                actor.Target.Z, MobjType.Fire);
+                actor.Target.Z,
+                MobjType.Fire);
 
             actor.Tracer = fog;
             fog.Target = actor;
@@ -1231,9 +1232,7 @@ namespace ManagedDoom
             Fire(fog);
         }
 
-        //
-        // A_VileAttack
-        //
+
         public void VileAttack(Mobj actor)
         {
             if (actor.Target == null)
@@ -1250,20 +1249,19 @@ namespace ManagedDoom
 
             world.StartSound(actor, Sfx.BAREXP);
             world.ThingInteraction.DamageMobj(actor.Target, actor, actor, 20);
-            actor.Target.MomZ = new Fixed(1000 * Fixed.FracUnit / actor.Target.Info.Mass);
-
-            var an = actor.Angle; // >> ANGLETOFINESHIFT;
+            actor.Target.MomZ = Fixed.FromInt(1000) / actor.Target.Info.Mass;
 
             var fire = actor.Tracer;
-
             if (fire == null)
             {
                 return;
             }
 
-            // move the fire between the vile and the player
-            fire.X = actor.Target.X - Fixed.FromInt(24) * Trig.Cos(an);
-            fire.Y = actor.Target.Y - Fixed.FromInt(24) * Trig.Sin(an);
+            var angle = actor.Angle;
+
+            // Move the fire between the vile and the player.
+            fire.X = actor.Target.X - Fixed.FromInt(24) * Trig.Cos(angle);
+            fire.Y = actor.Target.Y - Fixed.FromInt(24) * Trig.Sin(angle);
             world.ThingInteraction.RadiusAttack(fire, actor, 70);
         }
 
