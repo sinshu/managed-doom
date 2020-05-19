@@ -247,6 +247,7 @@ namespace ManagedDoom
             return true;
         }
 
+
         private bool TryWalk(Mobj actor)
         {
             if (!Move(actor))
@@ -262,14 +263,23 @@ namespace ManagedDoom
 
         private static readonly Direction[] opposite =
         {
-            Direction.west, Direction.Southwest, Direction.South, Direction.Southeast,
-            Direction.East, Direction.Northeast, Direction.North, Direction.Northwest,
+            Direction.west,
+            Direction.Southwest,
+            Direction.South,
+            Direction.Southeast,
+            Direction.East,
+            Direction.Northeast,
+            Direction.North,
+            Direction.Northwest,
             Direction.None
         };
 
         private static readonly Direction[] diags =
         {
-            Direction.Northwest, Direction.Northeast, Direction.Southwest, Direction.Southeast
+            Direction.Northwest,
+            Direction.Northeast,
+            Direction.Southwest,
+            Direction.Southeast
         };
 
         private readonly Direction[] choices = new Direction[3];
@@ -1062,6 +1072,7 @@ namespace ManagedDoom
             vileCheckFunc = VileCheck;
         }
 
+
         private bool VileCheck(Mobj thing)
         {
             if ((thing.Flags & MobjFlags.Corpse) == 0)
@@ -1266,16 +1277,6 @@ namespace ManagedDoom
         }
 
 
-
-
-
-
-
-
-
-        //
-        // A_SkelMissile
-        //
         public void SkelMissile(Mobj actor)
         {
             if (actor.Target == null)
@@ -1284,16 +1285,22 @@ namespace ManagedDoom
             }
 
             FaceTarget(actor);
-            actor.Z += Fixed.FromInt(16); // so missile spawns higher
-            var mo = world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Tracer);
-            actor.Z -= Fixed.FromInt(16); // back to normal
 
-            mo.X += mo.MomX;
-            mo.Y += mo.MomY;
-            mo.Tracer = actor.Target;
+            // Missile spawns higher.
+            actor.Z += Fixed.FromInt(16);
+
+            var missile = world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Tracer);
+
+            // Back to normal.
+            actor.Z -= Fixed.FromInt(16);
+
+            missile.X += missile.MomX;
+            missile.Y += missile.MomY;
+            missile.Tracer = actor.Target;
         }
 
-        private static Angle TRACEANGLE = new Angle(0xc000000);
+
+        private static Angle traceAngle = new Angle(0xc000000);
 
         public void Tracer(Mobj actor)
         {
@@ -1302,22 +1309,23 @@ namespace ManagedDoom
                 return;
             }
 
-            // spawn a puff of smoke behind the rocket		
+            // Spawn a puff of smoke behind the rocket.
             world.Hitscan.SpawnPuff(actor.X, actor.Y, actor.Z);
 
-            var th = world.ThingAllocation.SpawnMobj(
+            var smoke = world.ThingAllocation.SpawnMobj(
                 actor.X - actor.MomX,
                 actor.Y - actor.MomY,
-                actor.Z, MobjType.Smoke);
+                actor.Z,
+                MobjType.Smoke);
 
-            th.MomZ = Fixed.One;
-            th.Tics -= world.Random.Next() & 3;
-            if (th.Tics < 1)
+            smoke.MomZ = Fixed.One;
+            smoke.Tics -= world.Random.Next() & 3;
+            if (smoke.Tics < 1)
             {
-                th.Tics = 1;
+                smoke.Tics = 1;
             }
 
-            // adjust direction
+            // Adjust direction.
             var dest = actor.Tracer;
 
             if (dest == null || dest.Health <= 0)
@@ -1325,7 +1333,7 @@ namespace ManagedDoom
                 return;
             }
 
-            // change angle	
+            // Change angle.
             var exact = Geometry.PointToAngle(
                 actor.X, actor.Y,
                 dest.X, dest.Y);
@@ -1334,7 +1342,7 @@ namespace ManagedDoom
             {
                 if (exact - actor.Angle > Angle.Ang180)
                 {
-                    actor.Angle -= TRACEANGLE;
+                    actor.Angle -= traceAngle;
                     if (exact - actor.Angle < Angle.Ang180)
                     {
                         actor.Angle = exact;
@@ -1342,7 +1350,7 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    actor.Angle += TRACEANGLE;
+                    actor.Angle += traceAngle;
                     if (exact - actor.Angle > Angle.Ang180)
                     {
                         actor.Angle = exact;
@@ -1354,19 +1362,19 @@ namespace ManagedDoom
             actor.MomX = new Fixed(actor.Info.Speed) * Trig.Cos(exact);
             actor.MomY = new Fixed(actor.Info.Speed) * Trig.Sin(exact);
 
-            // change slope
+            // Change slope.
             var dist = Geometry.AproxDistance(
                 dest.X - actor.X,
                 dest.Y - actor.Y);
 
-            dist = new Fixed(dist.Data / actor.Info.Speed);
-
-            if (dist < new Fixed(1))
+            var num = (dest.Z + Fixed.FromInt(40) - actor.Z).Data;
+            var den = dist.Data / actor.Info.Speed;
+            if (den < 1)
             {
-                dist = new Fixed(1);
+                den = 1;
             }
 
-            var slope = new Fixed((dest.Z + Fixed.FromInt(40) - actor.Z).Data / dist.Data);
+            var slope = new Fixed(num / den);
 
             if (slope < actor.MomZ)
             {
@@ -1387,8 +1395,10 @@ namespace ManagedDoom
             }
 
             FaceTarget(actor);
+
             world.StartSound(actor, Sfx.SKESWG);
         }
+
 
         public void SkelFist(Mobj actor)
         {
@@ -1408,17 +1418,9 @@ namespace ManagedDoom
         }
 
 
-
-
-
-
-        //
-        // A_PainShootSkull
-        // Spawn a lost soul and launch it at the target
-        //
         public void PainShootSkull(Mobj actor, Angle angle)
         {
-            // count total number of skull currently on the level
+            // Count total number of skull currently on the level.
             var count = 0;
 
             foreach (var thinker in world.Thinkers)
@@ -1430,41 +1432,38 @@ namespace ManagedDoom
                 }
             }
 
-            // if there are allready 20 skulls on the level,
-            // don't spit another one
+            // If there are allready 20 skulls on the level,
+            // don't spit another one.
             if (count > 20)
             {
                 return;
             }
 
-            // okay, there's playe for another one
-            var an = angle; // >> ANGLETOFINESHIFT;
+            // Okay, there's playe for another one.
 
-            var prestep = Fixed.FromInt(4)
-                + 3 * (actor.Info.Radius + DoomInfo.MobjInfos[(int)MobjType.Skull].Radius) / 2;
+            var preStep = Fixed.FromInt(4) +
+                3 * (actor.Info.Radius + DoomInfo.MobjInfos[(int)MobjType.Skull].Radius) / 2;
 
-            var x = actor.X + prestep * Trig.Cos(an);
-            var y = actor.Y + prestep * Trig.Sin(an);
+            var x = actor.X + preStep * Trig.Cos(angle);
+            var y = actor.Y + preStep * Trig.Sin(angle);
             var z = actor.Z + Fixed.FromInt(8);
 
-            var newmobj = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Skull);
+            var skull = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Skull);
 
             // Check for movements.
-            if (!world.ThingMovement.TryMove(newmobj, newmobj.X, newmobj.Y))
+            if (!world.ThingMovement.TryMove(skull, skull.X, skull.Y))
             {
-                // kill it immediately
-                world.ThingInteraction.DamageMobj(newmobj, actor, actor, 10000);
+                // Kill it immediately.
+                world.ThingInteraction.DamageMobj(skull, actor, actor, 10000);
                 return;
             }
 
-            newmobj.Target = actor.Target;
-            SkullAttack(newmobj);
+            skull.Target = actor.Target;
+
+            SkullAttack(skull);
         }
 
-        //
-        // A_PainAttack
-        // Spawn a lost soul and launch it at the target
-        // 
+
         public void PainAttack(Mobj actor)
         {
             if (actor.Target == null)
@@ -1473,6 +1472,7 @@ namespace ManagedDoom
             }
 
             FaceTarget(actor);
+
             PainShootSkull(actor, actor.Angle);
         }
 
@@ -1480,25 +1480,28 @@ namespace ManagedDoom
         public void PainDie(Mobj actor)
         {
             Fall(actor);
+
             PainShootSkull(actor, actor.Angle + Angle.Ang90);
             PainShootSkull(actor, actor.Angle + Angle.Ang180);
             PainShootSkull(actor, actor.Angle + Angle.Ang270);
         }
 
 
-
-
         public void Hoof(Mobj mo)
         {
             world.StartSound(mo, Sfx.HOOF);
+
             Chase(mo);
         }
+
 
         public void Metal(Mobj mo)
         {
             world.StartSound(mo, Sfx.METAL);
+
             Chase(mo);
         }
+
 
         public void CyberAttack(Mobj actor)
         {
@@ -1508,6 +1511,7 @@ namespace ManagedDoom
             }
 
             FaceTarget(actor);
+
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Rocket);
         }
     }
