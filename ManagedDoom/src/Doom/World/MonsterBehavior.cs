@@ -139,7 +139,7 @@ namespace ManagedDoom
 
                 if (actor.Type == MobjType.Spider || actor.Type == MobjType.Cyborg)
                 {
-                    // Full volume.
+                    // Full volume for boss monsters.
                     world.StartSound(null, (Sfx)sound);
                 }
                 else
