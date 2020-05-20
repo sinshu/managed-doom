@@ -4,6 +4,22 @@ namespace ManagedDoom
 {
     public static class Geometry
     {
+        private const int slopeRange = 2048;
+        private const int slopeBits = 11;
+        private const int fracToSlopeShift = Fixed.FracBits - slopeBits;
+
+        private static uint SlopeDiv(Fixed num, Fixed den)
+        {
+            if ((uint)den.Data < 512)
+            {
+                return slopeRange;
+            }
+
+            var ans = ((uint)num.Data << 3) / ((uint)den.Data >> 8);
+
+            return ans <= slopeRange ? ans : slopeRange;
+        }
+
         public static Fixed PointToDist(Fixed fromX, Fixed fromY, Fixed toX, Fixed toY)
         {
             var dx = Fixed.Abs(toX - fromX);
@@ -26,10 +42,10 @@ namespace ManagedDoom
                 frac = Fixed.Zero;
             }
 
-            var angle = (Trig.TanToAngle((uint)frac.Data >> Trig.DBits) + Angle.Ang90).Data >> Trig.AngleToFineShift;
+            var angle = (Trig.TanToAngle((uint)frac.Data >> fracToSlopeShift) + Angle.Ang90);
 
-            // use as cosine
-            var dist = dx / Trig.Sin((int)angle);
+            // Use as cosine.
+            var dist = dx / Trig.Sin(angle);
 
             return dist;
         }
@@ -68,7 +84,7 @@ namespace ManagedDoom
             {
                 if (((node.Dy.Data ^ dx.Data) & 0x80000000) != 0)
                 {
-                    // (left is negative)
+                    // Left is negative.
                     return 1;
                 }
 
@@ -80,12 +96,12 @@ namespace ManagedDoom
 
             if (right < left)
             {
-                // front side
+                // Front side.
                 return 0;
             }
             else
             {
-                // back side
+                // Back side.
                 return 1;
             }
         }
@@ -109,14 +125,12 @@ namespace ManagedDoom
                     if (x > y)
                     {
                         // octant 0
-                        // return tantoangle[SlopeDiv(y, x)];
-                        return Trig.TanToAngle(Trig.SlopeDiv(y, x));
+                        return Trig.TanToAngle(SlopeDiv(y, x));
                     }
                     else
                     {
                         // octant 1
-                        // return ANG90 - 1 - tantoangle[SlopeDiv(x, y)];
-                        return new Angle(Angle.Ang90.Data - 1) - Trig.TanToAngle(Trig.SlopeDiv(x, y));
+                        return new Angle(Angle.Ang90.Data - 1) - Trig.TanToAngle(SlopeDiv(x, y));
                     }
                 }
                 else
@@ -127,14 +141,12 @@ namespace ManagedDoom
                     if (x > y)
                     {
                         // octant 8
-                        // return -tantoangle[SlopeDiv(y, x)];
-                        return -Trig.TanToAngle(Trig.SlopeDiv(y, x));
+                        return -Trig.TanToAngle(SlopeDiv(y, x));
                     }
                     else
                     {
                         // octant 7
-                        // return ANG270 + tantoangle[SlopeDiv(x, y)];
-                        return Angle.Ang270 + Trig.TanToAngle(Trig.SlopeDiv(x, y));
+                        return Angle.Ang270 + Trig.TanToAngle(SlopeDiv(x, y));
                     }
                 }
             }
@@ -149,14 +161,12 @@ namespace ManagedDoom
                     if (x > y)
                     {
                         // octant 3
-                        // return ANG180 - 1 - tantoangle[SlopeDiv(y, x)];
-                        return new Angle(Angle.Ang180.Data - 1) - Trig.TanToAngle(Trig.SlopeDiv(y, x));
+                        return new Angle(Angle.Ang180.Data - 1) - Trig.TanToAngle(SlopeDiv(y, x));
                     }
                     else
                     {
                         // octant 2
-                        // return ANG90 + tantoangle[SlopeDiv(x, y)];
-                        return Angle.Ang90 + Trig.TanToAngle(Trig.SlopeDiv(x, y));
+                        return Angle.Ang90 + Trig.TanToAngle(SlopeDiv(x, y));
                     }
                 }
                 else
@@ -167,14 +177,12 @@ namespace ManagedDoom
                     if (x > y)
                     {
                         // octant 4
-                        // return ANG180 + tantoangle[SlopeDiv(y, x)];
-                        return Angle.Ang180 + Trig.TanToAngle(Trig.SlopeDiv(y, x));
+                        return Angle.Ang180 + Trig.TanToAngle(SlopeDiv(y, x));
                     }
                     else
                     {
                         // octant 5
-                        // return ANG270 - 1 - tantoangle[SlopeDiv(x, y)];
-                        return new Angle(Angle.Ang270.Data - 1) - Trig.TanToAngle(Trig.SlopeDiv(x, y));
+                        return new Angle(Angle.Ang270.Data - 1) - Trig.TanToAngle(SlopeDiv(x, y));
                     }
                 }
             }
@@ -182,22 +190,22 @@ namespace ManagedDoom
 
         public static Subsector PointInSubsector(Fixed x, Fixed y, Map map)
         {
-            // single subsector is a special case
+            // Single subsector is a special case.
             if (map.Nodes.Length == 0)
             {
                 return map.Subsectors[0];
             }
 
-            var nodenum = map.Nodes.Length - 1;
+            var nodeNumber = map.Nodes.Length - 1;
 
-            while (!Node.IsSubsector(nodenum))
+            while (!Node.IsSubsector(nodeNumber))
             {
-                var node = map.Nodes[nodenum];
+                var node = map.Nodes[nodeNumber];
                 var side = PointOnSide(x, y, node);
-                nodenum = node.Children[side];
+                nodeNumber = node.Children[side];
             }
 
-            return map.Subsectors[Node.GetSubsector(nodenum)];
+            return map.Subsectors[Node.GetSubsector(nodeNumber)];
         }
 
         public static int PointOnSegSide(Fixed x, Fixed y, Seg line)
@@ -240,7 +248,7 @@ namespace ManagedDoom
             {
                 if (((ldy.Data ^ dx.Data) & 0x80000000) != 0)
                 {
-                    // (left is negative)
+                    // Left is negative.
                     return 1;
                 }
                 else
@@ -254,12 +262,12 @@ namespace ManagedDoom
 
             if (right < left)
             {
-                // front side
+                // Front side.
                 return 0;
             }
             else
             {
-                // back side
+                // Back side.
                 return 1;
             }
         }
@@ -298,27 +306,27 @@ namespace ManagedDoom
 
             if (right < left)
             {
-                // front side
+                // Front side.
                 return 0;
             }
             else
             {
-                // back side
+                // Back side.
                 return 1;
             }
         }
 
-        public static int BoxOnLineSide(Fixed[] tmbox, LineDef ld)
+        public static int BoxOnLineSide(Fixed[] box, LineDef line)
         {
             int p1;
             int p2;
 
-            switch (ld.SlopeType)
+            switch (line.SlopeType)
             {
                 case SlopeType.Horizontal:
-                    p1 = tmbox[Box.Top] > ld.Vertex1.Y ? 1 : 0;
-                    p2 = tmbox[Box.Bottom] > ld.Vertex1.Y ? 1 : 0;
-                    if (ld.Dx < Fixed.Zero)
+                    p1 = box[Box.Top] > line.Vertex1.Y ? 1 : 0;
+                    p2 = box[Box.Bottom] > line.Vertex1.Y ? 1 : 0;
+                    if (line.Dx < Fixed.Zero)
                     {
                         p1 ^= 1;
                         p2 ^= 1;
@@ -326,9 +334,9 @@ namespace ManagedDoom
                     break;
 
                 case SlopeType.Vertical:
-                    p1 = tmbox[Box.Right] < ld.Vertex1.X ? 1 : 0;
-                    p2 = tmbox[Box.Left] < ld.Vertex1.X ? 1 : 0;
-                    if (ld.Dy < Fixed.Zero)
+                    p1 = box[Box.Right] < line.Vertex1.X ? 1 : 0;
+                    p2 = box[Box.Left] < line.Vertex1.X ? 1 : 0;
+                    if (line.Dy < Fixed.Zero)
                     {
                         p1 ^= 1;
                         p2 ^= 1;
@@ -336,16 +344,17 @@ namespace ManagedDoom
                     break;
 
                 case SlopeType.Positive:
-                    p1 = PointOnLineSide(tmbox[Box.Left], tmbox[Box.Top], ld);
-                    p2 = PointOnLineSide(tmbox[Box.Right], tmbox[Box.Bottom], ld);
+                    p1 = PointOnLineSide(box[Box.Left], box[Box.Top], line);
+                    p2 = PointOnLineSide(box[Box.Right], box[Box.Bottom], line);
                     break;
 
                 case SlopeType.Negative:
-                    p1 = PointOnLineSide(tmbox[Box.Right], tmbox[Box.Top], ld);
-                    p2 = PointOnLineSide(tmbox[Box.Left], tmbox[Box.Bottom], ld);
+                    p1 = PointOnLineSide(box[Box.Right], box[Box.Top], line);
+                    p2 = PointOnLineSide(box[Box.Left], box[Box.Bottom], line);
                     break;
+
                 default:
-                    throw new Exception();
+                    throw new Exception("Invalid SlopeType.");
             }
 
             if (p1 == p2)
@@ -387,12 +396,12 @@ namespace ManagedDoom
             var dx = (x - line.X);
             var dy = (y - line.Y);
 
-            // try to quickly decide by looking at sign bits
+            // Try to quickly decide by looking at sign bits.
             if (((line.Dy.Data ^ line.Dx.Data ^ dx.Data ^ dy.Data) & 0x80000000) != 0)
             {
                 if (((line.Dy.Data ^ dx.Data) & 0x80000000) != 0)
                 {
-                    // (left is negative)
+                    // Left is negative.
                     return 1;
                 }
                 else
@@ -406,12 +415,12 @@ namespace ManagedDoom
 
             if (right < left)
             {
-                // front side
+                // Front side.
                 return 0;
             }
             else
             {
-                // back side
+                // Back side.
                 return 1;
             }
         }
@@ -423,55 +432,55 @@ namespace ManagedDoom
 
             if (dx < dy)
             {
-                return new Fixed(dx.Data + dy.Data - (dx.Data >> 1));
+                return dx + dy - (dx >> 1);
             }
             else
             {
-                return new Fixed(dx.Data + dy.Data - (dy.Data >> 1));
+                return dx + dy - (dy >> 1);
             }
         }
 
-        public static int DivLineSide(Fixed x, Fixed y, DivLine node)
+        public static int DivLineSide(Fixed x, Fixed y, DivLine line)
         {
-            if (node.Dx == Fixed.Zero)
+            if (line.Dx == Fixed.Zero)
             {
-                if (x == node.X)
+                if (x == line.X)
                 {
                     return 2;
                 }
 
-                if (x <= node.X)
+                if (x <= line.X)
                 {
-                    return node.Dy > Fixed.Zero ? 1 : 0;
+                    return line.Dy > Fixed.Zero ? 1 : 0;
                 }
 
-                return node.Dy < Fixed.Zero ? 1 : 0;
+                return line.Dy < Fixed.Zero ? 1 : 0;
             }
 
-            if (node.Dy == Fixed.Zero)
+            if (line.Dy == Fixed.Zero)
             {
-                if (x == node.Y)
+                if (x == line.Y)
                 {
                     return 2;
                 }
 
-                if (y <= node.Y)
+                if (y <= line.Y)
                 {
-                    return node.Dx < Fixed.Zero ? 1 : 0;
+                    return line.Dx < Fixed.Zero ? 1 : 0;
                 }
 
-                return node.Dx > Fixed.Zero ? 1 : 0;
+                return line.Dx > Fixed.Zero ? 1 : 0;
             }
 
-            var dx = (x - node.X);
-            var dy = (y - node.Y);
+            var dx = (x - line.X);
+            var dy = (y - line.Y);
 
-            var left = new Fixed((node.Dy.Data >> Fixed.FracBits) * (dx.Data >> Fixed.FracBits));
-            var right = new Fixed((dy.Data >> Fixed.FracBits) * (node.Dx.Data >> Fixed.FracBits));
+            var left = new Fixed((line.Dy.Data >> Fixed.FracBits) * (dx.Data >> Fixed.FracBits));
+            var right = new Fixed((dy.Data >> Fixed.FracBits) * (line.Dx.Data >> Fixed.FracBits));
 
             if (right < left)
             {
-                // front side
+                // Front side.
                 return 0;
             }
 
@@ -481,7 +490,7 @@ namespace ManagedDoom
             }
             else
             {
-                // back side
+                // Back side.
                 return 1;
             }
         }
@@ -526,7 +535,7 @@ namespace ManagedDoom
 
             if (right < left)
             {
-                // front side
+                // Front side.
                 return 0;
             }
 
@@ -536,7 +545,7 @@ namespace ManagedDoom
             }
             else
             {
-                // back side
+                // Back side.
                 return 1;
             }
         }
