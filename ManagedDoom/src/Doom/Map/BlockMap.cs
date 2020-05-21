@@ -149,33 +149,5 @@ namespace ManagedDoom
         public int Width => width;
         public int Height => height;
         public Mobj[] ThingLists => thingLists;
-
-
-
-        public void DumpMobjState()
-        {
-            var sb = new System.Text.StringBuilder();
-            for (var blockY = 0; blockY < Height; blockY++)
-            {
-                for (var blockX = 0; blockX < Width; blockX++)
-                {
-                    var index = GetIndex(blockX, blockY);
-                    var count = 0;
-                    IterateThings(blockX, blockY, mobj => { count++; return true; });
-                    if (count > 0)
-                    {
-                        sb.Append(DoomInfo.SpriteNames[(int)thingLists[index].Sprite][0]);
-                        sb.Append(count);
-                    }
-                    else
-                    {
-                        sb.Append("  ");
-                    }
-                }
-                sb.AppendLine();
-            }
-            sb.AppendLine();
-            Console.WriteLine(sb);
-        }
     }
 }

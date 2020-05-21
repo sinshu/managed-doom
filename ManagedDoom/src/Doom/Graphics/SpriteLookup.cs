@@ -114,46 +114,6 @@ namespace ManagedDoom
             }
         }
 
-        public void DumpInfo()
-        {
-            Console.WriteLine("Count: " + spriteDefs.Length);
-            Console.WriteLine();
-
-            for (var i = 0; i < (int)Sprite.Count; i++)
-            {
-                var spriteDef = spriteDefs[i];
-                Console.WriteLine(DoomInfo.SpriteNames[i]);
-                for (var j = 0; j < spriteDef.Frames.Length; j++)
-                {
-                    var frame = spriteDef.Frames[j];
-                    Console.Write("Frame " + (char)('A' + j) + ":");
-                    if (frame.Rotate)
-                    {
-                        for (var k = 0; k < 8; k++)
-                        {
-                            Console.Write(" ");
-                            if (frame.Flip[k])
-                            {
-                                Console.Write("!");
-                            }
-                            Console.Write(frame.Patches[k].Name);
-                        }
-                    }
-                    else
-                    {
-                        Console.Write(" ");
-                        if (frame.Flip[0])
-                        {
-                            Console.Write("!");
-                        }
-                        Console.Write(frame.Patches[0].Name);
-                    }
-                    Console.WriteLine();
-                }
-                Console.WriteLine();
-            }
-        }
-
         private static IEnumerable<int> EnumerateSprites(Wad wad)
         {
             var spriteSection = false;
@@ -201,7 +161,6 @@ namespace ManagedDoom
 
             return cache[lump];
         }
-
 
 
         private class SpriteInfo
