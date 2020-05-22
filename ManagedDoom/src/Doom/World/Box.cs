@@ -11,28 +11,28 @@ namespace ManagedDoom
 
         public static void Clear(Fixed[] box)
         {
-            box[Box.Top] = box[Box.Right] = Fixed.MinValue;
-            box[Box.Bottom] = box[Box.Left] = Fixed.MaxValue;
+            box[Top] = box[Right] = Fixed.MinValue;
+            box[Bottom] = box[Left] = Fixed.MaxValue;
         }
 
         public static void AddPoint(Fixed[] box, Fixed x, Fixed y)
         {
-            if (x < box[Box.Left])
+            if (x < box[Left])
             {
-                box[Box.Left] = x;
+                box[Left] = x;
             }
-            else if (x > box[Box.Right])
+            else if (x > box[Right])
             {
-                box[Box.Right] = x;
+                box[Right] = x;
             }
 
-            if (y < box[Box.Bottom])
+            if (y < box[Bottom])
             {
-                box[Box.Bottom] = y;
+                box[Bottom] = y;
             }
-            else if (y > box[Box.Top])
+            else if (y > box[Top])
             {
-                box[Box.Top] = y;
+                box[Top] = y;
             }
         }
     }

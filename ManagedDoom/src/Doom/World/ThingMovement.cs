@@ -156,10 +156,10 @@ namespace ManagedDoom
         {
             var mc = world.MapCollision;
 
-            if (currentBox[Box.Right] <= line.BboxLeft ||
-                currentBox[Box.Left] >= line.BboxRight ||
-                currentBox[Box.Top] <= line.BboxBottom ||
-                currentBox[Box.Bottom] >= line.BboxTop)
+            if (currentBox.Right() <= line.Box.Left() ||
+                currentBox.Left() >= line.Box.Right() ||
+                currentBox.Top() <= line.Box.Bottom() ||
+                currentBox.Bottom() >= line.Box.Top())
             {
                 return true;
             }

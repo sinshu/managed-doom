@@ -19,10 +19,7 @@ namespace ManagedDoom
         public SideDef Side0;
         public SideDef Side1;
 
-        public Fixed BboxTop;
-        public Fixed BboxBottom;
-        public Fixed BboxLeft;
-        public Fixed BboxRight;
+        public Fixed[] Box;
 
         public SlopeType SlopeType;
 
@@ -75,10 +72,11 @@ namespace ManagedDoom
                 }
             }
 
-            BboxTop = Fixed.Max(vertex1.Y, vertex2.Y);
-            BboxBottom = Fixed.Min(vertex1.Y, vertex2.Y);
-            BboxLeft = Fixed.Min(vertex1.X, vertex2.X);
-            BboxRight = Fixed.Max(vertex1.X, vertex2.X);
+            Box = new Fixed[4];
+            Box[ManagedDoom.Box.Top] = Fixed.Max(vertex1.Y, vertex2.Y);
+            Box[ManagedDoom.Box.Bottom] = Fixed.Min(vertex1.Y, vertex2.Y);
+            Box[ManagedDoom.Box.Left] = Fixed.Min(vertex1.X, vertex2.X);
+            Box[ManagedDoom.Box.Right] = Fixed.Max(vertex1.X, vertex2.X);
 
             FrontSector = side0?.Sector;
             BackSector = side1?.Sector;
