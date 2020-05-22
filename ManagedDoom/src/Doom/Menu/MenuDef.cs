@@ -24,7 +24,7 @@ namespace ManagedDoom
             choice = items[index];
         }
 
-        public void Up()
+        private void Up()
         {
             index--;
             if (index < 0)
@@ -35,7 +35,7 @@ namespace ManagedDoom
             choice = items[index];
         }
 
-        public void Down()
+        private void Down()
         {
             index++;
             if (index >= items.Length)
@@ -44,6 +44,26 @@ namespace ManagedDoom
             }
 
             choice = items[index];
+        }
+
+        public bool DoEvent(DoomEvent e)
+        {
+            if (e.Type != EventType.KeyDown)
+            {
+                return true;
+            }
+
+            if (e.Key == SFML.Window.Keyboard.Key.Up)
+            {
+                Up();
+            }
+
+            if (e.Key == SFML.Window.Keyboard.Key.Down)
+            {
+                Down();
+            }
+
+            return true;
         }
 
         public string Name => name;
