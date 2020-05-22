@@ -2,28 +2,22 @@
 
 namespace ManagedDoom
 {
-    public sealed class MenuItem
+    public abstract class MenuItem
     {
-        // 0 = no cursor here, 1 = ok, 2 = arrows ok
-        public int Status;
+        private int skullX;
+        private int skullY;
 
-        public string Name;
-
-        // choice = menu item #.
-        // if status = 2,
-        //   choice = 0: leftarrow,
-        //            1: rightarrow
-        public Action<int> Routine;
-
-        // hotkey in menu
-        public char AlphaKey;
-
-        public MenuItem(int status, string name, Action<int> routine, char alphaKey)
+        private MenuItem()
         {
-            Status = status;
-            Name = name;
-            Routine = routine;
-            AlphaKey = alphaKey;
         }
+
+        public MenuItem(int skullX, int skullY)
+        {
+            this.skullX = skullX;
+            this.skullY = skullY;
+        }
+
+        public int SkullX => skullX;
+        public int SkullY => skullY;
     }
 }

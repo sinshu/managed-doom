@@ -29,6 +29,7 @@ namespace ManagedDoom.SoftwareRendering
         private SFML.Graphics.Sprite sfmlSprite;
         private SFML.Graphics.RenderStates sfmlStates;
 
+        private MenuRenderer menu;
         private ThreeDRenderer threeD;
         private StatusBarRenderer statusBar;
         private IntermissionRenderer intermission;
@@ -77,6 +78,7 @@ namespace ManagedDoom.SoftwareRendering
 
             sfmlStates = new RenderStates(BlendMode.None);
 
+            menu = new MenuRenderer(resource.Wad, screen);
             threeD = new ThreeDRenderer(resource, screen);
             statusBar = new StatusBarRenderer(resource.Patches, screen);
             intermission = new IntermissionRenderer(resource.Patches, screen);
@@ -112,8 +114,9 @@ namespace ManagedDoom.SoftwareRendering
         }
         */
 
-        public void Render(DoomGame game)
+        public void Render(DoomApplication app)
         {
+            var game = app.Game;
             if (game.gameState == GameState.Level)
             {
                 var player = game.World.Players[game.Options.ConsolePlayer];
@@ -124,6 +127,8 @@ namespace ManagedDoom.SoftwareRendering
             {
                 intermission.Render(game.Intermission);
             }
+
+            //menu.Render(app.Menu);
 
             var screenData = screen.Data;
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);

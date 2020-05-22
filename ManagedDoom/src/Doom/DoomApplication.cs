@@ -14,12 +14,12 @@ namespace ManagedDoom
         private SfmlRenderer renderer;
         private SfmlAudio audio;
 
+        private DoomMenu menu;
+
         private Player[] players;
         private TicCmd[] cmds;
         private GameOptions options;
         private DoomGame game;
-
-        private DoomMenu menu;
 
         private List<DoomEvent> events;
 
@@ -35,6 +35,8 @@ namespace ManagedDoom
                 resource = new CommonResource("DOOM2.WAD");
                 renderer = new SoftwareRendering.SfmlRenderer(window, resource, true);
                 audio = new SfmlAudio(resource.Wad);
+
+                menu = new DoomMenu();
 
                 players = new Player[Player.MaxPlayerCount];
                 cmds = new TicCmd[Player.MaxPlayerCount];
@@ -82,7 +84,7 @@ namespace ManagedDoom
         {
             UserInput.BuildTicCmd(cmds[0]);
             game.Update(cmds);
-            renderer.Render(game);
+            renderer.Render(this);
         }
 
         private void KeyPressed(object sender, KeyEventArgs e)
@@ -133,5 +135,9 @@ namespace ManagedDoom
                 window = null;
             }
         }
+
+
+        public DoomGame Game => game;
+        public DoomMenu Menu => menu;
     }
 }

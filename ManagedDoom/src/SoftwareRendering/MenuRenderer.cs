@@ -20,18 +20,19 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Render(DoomMenu menu)
         {
-
+            var current = menu.Current;
+            DrawMenuPatch(current.Name, current.TitleX, current.TitleY);
+            foreach (var item in current.Items)
+            {
+                var simpleItem = item as SimpleMenuItem;
+                if (simpleItem != null)
+                {
+                    DrawSimpleMenuItem(simpleItem);
+                }
+            }
         }
 
-        //
-        // M_DrawMainMenu
-        //
-        private void M_DrawMainMenu()
-        {
-            DrawPatch(94, 2, "M_DOOM");
-        }
-
-        private void DrawPatch(int x, int y, string name)
+        private void DrawMenuPatch(string name, int x, int y)
         {
             Patch patch;
             if (!patches.TryGetValue(name, out patch))
@@ -42,6 +43,11 @@ namespace ManagedDoom.SoftwareRendering
 
             var scale = screen.Width / 320;
             screen.DrawPatch(patch, scale * x, scale * y, scale);
+        }
+
+        private void DrawSimpleMenuItem(SimpleMenuItem item)
+        {
+            DrawMenuPatch(item.Name, item.ItemX, item.ItemY);
         }
     }
 }

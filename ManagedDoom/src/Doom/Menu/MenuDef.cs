@@ -5,23 +5,22 @@ namespace ManagedDoom
 {
     public sealed class MenuDef
     {
-        // # of menu items
-        public int NumItems;
+        private string name;
+        private int titleX;
+        private int titleY;
+        private MenuItem[] items;
 
-        // previous menu
-        public MenuDef PrevMenu;
+        public MenuDef(string name, int titleX, int titleY, params MenuItem[] items)
+        {
+            this.name = name;
+            this.titleX = titleX;
+            this.titleY = titleY;
+            this.items = items;
+        }
 
-        // menu items
-        public List<MenuItem> MenuItems = new List<MenuItem>();
-
-        // draw routine
-        public Action Routine;
-
-        // x,y of menu
-        public int X;
-        public int Y;
-
-        // last item user was on in menu
-        public int LastOn;
+        public string Name => name;
+        public int TitleX => titleX;
+        public int TitleY => titleY;
+        public IReadOnlyList<MenuItem> Items => items;
     }
 }
