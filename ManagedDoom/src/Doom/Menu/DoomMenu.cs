@@ -45,7 +45,7 @@ namespace ManagedDoom
                     return true;
                 }
 
-                return current.DoEvent(e);
+                return false;
             }
         }
 
