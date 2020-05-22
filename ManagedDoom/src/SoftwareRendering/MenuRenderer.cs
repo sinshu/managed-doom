@@ -30,6 +30,9 @@ namespace ManagedDoom.SoftwareRendering
                     DrawSimpleMenuItem(simpleItem);
                 }
             }
+
+            var choice = current.Choice;
+            DrawMenuPatch("M_SKULL1", choice.SkullX, choice.SkullY);
         }
 
         private void DrawMenuPatch(string name, int x, int y)
@@ -37,6 +40,7 @@ namespace ManagedDoom.SoftwareRendering
             Patch patch;
             if (!patches.TryGetValue(name, out patch))
             {
+                Console.WriteLine("Patch loaded: " + name);
                 patch = Patch.FromWad(name, wad);
                 patches.Add(name, patch);
             }
