@@ -7,6 +7,7 @@ namespace ManagedDoom
     {
         private MenuDef main;
         private MenuDef current;
+        private bool active;
 
         public DoomMenu()
         {
@@ -19,13 +20,36 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_QUITG", 65, 131, 97, 136));
 
             current = main;
+            active = false;
         }
 
         public bool DoEvent(DoomEvent e)
         {
-            return current.DoEvent(e);
+            if (active)
+            {
+                if (e.Key == SFML.Window.Keyboard.Key.Escape && e.Type == EventType.KeyDown)
+                {
+                    active = false;
+                    return true;
+                }
+
+                current.DoEvent(e);
+
+                return true;
+            }
+            else
+            {
+                if (e.Key == SFML.Window.Keyboard.Key.Escape && e.Type == EventType.KeyDown)
+                {
+                    active = true;
+                    return true;
+                }
+
+                return current.DoEvent(e);
+            }
         }
 
         public MenuDef Current => current;
+        public bool Active => active;
     }
 }

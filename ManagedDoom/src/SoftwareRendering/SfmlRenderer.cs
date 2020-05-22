@@ -128,7 +128,10 @@ namespace ManagedDoom.SoftwareRendering
                 intermission.Render(game.Intermission);
             }
 
-            //menu.Render(app.Menu);
+            if (app.Menu.Active)
+            {
+                menu.Render(app.Menu);
+            }
 
             var screenData = screen.Data;
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
