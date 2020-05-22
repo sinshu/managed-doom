@@ -33,7 +33,7 @@ namespace ManagedDoom
                 window.Display();
 
                 resource = new CommonResource("DOOM2.WAD");
-                renderer = new SoftwareRendering.SfmlRenderer(window, resource, true);
+                renderer = new SfmlRenderer(window, resource, true);
                 audio = new SfmlAudio(resource.Wad);
 
                 menu = new DoomMenu();
@@ -76,8 +76,18 @@ namespace ManagedDoom
             while (window.IsOpen)
             {
                 window.DispatchEvents();
+                DoEvents();
                 Update();
             }
+        }
+
+        private void DoEvents()
+        {
+            foreach (var e in events)
+            {
+                menu.DoEvent(e);
+            }
+            events.Clear();
         }
 
         private void Update()
@@ -94,6 +104,7 @@ namespace ManagedDoom
                 var de = new DoomEvent();
                 de.Type = EventType.KeyDown;
                 de.Data1 = KeyMap.ToDoomKeyCode(e.Code);
+                de.Key = e.Code;
                 events.Add(de);
             }
         }
@@ -105,6 +116,7 @@ namespace ManagedDoom
                 var de = new DoomEvent();
                 de.Type = EventType.KeyUp;
                 de.Data1 = KeyMap.ToDoomKeyCode(e.Code);
+                de.Key = e.Code;
                 events.Add(de);
             }
         }

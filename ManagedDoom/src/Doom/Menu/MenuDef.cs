@@ -10,6 +10,7 @@ namespace ManagedDoom
         private int titleY;
         private MenuItem[] items;
 
+        private int index;
         private MenuItem choice;
 
         public MenuDef(string name, int titleX, int titleY, params MenuItem[] items)
@@ -19,7 +20,30 @@ namespace ManagedDoom
             this.titleY = titleY;
             this.items = items;
 
-            choice = items[0];
+            index = 0;
+            choice = items[index];
+        }
+
+        public void Up()
+        {
+            index--;
+            if (index < 0)
+            {
+                index = items.Length - 1;
+            }
+
+            choice = items[index];
+        }
+
+        public void Down()
+        {
+            index++;
+            if (index >= items.Length)
+            {
+                index = 0;
+            }
+
+            choice = items[index];
         }
 
         public string Name => name;

@@ -8,5 +8,7 @@ namespace ManagedDoom
         public int Data1;
         public int Data2;
         public int Data3;
+
+        public SFML.Window.Keyboard.Key Key;
     }
 }
