@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace ManagedDoom.SoftwareRendering
 {
@@ -8,11 +9,24 @@ namespace ManagedDoom.SoftwareRendering
         private int height;
         private byte[] data;
 
-        public DrawScreen(int width, int height)
+        private Patch[] chars;
+
+        public DrawScreen(Wad wad, int width, int height)
         {
             this.width = width;
             this.height = height;
             data = new byte[width * height];
+
+            chars = new Patch[128];
+            for (var i = 0; i < chars.Length; i++)
+            {
+                var name = "STCFN" + i.ToString("000");
+                var lump = wad.GetLumpNumber(name);
+                if (lump != -1)
+                {
+                    chars[i] = Patch.FromData(name, wad.ReadLump(lump));
+                }
+            }
         }
 
         public void DrawPatch(Patch patch, int x, int y, int scale)
@@ -82,6 +96,41 @@ namespace ManagedDoom.SoftwareRendering
                     p++;
                     frac += step;
                 }
+            }
+        }
+
+        public void DrawText(string text, int x, int y, int scale)
+        {
+            var drawX = x;
+            var drawY = y - 7 * scale;
+            foreach (var ch in text)
+            {
+                if (ch >= chars.Length)
+                {
+                    continue;
+                }
+
+                if (ch == 32)
+                {
+                    drawX += 4 * scale;
+                    continue;
+                }
+
+                var index = (int)ch;
+                if ('a' <= index && index <= 'z')
+                {
+                    index = index - 'a' + 'A';
+                }
+
+                var patch = chars[index];
+                if (patch == null)
+                {
+                    continue;
+                }
+
+                DrawPatch(patch, drawX, drawY, scale);
+
+                drawX += scale * patch.Width;
             }
         }
 

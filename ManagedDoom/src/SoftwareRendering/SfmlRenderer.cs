@@ -46,13 +46,13 @@ namespace ManagedDoom.SoftwareRendering
 
             if (highResolution)
             {
-                screen = new DrawScreen(640, 400);
+                screen = new DrawScreen(resource.Wad, 640, 400);
                 sfmlTextureWidth = 512;
                 sfmlTextureHeight = 1024;
             }
             else
             {
-                screen = new DrawScreen(320, 200);
+                screen = new DrawScreen(resource.Wad, 320, 200);
                 sfmlTextureWidth = 256;
                 sfmlTextureHeight = 512;
             }

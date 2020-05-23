@@ -76,6 +76,12 @@ namespace ManagedDoom.SoftwareRendering
             screen.DrawPatch(patch, scale * x, scale * y, scale);
         }
 
+        private void DrawMenuText(string text, int x, int y)
+        {
+            var scale = screen.Width / 320;
+            screen.DrawText(text, scale * x, scale * y, scale);
+        }
+
         private void DrawSimpleMenuItem(SimpleMenuItem item)
         {
             DrawMenuPatch(item.Name, item.ItemX, item.ItemY);
@@ -115,6 +121,8 @@ namespace ManagedDoom.SoftwareRendering
                 DrawMenuPatch("M_LSCNTR", x, item.ItemY);
             }
             DrawMenuPatch("M_LSRGHT", item.ItemX + 8 * (1 + length), item.ItemY);
+
+            DrawMenuText(item.Text, item.ItemX + 8, item.ItemY);
         }
     }
 }

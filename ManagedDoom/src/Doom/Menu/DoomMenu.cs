@@ -50,8 +50,8 @@ namespace ManagedDoom
                 0,
                 new TextBoxMenuItem("TEST!!!", 48, 49, 72, 61),
                 new TextBoxMenuItem("TEST!!!", 48, 65, 72, 77),
-                new TextBoxMenuItem("TEST!!!", 48, 81, 72, 93),
-                new TextBoxMenuItem("TEST!!!", 48, 97, 72, 109),
+                new TextBoxMenuItem("TE ST!!!", 48, 81, 72, 93),
+                new TextBoxMenuItem("TE  ST!!!", 48, 97, 72, 109),
                 new TextBoxMenuItem("TEST!!!", 48, 113, 72, 125),
                 new TextBoxMenuItem("TEST!!!", 48, 129, 72, 141));
 
@@ -61,10 +61,10 @@ namespace ManagedDoom
                 0,
                 new TextBoxMenuItem("TEST!!!", 48, 49, 72, 61),
                 new TextBoxMenuItem("TEST!!!", 48, 65, 72, 77),
-                new TextBoxMenuItem("TEST!!!", 48, 81, 72, 93),
-                new TextBoxMenuItem("TEST!!!", 48, 97, 72, 109),
-                new TextBoxMenuItem("TEST!!!", 48, 113, 72, 125),
-                new TextBoxMenuItem("TEST!!!", 48, 129, 72, 141));
+                new TextBoxMenuItem("TE ST!!!", 48, 81, 72, 93),
+                new TextBoxMenuItem("TE ST!!!", 48, 97, 72, 109),
+                new TextBoxMenuItem("test???", 48, 113, 72, 125),
+                new TextBoxMenuItem("testtest___", 48, 129, 72, 141));
 
             main = new MenuDef(
                 this,
