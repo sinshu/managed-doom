@@ -54,6 +54,12 @@ namespace ManagedDoom.SoftwareRendering
             {
                 DrawSliderMenuItem(slider);
             }
+
+            var textBox = item as TextBoxMenuItem;
+            if (textBox != null)
+            {
+                DrawTextBoxMenuItem(textBox);
+            }
         }
 
         private void DrawMenuPatch(string name, int x, int y)
@@ -97,6 +103,18 @@ namespace ManagedDoom.SoftwareRendering
 
             var pos = item.SliderX + 8 * (1 + item.SliderPosition);
             DrawMenuPatch("M_THERMO", pos, item.SliderY);
+        }
+
+        private void DrawTextBoxMenuItem(TextBoxMenuItem item)
+        {
+            var length = 24;
+            DrawMenuPatch("M_LSLEFT", item.ItemX, item.ItemY);
+            for (var i = 0; i < length; i++)
+            {
+                var x = item.ItemX + 8 * (1 + i);
+                DrawMenuPatch("M_LSCNTR", x, item.ItemY);
+            }
+            DrawMenuPatch("M_LSRGHT", item.ItemX + 8 * (1 + length), item.ItemY);
         }
     }
 }

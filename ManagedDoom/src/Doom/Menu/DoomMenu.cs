@@ -9,6 +9,8 @@ namespace ManagedDoom
         private MenuDef skill;
         private MenuDef options;
         private MenuDef volume;
+        private MenuDef load;
+        private MenuDef save;
         private MenuDef current;
         private bool active;
 
@@ -42,6 +44,27 @@ namespace ManagedDoom
                 new SliderMenuItem("M_MSENS", 28, 112 - 16, 60, 117 - 16, 10, 3),
                 new SimpleMenuItem("M_SVOL", 28, 144 - 16, 60, 149 - 16, volume));
 
+            load = new MenuDef(
+                this,
+                "M_LOADG", 72, 28,
+                0,
+                new TextBoxMenuItem("TEST!!!", 48, 49, 72, 61),
+                new TextBoxMenuItem("TEST!!!", 48, 65, 72, 77),
+                new TextBoxMenuItem("TEST!!!", 48, 81, 72, 93),
+                new TextBoxMenuItem("TEST!!!", 48, 97, 72, 109),
+                new TextBoxMenuItem("TEST!!!", 48, 113, 72, 125),
+                new TextBoxMenuItem("TEST!!!", 48, 129, 72, 141));
+
+            save = new MenuDef(
+                this,
+                "M_SAVEG", 72, 28,
+                0,
+                new TextBoxMenuItem("TEST!!!", 48, 49, 72, 61),
+                new TextBoxMenuItem("TEST!!!", 48, 65, 72, 77),
+                new TextBoxMenuItem("TEST!!!", 48, 81, 72, 93),
+                new TextBoxMenuItem("TEST!!!", 48, 97, 72, 109),
+                new TextBoxMenuItem("TEST!!!", 48, 113, 72, 125),
+                new TextBoxMenuItem("TEST!!!", 48, 129, 72, 141));
 
             main = new MenuDef(
                 this,
@@ -49,8 +72,8 @@ namespace ManagedDoom
                 0,
                 new SimpleMenuItem("M_NGAME", 65, 67, 97, 72, skill),
                 new SimpleMenuItem("M_OPTION", 65, 83, 97, 88, options),
-                new SimpleMenuItem("M_LOADG", 65, 99, 97, 104, null),
-                new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null),
+                new SimpleMenuItem("M_LOADG", 65, 99, 97, 104, load),
+                new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, save),
                 new SimpleMenuItem("M_QUITG", 65, 131, 97, 136, null));
 
             current = main;
