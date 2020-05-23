@@ -14,6 +14,8 @@ namespace ManagedDoom
         private int index;
         private MenuItem choice;
 
+        private TextInput textInput;
+
         public MenuDef(
             DoomMenu menu,
             string name, int titleX, int titleY,
@@ -76,6 +78,25 @@ namespace ManagedDoom
                 return true;
             }
 
+            if (textInput != null)
+            {
+                var result = textInput.DoEvent(e);
+
+                if (textInput.State == TextInputState.Canceled)
+                {
+                    textInput = null;
+                }
+                else if (textInput.State == TextInputState.Finished)
+                {
+                    textInput = null;
+                }
+
+                if (result)
+                {
+                    return true;
+                }
+            }
+
             if (e.Key == SFML.Window.Keyboard.Key.Up)
             {
                 Up();
@@ -122,6 +143,12 @@ namespace ManagedDoom
                 if (toggle != null)
                 {
                     toggle.Up();
+                }
+
+                var textBox = choice as TextBoxMenuItem;
+                if (textBox != null)
+                {
+                    textInput = textBox.Edit();
                 }
 
                 if (choice.Next != null)

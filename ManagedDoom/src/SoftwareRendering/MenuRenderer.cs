@@ -5,6 +5,8 @@ namespace ManagedDoom.SoftwareRendering
 {
     public sealed class MenuRenderer
     {
+        private static readonly char[] cursor = { '_' };
+
         private Wad wad;
         private DrawScreen screen;
 
@@ -76,7 +78,7 @@ namespace ManagedDoom.SoftwareRendering
             screen.DrawPatch(patch, scale * x, scale * y, scale);
         }
 
-        private void DrawMenuText(string text, int x, int y)
+        private void DrawMenuText(IReadOnlyList<char> text, int x, int y)
         {
             var scale = screen.Width / 320;
             screen.DrawText(text, scale * x, scale * y, scale);
@@ -123,6 +125,12 @@ namespace ManagedDoom.SoftwareRendering
             DrawMenuPatch("M_LSRGHT", item.ItemX + 8 * (1 + length), item.ItemY);
 
             DrawMenuText(item.Text, item.ItemX + 8, item.ItemY);
+
+            if (item.Editing)
+            {
+                var textWidth = screen.MeasureText(item.Text, 1);
+                DrawMenuText(cursor, item.ItemX + 8 + textWidth, item.ItemY);
+            }
         }
     }
 }

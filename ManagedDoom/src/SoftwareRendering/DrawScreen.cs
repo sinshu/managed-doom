@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
 
 namespace ManagedDoom.SoftwareRendering
 {
@@ -99,7 +99,7 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        public void DrawText(string text, int x, int y, int scale)
+        public void DrawText(IReadOnlyList<char> text, int x, int y, int scale)
         {
             var drawX = x;
             var drawY = y - 7 * scale;
@@ -132,6 +132,41 @@ namespace ManagedDoom.SoftwareRendering
 
                 drawX += scale * patch.Width;
             }
+        }
+
+        public int MeasureText(IReadOnlyList<char> text, int scale)
+        {
+            var width = 0;
+
+            foreach (var ch in text)
+            {
+                if (ch >= chars.Length)
+                {
+                    continue;
+                }
+
+                if (ch == 32)
+                {
+                    width += 4 * scale;
+                    continue;
+                }
+
+                var index = (int)ch;
+                if ('a' <= index && index <= 'z')
+                {
+                    index = index - 'a' + 'A';
+                }
+
+                var patch = chars[index];
+                if (patch == null)
+                {
+                    continue;
+                }
+
+                width += scale * patch.Width;
+            }
+
+            return width;
         }
 
         public int Width => width;
