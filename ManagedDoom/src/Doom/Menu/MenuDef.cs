@@ -5,22 +5,45 @@ namespace ManagedDoom
 {
     public sealed class MenuDef
     {
-        private string name;
-        private int titleX;
-        private int titleY;
+        DoomMenu menu;
+        private string[] name;
+        private int[] titleX;
+        private int[] titleY;
         private MenuItem[] items;
 
         private int index;
         private MenuItem choice;
 
-        public MenuDef(string name, int titleX, int titleY, params MenuItem[] items)
+        public MenuDef(
+            DoomMenu menu,
+            string name, int titleX, int titleY,
+            int defaultChoice,
+            params MenuItem[] items)
         {
-            this.name = name;
-            this.titleX = titleX;
-            this.titleY = titleY;
+            this.menu = menu;
+            this.name = new[] { name };
+            this.titleX = new[] { titleX };
+            this.titleY = new[] { titleY };
             this.items = items;
 
-            index = 0;
+            index = defaultChoice;
+            choice = items[index];
+        }
+
+        public MenuDef(
+            DoomMenu menu,
+            string name1, int titleX1, int titleY1,
+            string name2, int titleX2, int titleY2,
+            int defaultChoice,
+            params MenuItem[] items)
+        {
+            this.menu = menu;
+            this.name = new[] { name1, name2 };
+            this.titleX = new[] { titleX1, titleX2 };
+            this.titleY = new[] { titleY1, titleY2 };
+            this.items = items;
+
+            index = defaultChoice;
             choice = items[index];
         }
 
@@ -63,12 +86,20 @@ namespace ManagedDoom
                 Down();
             }
 
+            if (e.Key == SFML.Window.Keyboard.Key.Enter)
+            {
+                if (choice.Next != null)
+                {
+                    menu.SetCurrent(choice.Next);
+                }
+            }
+
             return true;
         }
 
-        public string Name => name;
-        public int TitleX => titleX;
-        public int TitleY => titleY;
+        public IReadOnlyList<string> Name => name;
+        public IReadOnlyList<int> TitleX => titleX;
+        public IReadOnlyList<int> TitleY => titleY;
         public IReadOnlyList<MenuItem> Items => items;
         public MenuItem Choice => choice;
     }

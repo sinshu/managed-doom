@@ -21,7 +21,10 @@ namespace ManagedDoom.SoftwareRendering
         public void Render(DoomMenu menu)
         {
             var current = menu.Current;
-            DrawMenuPatch(current.Name, current.TitleX, current.TitleY);
+            for (var i = 0; i < current.Name.Count; i++)
+            {
+                DrawMenuPatch(current.Name[i], current.TitleX[i], current.TitleY[i]);
+            }
             foreach (var item in current.Items)
             {
                 var simpleItem = item as SimpleMenuItem;
