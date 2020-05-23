@@ -7,6 +7,8 @@ namespace ManagedDoom
     {
         private MenuDef main;
         private MenuDef skill;
+        private MenuDef options;
+        private MenuDef volume;
         private MenuDef current;
         private bool active;
 
@@ -23,12 +25,30 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_ULTRA", 16, 106, 48, 111, null),
                 new SimpleMenuItem("M_NMARE", 16, 122, 48, 127, null));
 
+            volume = new MenuDef(
+                this,
+                "M_SVOL", 60, 38,
+                0,
+                new SliderMenuItem("M_SFXVOL", 48, 59, 80, 64, 16, 8),
+                new SliderMenuItem("M_MUSVOL", 48, 91, 80, 96, 16, 8));
+
+            options = new MenuDef(
+                this,
+                "M_OPTTTL", 108, 15,
+                0,
+                new SimpleMenuItem("M_ENDGAM", 28, 32, 60, 37, null),
+                new ToggleMenuItem("M_MESSG", 28, 48, 60, 53, "M_MSGON", "M_MSGOFF", 180, 0),
+                new SliderMenuItem("M_SCRNSZ", 28, 80 - 16, 60, 85 - 16, 9, 3),
+                new SliderMenuItem("M_MSENS", 28, 112 - 16, 60, 117 - 16, 10, 3),
+                new SimpleMenuItem("M_SVOL", 28, 144 - 16, 60, 149 - 16, volume));
+
+
             main = new MenuDef(
                 this,
                 "M_DOOM", 94, 2,
                 0,
                 new SimpleMenuItem("M_NGAME", 65, 67, 97, 72, skill),
-                new SimpleMenuItem("M_OPTION", 65, 83, 97, 88, null),
+                new SimpleMenuItem("M_OPTION", 65, 83, 97, 88, options),
                 new SimpleMenuItem("M_LOADG", 65, 99, 97, 104, null),
                 new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null),
                 new SimpleMenuItem("M_QUITG", 65, 131, 97, 136, null));
@@ -41,13 +61,15 @@ namespace ManagedDoom
         {
             if (active)
             {
-                if (e.Key == SFML.Window.Keyboard.Key.Escape && e.Type == EventType.KeyDown)
+                if (current.DoEvent(e))
                 {
-                    active = false;
                     return true;
                 }
 
-                current.DoEvent(e);
+                if (e.Key == SFML.Window.Keyboard.Key.Escape && e.Type == EventType.KeyDown)
+                {
+                    active = false;
+                }
 
                 return true;
             }
@@ -67,6 +89,11 @@ namespace ManagedDoom
         public void SetCurrent(MenuDef next)
         {
             current = next;
+        }
+
+        public void Close()
+        {
+            active = false;
         }
 
         public MenuDef Current => current;

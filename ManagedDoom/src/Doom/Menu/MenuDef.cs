@@ -17,7 +17,7 @@ namespace ManagedDoom
         public MenuDef(
             DoomMenu menu,
             string name, int titleX, int titleY,
-            int defaultChoice,
+            int firstChoice,
             params MenuItem[] items)
         {
             this.menu = menu;
@@ -26,7 +26,7 @@ namespace ManagedDoom
             this.titleY = new[] { titleY };
             this.items = items;
 
-            index = defaultChoice;
+            index = firstChoice;
             choice = items[index];
         }
 
@@ -34,7 +34,7 @@ namespace ManagedDoom
             DoomMenu menu,
             string name1, int titleX1, int titleY1,
             string name2, int titleX2, int titleY2,
-            int defaultChoice,
+            int firstChoice,
             params MenuItem[] items)
         {
             this.menu = menu;
@@ -43,7 +43,7 @@ namespace ManagedDoom
             this.titleY = new[] { titleY1, titleY2 };
             this.items = items;
 
-            index = defaultChoice;
+            index = firstChoice;
             choice = items[index];
         }
 
@@ -86,12 +86,35 @@ namespace ManagedDoom
                 Down();
             }
 
+            if (e.Key == SFML.Window.Keyboard.Key.Left)
+            {
+                var slider = choice as SliderMenuItem;
+                if (slider != null)
+                {
+                    slider.Down();
+                }
+            }
+
+            if (e.Key == SFML.Window.Keyboard.Key.Right)
+            {
+                var slider = choice as SliderMenuItem;
+                if (slider != null)
+                {
+                    slider.Up();
+                }
+            }
+
             if (e.Key == SFML.Window.Keyboard.Key.Enter)
             {
                 if (choice.Next != null)
                 {
                     menu.SetCurrent(choice.Next);
                 }
+            }
+
+            if (e.Key == SFML.Window.Keyboard.Key.Escape)
+            {
+                menu.Close();
             }
 
             return true;
