@@ -37,22 +37,22 @@ namespace ManagedDoom.SoftwareRendering
 
         private void DrawMenuItem(MenuItem item)
         {
-            var simpleItem = item as SimpleMenuItem;
-            if (simpleItem != null)
+            var simple = item as SimpleMenuItem;
+            if (simple != null)
             {
-                DrawSimpleMenuItem(simpleItem);
+                DrawSimpleMenuItem(simple);
             }
 
-            var toggleItem = item as ToggleMenuItem;
-            if (toggleItem != null)
+            var toggle = item as ToggleMenuItem;
+            if (toggle != null)
             {
-                DrawToggleMenuItem(toggleItem);
+                DrawToggleMenuItem(toggle);
             }
 
-            var sliderItem = item as SliderMenuItem;
-            if (sliderItem != null)
+            var slider = item as SliderMenuItem;
+            if (slider != null)
             {
-                DrawSliderMenuItem(sliderItem);
+                DrawSliderMenuItem(slider);
             }
         }
 

@@ -32,6 +32,24 @@ namespace ManagedDoom
             stateNumber = firstState;
         }
 
+        public void Up()
+        {
+            stateNumber++;
+            if (stateNumber == states.Length)
+            {
+                stateNumber = 0;
+            }
+        }
+
+        public void Down()
+        {
+            stateNumber--;
+            if (stateNumber == -1)
+            {
+                stateNumber = states.Length - 1;
+            }
+        }
+
         public string Name => name;
         public int ItemX => itemX;
         public int ItemY => itemY;

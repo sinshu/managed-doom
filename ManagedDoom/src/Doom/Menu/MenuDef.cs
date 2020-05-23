@@ -88,6 +88,12 @@ namespace ManagedDoom
 
             if (e.Key == SFML.Window.Keyboard.Key.Left)
             {
+                var toggle = choice as ToggleMenuItem;
+                if (toggle != null)
+                {
+                    toggle.Down();
+                }
+
                 var slider = choice as SliderMenuItem;
                 if (slider != null)
                 {
@@ -97,6 +103,12 @@ namespace ManagedDoom
 
             if (e.Key == SFML.Window.Keyboard.Key.Right)
             {
+                var toggle = choice as ToggleMenuItem;
+                if (toggle != null)
+                {
+                    toggle.Up();
+                }
+
                 var slider = choice as SliderMenuItem;
                 if (slider != null)
                 {
@@ -106,6 +118,12 @@ namespace ManagedDoom
 
             if (e.Key == SFML.Window.Keyboard.Key.Enter)
             {
+                var toggle = choice as ToggleMenuItem;
+                if (toggle != null)
+                {
+                    toggle.Up();
+                }
+
                 if (choice.Next != null)
                 {
                     menu.SetCurrent(choice.Next);
