@@ -14,6 +14,8 @@ namespace ManagedDoom
         private MenuDef current;
         private bool active;
 
+        private int tics;
+
         public DoomMenu()
         {
             skill = new MenuDef(
@@ -78,6 +80,8 @@ namespace ManagedDoom
 
             current = main;
             active = false;
+
+            tics = 0;
         }
 
         public bool DoEvent(DoomEvent e)
@@ -109,6 +113,11 @@ namespace ManagedDoom
             }
         }
 
+        public void Update()
+        {
+            tics++;
+        }
+
         public void SetCurrent(MenuDef next)
         {
             current = next;
@@ -121,5 +130,6 @@ namespace ManagedDoom
 
         public MenuDef Current => current;
         public bool Active => active;
+        public int Tics => tics;
     }
 }

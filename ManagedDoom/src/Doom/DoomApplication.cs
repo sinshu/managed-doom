@@ -92,8 +92,11 @@ namespace ManagedDoom
 
         private void Update()
         {
+            menu.Update();
+
             UserInput.BuildTicCmd(cmds[0]);
             game.Update(cmds);
+
             renderer.Render(this);
         }
 

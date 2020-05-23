@@ -30,14 +30,15 @@ namespace ManagedDoom.SoftwareRendering
 
             foreach (var item in current.Items)
             {
-                DrawMenuItem(item);
+                DrawMenuItem(menu, item);
             }
 
             var choice = current.Choice;
-            DrawMenuPatch("M_SKULL1", choice.SkullX, choice.SkullY);
+            var skull = menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
+            DrawMenuPatch(skull, choice.SkullX, choice.SkullY);
         }
 
-        private void DrawMenuItem(MenuItem item)
+        private void DrawMenuItem(DoomMenu menu, MenuItem item)
         {
             var simple = item as SimpleMenuItem;
             if (simple != null)
@@ -60,7 +61,7 @@ namespace ManagedDoom.SoftwareRendering
             var textBox = item as TextBoxMenuItem;
             if (textBox != null)
             {
-                DrawTextBoxMenuItem(textBox);
+                DrawTextBoxMenuItem(textBox, menu.Tics);
             }
         }
 
@@ -113,7 +114,7 @@ namespace ManagedDoom.SoftwareRendering
             DrawMenuPatch("M_THERMO", pos, item.SliderY);
         }
 
-        private void DrawTextBoxMenuItem(TextBoxMenuItem item)
+        private void DrawTextBoxMenuItem(TextBoxMenuItem item, int tics)
         {
             var length = 24;
             DrawMenuPatch("M_LSLEFT", item.ItemX, item.ItemY);
@@ -126,7 +127,7 @@ namespace ManagedDoom.SoftwareRendering
 
             DrawMenuText(item.Text, item.ItemX + 8, item.ItemY);
 
-            if (item.Editing)
+            if (item.Editing && tics / 3 % 2 == 0)
             {
                 var textWidth = screen.MeasureText(item.Text, 1);
                 DrawMenuText(cursor, item.ItemX + 8 + textWidth, item.ItemY);
