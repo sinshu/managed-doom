@@ -12,6 +12,23 @@ namespace ManagedDoomTest.UnitTests
         private static readonly double delta = 1.0E-3;
 
         [TestMethod]
+        public void Conversion()
+        {
+            var random = new Random(666);
+            for (var i = 0; i < 100; i++)
+            {
+                var da = 666 * random.NextDouble() - 333;
+                var sa = (float)da;
+
+                var fda = Fixed.FromDouble(da);
+                var fsa = Fixed.FromFloat(sa);
+
+                Assert.AreEqual(da, fda.ToDouble(), delta);
+                Assert.AreEqual(sa, fsa.ToFloat(), delta);
+            }
+        }
+
+        [TestMethod]
         public void Abs1()
         {
             var random = new Random(666);

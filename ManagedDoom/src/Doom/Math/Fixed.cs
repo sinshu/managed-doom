@@ -32,11 +32,24 @@ namespace ManagedDoom
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Fixed FromFloat(float value)
+        {
+            return new Fixed((int)(FracUnit * value));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed FromDouble(double value)
         {
             return new Fixed((int)(FracUnit * value));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float ToFloat()
+        {
+            return (float)data / FracUnit;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double ToDouble()
         {
             return (double)data / FracUnit;

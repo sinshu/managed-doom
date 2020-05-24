@@ -252,7 +252,7 @@ namespace ManagedDoom.SoftwareRendering
             Top = 8
         }
 
-        private OutCode ComputeOutCode(double x, double y)
+        private OutCode ComputeOutCode(float x, float y)
         {
             var code = OutCode.Inside;
 
