@@ -240,7 +240,115 @@ namespace ManagedDoom.SoftwareRendering
             return width;
         }
 
-        public void DrawLine(int x1, int y1, int x2, int y2, int color)
+
+
+        [Flags]
+        private enum OutCode
+        {
+            Inside = 0,
+            Left = 1,
+            Right = 2,
+            Bottom = 4,
+            Top = 8
+        }
+
+        private OutCode ComputeOutCode(double x, double y)
+        {
+            var code = OutCode.Inside;
+
+            if (x < 0)
+            {
+                code |= OutCode.Left;
+            }
+            else if (x > width)
+            {
+                code |= OutCode.Right;
+            }
+
+            if (y < 0)
+            {
+                code |= OutCode.Bottom;
+            }
+            else if (y > height)
+            {
+                code |= OutCode.Top;
+            }
+
+            return code;
+        }
+
+        public void DrawLine(float x1, float y1, float x2, float y2, int color)
+        {
+            var outCode1 = ComputeOutCode(x1, y1);
+            var outCode2 = ComputeOutCode(x2, y2);
+
+            var accept = false;
+
+            while (true)
+            {
+                if ((outCode1 | outCode2) == 0)
+                {
+                    accept = true;
+                    break;
+                }
+                else if ((outCode1 & outCode2) != 0)
+                {
+                    break;
+                }
+                else
+                {
+                    var x = 0.0F;
+                    var y = 0.0F;
+
+                    var outcodeOut = outCode2 > outCode1 ? outCode2 : outCode1;
+
+                    if ((outcodeOut & OutCode.Top) != 0)
+                    {
+                        x = x1 + (x2 - x1) * (height - y1) / (y2 - y1);
+                        y = height;
+                    }
+                    else if ((outcodeOut & OutCode.Bottom) != 0)
+                    {
+                        x = x1 + (x2 - x1) * (0 - y1) / (y2 - y1);
+                        y = 0;
+                    }
+                    else if ((outcodeOut & OutCode.Right) != 0)
+                    {
+                        y = y1 + (y2 - y1) * (width - x1) / (x2 - x1);
+                        x = width;
+                    }
+                    else if ((outcodeOut & OutCode.Left) != 0)
+                    {
+                        y = y1 + (y2 - y1) * (0 - x1) / (x2 - x1);
+                        x = 0;
+                    }
+
+                    if (outcodeOut == outCode1)
+                    {
+                        x1 = x;
+                        y1 = y;
+                        outCode1 = ComputeOutCode(x1, y1);
+                    }
+                    else
+                    {
+                        x2 = x;
+                        y2 = y;
+                        outCode2 = ComputeOutCode(x2, y2);
+                    }
+                }
+            }
+
+            if (accept)
+            {
+                var bx1 = Math.Clamp((int)x1, 0, width - 1);
+                var by1 = Math.Clamp((int)y1, 0, height - 1);
+                var bx2 = Math.Clamp((int)x2, 0, width - 1);
+                var by2 = Math.Clamp((int)y2, 0, height - 1);
+                Bresenham(bx1, by1, bx2, by2, color);
+            }
+        }
+
+        private void Bresenham(int x1, int y1, int x2, int y2, int color)
         {
             var dx = x2 - x1;
             var ax = 2 * (dx < 0 ? -dx : dx);
