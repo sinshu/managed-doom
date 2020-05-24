@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFML.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace ManagedDoom.SoftwareRendering
@@ -134,6 +135,41 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
+        public void DrawText(string text, int x, int y, int scale)
+        {
+            var drawX = x;
+            var drawY = y - 7 * scale;
+            foreach (var ch in text)
+            {
+                if (ch >= chars.Length)
+                {
+                    continue;
+                }
+
+                if (ch == 32)
+                {
+                    drawX += 4 * scale;
+                    continue;
+                }
+
+                var index = (int)ch;
+                if ('a' <= index && index <= 'z')
+                {
+                    index = index - 'a' + 'A';
+                }
+
+                var patch = chars[index];
+                if (patch == null)
+                {
+                    continue;
+                }
+
+                DrawPatch(patch, drawX, drawY, scale);
+
+                drawX += scale * patch.Width;
+            }
+        }
+
         public int MeasureText(IReadOnlyList<char> text, int scale)
         {
             var width = 0;
@@ -167,6 +203,101 @@ namespace ManagedDoom.SoftwareRendering
             }
 
             return width;
+        }
+
+        public int MeasureText(string text, int scale)
+        {
+            var width = 0;
+
+            foreach (var ch in text)
+            {
+                if (ch >= chars.Length)
+                {
+                    continue;
+                }
+
+                if (ch == 32)
+                {
+                    width += 4 * scale;
+                    continue;
+                }
+
+                var index = (int)ch;
+                if ('a' <= index && index <= 'z')
+                {
+                    index = index - 'a' + 'A';
+                }
+
+                var patch = chars[index];
+                if (patch == null)
+                {
+                    continue;
+                }
+
+                width += scale * patch.Width;
+            }
+
+            return width;
+        }
+
+        public void DrawLine(int x1, int y1, int x2, int y2, int color)
+        {
+            var dx = x2 - x1;
+            var ax = 2 * (dx < 0 ? -dx : dx);
+            var sx = dx < 0 ? -1 : 1;
+
+            var dy = y2 - y1;
+            var ay = 2 * (dy < 0 ? -dy : dy);
+            var sy = dy < 0 ? -1 : 1;
+
+            var x = x1;
+            var y = y1;
+
+            if (ax > ay)
+            {
+                var d = ay - ax / 2;
+
+                while (true)
+                {
+                    data[height * x + y] = (byte)color;
+
+                    if (x == x2)
+                    {
+                        return;
+                    }
+
+                    if (d >= 0)
+                    {
+                        y += sy;
+                        d -= ax;
+                    }
+
+                    x += sx;
+                    d += ay;
+                }
+            }
+            else
+            {
+                var d = ax - ay / 2;
+                while (true)
+                {
+                    data[height * x + y] = (byte)color;
+
+                    if (y == y2)
+                    {
+                        return;
+                    }
+
+                    if (d >= 0)
+                    {
+                        x += sx;
+                        d -= ay;
+                    }
+
+                    y += sy;
+                    d += ax;
+                }
+            }
         }
 
         public int Width => width;
