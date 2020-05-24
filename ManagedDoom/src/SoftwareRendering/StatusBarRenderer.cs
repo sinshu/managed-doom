@@ -118,7 +118,8 @@ namespace ManagedDoom.SoftwareRendering
         public static readonly int ST_FY = 169;
 
         private DrawScreen screen;
-        private CommonPatches patches;
+
+        private Patches patches;
 
         private int scale;
 
@@ -133,10 +134,11 @@ namespace ManagedDoom.SoftwareRendering
 
         private NumberWidget wFrags;
 
-        public StatusBarRenderer(CommonPatches patches, DrawScreen screen)
+        public StatusBarRenderer(Wad wad, DrawScreen screen)
         {
             this.screen = screen;
-            this.patches = patches;
+
+            patches = new Patches(wad);
 
             scale = screen.Width / 320;
 
@@ -390,6 +392,90 @@ namespace ManagedDoom.SoftwareRendering
             public int X;
             public int Y;
             public Patch[] Patches;
+        }
+
+
+
+
+        private class Patches
+        {
+            private Patch statusBar;
+            private Patch[] tallNumbers;
+            private Patch[] shortNumbers;
+            private Patch tallMinus;
+            private Patch tallPercent;
+            private Patch[] keys;
+            private Patch armsBg;
+            private Patch[][] arms;
+            private Patch[] faces;
+            private Patch[] faceBacks;
+
+            public Patches(Wad wad)
+            {
+                statusBar = Patch.FromWad("STBAR", wad);
+                tallNumbers = new Patch[10];
+                shortNumbers = new Patch[10];
+                for (var i = 0; i < 10; i++)
+                {
+                    tallNumbers[i] = Patch.FromWad("STTNUM" + i, wad);
+                    shortNumbers[i] = Patch.FromWad("STYSNUM" + i, wad);
+                }
+                tallMinus = Patch.FromWad("STTMINUS", wad);
+                tallPercent = Patch.FromWad("STTPRCNT", wad);
+                keys = new Patch[(int)CardType.Count];
+                for (var i = 0; i < keys.Length; i++)
+                {
+                    keys[i] = Patch.FromWad("STKEYS" + i, wad);
+                }
+                armsBg = Patch.FromWad("STARMS", wad);
+                arms = new Patch[6][];
+                for (var i = 0; i < 6; i++)
+                {
+                    var num = i + 2;
+                    arms[i] = new Patch[2];
+                    arms[i][0] = Patch.FromWad("STGNUM" + num, wad);
+                    arms[i][1] = shortNumbers[num];
+                }
+                faceBacks = new Patch[Player.MaxPlayerCount];
+                for (var i = 0; i < faceBacks.Length; i++)
+                {
+                    faceBacks[i] = Patch.FromWad("STFB" + i, wad);
+                }
+
+                faces = new Patch[DoomInfo.FaceInfos.ST_NUMFACES];
+                var facenum = 0;
+                for (var i = 0; i < DoomInfo.FaceInfos.ST_NUMPAINFACES; i++)
+                {
+                    for (var j = 0; j < DoomInfo.FaceInfos.ST_NUMSTRAIGHTFACES; j++)
+                    {
+                        faces[facenum++] = Patch.FromWad("STFST" + i + j, wad);
+                    }
+                    faces[facenum++] = Patch.FromWad("STFTR" + i + "0", wad);
+                    faces[facenum++] = Patch.FromWad("STFTL" + i + "0", wad);
+                    faces[facenum++] = Patch.FromWad("STFOUCH" + i, wad);
+                    faces[facenum++] = Patch.FromWad("STFEVL" + i, wad);
+                    faces[facenum++] = Patch.FromWad("STFKILL" + i, wad);
+                }
+                faces[facenum++] = Patch.FromWad("STFGOD0", wad);
+                faces[facenum++] = Patch.FromWad("STFDEAD0", wad);
+
+                Console.WriteLine("Status bar patches are OK.");
+            }
+
+
+
+
+
+            public Patch StatusBar => statusBar;
+            public Patch[] TallNumbers => tallNumbers;
+            public Patch[] ShortNumbers => shortNumbers;
+            public Patch TallMinus => tallMinus;
+            public Patch TallPercent => tallPercent;
+            public Patch[] Keys => keys;
+            public Patch ArmsBg => armsBg;
+            public Patch[][] Arms => arms;
+            public Patch[] Faces => faces;
+            public Patch[] FaceBacks => faceBacks;
         }
     }
 }

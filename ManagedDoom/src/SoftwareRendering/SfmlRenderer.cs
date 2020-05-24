@@ -80,8 +80,8 @@ namespace ManagedDoom.SoftwareRendering
 
             menu = new MenuRenderer(resource.Wad, screen);
             threeD = new ThreeDRenderer(resource, screen);
-            statusBar = new StatusBarRenderer(resource.Patches, screen);
-            intermission = new IntermissionRenderer(resource.Patches, screen);
+            statusBar = new StatusBarRenderer(resource.Wad, screen);
+            intermission = new IntermissionRenderer(resource.Wad, screen);
         }
 
         private static uint[] InitColors(Palette palette)
