@@ -28,7 +28,7 @@ Now I'm working on the gaming code. Although several functionalities are still m
 
 https://www.youtube.com/watch?v=LZpyeLlm_1Y  
 
-[![YouTube video of Managed Doom](https://img.youtube.com/vi/LZpyeLlm_1Y/0.jpg)](https://youtu.be/LZpyeLlm_1Y)
+[![YouTube video of Managed Doom](https://img.youtube.com/vi/LZpyeLlm_1Y/0.jpg)](https://www.youtube.com/watch?v=LZpyeLlm_1Y)
 
 
 
@@ -61,9 +61,9 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
 - __Other things__
     * [x] Status bar
     * [ ] Automap
-    * [ ] Title screen
+    * [x] Title screen
     * [ ] Intermission screen
-    * [ ] Menu screen
+    * [x] Menu screen
     * [ ] Save / load
     * [ ] DeHackEd support
 
