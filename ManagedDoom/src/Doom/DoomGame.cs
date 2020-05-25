@@ -316,6 +316,8 @@ namespace ManagedDoom
 				Array.Clear(players[i].Frags, 0, players[i].Frags.Length);
 			}
 
+			intermission = null;
+
 			// P_SetupLevel(gameepisode, gamemap, 0, gameskill);
 			world = new World(resource, options, players);
 			world.Audio = audio;

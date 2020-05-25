@@ -49,7 +49,6 @@ namespace ManagedDoomTest.CompatibilityTests
                 {
                     for (var i = 0; i < 334; i++)
                     {
-                        Console.WriteLine(game.World.levelTime);
                         demo.ReadCmd(cmds);
                         game.Update(cmds);
                         lastMobjHash = DoomDebug.GetMobjHash(game.World);
@@ -73,7 +72,6 @@ namespace ManagedDoomTest.CompatibilityTests
                 {
                     for (var i = 0; i < 653; i++)
                     {
-                        Console.WriteLine(game.World.levelTime);
                         demo.ReadCmd(cmds);
                         game.Update(cmds);
                         lastMobjHash = DoomDebug.GetMobjHash(game.World);
@@ -97,7 +95,6 @@ namespace ManagedDoomTest.CompatibilityTests
                 {
                     for (var i = 0; i < 469; i++)
                     {
-                        Console.WriteLine(game.World.levelTime);
                         demo.ReadCmd(cmds);
                         game.Update(cmds);
                         lastMobjHash = DoomDebug.GetMobjHash(game.World);
@@ -121,7 +118,6 @@ namespace ManagedDoomTest.CompatibilityTests
                 {
                     for (var i = 0; i < 312; i++)
                     {
-                        Console.WriteLine(game.World.levelTime);
                         demo.ReadCmd(cmds);
                         game.Update(cmds);
                         lastMobjHash = DoomDebug.GetMobjHash(game.World);
