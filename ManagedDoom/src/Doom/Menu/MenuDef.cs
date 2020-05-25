@@ -151,6 +151,14 @@ namespace ManagedDoom
                     textInput = textBox.Edit();
                 }
 
+                var simple = choice as SimpleMenuItem;
+                if (simple != null && simple.Action != null)
+                {
+                    simple.Action();
+                    menu.Close();
+                    return true;
+                }
+
                 if (choice.Next != null)
                 {
                     menu.SetCurrent(choice.Next);

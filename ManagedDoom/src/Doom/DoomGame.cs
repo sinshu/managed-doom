@@ -711,6 +711,10 @@ namespace ManagedDoom
 			//viewactive = true;
 		}
 
+		public void DoAction(GameAction action)
+		{
+			gameAction = action;
+		}
 
 
 

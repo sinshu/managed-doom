@@ -16,6 +16,10 @@ namespace ManagedDoom
 
         private DoomMenu menu;
 
+        private ApplicationState state;
+
+        private OpeningSequence opening;
+
         private Player[] players;
         private TicCmd[] cmds;
         private GameOptions options;
@@ -36,7 +40,11 @@ namespace ManagedDoom
                 renderer = new SfmlRenderer(window, resource, true);
                 audio = new SfmlAudio(resource.Wad);
 
-                menu = new DoomMenu();
+                menu = new DoomMenu(this);
+
+                state = ApplicationState.Opening;
+
+                opening = new OpeningSequence();
 
                 players = new Player[Player.MaxPlayerCount];
                 cmds = new TicCmd[Player.MaxPlayerCount];
@@ -81,6 +89,12 @@ namespace ManagedDoom
             }
         }
 
+        public void NewGame()
+        {
+            game.DoAction(GameAction.NewGame);
+            state = ApplicationState.Game;
+        }
+
         private void DoEvents()
         {
             foreach (var e in events)
@@ -94,8 +108,15 @@ namespace ManagedDoom
         {
             menu.Update();
 
-            UserInput.BuildTicCmd(cmds[0]);
-            game.Update(cmds);
+            if (state == ApplicationState.Opening)
+            {
+                opening.Update();
+            }
+            else if (state == ApplicationState.Game)
+            {
+                UserInput.BuildTicCmd(cmds[0]);
+                game.Update(cmds);
+            }
 
             renderer.Render(this);
         }
@@ -151,7 +172,8 @@ namespace ManagedDoom
             }
         }
 
-
+        public ApplicationState State => state;
+        public OpeningSequence Opening => opening;
         public DoomGame Game => game;
         public DoomMenu Menu => menu;
     }

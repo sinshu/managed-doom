@@ -33,6 +33,7 @@ namespace ManagedDoom.SoftwareRendering
         private ThreeDRenderer threeD;
         private StatusBarRenderer statusBar;
         private IntermissionRenderer intermission;
+        private OpeningSequenceRenderer openingSequence;
 
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
         {
@@ -82,6 +83,7 @@ namespace ManagedDoom.SoftwareRendering
             threeD = new ThreeDRenderer(resource, screen);
             statusBar = new StatusBarRenderer(resource.Wad, screen);
             intermission = new IntermissionRenderer(resource.Wad, screen);
+            openingSequence = new OpeningSequenceRenderer(resource.Wad, screen, this);
         }
 
         private static uint[] InitColors(Palette palette)
@@ -114,9 +116,8 @@ namespace ManagedDoom.SoftwareRendering
         }
         */
 
-        public void Render(DoomApplication app)
+        public void RenderGame(DoomGame game)
         {
-            var game = app.Game;
             if (game.gameState == GameState.Level)
             {
                 var player = game.World.Players[game.Options.ConsolePlayer];
@@ -126,6 +127,18 @@ namespace ManagedDoom.SoftwareRendering
             else if (game.gameState == GameState.Intermission)
             {
                 intermission.Render(game.Intermission);
+            }
+        }
+
+        public void Render(DoomApplication app)
+        {
+            if (app.State == ApplicationState.Opening)
+            {
+                openingSequence.Render(app.Opening);
+            }
+            else if (app.State == ApplicationState.Game)
+            {
+                RenderGame(app.Game);
             }
 
             if (app.Menu.Active)
