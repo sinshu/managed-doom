@@ -723,21 +723,34 @@ namespace ManagedDoom
 
 		public bool DoEvent(DoomEvent e)
 		{
-			if (e.Key == SFML.Window.Keyboard.Key.Tab && e.Type == EventType.KeyDown)
+			if (gameState == GameState.Level)
 			{
 				var am = world.AutoMap;
 
 				if (am.Visible)
 				{
-					am.Close();
+					if (am.DoEvent(e))
+					{
+						return true;
+					}
 				}
-				else
+
+				if (e.Key == SFML.Window.Keyboard.Key.Tab && e.Type == EventType.KeyDown)
 				{
-					am.Open();
+					if (am.Visible)
+					{
+						am.Close();
+					}
+					else
+					{
+						am.Open();
+					}
 				}
+
+				return true;
 			}
 
-			return true;
+			return false;
 		}
 
 

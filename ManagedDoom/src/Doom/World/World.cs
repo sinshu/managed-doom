@@ -126,6 +126,7 @@ namespace ManagedDoom
             thinkers.Run();
             specials.Update();
             statusBar.Update();
+            autoMap.Update();
 
             levelTime++;
 
