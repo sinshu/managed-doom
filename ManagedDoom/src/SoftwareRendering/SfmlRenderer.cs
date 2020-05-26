@@ -34,7 +34,7 @@ namespace ManagedDoom.SoftwareRendering
         private StatusBarRenderer statusBar;
         private IntermissionRenderer intermission;
         private OpeningSequenceRenderer openingSequence;
-        private AutomapRenderer automap;
+        private AutoMapRenderer2 autoMap;
 
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
         {
@@ -85,7 +85,7 @@ namespace ManagedDoom.SoftwareRendering
             statusBar = new StatusBarRenderer(resource.Wad, screen);
             intermission = new IntermissionRenderer(resource.Wad, screen);
             openingSequence = new OpeningSequenceRenderer(resource.Wad, screen, this);
-            automap = new AutomapRenderer(screen);
+            autoMap = new AutoMapRenderer2(screen);
         }
 
         private static uint[] InitColors(Palette palette)
@@ -125,7 +125,7 @@ namespace ManagedDoom.SoftwareRendering
                 var player = game.World.Players[game.Options.ConsolePlayer];
                 if (game.ViewingAutomap)
                 {
-                    automap.Render(player);
+                    autoMap.Render(player);
                     statusBar.Render(game.World.StatusBar, player);
                 }
                 else

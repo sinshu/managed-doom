@@ -39,6 +39,7 @@ namespace ManagedDoom
         private MonsterBehavior monsterBehavior;
         private LightingChange lightingChange;
         private StatusBar statusBar;
+        private AutoMap autoMap;
 
         private MapThing[] playerStarts;
         private MapThing[] deathmatchStarts;
@@ -74,6 +75,7 @@ namespace ManagedDoom
             monsterBehavior = new MonsterBehavior(this);
             lightingChange = new LightingChange(this);
             statusBar = new StatusBar(this);
+            autoMap = new AutoMap(this);
 
             totalKills = 0;
             totalItems = 0;
@@ -453,6 +455,7 @@ namespace ManagedDoom
         public MonsterBehavior MonsterBehavior => monsterBehavior;
         public LightingChange LightingChange => lightingChange;
         public StatusBar StatusBar => statusBar;
+        public AutoMap AutoMap => autoMap;
 
         public MapThing[] PlayerStarts => playerStarts;
         public MapThing[] DeathmatchStarts => deathmatchStarts;
