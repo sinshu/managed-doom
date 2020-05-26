@@ -123,7 +123,7 @@ namespace ManagedDoom.SoftwareRendering
             if (game.gameState == GameState.Level)
             {
                 var player = game.World.Players[game.Options.ConsolePlayer];
-                if (game.ViewingAutomap)
+                if (game.World.AutoMap.Visible)
                 {
                     autoMap.Render(player);
                     statusBar.Render(game.World.StatusBar, player);

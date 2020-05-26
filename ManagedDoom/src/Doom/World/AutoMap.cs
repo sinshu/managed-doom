@@ -11,6 +11,9 @@ namespace ManagedDoom
         private Fixed minY;
         private Fixed maxY;
 
+        private bool visible;
+        private AutoMapState state;
+
         public AutoMap(World world)
         {
             this.world = world;
@@ -41,11 +44,26 @@ namespace ManagedDoom
                     maxY = vertex.Y;
                 }
             }
+
+            visible = false;
+            state = AutoMapState.None;
+        }
+
+        public void Open()
+        {
+            visible = true;
+        }
+
+        public void Close()
+        {
+            visible = false;
         }
 
         public Fixed MinX => minX;
         public Fixed MaxX => maxX;
         public Fixed MinY => minY;
         public Fixed MaxY => maxY;
+        public bool Visible => visible;
+        public AutoMapState State => state;
     }
 }

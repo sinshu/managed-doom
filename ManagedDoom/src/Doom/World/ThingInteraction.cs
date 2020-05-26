@@ -59,15 +59,13 @@ namespace ManagedDoom
 				target.Player.PlayerState = PlayerState.Dead;
 				world.PlayerBehavior.DropWeapon(target.Player);
 
-				/*
-				if (target->player == &players[consoleplayer]
-					&& automapactive)
+				var am = world.AutoMap;
+
+				if (target.Player.Number == world.Options.ConsolePlayer && am.Visible)
 				{
-					// don't die in auto map,
-					// switch view prior to dying
-					AM_Stop();
+					// Don't die in auto map, switch view prior to dying.
+					am.Close();
 				}
-				*/
 			}
 
 			if (target.Health < -target.Info.SpawnHealth && target.Info.XdeathState != 0)
