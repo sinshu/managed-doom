@@ -99,7 +99,18 @@ namespace ManagedDoom
         {
             foreach (var e in events)
             {
-                menu.DoEvent(e);
+                if (menu.DoEvent(e))
+                {
+                    continue;
+                }
+
+                if (state == ApplicationState.Game)
+                {
+                    if (game.DoEvent(e))
+                    {
+                        continue;
+                    }
+                }
             }
             events.Clear();
         }

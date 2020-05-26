@@ -34,6 +34,7 @@ namespace ManagedDoom.SoftwareRendering
         private StatusBarRenderer statusBar;
         private IntermissionRenderer intermission;
         private OpeningSequenceRenderer openingSequence;
+        private AutomapRenderer automap;
 
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
         {
@@ -84,6 +85,7 @@ namespace ManagedDoom.SoftwareRendering
             statusBar = new StatusBarRenderer(resource.Wad, screen);
             intermission = new IntermissionRenderer(resource.Wad, screen);
             openingSequence = new OpeningSequenceRenderer(resource.Wad, screen, this);
+            automap = new AutomapRenderer(screen);
         }
 
         private static uint[] InitColors(Palette palette)
@@ -121,8 +123,16 @@ namespace ManagedDoom.SoftwareRendering
             if (game.gameState == GameState.Level)
             {
                 var player = game.World.Players[game.Options.ConsolePlayer];
-                threeD.Render(player);
-                statusBar.Render(game.World.StatusBar, player);
+                if (game.ViewingAutomap)
+                {
+                    automap.Render(player);
+                    statusBar.Render(game.World.StatusBar, player);
+                }
+                else
+                {
+                    threeD.Render(player);
+                    statusBar.Render(game.World.StatusBar, player);
+                }
             }
             else if (game.gameState == GameState.Intermission)
             {

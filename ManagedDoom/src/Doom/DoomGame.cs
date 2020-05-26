@@ -720,11 +720,26 @@ namespace ManagedDoom
 
 
 
+
+		private bool viewingAutomap = false;
+
+		public bool DoEvent(DoomEvent e)
+		{
+			if (e.Key == SFML.Window.Keyboard.Key.Tab && e.Type == EventType.KeyDown)
+			{
+				viewingAutomap = !viewingAutomap;
+			}
+
+			return true;
+		}
+
+
+
 		public Player[] Players => players;
 		public GameOptions Options => options;
 		public World World => world;
 		public Intermission Intermission => intermission;
-
+		public bool ViewingAutomap => viewingAutomap;
 
 
 

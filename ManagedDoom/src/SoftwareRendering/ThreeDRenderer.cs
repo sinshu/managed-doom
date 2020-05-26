@@ -995,6 +995,9 @@ namespace ManagedDoom.SoftwareRendering
             var side = seg.SideDef;
             var frontSector = seg.FrontSector;
 
+            // Mark the segment as visible for auto map.
+            line.Flags |= LineFlags.Mapped;
+
             // Calculate the relative plane heights of front and back sector.
             var worldFrontZ1 = frontSector.CeilingHeight - viewZ;
             var worldFrontZ2 = frontSector.FloorHeight - viewZ;
@@ -1197,6 +1200,9 @@ namespace ManagedDoom.SoftwareRendering
             var side = seg.SideDef;
             var frontSector = seg.FrontSector;
             var backSector = seg.BackSector;
+
+            // Mark the segment as visible for auto map.
+            line.Flags |= LineFlags.Mapped;
 
             // Calculate the relative plane heights of front and back sector.
             // These values are later 4 bits right shifted to calculate the rendering area.

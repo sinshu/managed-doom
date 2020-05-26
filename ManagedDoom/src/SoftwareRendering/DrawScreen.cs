@@ -240,6 +240,21 @@ namespace ManagedDoom.SoftwareRendering
             return width;
         }
 
+        public void FillRect(int x, int y, int w, int h, int color)
+        {
+            var x1 = x;
+            var x2 = x + w;
+            for (var drawX = x1; drawX < x2; drawX++)
+            {
+                var pos = height * drawX + y;
+                for (var i = 0; i < h; i++)
+                {
+                    data[pos] = (byte)color;
+                    pos++;
+                }
+            }
+        }
+
 
 
         [Flags]
