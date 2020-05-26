@@ -3,7 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace ManagedDoom.SoftwareRendering
 {
-    public sealed class AutoMapRenderer2
+    public sealed class AutoMapRenderer
     {
         private DrawScreen screen;
 
@@ -14,7 +14,7 @@ namespace ManagedDoom.SoftwareRendering
         private float maxY;
         private float height;
 
-        public AutoMapRenderer2(DrawScreen screen)
+        public AutoMapRenderer(DrawScreen screen)
         {
             this.screen = screen;
         }
