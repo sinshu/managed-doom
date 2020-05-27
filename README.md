@@ -60,7 +60,7 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
 
 - __Other things__
     * [x] Status bar
-    * [ ] Automap
+    * [x] Automap
     * [x] Title screen
     * [ ] Intermission screen
     * [x] Menu screen
