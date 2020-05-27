@@ -97,17 +97,17 @@ namespace ManagedDoom
                 }
             }
 
-            if (e.Key == SFML.Window.Keyboard.Key.Up)
+            if (e.Key == DoomKeys.Up)
             {
                 Up();
             }
 
-            if (e.Key == SFML.Window.Keyboard.Key.Down)
+            if (e.Key == DoomKeys.Down)
             {
                 Down();
             }
 
-            if (e.Key == SFML.Window.Keyboard.Key.Left)
+            if (e.Key == DoomKeys.Left)
             {
                 var toggle = choice as ToggleMenuItem;
                 if (toggle != null)
@@ -122,7 +122,7 @@ namespace ManagedDoom
                 }
             }
 
-            if (e.Key == SFML.Window.Keyboard.Key.Right)
+            if (e.Key == DoomKeys.Right)
             {
                 var toggle = choice as ToggleMenuItem;
                 if (toggle != null)
@@ -137,7 +137,7 @@ namespace ManagedDoom
                 }
             }
 
-            if (e.Key == SFML.Window.Keyboard.Key.Enter)
+            if (e.Key == DoomKeys.Enter)
             {
                 var toggle = choice as ToggleMenuItem;
                 if (toggle != null)
@@ -165,7 +165,7 @@ namespace ManagedDoom
                 }
             }
 
-            if (e.Key == SFML.Window.Keyboard.Key.Escape)
+            if (e.Key == DoomKeys.Escape)
             {
                 menu.Close();
             }

@@ -97,7 +97,7 @@ namespace ManagedDoom
                     return true;
                 }
 
-                if (e.Key == SFML.Window.Keyboard.Key.Escape && e.Type == EventType.KeyDown)
+                if (e.Key == DoomKeys.Escape && e.Type == EventType.KeyDown)
                 {
                     Close();
                 }
@@ -106,7 +106,7 @@ namespace ManagedDoom
             }
             else
             {
-                if (e.Key == SFML.Window.Keyboard.Key.Escape && e.Type == EventType.KeyDown)
+                if (e.Key == DoomKeys.Escape && e.Type == EventType.KeyDown)
                 {
                     current = main;
                     Open();

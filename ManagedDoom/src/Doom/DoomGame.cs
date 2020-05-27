@@ -735,7 +735,7 @@ namespace ManagedDoom
 					}
 				}
 
-				if (e.Key == SFML.Window.Keyboard.Key.Tab && e.Type == EventType.KeyDown)
+				if (e.Key == DoomKeys.Tab && e.Type == EventType.KeyDown)
 				{
 					if (am.Visible)
 					{

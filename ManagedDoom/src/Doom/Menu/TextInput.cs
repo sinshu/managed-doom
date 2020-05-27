@@ -31,16 +31,14 @@ namespace ManagedDoom
 
         public bool DoEvent(DoomEvent e)
         {
-            if (SFML.Window.Keyboard.Key.A <= e.Key &&
-                e.Key <= SFML.Window.Keyboard.Key.Z &&
-                e.Type == EventType.KeyDown)
+            if (DoomKeys.A <= e.Key && e.Key <= DoomKeys.Z && e.Type == EventType.KeyDown)
             {
-                text.Add((char)(e.Key - SFML.Window.Keyboard.Key.A + 'A'));
+                text.Add((char)(e.Key - DoomKeys.A + 'A'));
                 typed(text);
                 return true;
             }
 
-            if (e.Key == SFML.Window.Keyboard.Key.Backspace &&
+            if (e.Key == DoomKeys.Backspace &&
                 e.Type == EventType.KeyDown)
             {
                 if (text.Count > 0)
@@ -51,16 +49,14 @@ namespace ManagedDoom
                 return true;
             }
 
-            if (e.Key == SFML.Window.Keyboard.Key.Enter &&
-                e.Type == EventType.KeyDown)
+            if (e.Key == DoomKeys.Enter && e.Type == EventType.KeyDown)
             {
                 finished(text);
                 state = TextInputState.Finished;
                 return true;
             }
 
-            if (e.Key == SFML.Window.Keyboard.Key.Escape &&
-                e.Type == EventType.KeyDown)
+            if (e.Key == DoomKeys.Escape && e.Type == EventType.KeyDown)
             {
                 canceled();
                 state = TextInputState.Canceled;

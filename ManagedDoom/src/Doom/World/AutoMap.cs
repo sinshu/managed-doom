@@ -145,7 +145,7 @@ namespace ManagedDoom
 
         public bool DoEvent(DoomEvent e)
         {
-            if (e.Key == SFML.Window.Keyboard.Key.Add)
+            if (e.Key == DoomKeys.Add)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -158,7 +158,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == SFML.Window.Keyboard.Key.Subtract)
+            else if (e.Key == DoomKeys.Subtract)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -171,7 +171,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == SFML.Window.Keyboard.Key.Left)
+            else if (e.Key == DoomKeys.Left)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -184,7 +184,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == SFML.Window.Keyboard.Key.Right)
+            else if (e.Key == DoomKeys.Right)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -197,7 +197,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == SFML.Window.Keyboard.Key.Up)
+            else if (e.Key == DoomKeys.Up)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -210,7 +210,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == SFML.Window.Keyboard.Key.Down)
+            else if (e.Key == DoomKeys.Down)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -223,7 +223,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == SFML.Window.Keyboard.Key.F)
+            else if (e.Key == DoomKeys.F)
             {
                 if (e.Type == EventType.KeyDown)
                 {
