@@ -251,6 +251,15 @@ namespace ManagedDoom
             down = false;
         }
 
+        public void ToggleCheat()
+        {
+            state++;
+            if ((int)state == 3)
+            {
+                state = AutoMapState.None;
+            }
+        }
+
         public Fixed MinX => minX;
         public Fixed MaxX => maxX;
         public Fixed MinY => minY;
@@ -258,6 +267,7 @@ namespace ManagedDoom
         public Fixed ViewX => viewX;
         public Fixed ViewY => viewY;
         public Fixed Zoom => zoom;
+        public bool Follow => follow;
         public bool Visible => visible;
         public AutoMapState State => state;
     }

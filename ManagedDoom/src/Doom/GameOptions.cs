@@ -6,6 +6,7 @@ namespace ManagedDoom
     {
         public GameSkill Skill = GameSkill.Medium;
         public GameMode GameMode = GameMode.Commercial;
+        public bool DemoPlayback = false;
         public bool NetGame = false;
         public int Episode = 1;
         public int Map = 1;

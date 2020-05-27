@@ -5,11 +5,33 @@ namespace ManagedDoom.SoftwareRendering
 {
     public sealed class AutoMapRenderer
     {
+        private static readonly float pr = 8 * DoomInfo.MobjInfos[(int)MobjType.Player].Radius.ToFloat() / 7;
+
+        // The vector graphics for the automap.
+        // A line drawing of the player pointing right, starting from the middle.
+        private static readonly float[] playerArrow = new float[]
+        {
+            -pr + pr / 8, 0, pr, 0, // -----
+            pr, 0, pr - pr / 2, pr / 4, // ----->
+            pr, 0, pr - pr / 2, -pr / 4,
+            -pr + pr / 8, 0, -pr - pr / 8, pr / 4, // >---->
+            -pr + pr / 8, 0, -pr - pr / 8, -pr / 4,
+            -pr + 3 * pr / 8, 0, -pr + pr / 8, pr / 4, // >>--->
+            -pr + 3 * pr / 8, 0, -pr + pr / 8, -pr / 4
+        };
+
+        private static readonly float tr = 16;
+
+        private static readonly float[] thingTriangle = new float[]
+        {
+            -0.5F * tr, -0.7F * tr, tr, 0F,
+            tr, 0F, -0.5F * tr, 0.7F * tr,
+            -0.5F * tr, 0.7F * tr, -0.5F * tr, -0.7F * tr
+        };
+
         // For use if I do walls with outsides / insides.
         private static readonly int reds = (256 - 5 * 16);
         private static readonly int redRange = 16;
-        private static readonly int blues = (256 - 4 * 16 + 8);
-        private static readonly int blueRange = 8;
         private static readonly int greens = (7 * 16);
         private static readonly int greenRange = 16;
         private static readonly int grays = (6 * 16);
@@ -21,10 +43,8 @@ namespace ManagedDoom.SoftwareRendering
         private static readonly int black = 0;
         private static readonly int white = (256 - 47);
 
-        // Automap colors
+        // Automap colors.
         private static readonly int background = black;
-        private static readonly int yourColors = white;
-        private static readonly int yourRange = 0;
         private static readonly int wallColors = reds;
         private static readonly int wallRange = redRange;
         private static readonly int tsWallColors = grays;
@@ -38,8 +58,17 @@ namespace ManagedDoom.SoftwareRendering
         private static readonly int secretWallColors = wallColors;
         private static readonly int secretWallRange = wallRange;
 
+        private static readonly int[] playerColors = new int[]
+        {
+            greens,
+            grays,
+            browns,
+            reds
+        };
+
         private DrawScreen screen;
 
+        private int scale;
         private int amWidth;
         private int amHeight;
         private float ppu;
@@ -59,8 +88,7 @@ namespace ManagedDoom.SoftwareRendering
         {
             this.screen = screen;
 
-            var scale = screen.Width / 320;
-
+            scale = screen.Width / 320;
             amWidth = screen.Width;
             amHeight = screen.Height - scale * StatusBar.Height;
             ppu = (float)scale / 16;
@@ -68,7 +96,7 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Render(Player player)
         {
-            screen.FillRect(0, 0, amWidth, amHeight, 0);
+            screen.FillRect(0, 0, amWidth, amHeight, background);
 
             var world = player.Mobj.World;
             var am = world.AutoMap;
@@ -145,13 +173,108 @@ namespace ManagedDoom.SoftwareRendering
                     }
                 }
             }
+
+            if (am.State == AutoMapState.AllThings)
+            {
+                DrawThings(world);
+            }
+
+            DrawPlayers(world);
+
+            if (!am.Follow)
+            {
+                screen.DrawLine(
+                    amWidth / 2 - 2 * scale, amHeight / 2,
+                    amWidth / 2 + 2 * scale, amHeight / 2,
+                    grays);
+
+                screen.DrawLine(
+                    amWidth / 2, amHeight / 2 - 2 * scale,
+                    amWidth / 2, amHeight / 2 + 2 * scale,
+                    grays);
+            }
+        }
+
+        private void DrawPlayers(World world)
+        {
+            var options = world.Options;
+            var players = world.Players;
+            var consolePlayer = players[world.consoleplayer];
+            var am = world.AutoMap;
+
+            if (!options.NetGame)
+            {
+                DrawCharacter(consolePlayer.Mobj, playerArrow, white);
+                return;
+            }
+
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                var player = players[i];
+                if (options.Deathmatch != 0 && !options.DemoPlayback && player != consolePlayer)
+                {
+                    continue;
+                }
+
+                if (!player.InGame)
+                {
+                    continue;
+                }
+
+                int color;
+                if (player.Powers[(int)PowerType.Invisibility] > 0)
+                {
+                    // Close to black.
+                    color = 246;
+                }
+                else
+                {
+                    color = playerColors[i];
+                }
+
+                DrawCharacter(player.Mobj, playerArrow, color);
+            }
+        }
+
+        private void DrawThings(World world)
+        {
+            foreach (var thinker in world.Thinkers)
+            {
+                var mobj = thinker as Mobj;
+                if (mobj != null)
+                {
+                    DrawCharacter(mobj, thingTriangle, greens);
+                }
+            }
+        }
+
+        private void DrawCharacter(Mobj mobj, float[] data, int color)
+        {
+            var pos = ToScreenPos(mobj.X, mobj.Y);
+            var sin = (float)Math.Sin(mobj.Angle.ToRadian());
+            var cos = (float)Math.Cos(mobj.Angle.ToRadian());
+            for (var i = 0; i < data.Length; i += 4)
+            {
+                var x1 = pos.X + zoom * ppu * (cos * data[i + 0] - sin * data[i + 1]);
+                var y1 = pos.Y - zoom * ppu * (sin * data[i + 0] + cos * data[i + 1]);
+                var x2 = pos.X + zoom * ppu * (cos * data[i + 2] - sin * data[i + 3]);
+                var y2 = pos.Y - zoom * ppu * (sin * data[i + 2] + cos * data[i + 3]);
+                screen.DrawLine(x1, y1, x2, y2, color);
+            }
+        }
+
+        private DrawPos ToScreenPos(Fixed x, Fixed y)
+        {
+            var posX = zoom * ppu * (x.ToFloat() - viewX) + amWidth / 2;
+            var posY = -zoom * ppu * (y.ToFloat() - viewY) + amHeight / 2;
+            return new DrawPos(posX, posY);
         }
 
         private DrawPos ToScreenPos(Vertex v)
         {
-            var x = zoom * ppu * (v.X.ToFloat() - viewX) + amWidth / 2;
-            var y = -zoom * ppu * (v.Y.ToFloat() - viewY) + amHeight / 2;
-            return new DrawPos(x, y);
+            var posX = zoom * ppu * (v.X.ToFloat() - viewX) + amWidth / 2;
+            var posY = -zoom * ppu * (v.Y.ToFloat() - viewY) + amHeight / 2;
+            return new DrawPos(posX, posY);
         }
 
 
