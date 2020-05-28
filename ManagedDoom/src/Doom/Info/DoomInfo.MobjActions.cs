@@ -143,6 +143,7 @@ namespace ManagedDoom
 
             public void BossDeath(World world, Mobj actor)
             {
+                world.MonsterBehavior.BossDeath(actor);
             }
 
             public void CPosAttack(World world, Mobj actor)

@@ -13,6 +13,7 @@ namespace ManagedDoom
             this.world = world;
 
             InitVile();
+            InitBoss();
         }
 
 
@@ -1513,6 +1514,191 @@ namespace ManagedDoom
             FaceTarget(actor);
 
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Rocket);
+        }
+
+
+        private LineDef junk;
+
+        private void InitBoss()
+        {
+            var v = new Vertex(Fixed.Zero, Fixed.Zero);
+            junk = new LineDef(v, v, 0, 0, 0, null, null);
+        }
+
+
+        public void BossDeath(Mobj mo)
+        {
+            var options = world.Options;
+            if (options.GameMode == GameMode.Commercial)
+            {
+                if (options.Map != 7)
+                {
+                    return;
+                }
+
+                if ((mo.Type != MobjType.Fatso) && (mo.Type != MobjType.Baby))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                switch (options.Episode)
+                {
+                    case 1:
+                        if (options.Map != 8)
+                        {
+                            return;
+                        }
+
+                        if (mo.Type != MobjType.Bruiser)
+                        {
+                            return;
+                        }
+
+                        break;
+
+                    case 2:
+                        if (options.Map != 8)
+                        {
+                            return;
+                        }
+
+                        if (mo.Type != MobjType.Cyborg)
+                        {
+                            return;
+                        }
+
+                        break;
+
+                    case 3:
+                        if (options.Map != 8)
+                        {
+                            return;
+                        }
+
+                        if (mo.Type != MobjType.Spider)
+                        {
+                            return;
+                        }
+
+                        break;
+
+                    case 4:
+                        switch (options.Map)
+                        {
+                            case 6:
+                                if (mo.Type != MobjType.Cyborg)
+                                {
+                                    return;
+                                }
+
+                                break;
+
+                            case 8:
+                                if (mo.Type != MobjType.Spider)
+                                {
+                                    return;
+                                }
+
+                                break;
+
+                            default:
+                                return;
+                        }
+                        break;
+
+                    default:
+                        if (options.Map != 8)
+                        {
+                            return;
+                        }
+
+                        break;
+                }
+            }
+
+
+            // Make sure there is a player alive for victory.
+            var players = world.Players;
+            int i;
+            for (i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                if (players[i].InGame && players[i].Health > 0)
+                {
+                    break;
+                }
+            }
+
+            if (i == Player.MaxPlayerCount)
+            {
+                // No one left alive, so do not end game.
+                return;
+            }
+
+            // Scan the remaining thinkers to see if all bosses are dead.
+            foreach (var thinker in world.Thinkers)
+            {
+                var mo2 = thinker as Mobj;
+                if (mo2 == null)
+                {
+                    continue;
+                }
+
+                if (mo2 != mo && mo2.Type == mo.Type && mo2.Health > 0)
+                {
+                    // Other boss not dead.
+                    return;
+                }
+            }
+
+            // Victory!
+            if (options.GameMode == GameMode.Commercial)
+            {
+                if (options.Map == 7)
+                {
+                    if (mo.Type == MobjType.Fatso)
+                    {
+                        junk.Tag = 666;
+                        world.SectorAction.EV_DoFloor(junk, FloorMoveType.LowerFloorToLowest);
+                        return;
+                    }
+
+                    if (mo.Type == MobjType.Baby)
+                    {
+                        junk.Tag = 667;
+                        world.SectorAction.EV_DoFloor(junk, FloorMoveType.RaiseToTexture);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                switch (options.Episode)
+                {
+                    case 1:
+                        junk.Tag = 666;
+                        world.SectorAction.EV_DoFloor(junk, FloorMoveType.LowerFloorToLowest);
+                        return;
+
+                    case 4:
+                        switch (options.Map)
+                        {
+                            case 6:
+                                junk.Tag = 666;
+                                world.SectorAction.EV_DoDoor(junk, VlDoorType.BlazeOpen);
+                                return;
+
+                            case 8:
+                                junk.Tag = 666;
+                                world.SectorAction.EV_DoFloor(junk, FloorMoveType.LowerFloorToLowest);
+                                return;
+                        }
+                        break;
+                }
+            }
+
+            world.G_ExitLevel();
         }
     }
 }
