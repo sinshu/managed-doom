@@ -230,6 +230,9 @@
     <None Update="data\zombieman_test2.wad">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="demos\e1m8_boss_test.lmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="demos\map06_crusher_test.lmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

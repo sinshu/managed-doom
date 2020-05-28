@@ -27,6 +27,8 @@ namespace ManagedDoom
 
         private List<DoomEvent> events;
 
+        //private Demo demo;
+
         public DoomApplication()
         {
             try
@@ -60,6 +62,9 @@ namespace ManagedDoom
                 options.GameMode = resource.Wad.GameMode;
                 options.Episode = 1;
                 options.Map = 1;
+
+                //demo = new Demo("test.lmp");
+                //options = demo.Options;
 
                 game = new DoomGame(players, resource, options);
                 game.Audio = audio;
@@ -126,6 +131,7 @@ namespace ManagedDoom
             else if (state == ApplicationState.Game)
             {
                 UserInput.BuildTicCmd(cmds[0]);
+                //demo.ReadCmd(cmds);
                 game.Update(cmds);
             }
 

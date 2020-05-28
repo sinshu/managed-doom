@@ -1618,7 +1618,6 @@ namespace ManagedDoom
                 }
             }
 
-
             // Make sure there is a player alive for victory.
             var players = world.Players;
             int i;
