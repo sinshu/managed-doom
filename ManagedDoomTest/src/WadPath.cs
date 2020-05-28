@@ -15,5 +15,6 @@ namespace ManagedDoomTest
 
         public static readonly string Requiem = "REQUIEM.WAD";
         public static readonly string TntBlood = "TNTBLOOD.WAD";
+        public static readonly string MementoMori = "MM.WAD";
     }
 }
