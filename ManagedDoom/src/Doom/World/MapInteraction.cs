@@ -94,9 +94,9 @@ namespace ManagedDoom
 
 				case 9:
 					// Change Donut
-					//if (EV_DoDonut(line))
+					if (sa.EV_DoDonut(line))
 					{
-						//P_ChangeSwitchTexture(line, 0);
+						specials.ChangeSwitchTexture(line, false);
 					}
 					break;
 

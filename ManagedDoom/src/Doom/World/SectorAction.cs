@@ -1723,6 +1723,89 @@ namespace ManagedDoom
 
 
 
+
+		public bool EV_DoDonut(LineDef line)
+		{
+			var sectors = world.Map.Sectors;
+
+			var secnum = -1;
+			var rtn = false;
+			while ((secnum = FindSectorFromLineTag(line, secnum)) >= 0)
+			{
+				var s1 = sectors[secnum];
+
+				// ALREADY MOVING?  IF SO, KEEP GOING...
+				if (s1.SpecialData != null)
+				{
+					continue;
+				}
+
+				rtn = true;
+
+				var s2 = GetNextSector(s1.Lines[0], s1);
+
+				if (s2 == null)
+				{
+					break;
+				}
+
+				for (var i = 0; i < s2.Lines.Length; i++)
+				{
+					var s3 = s2.Lines[i].BackSector;
+
+					if (s3 == s1)
+					{
+						continue;
+					}
+
+					if (s3 == null)
+					{
+						return rtn;
+					}
+
+					var thinkers = world.Thinkers;
+
+					//	Spawn rising slime.
+					var floor1 = ThinkerPool.RentFloorMove(world);
+					thinkers.Add(floor1);
+					s2.SpecialData = floor1;
+					floor1.Type = FloorMoveType.DonutRaise;
+					floor1.Crush = false;
+					floor1.Direction = 1;
+					floor1.Sector = s2;
+					floor1.Speed = FLOORSPEED / 2;
+					floor1.Texture = s3.FloorFlat;
+					floor1.NewSpecial = 0;
+					floor1.FloorDestHeight = s3.FloorHeight;
+
+					//	Spawn lowering donut-hole.
+					var floor2 = ThinkerPool.RentFloorMove(world);
+					thinkers.Add(floor2);
+					s1.SpecialData = floor2;
+					floor2.Type = FloorMoveType.LowerFloor;
+					floor2.Crush = false;
+					floor2.Direction = -1;
+					floor2.Sector = s1;
+					floor2.Speed = FLOORSPEED / 2;
+					floor2.FloorDestHeight = s3.FloorHeight;
+
+					break;
+				}
+			}
+
+			return rtn;
+		}
+
+
+
+
+
+
+
+
+
+
+
 		//
 		// Spawn a door that closes after 30 seconds
 		//

@@ -10,6 +10,43 @@ namespace ManagedDoomTest.CompatibilityTests
     public class MapGimmicks
     {
         [TestMethod]
+        public void E1M2Donut()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            {
+                var demo = new Demo(@"demos\e1m2_donut_test.lmp");
+                demo.Options.GameMode = resource.Wad.GameMode;
+                var players = DoomTest.GetDefaultPlayers(demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(players, resource, demo.Options);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd(cmds))
+                    {
+                        break;
+                    }
+
+                    game.Update(cmds);
+                    lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    lastSectorHash = DoomDebug.GetSectorHash(game.World);
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0xcfa012d2u, (uint)lastMobjHash);
+                Assert.AreEqual(0xdd1a0d72u, (uint)aggMobjHash);
+                Assert.AreEqual(0x76aad5fbu, (uint)lastSectorHash);
+                Assert.AreEqual(0xaa2757eau, (uint)aggSectorHash);
+            }
+        }
+
+        [TestMethod]
         public void E1M8Boss()
         {
             using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
