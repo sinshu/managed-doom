@@ -73,7 +73,7 @@ namespace ManagedDoom.SoftwareRendering
                     }
                     else if (im.Options.NetGame)
                     {
-                        // WI_drawNetgameStats();
+                        WI_DrawNetgameStats(im);
                     }
                     else
                     {
@@ -142,6 +142,93 @@ namespace ManagedDoom.SoftwareRendering
                 //V_DrawPatch(SCREENWIDTH / 2 + SP_TIMEX, SP_TIMEY, FB, par);
                 //WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
             }
+        }
+
+        private void WI_DrawNetgameStats(Intermission im)
+        {
+            int pwidth = patches.Percent.Width;
+
+            DrawBackground(im);
+
+            // draw animated background
+            //WI_drawAnimatedBack();
+
+            WI_drawLF(im);
+
+            var NG_STATSX = 32 + patches.Star.Width / 2;
+            if (!im.DoFrags)
+            {
+                NG_STATSX += 32;
+            }
+
+            // draw stat titles (top line)
+            DrawPatch(
+                patches.Kills,
+                NG_STATSX + NG_SPACINGX - patches.Kills.Width,
+                NG_STATSY);
+
+            DrawPatch(
+                patches.Items,
+                NG_STATSX + 2 * NG_SPACINGX - patches.Items.Width,
+                NG_STATSY);
+
+            DrawPatch(
+                patches.Secret,
+                NG_STATSX + 3 * NG_SPACINGX - patches.Secret.Width,
+                NG_STATSY);
+
+            if (im.DoFrags)
+            {
+                DrawPatch(
+                    patches.Frags,
+                    NG_STATSX + 4 * NG_SPACINGX - patches.Frags.Width,
+                    NG_STATSY);
+            }
+
+            // draw stats
+            var y = NG_STATSY + patches.Kills.Height;
+
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                if (!im.Players[i].InGame)
+                {
+                    continue;
+                }
+
+                var x = NG_STATSX;
+
+                DrawPatch(
+                    patches.P[i],
+                    x - patches.P[i].Width,
+                    y);
+
+                if (i == im.Options.ConsolePlayer)
+                {
+                    DrawPatch(
+                        patches.Star,
+                        x - patches.P[i].Width,
+                        y);
+                }
+
+                x += NG_SPACINGX;
+
+                WI_drawPercent(x - pwidth, y + 10, im.cnt_kills[i]);
+                x += NG_SPACINGX;
+
+                WI_drawPercent(x - pwidth, y + 10, im.cnt_items[i]);
+                x += NG_SPACINGX;
+
+                WI_drawPercent(x - pwidth, y + 10, im.cnt_secret[i]);
+                x += NG_SPACINGX;
+
+                if (im.DoFrags)
+                {
+                    WI_drawNum(x, y + 10, im.cnt_frags[i], -1);
+                }
+
+                y += WI_SPACINGY;
+            }
+
         }
 
         private void WI_DrawDeathmatchStats(Intermission im)

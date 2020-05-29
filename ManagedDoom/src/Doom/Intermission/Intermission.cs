@@ -32,11 +32,15 @@ namespace ManagedDoom
         public int[] cnt_kills;
         public int[] cnt_items;
         public int[] cnt_secret;
+        public int[] cnt_frags;
         public int cnt_time;
         public int cnt_par;
         public int cnt_pause;
 
         private int sp_state;
+
+        private int ng_state;
+        private bool dofrags;
 
         private int dm_state;
         private int[][] dm_frags;
@@ -55,6 +59,7 @@ namespace ManagedDoom
             cnt_kills = new int[Player.MaxPlayerCount];
             cnt_items = new int[Player.MaxPlayerCount];
             cnt_secret = new int[Player.MaxPlayerCount];
+            cnt_frags = new int[Player.MaxPlayerCount];
 
             dm_frags = new int[Player.MaxPlayerCount][];
             for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -66,6 +71,10 @@ namespace ManagedDoom
             if (options.Deathmatch != 0)
             {
                 WI_initDeathmatchStats();
+            }
+            else if (options.NetGame)
+            {
+                WI_InitNetgameStats();
             }
             else
             {
@@ -83,6 +92,31 @@ namespace ManagedDoom
             cnt_pause = GameConstants.TicRate;
 
             // WI_initAnimatedBack();
+        }
+
+        private void WI_InitNetgameStats()
+        {
+            state = IntermissionState.StatCount;
+            acceleratestage = false;
+            ng_state = 1;
+            cnt_pause = GameConstants.TicRate;
+
+            var frags = 0;
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                if (!players[i].InGame)
+                {
+                    continue;
+                }
+
+                cnt_kills[i] = cnt_items[i] = cnt_secret[i] = cnt_frags[i] = 0;
+
+                frags += WI_fragSum(i);
+            }
+
+            dofrags = frags > 0;
+
+            //WI_initAnimatedBack();
         }
 
         private void WI_initDeathmatchStats()
@@ -142,7 +176,7 @@ namespace ManagedDoom
                     }
                     else if (options.NetGame)
                     {
-                        //WI_updateNetgameStats();
+                        WI_UpdateNetgameStats();
                     }
                     else
                     {
@@ -285,7 +319,201 @@ namespace ManagedDoom
 
 
 
+        private void WI_UpdateNetgameStats()
+        {
+            bool stillticking;
 
+            //WI_updateAnimatedBack();
+
+            if (acceleratestage && ng_state != 10)
+            {
+                acceleratestage = false;
+
+                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                {
+                    if (!players[i].InGame)
+                    {
+                        continue;
+                    }
+
+                    cnt_kills[i] = (plrs[i].Skills * 100) / wbs.MaxKills;
+                    cnt_items[i] = (plrs[i].SItems * 100) / wbs.MaxItems;
+                    cnt_secret[i] = (plrs[i].SSecret * 100) / wbs.MaxSecret;
+                }
+
+                StartSound(Sfx.BAREXP);
+
+                ng_state = 10;
+            }
+
+            if (ng_state == 2)
+            {
+                if ((bcnt & 3) == 0)
+                {
+                    StartSound(Sfx.PISTOL);
+                }
+
+                stillticking = false;
+
+                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                {
+                    if (!players[i].InGame)
+                    {
+                        continue;
+                    }
+
+                    cnt_kills[i] += 2;
+
+                    if (cnt_kills[i] >= (plrs[i].Skills * 100) / wbs.MaxKills)
+                    {
+                        cnt_kills[i] = (plrs[i].Skills * 100) / wbs.MaxKills;
+                    }
+                    else
+                    {
+                        stillticking = true;
+                    }
+                }
+
+                if (!stillticking)
+                {
+                    StartSound(Sfx.BAREXP);
+                    ng_state++;
+                }
+            }
+            else if (ng_state == 4)
+            {
+                if ((bcnt & 3) == 0)
+                {
+                    StartSound(Sfx.PISTOL);
+                }
+
+                stillticking = false;
+
+                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                {
+                    if (!players[i].InGame)
+                    {
+                        continue;
+                    }
+
+                    cnt_items[i] += 2;
+                    if (cnt_items[i] >= (plrs[i].SItems * 100) / wbs.MaxItems)
+                    {
+                        cnt_items[i] = (plrs[i].SItems * 100) / wbs.MaxItems;
+                    }
+                    else
+                    {
+                        stillticking = true;
+                    }
+                }
+
+                if (!stillticking)
+                {
+                    StartSound(Sfx.BAREXP);
+                    ng_state++;
+                }
+            }
+            else if (ng_state == 6)
+            {
+                if ((bcnt & 3) == 0)
+                {
+                    StartSound(Sfx.PISTOL);
+                }
+
+                stillticking = false;
+
+                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                {
+                    if (!players[i].InGame)
+                    {
+                        continue;
+                    }
+
+                    cnt_secret[i] += 2;
+
+                    if (cnt_secret[i] >= (plrs[i].SSecret * 100) / wbs.MaxSecret)
+                    {
+                        cnt_secret[i] = (plrs[i].SSecret * 100) / wbs.MaxSecret;
+                    }
+                    else
+                    {
+                        stillticking = true;
+                    }
+                }
+
+                if (!stillticking)
+                {
+                    StartSound(Sfx.BAREXP);
+                    if (dofrags)
+                    {
+                        ng_state++;
+                    }
+                    else
+                    {
+                        ng_state += 3;
+                    }
+                }
+            }
+            else if (ng_state == 8)
+            {
+                if ((bcnt & 3) == 0)
+                {
+                    StartSound(Sfx.PISTOL);
+                }
+
+                stillticking = false;
+
+                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                {
+                    if (!players[i].InGame)
+                    {
+                        continue;
+                    }
+
+                    cnt_frags[i] += 1;
+
+                    int fsum;
+                    if (cnt_frags[i] >= (fsum = WI_fragSum(i)))
+                    {
+                        cnt_frags[i] = fsum;
+                    }
+                    else
+                    {
+                        stillticking = true;
+                    }
+                }
+
+                if (!stillticking)
+                {
+                    StartSound(Sfx.PLDETH);
+                    ng_state++;
+                }
+            }
+            else if (ng_state == 10)
+            {
+                if (acceleratestage)
+                {
+                    StartSound(Sfx.SGCOCK);
+
+                    if (options.GameMode == GameMode.Commercial)
+                    {
+                        WI_initNoState();
+                    }
+                    else
+                    {
+                        WI_initShowNextLoc();
+                    }
+                }
+            }
+            else if ((ng_state & 1) != 0)
+            {
+                if (--cnt_pause == 0)
+                {
+                    ng_state++;
+                    cnt_pause = GameConstants.TicRate;
+                }
+            }
+        }
 
 
 
@@ -538,6 +766,7 @@ namespace ManagedDoom
         public Player[] Players => players;
         public int[][] DM_Frags => dm_frags;
         public int[] DM_Totals => dm_totals;
+        public bool DoFrags => dofrags;
 
 
 
