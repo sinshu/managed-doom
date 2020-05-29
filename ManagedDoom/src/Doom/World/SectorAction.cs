@@ -630,10 +630,9 @@ namespace ManagedDoom
 					continue;
 				}
 
-				// New door thinker.
-
 				result = true;
 
+				// New door thinker.
 				var door = ThinkerPool.RentVlDoor(world);
 				world.Thinkers.Add(door);
 				sector.SpecialData = door;
@@ -761,28 +760,12 @@ namespace ManagedDoom
 		}
 
 
+		private static readonly int platformWait = 3;
+		private static readonly Fixed platformSpeed = Fixed.One;
 
-
-
-
-
-
-
-
-
-		private static readonly int PLATWAIT = 3;
-		private static readonly Fixed PLATSPEED = Fixed.One;
-
-		//
-		// Do Platforms
-		//  "amount" is only used for SOME platforms.
-		//
-		public bool EV_DoPlat(LineDef line, PlatformType type, int amount)
+		public bool DoPlatform(LineDef line, PlatformType type, int amount)
 		{
-			var secnum = -1;
-			var rtn = false;
-
-			//	Activate all <type> plats that are in_stasis
+			//	Activate all <type> plats that are in stasis.
 			switch (type)
 			{
 				case PlatformType.PerpetualRaise:
@@ -793,24 +776,27 @@ namespace ManagedDoom
 					break;
 			}
 
-			var sectors = world.Map.Sectors;
-			var sides = world.Map.Sides;
-			while ((secnum = FindSectorFromLineTag(line, secnum)) >= 0)
-			{
-				var sec = sectors[secnum];
+			var sectorNumber = -1;
+			var result = false;
 
-				if (sec.SpecialData != null)
+			var sectors = world.Map.Sectors;
+
+			while ((sectorNumber = FindSectorFromLineTag(line, sectorNumber)) >= 0)
+			{
+				var sector = sectors[sectorNumber];
+
+				if (sector.SpecialData != null)
 				{
 					continue;
 				}
 
-				// Find lowest & highest floors around sector
-				rtn = true;
+				result = true;
+
+				// Find lowest & highest floors around sector.
 				var plat = ThinkerPool.RentPlatform(world);
 				world.Thinkers.Add(plat);
-
 				plat.Type = type;
-				plat.Sector = sec;
+				plat.Sector = sector;
 				plat.Sector.SpecialData = plat;
 				plat.Crush = false;
 				plat.Tag = line.Tag;
@@ -818,173 +804,151 @@ namespace ManagedDoom
 				switch (type)
 				{
 					case PlatformType.RaiseToNearestAndChange:
-						plat.Speed = PLATSPEED / 2;
-						sec.FloorFlat = line.Side0.Sector.FloorFlat;
-						plat.High = FindNextHighestFloor(sec, sec.FloorHeight);
+						plat.Speed = platformSpeed / 2;
+						sector.FloorFlat = line.Side0.Sector.FloorFlat;
+						plat.High = FindNextHighestFloor(sector, sector.FloorHeight);
 						plat.Wait = 0;
 						plat.Status = PlatformState.Up;
-						// NO MORE DAMAGE, IF APPLICABLE
-						sec.Special = 0;
-
-						world.StartSound(sec.SoundOrigin, Sfx.STNMOV);
+						// NO MORE DAMAGE, IF APPLICABLE.
+						sector.Special = 0;
+						world.StartSound(sector.SoundOrigin, Sfx.STNMOV);
 						break;
 
 					case PlatformType.RaiseAndChange:
-						plat.Speed = PLATSPEED / 2;
-						sec.FloorFlat = line.Side0.Sector.FloorFlat;
-						plat.High = sec.FloorHeight + amount * Fixed.One;
+						plat.Speed = platformSpeed / 2;
+						sector.FloorFlat = line.Side0.Sector.FloorFlat;
+						plat.High = sector.FloorHeight + amount * Fixed.One;
 						plat.Wait = 0;
 						plat.Status = PlatformState.Up;
-
-						world.StartSound(sec.SoundOrigin, Sfx.STNMOV);
+						world.StartSound(sector.SoundOrigin, Sfx.STNMOV);
 						break;
 
 					case PlatformType.DownWaitUpStay:
-						plat.Speed = PLATSPEED * 4;
-						plat.Low = FindLowestFloorSurrounding(sec);
-
-						if (plat.Low > sec.FloorHeight)
+						plat.Speed = platformSpeed * 4;
+						plat.Low = FindLowestFloorSurrounding(sector);
+						if (plat.Low > sector.FloorHeight)
 						{
-							plat.Low = sec.FloorHeight;
+							plat.Low = sector.FloorHeight;
 						}
-
-						plat.High = sec.FloorHeight;
-						plat.Wait = 35 * PLATWAIT;
+						plat.High = sector.FloorHeight;
+						plat.Wait = 35 * platformWait;
 						plat.Status = PlatformState.Down;
-						world.StartSound(sec.SoundOrigin, Sfx.PSTART);
+						world.StartSound(sector.SoundOrigin, Sfx.PSTART);
 						break;
 
 					case PlatformType.BlazeDwus:
-						plat.Speed = PLATSPEED * 8;
-						plat.Low = FindLowestFloorSurrounding(sec);
-
-						if (plat.Low > sec.FloorHeight)
+						plat.Speed = platformSpeed * 8;
+						plat.Low = FindLowestFloorSurrounding(sector);
+						if (plat.Low > sector.FloorHeight)
 						{
-							plat.Low = sec.FloorHeight;
+							plat.Low = sector.FloorHeight;
 						}
-
-						plat.High = sec.FloorHeight;
-						plat.Wait = 35 * PLATWAIT;
+						plat.High = sector.FloorHeight;
+						plat.Wait = 35 * platformWait;
 						plat.Status = PlatformState.Down;
-						world.StartSound(sec.SoundOrigin, Sfx.PSTART);
+						world.StartSound(sector.SoundOrigin, Sfx.PSTART);
 						break;
 
 					case PlatformType.PerpetualRaise:
-						plat.Speed = PLATSPEED;
-						plat.Low = FindLowestFloorSurrounding(sec);
-
-						if (plat.Low > sec.FloorHeight)
+						plat.Speed = platformSpeed;
+						plat.Low = FindLowestFloorSurrounding(sector);
+						if (plat.Low > sector.FloorHeight)
 						{
-							plat.Low = sec.FloorHeight;
+							plat.Low = sector.FloorHeight;
 						}
-
-						plat.High = FindHighestFloorSurrounding(sec);
-
-						if (plat.High < sec.FloorHeight)
+						plat.High = FindHighestFloorSurrounding(sector);
+						if (plat.High < sector.FloorHeight)
 						{
-							plat.High = sec.FloorHeight;
+							plat.High = sector.FloorHeight;
 						}
-
-						plat.Wait = 35 * PLATWAIT;
+						plat.Wait = 35 * platformWait;
 						plat.Status = (PlatformState)(world.Random.Next() & 1);
-
-						world.StartSound(sec.SoundOrigin, Sfx.PSTART);
+						world.StartSound(sector.SoundOrigin, Sfx.PSTART);
 						break;
 				}
 
-				AddActivePlat(plat);
+				AddActivePlatform(plat);
 			}
-			return rtn;
+
+			return result;
 		}
 
 
 
-		private static readonly int MAXPLATS = 30;
-		private Platform[] activeplats = new Platform[MAXPLATS];
+		private static readonly int maxPlatformCount = 60;
+		private Platform[] activePlatforms = new Platform[maxPlatformCount];
 
 		public void ActivateInStasis(int tag)
 		{
-			for (var i = 0; i < activeplats.Length; i++)
+			for (var i = 0; i < activePlatforms.Length; i++)
 			{
-				if (activeplats[i] != null
-					&& activeplats[i].Tag == tag
-					&& activeplats[i].Status == PlatformState.InStasis)
+				if (activePlatforms[i] != null &&
+					activePlatforms[i].Tag == tag &&
+					activePlatforms[i].Status == PlatformState.InStasis)
 				{
-					activeplats[i].Status = activeplats[i].Oldstatus;
-					//activeplats[i].Active = true;
-					activeplats[i].ThinkerState = ThinkerState.Active;
+					activePlatforms[i].Status = activePlatforms[i].Oldstatus;
+					activePlatforms[i].ThinkerState = ThinkerState.Active;
 				}
 			}
 		}
 
-		public void EV_StopPlat(LineDef line)
+		public void StopPlatform(LineDef line)
 		{
-			for (var j = 0; j < activeplats.Length; j++)
+			for (var j = 0; j < activePlatforms.Length; j++)
 			{
-				if (activeplats[j] != null
-					&& activeplats[j].Status != PlatformState.InStasis
-					&& activeplats[j].Tag == line.Tag)
+				if (activePlatforms[j] != null &&
+					activePlatforms[j].Status != PlatformState.InStasis &&
+					activePlatforms[j].Tag == line.Tag)
 				{
-					activeplats[j].Oldstatus = activeplats[j].Status;
-					activeplats[j].Status = PlatformState.InStasis;
-					//activeplats[j].Active = false;
-					activeplats[j].ThinkerState = ThinkerState.InStasis;
+					activePlatforms[j].Oldstatus = activePlatforms[j].Status;
+					activePlatforms[j].Status = PlatformState.InStasis;
+					activePlatforms[j].ThinkerState = ThinkerState.InStasis;
 				}
 			}
 		}
 
-		public void AddActivePlat(Platform plat)
+		public void AddActivePlatform(Platform platform)
 		{
-			for (var i = 0; i < activeplats.Length; i++)
+			for (var i = 0; i < activePlatforms.Length; i++)
 			{
-				if (activeplats[i] == null)
+				if (activePlatforms[i] == null)
 				{
-					activeplats[i] = plat;
-					return;
-				}
-			}
-
-			throw new Exception("P_AddActivePlat: no more plats!");
-		}
-
-		public void RemoveActivePlat(Platform plat)
-		{
-			for (var i = 0; i < activeplats.Length; i++)
-			{
-				if (plat == activeplats[i])
-				{
-					activeplats[i].Sector.SpecialData = null;
-					world.Thinkers.Remove(activeplats[i]);
-					activeplats[i] = null;
+					activePlatforms[i] = platform;
 
 					return;
 				}
 			}
 
-			throw new Exception("P_RemoveActivePlat: can't find plat!");
+			throw new Exception("Too many active platforms!");
+		}
+
+		public void RemoveActivePlatform(Platform platform)
+		{
+			for (var i = 0; i < activePlatforms.Length; i++)
+			{
+				if (platform == activePlatforms[i])
+				{
+					activePlatforms[i].Sector.SpecialData = null;
+					world.Thinkers.Remove(activePlatforms[i]);
+					activePlatforms[i] = null;
+
+					return;
+				}
+			}
+
+			throw new Exception("The platform was not found.");
 		}
 
 
-
-
-
-
-
-
-
-		//
-		// TELEPORTATION
-		//
-		public bool EV_Teleport(LineDef line, int side, Mobj thing)
+		public bool Teleport(LineDef line, int side, Mobj thing)
 		{
-			// don't teleport missiles
+			// Don't teleport missiles.
 			if ((thing.Flags & MobjFlags.Missile) != 0)
 			{
 				return false;
 			}
 
-			// Don't teleport if hit back of line,
-			//  so you can get out of teleporter.
+			// Don't teleport if hit back of line, so you can get out of teleporter.
 			if (side == 1)
 			{
 				return false;
@@ -992,6 +956,7 @@ namespace ManagedDoom
 
 			var tag = line.Tag;
 			var sectors = world.Map.Sectors;
+
 			for (var i = 0; i < sectors.Length; i++)
 			{
 				if (sectors[i].Tag == tag)
@@ -1002,11 +967,11 @@ namespace ManagedDoom
 
 						if (m == null)
 						{
-							// not a mobj
+							// Not a mobj.
 							continue;
 						}
 
-						// not a teleportman
+						// Not a teleportman.
 						if (m.Type != MobjType.Teleportman)
 						{
 							continue;
@@ -1014,40 +979,46 @@ namespace ManagedDoom
 
 						var sector = m.Subsector.Sector;
 
-						// wrong sector
+						// Wrong sector.
 						if (sector.Number != i)
 						{
 							continue;
 						}
 
-						var oldx = thing.X;
-						var oldy = thing.Y;
-						var oldz = thing.Z;
+						var oldX = thing.X;
+						var oldY = thing.Y;
+						var oldZ = thing.Z;
 
 						if (!world.ThingMovement.TeleportMove(thing, m.X, m.Y))
 						{
 							return false;
 						}
 
-						thing.Z = thing.FloorZ; //fixme: not needed?
+						thing.Z = thing.FloorZ;
+
 						if (thing.Player != null)
 						{
 							thing.Player.ViewZ = thing.Z + thing.Player.ViewHeight;
 						}
 
-						// spawn teleport fog at source and destination
-						var fog = world.ThingAllocation.SpawnMobj(oldx, oldy, oldz, MobjType.Tfog);
-						world.StartSound(fog, Sfx.TELEPT);
-						var an = m.Angle; // >> ANGLETOFINESHIFT;
-						fog = world.ThingAllocation.SpawnMobj(
-							m.X + 20 * Trig.Cos(an),
-							m.Y + 20 * Trig.Sin(an),
-							thing.Z, MobjType.Tfog);
+						// Spawn teleport fog at source position.
+						var fog1 = world.ThingAllocation.SpawnMobj(
+							oldX,
+							oldY,
+							oldZ,
+							MobjType.Tfog);
+						world.StartSound(fog1, Sfx.TELEPT);
 
-						// emit sound, where?
-						world.StartSound(fog, Sfx.TELEPT);
+						// Destination position.
+						var angle = m.Angle;
+						var fog2 = world.ThingAllocation.SpawnMobj(
+							m.X + 20 * Trig.Cos(angle),
+							m.Y + 20 * Trig.Sin(angle),
+							thing.Z,
+							MobjType.Tfog);
+						world.StartSound(fog2, Sfx.TELEPT);
 
-						// don't move for a bit
+						// Don't move for a bit.
 						if (thing.Player != null)
 						{
 							thing.ReactionTime = 18;
@@ -1055,10 +1026,12 @@ namespace ManagedDoom
 
 						thing.Angle = m.Angle;
 						thing.MomX = thing.MomY = thing.MomZ = Fixed.Zero;
+
 						return true;
 					}
 				}
 			}
+
 			return false;
 		}
 

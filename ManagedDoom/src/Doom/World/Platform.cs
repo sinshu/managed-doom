@@ -65,12 +65,12 @@ namespace ManagedDoom
 							{
 								case PlatformType.BlazeDwus:
 								case PlatformType.DownWaitUpStay:
-									sa.RemoveActivePlat(this);
+									sa.RemoveActivePlatform(this);
 									break;
 
 								case PlatformType.RaiseAndChange:
 								case PlatformType.RaiseToNearestAndChange:
-									sa.RemoveActivePlat(this);
+									sa.RemoveActivePlatform(this);
 									break;
 
 								default:

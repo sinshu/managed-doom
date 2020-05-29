@@ -108,7 +108,7 @@ namespace ManagedDoom
 
 				case 14:
 					// Raise Floor 32 and change texture
-					if (sa.EV_DoPlat(line, PlatformType.RaiseAndChange, 32))
+					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 32))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -116,7 +116,7 @@ namespace ManagedDoom
 
 				case 15:
 					// Raise Floor 24 and change texture
-					if (sa.EV_DoPlat(line, PlatformType.RaiseAndChange, 24))
+					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 24))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -132,7 +132,7 @@ namespace ManagedDoom
 
 				case 20:
 					// Raise Plat next highest floor and change texture
-					if (sa.EV_DoPlat(line, PlatformType.RaiseToNearestAndChange, 0))
+					if (sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -140,7 +140,7 @@ namespace ManagedDoom
 
 				case 21:
 					// PlatDownWaitUpStay
-					if (sa.EV_DoPlat(line, PlatformType.DownWaitUpStay, 0))
+					if (sa.DoPlatform(line, PlatformType.DownWaitUpStay, 0))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -258,7 +258,7 @@ namespace ManagedDoom
 
 				case 122:
 					// Blazing PlatDownWaitUpStay
-					if (sa.EV_DoPlat(line, PlatformType.BlazeDwus, 0))
+					if (sa.DoPlatform(line, PlatformType.BlazeDwus, 0))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -343,7 +343,7 @@ namespace ManagedDoom
 
 				case 62:
 					// PlatDownWaitUpStay
-					if (sa.EV_DoPlat(line, PlatformType.DownWaitUpStay, 1))
+					if (sa.DoPlatform(line, PlatformType.DownWaitUpStay, 1))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -367,7 +367,7 @@ namespace ManagedDoom
 
 				case 66:
 					// Raise Floor 24 and change texture
-					if (sa.EV_DoPlat(line, PlatformType.RaiseAndChange, 24))
+					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 24))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -375,7 +375,7 @@ namespace ManagedDoom
 
 				case 67:
 					// Raise Floor 32 and change texture
-					if (sa.EV_DoPlat(line, PlatformType.RaiseAndChange, 32))
+					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 32))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -391,7 +391,7 @@ namespace ManagedDoom
 
 				case 68:
 					// Raise Plat to next highest floor and change texture
-					if (sa.EV_DoPlat(line, PlatformType.RaiseToNearestAndChange, 0))
+					if (sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -439,7 +439,7 @@ namespace ManagedDoom
 
 				case 123:
 					// Blazing PlatDownWaitUpStay
-					if (sa.EV_DoPlat(line, PlatformType.BlazeDwus, 0))
+					if (sa.DoPlatform(line, PlatformType.BlazeDwus, 0))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -644,7 +644,7 @@ namespace ManagedDoom
 
 				case 10:
 					// PlatDownWaitUp
-					sa.EV_DoPlat(line, PlatformType.DownWaitUpStay, 0);
+					sa.DoPlatform(line, PlatformType.DownWaitUpStay, 0);
 					line.Special = 0;
 					break;
 
@@ -680,7 +680,7 @@ namespace ManagedDoom
 
 				case 22:
 					// Raise floor to nearest height and change texture
-					sa.EV_DoPlat(line, PlatformType.RaiseToNearestAndChange, 0);
+					sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0);
 					line.Special = 0;
 					break;
 
@@ -723,7 +723,7 @@ namespace ManagedDoom
 
 				case 39:
 					// TELEPORT!
-					sa.EV_Teleport(line, side, thing);
+					sa.Teleport(line, side, thing);
 					line.Special = 0;
 					break;
 
@@ -747,13 +747,13 @@ namespace ManagedDoom
 
 				case 53:
 					// Perpetual Platform Raise
-					sa.EV_DoPlat(line, PlatformType.PerpetualRaise, 0);
+					sa.DoPlatform(line, PlatformType.PerpetualRaise, 0);
 					line.Special = 0;
 					break;
 
 				case 54:
 					// Platform Stop
-					sa.EV_StopPlat(line);
+					sa.StopPlatform(line);
 					line.Special = 0;
 					break;
 
@@ -819,7 +819,7 @@ namespace ManagedDoom
 
 				case 121:
 					// Blazing PlatDownWaitUpStay
-					sa.EV_DoPlat(line, PlatformType.BlazeDwus, 0);
+					sa.DoPlatform(line, PlatformType.BlazeDwus, 0);
 					line.Special = 0;
 					break;
 
@@ -832,7 +832,7 @@ namespace ManagedDoom
 					// TELEPORT MonsterONLY
 					if (thing.Player == null)
 					{
-						sa.EV_Teleport(line, side, thing);
+						sa.Teleport(line, side, thing);
 						line.Special = 0;
 					}
 					break;
@@ -917,17 +917,17 @@ namespace ManagedDoom
 
 				case 87:
 					// Perpetual Platform Raise
-					sa.EV_DoPlat(line, PlatformType.PerpetualRaise, 0);
+					sa.DoPlatform(line, PlatformType.PerpetualRaise, 0);
 					break;
 
 				case 88:
 					// PlatDownWaitUp
-					sa.EV_DoPlat(line, PlatformType.DownWaitUpStay, 0);
+					sa.DoPlatform(line, PlatformType.DownWaitUpStay, 0);
 					break;
 
 				case 89:
 					// Platform Stop
-					sa.EV_StopPlat(line);
+					sa.StopPlatform(line);
 					break;
 
 				case 90:
@@ -958,7 +958,7 @@ namespace ManagedDoom
 				case 95:
 					// Raise floor to nearest height
 					// and change texture.
-					sa.EV_DoPlat(line, PlatformType.RaiseToNearestAndChange, 0);
+					sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0);
 					break;
 
 				case 96:
@@ -969,7 +969,7 @@ namespace ManagedDoom
 
 				case 97:
 					// TELEPORT!
-					sa.EV_Teleport(line, side, thing);
+					sa.Teleport(line, side, thing);
 					break;
 
 				case 98:
@@ -994,14 +994,14 @@ namespace ManagedDoom
 
 				case 120:
 					// Blazing PlatDownWaitUpStay.
-					sa.EV_DoPlat(line, PlatformType.BlazeDwus, 0);
+					sa.DoPlatform(line, PlatformType.BlazeDwus, 0);
 					break;
 
 				case 126:
 					// TELEPORT MonsterONLY.
 					if (thing.Player == null)
 					{
-						sa.EV_Teleport(line, side, thing);
+						sa.Teleport(line, side, thing);
 					}
 					break;
 
@@ -1064,7 +1064,7 @@ namespace ManagedDoom
 
 				case 47:
 					// RAISE FLOOR NEAR AND CHANGE
-					sa.EV_DoPlat(line, PlatformType.RaiseToNearestAndChange, 0);
+					sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0);
 					specials.ChangeSwitchTexture(line, false);
 					break;
 			}
