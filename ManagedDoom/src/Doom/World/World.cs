@@ -375,7 +375,7 @@ namespace ManagedDoom
 
                     case 10:
                         // DOOR CLOSE IN 30 SECONDS
-                        sectorAction.P_SpawnDoorCloseIn30(sector);
+                        sectorAction.SpawnDoorCloseIn30(sector);
                         break;
 
                     case 12:
@@ -390,7 +390,7 @@ namespace ManagedDoom
 
                     case 14:
                         // DOOR RAISE IN 5 MINUTES
-                        sectorAction.P_SpawnDoorRaiseIn5Mins(sector);
+                        sectorAction.SpawnDoorRaiseIn5Mins(sector);
                         break;
 
                     case 17:

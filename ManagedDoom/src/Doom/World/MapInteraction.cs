@@ -86,7 +86,7 @@ namespace ManagedDoom
 				// SWITCHES
 				case 7:
 					// Build Stairs
-					if (sa.EV_BuildStairs(line, StairType.Build8))
+					if (sa.BuildStairs(line, StairType.Build8))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -94,7 +94,7 @@ namespace ManagedDoom
 
 				case 9:
 					// Change Donut
-					if (sa.EV_DoDonut(line))
+					if (sa.DoDonut(line))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -124,7 +124,7 @@ namespace ManagedDoom
 
 				case 18:
 					// Raise Floor to next highest floor
-					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorToNearest))
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorToNearest))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -148,7 +148,7 @@ namespace ManagedDoom
 
 				case 23:
 					// Lower Floor to Lowest
-					if (sa.EV_DoFloor(line, FloorMoveType.LowerFloorToLowest))
+					if (sa.DoFloor(line, FloorMoveType.LowerFloorToLowest))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -164,7 +164,7 @@ namespace ManagedDoom
 
 				case 41:
 					// Lower Ceiling to Floor
-					if (sa.EV_DoCeiling(line, CeilingMoveType.LowerToFloor))
+					if (sa.DoCeiling(line, CeilingMoveType.LowerToFloor))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -172,7 +172,7 @@ namespace ManagedDoom
 
 				case 71:
 					// Turbo Lower Floor
-					if (sa.EV_DoFloor(line, FloorMoveType.TurboLower))
+					if (sa.DoFloor(line, FloorMoveType.TurboLower))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -180,7 +180,7 @@ namespace ManagedDoom
 
 				case 49:
 					// Ceiling Crush And Raise
-					if (sa.EV_DoCeiling(line, CeilingMoveType.CrushAndRaise))
+					if (sa.DoCeiling(line, CeilingMoveType.CrushAndRaise))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -202,7 +202,7 @@ namespace ManagedDoom
 
 				case 55:
 					// Raise Floor Crush
-					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorCrush))
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorCrush))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -210,7 +210,7 @@ namespace ManagedDoom
 
 				case 101:
 					// Raise Floor
-					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloor))
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloor))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -218,7 +218,7 @@ namespace ManagedDoom
 
 				case 102:
 					// Lower Floor to Surrounding floor height
-					if (sa.EV_DoFloor(line, FloorMoveType.LowerFloor))
+					if (sa.DoFloor(line, FloorMoveType.LowerFloor))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -266,7 +266,7 @@ namespace ManagedDoom
 
 				case 127:
 					// Build Stairs Turbo 16
-					if (sa.EV_BuildStairs(line, StairType.Turbo16))
+					if (sa.BuildStairs(line, StairType.Turbo16))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -274,7 +274,7 @@ namespace ManagedDoom
 
 				case 131:
 					// Raise Floor Turbo
-					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorTurbo))
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorTurbo))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -294,7 +294,7 @@ namespace ManagedDoom
 
 				case 140:
 					// Raise Floor 512
-					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloor512))
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloor512))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -311,7 +311,7 @@ namespace ManagedDoom
 
 				case 43:
 					// Lower Ceiling to Floor
-					if (sa.EV_DoCeiling(line, CeilingMoveType.LowerToFloor))
+					if (sa.DoCeiling(line, CeilingMoveType.LowerToFloor))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -319,7 +319,7 @@ namespace ManagedDoom
 
 				case 45:
 					// Lower Floor to Surrounding floor height
-					if (sa.EV_DoFloor(line, FloorMoveType.LowerFloor))
+					if (sa.DoFloor(line, FloorMoveType.LowerFloor))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -327,7 +327,7 @@ namespace ManagedDoom
 
 				case 60:
 					// Lower Floor to Lowest
-					if (sa.EV_DoFloor(line, FloorMoveType.LowerFloorToLowest))
+					if (sa.DoFloor(line, FloorMoveType.LowerFloorToLowest))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -359,7 +359,7 @@ namespace ManagedDoom
 
 				case 64:
 					// Raise Floor to ceiling
-					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloor))
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloor))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -383,7 +383,7 @@ namespace ManagedDoom
 
 				case 65:
 					// Raise Floor Crush
-					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorCrush))
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorCrush))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -399,7 +399,7 @@ namespace ManagedDoom
 
 				case 69:
 					// Raise Floor to next highest floor
-					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorToNearest))
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorToNearest))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -407,7 +407,7 @@ namespace ManagedDoom
 
 				case 70:
 					// Turbo Lower Floor
-					if (sa.EV_DoFloor(line, FloorMoveType.TurboLower))
+					if (sa.DoFloor(line, FloorMoveType.TurboLower))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -447,7 +447,7 @@ namespace ManagedDoom
 
 				case 132:
 					// Raise Floor Turbo
-					if (sa.EV_DoFloor(line, FloorMoveType.RaiseFloorTurbo))
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorTurbo))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -467,13 +467,13 @@ namespace ManagedDoom
 
 				case 138:
 					// Light Turn On
-					sa.EV_LightTurnOn(line, 255);
+					sa.LightTurnOn(line, 255);
 					specials.ChangeSwitchTexture(line, true);
 					break;
 
 				case 139:
 					// Light Turn Off
-					sa.EV_LightTurnOn(line, 35);
+					sa.LightTurnOn(line, 35);
 					specials.ChangeSwitchTexture(line, true);
 					break;
 			}
@@ -626,19 +626,19 @@ namespace ManagedDoom
 
 				case 5:
 					// Raise Floor
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor);
+					sa.DoFloor(line, FloorMoveType.RaiseFloor);
 					line.Special = 0;
 					break;
 
 				case 6:
 					// Fast Ceiling Crush & Raise
-					sa.EV_DoCeiling(line, CeilingMoveType.FastCrushAndRaise);
+					sa.DoCeiling(line, CeilingMoveType.FastCrushAndRaise);
 					line.Special = 0;
 					break;
 
 				case 8:
 					// Build Stairs
-					sa.EV_BuildStairs(line, StairType.Build8);
+					sa.BuildStairs(line, StairType.Build8);
 					line.Special = 0;
 					break;
 
@@ -650,13 +650,13 @@ namespace ManagedDoom
 
 				case 12:
 					// Light Turn On - brightest near
-					sa.EV_LightTurnOn(line, 0);
+					sa.LightTurnOn(line, 0);
 					line.Special = 0;
 					break;
 
 				case 13:
 					// Light Turn On 255
-					sa.EV_LightTurnOn(line, 255);
+					sa.LightTurnOn(line, 255);
 					line.Special = 0;
 					break;
 
@@ -668,13 +668,13 @@ namespace ManagedDoom
 
 				case 17:
 					// Start Light Strobing
-					sa.EV_StartLightStrobing(line);
+					sa.StartLightStrobing(line);
 					line.Special = 0;
 					break;
 
 				case 19:
 					// Lower Floor
-					sa.EV_DoFloor(line, FloorMoveType.LowerFloor);
+					sa.DoFloor(line, FloorMoveType.LowerFloor);
 					line.Special = 0;
 					break;
 
@@ -686,38 +686,38 @@ namespace ManagedDoom
 
 				case 25:
 					// Ceiling Crush and Raise
-					sa.EV_DoCeiling(line, CeilingMoveType.CrushAndRaise);
+					sa.DoCeiling(line, CeilingMoveType.CrushAndRaise);
 					line.Special = 0;
 					break;
 
 				case 30:
 					// Raise floor to shortest texture height
 					//  on either side of lines.
-					sa.EV_DoFloor(line, FloorMoveType.RaiseToTexture);
+					sa.DoFloor(line, FloorMoveType.RaiseToTexture);
 					line.Special = 0;
 					break;
 
 				case 35:
 					// Lights Very Dark
-					sa.EV_LightTurnOn(line, 35);
+					sa.LightTurnOn(line, 35);
 					line.Special = 0;
 					break;
 
 				case 36:
 					// Lower Floor (TURBO)
-					sa.EV_DoFloor(line, FloorMoveType.TurboLower);
+					sa.DoFloor(line, FloorMoveType.TurboLower);
 					line.Special = 0;
 					break;
 
 				case 37:
 					// LowerAndChange
-					sa.EV_DoFloor(line, FloorMoveType.LowerAndChange);
+					sa.DoFloor(line, FloorMoveType.LowerAndChange);
 					line.Special = 0;
 					break;
 
 				case 38:
 					// Lower Floor To Lowest
-					sa.EV_DoFloor(line, FloorMoveType.LowerFloorToLowest);
+					sa.DoFloor(line, FloorMoveType.LowerFloorToLowest);
 					line.Special = 0;
 					break;
 
@@ -729,14 +729,14 @@ namespace ManagedDoom
 
 				case 40:
 					// RaiseCeilingLowerFloor
-					sa.EV_DoCeiling(line, CeilingMoveType.RaiseToHighest);
-					sa.EV_DoFloor(line, FloorMoveType.LowerFloorToLowest);
+					sa.DoCeiling(line, CeilingMoveType.RaiseToHighest);
+					sa.DoFloor(line, FloorMoveType.LowerFloorToLowest);
 					line.Special = 0;
 					break;
 
 				case 44:
 					// Ceiling Crush
-					sa.EV_DoCeiling(line, CeilingMoveType.LowerAndCrush);
+					sa.DoCeiling(line, CeilingMoveType.LowerAndCrush);
 					line.Special = 0;
 					break;
 
@@ -759,31 +759,31 @@ namespace ManagedDoom
 
 				case 56:
 					// Raise Floor Crush
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorCrush);
+					sa.DoFloor(line, FloorMoveType.RaiseFloorCrush);
 					line.Special = 0;
 					break;
 
 				case 57:
 					// Ceiling Crush Stop
-					sa.EV_CeilingCrushStop(line);
+					sa.CeilingCrushStop(line);
 					line.Special = 0;
 					break;
 
 				case 58:
 					// Raise Floor 24
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor24);
+					sa.DoFloor(line, FloorMoveType.RaiseFloor24);
 					line.Special = 0;
 					break;
 
 				case 59:
 					// Raise Floor 24 And Change
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor24AndChange);
+					sa.DoFloor(line, FloorMoveType.RaiseFloor24AndChange);
 					line.Special = 0;
 					break;
 
 				case 104:
 					// Turn lights off in sector(tag)
-					sa.EV_TurnTagLightsOff(line);
+					sa.TurnTagLightsOff(line);
 					line.Special = 0;
 					break;
 
@@ -801,7 +801,7 @@ namespace ManagedDoom
 
 				case 100:
 					// Build Stairs Turbo 16
-					sa.EV_BuildStairs(line, StairType.Turbo16);
+					sa.BuildStairs(line, StairType.Turbo16);
 					line.Special = 0;
 					break;
 
@@ -813,7 +813,7 @@ namespace ManagedDoom
 
 				case 119:
 					// Raise floor to nearest surr. floor
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorToNearest);
+					sa.DoFloor(line, FloorMoveType.RaiseFloorToNearest);
 					line.Special = 0;
 					break;
 
@@ -839,30 +839,30 @@ namespace ManagedDoom
 
 				case 130:
 					// Raise Floor Turbo
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorTurbo);
+					sa.DoFloor(line, FloorMoveType.RaiseFloorTurbo);
 					line.Special = 0;
 					break;
 
 				case 141:
 					// Silent Ceiling Crush & Raise
-					sa.EV_DoCeiling(line, CeilingMoveType.SilentCrushAndRaise);
+					sa.DoCeiling(line, CeilingMoveType.SilentCrushAndRaise);
 					line.Special = 0;
 					break;
 
 				// RETRIGGERS.  All from here till end.
 				case 72:
 					// Ceiling Crush
-					sa.EV_DoCeiling(line, CeilingMoveType.LowerAndCrush);
+					sa.DoCeiling(line, CeilingMoveType.LowerAndCrush);
 					break;
 
 				case 73:
 					// Ceiling Crush and Raise
-					sa.EV_DoCeiling(line, CeilingMoveType.CrushAndRaise);
+					sa.DoCeiling(line, CeilingMoveType.CrushAndRaise);
 					break;
 
 				case 74:
 					// Ceiling Crush Stop
-					sa.EV_CeilingCrushStop(line);
+					sa.CeilingCrushStop(line);
 					break;
 
 				case 75:
@@ -877,37 +877,37 @@ namespace ManagedDoom
 
 				case 77:
 					// Fast Ceiling Crush & Raise
-					sa.EV_DoCeiling(line, CeilingMoveType.FastCrushAndRaise);
+					sa.DoCeiling(line, CeilingMoveType.FastCrushAndRaise);
 					break;
 
 				case 79:
 					// Lights Very Dark
-					sa.EV_LightTurnOn(line, 35);
+					sa.LightTurnOn(line, 35);
 					break;
 
 				case 80:
 					// Light Turn On - brightest near
-					sa.EV_LightTurnOn(line, 0);
+					sa.LightTurnOn(line, 0);
 					break;
 
 				case 81:
 					// Light Turn On 255
-					sa.EV_LightTurnOn(line, 255);
+					sa.LightTurnOn(line, 255);
 					break;
 
 				case 82:
 					// Lower Floor To Lowest
-					sa.EV_DoFloor(line, FloorMoveType.LowerFloorToLowest);
+					sa.DoFloor(line, FloorMoveType.LowerFloorToLowest);
 					break;
 
 				case 83:
 					// Lower Floor
-					sa.EV_DoFloor(line, FloorMoveType.LowerFloor);
+					sa.DoFloor(line, FloorMoveType.LowerFloor);
 					break;
 
 				case 84:
 					// LowerAndChange
-					sa.EV_DoFloor(line, FloorMoveType.LowerAndChange);
+					sa.DoFloor(line, FloorMoveType.LowerAndChange);
 					break;
 
 				case 86:
@@ -937,22 +937,22 @@ namespace ManagedDoom
 
 				case 91:
 					// Raise Floor
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor);
+					sa.DoFloor(line, FloorMoveType.RaiseFloor);
 					break;
 
 				case 92:
 					// Raise Floor 24
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor24);
+					sa.DoFloor(line, FloorMoveType.RaiseFloor24);
 					break;
 
 				case 93:
 					// Raise Floor 24 And Change
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor24AndChange);
+					sa.DoFloor(line, FloorMoveType.RaiseFloor24AndChange);
 					break;
 
 				case 94:
 					// Raise Floor Crush
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorCrush);
+					sa.DoFloor(line, FloorMoveType.RaiseFloorCrush);
 					break;
 
 				case 95:
@@ -964,7 +964,7 @@ namespace ManagedDoom
 				case 96:
 					// Raise floor to shortest texture height
 					// on either side of lines.
-					sa.EV_DoFloor(line, FloorMoveType.RaiseToTexture);
+					sa.DoFloor(line, FloorMoveType.RaiseToTexture);
 					break;
 
 				case 97:
@@ -974,7 +974,7 @@ namespace ManagedDoom
 
 				case 98:
 					// Lower Floor (TURBO)
-					sa.EV_DoFloor(line, FloorMoveType.TurboLower);
+					sa.DoFloor(line, FloorMoveType.TurboLower);
 					break;
 
 				case 105:
@@ -1007,12 +1007,12 @@ namespace ManagedDoom
 
 				case 128:
 					// Raise To Nearest Floor
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorToNearest);
+					sa.DoFloor(line, FloorMoveType.RaiseFloorToNearest);
 					break;
 
 				case 129:
 					// Raise Floor Turbo
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloorTurbo);
+					sa.DoFloor(line, FloorMoveType.RaiseFloorTurbo);
 					break;
 			}
 		}
@@ -1052,7 +1052,7 @@ namespace ManagedDoom
 			{
 				case 24:
 					// RAISE FLOOR
-					sa.EV_DoFloor(line, FloorMoveType.RaiseFloor);
+					sa.DoFloor(line, FloorMoveType.RaiseFloor);
 					specials.ChangeSwitchTexture(line, false);
 					break;
 

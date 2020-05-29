@@ -115,7 +115,7 @@ namespace ManagedDoom
 								}
 								if (Type == CeilingMoveType.CrushAndRaise)
 								{
-									Speed = SectorAction.CEILSPEED;
+									Speed = SectorAction.CeilingSpeed;
 								}
 								Direction = 1;
 								break;
@@ -138,7 +138,7 @@ namespace ManagedDoom
 								case CeilingMoveType.SilentCrushAndRaise:
 								case CeilingMoveType.CrushAndRaise:
 								case CeilingMoveType.LowerAndCrush:
-									Speed = SectorAction.CEILSPEED / 8;
+									Speed = SectorAction.CeilingSpeed / 8;
 									break;
 
 								default:

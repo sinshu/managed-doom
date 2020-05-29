@@ -1659,14 +1659,14 @@ namespace ManagedDoom
                     if (mo.Type == MobjType.Fatso)
                     {
                         junk.Tag = 666;
-                        world.SectorAction.EV_DoFloor(junk, FloorMoveType.LowerFloorToLowest);
+                        world.SectorAction.DoFloor(junk, FloorMoveType.LowerFloorToLowest);
                         return;
                     }
 
                     if (mo.Type == MobjType.Baby)
                     {
                         junk.Tag = 667;
-                        world.SectorAction.EV_DoFloor(junk, FloorMoveType.RaiseToTexture);
+                        world.SectorAction.DoFloor(junk, FloorMoveType.RaiseToTexture);
                         return;
                     }
                 }
@@ -1677,7 +1677,7 @@ namespace ManagedDoom
                 {
                     case 1:
                         junk.Tag = 666;
-                        world.SectorAction.EV_DoFloor(junk, FloorMoveType.LowerFloorToLowest);
+                        world.SectorAction.DoFloor(junk, FloorMoveType.LowerFloorToLowest);
                         return;
 
                     case 4:
@@ -1690,7 +1690,7 @@ namespace ManagedDoom
 
                             case 8:
                                 junk.Tag = 666;
-                                world.SectorAction.EV_DoFloor(junk, FloorMoveType.LowerFloorToLowest);
+                                world.SectorAction.DoFloor(junk, FloorMoveType.LowerFloorToLowest);
                                 return;
                         }
                         break;
