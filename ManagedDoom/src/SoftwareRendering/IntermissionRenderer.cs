@@ -69,7 +69,7 @@ namespace ManagedDoom.SoftwareRendering
                 case IntermissionState.StatCount:
                     if (im.Options.Deathmatch != 0)
                     {
-                        // WI_drawDeathmatchStats();
+                        WI_DrawDeathmatchStats(im);
                     }
                     else if (im.Options.NetGame)
                     {
@@ -141,6 +141,102 @@ namespace ManagedDoom.SoftwareRendering
             {
                 //V_DrawPatch(SCREENWIDTH / 2 + SP_TIMEX, SP_TIMEY, FB, par);
                 //WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
+            }
+        }
+
+        private void WI_DrawDeathmatchStats(Intermission im)
+        {
+            DrawBackground(im);
+
+            // draw animated background
+            //WI_drawAnimatedBack();
+
+            WI_drawLF(im);
+
+            // draw stat titles (top line)
+
+            DrawPatch(
+                patches.Total,
+                DM_TOTALSX - (patches.Total.Width) / 2,
+                DM_MATRIXY - WI_SPACINGY + 10);
+
+            DrawPatch(
+                patches.Killers,
+                DM_KILLERSX,
+                DM_KILLERSY);
+
+            DrawPatch(
+                patches.Victims,
+                DM_VICTIMSX,
+                DM_VICTIMSY);
+
+            // draw P?
+            var x = DM_MATRIXX + DM_SPACINGX;
+            var y = DM_MATRIXY;
+
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                if (im.Players[i].InGame)
+                {
+                    DrawPatch(
+                        patches.P[i],
+                        x - patches.P[i].Width / 2,
+                        DM_MATRIXY - WI_SPACINGY);
+
+                    DrawPatch(
+                        patches.P[i],
+                        DM_MATRIXX - patches.P[i].Width / 2,
+                        y);
+
+                    if (i == im.Options.ConsolePlayer)
+                    {
+                        DrawPatch(
+                            patches.BStar,
+                            x - patches.P[i].Width / 2,
+                                DM_MATRIXY - WI_SPACINGY);
+
+                        DrawPatch(
+                            patches.Star,
+                            DM_MATRIXX - patches.P[i].Width / 2,
+                            y);
+                    }
+                }
+                else
+                {
+                    // V_DrawPatch(x-SHORT(bp[i]->width)/2,
+                    //   DM_MATRIXY - WI_SPACINGY, FB, bp[i]);
+                    // V_DrawPatch(DM_MATRIXX-SHORT(bp[i]->width)/2,
+                    //   y, FB, bp[i]);
+                }
+
+                x += DM_SPACINGX;
+                y += WI_SPACINGY;
+            }
+
+            // draw stats
+            y = DM_MATRIXY + 10;
+            var w = patches.Numbers[0].Width;
+
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                x = DM_MATRIXX + DM_SPACINGX;
+
+                if (im.Players[i].InGame)
+                {
+                    for (var j = 0; j < Player.MaxPlayerCount; j++)
+                    {
+                        if (im.Players[j].InGame)
+                        {
+                            WI_drawNum(x + w, y, im.DM_Frags[i][j], 2);
+                        }
+
+                        x += DM_SPACINGX;
+                    }
+
+                    WI_drawNum(DM_TOTALSX + w, y, im.DM_Totals[i], 2);
+                }
+
+                y += WI_SPACINGY;
             }
         }
 
@@ -516,6 +612,14 @@ namespace ManagedDoom.SoftwareRendering
                     splat = Patch.FromWad("WISPLAT", wad);
                 }
 
+                p = new Patch[Player.MaxPlayerCount];
+                bp = new Patch[Player.MaxPlayerCount];
+                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                {
+                    p[i] = Patch.FromWad("STPB" + i, wad);
+                    bp[i] = Patch.FromWad("WIBP" + (i + 1), wad);
+                }
+
                 Console.WriteLine("All intermission patches are OK.");
             }
 
@@ -551,7 +655,10 @@ namespace ManagedDoom.SoftwareRendering
 
             public Patch Total => total;
             public Patch Star => star;
-            public Patch BStar => BStar;
+            public Patch BStar => bstar;
+
+            public IReadOnlyList<Patch> P => p;
+            public IReadOnlyList<Patch> BP => bp;
 
             public IReadOnlyList<IReadOnlyList<Patch>> LevelNames => lnames;
         }

@@ -256,24 +256,11 @@ namespace ManagedDoom.SoftwareRendering
                     scale * ST_ARMSBGX,
                     scale * ST_ARMSBGY,
                     scale);
+
                 for (var i = 0; i < wArms.Length; i++)
                 {
                     DrawMultIcon(wArms[i], player.WeaponOwned[i + 1] ? 1 : 0);
                 }
-
-                if (player.Mobj.World.Options.NetGame)
-                {
-                    screen.DrawPatch(
-                        patches.FaceBacks[player.Number],
-                        scale * ST_FX,
-                        scale * ST_FY,
-                        scale);
-                }
-                screen.DrawPatch(
-                    patches.Faces[statusBar.Face],
-                    scale * ST_FACESX,
-                    scale * ST_FACESY,
-                    scale);
             }
             else
             {
@@ -284,6 +271,21 @@ namespace ManagedDoom.SoftwareRendering
                 }
                 DrawNumber(wFrags, sum);
             }
+
+            if (player.Mobj.World.Options.NetGame)
+            {
+                screen.DrawPatch(
+                    patches.FaceBacks[player.Number],
+                    scale * ST_FX,
+                    scale * ST_FY,
+                    scale);
+            }
+
+            screen.DrawPatch(
+                patches.Faces[statusBar.Face],
+                scale * ST_FACESX,
+                scale * ST_FACESY,
+                scale);
         }
 
         private void DrawNumber(NumberWidget widget, int num)

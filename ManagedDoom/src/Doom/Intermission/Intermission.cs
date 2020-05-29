@@ -38,6 +38,10 @@ namespace ManagedDoom
 
         private int sp_state;
 
+        private int dm_state;
+        private int[][] dm_frags;
+        private int[] dm_totals;
+
         private Player[] players;
 
         public Intermission(Player[] players, IntermissionInfo wbs, GameOptions options)
@@ -52,7 +56,21 @@ namespace ManagedDoom
             cnt_items = new int[Player.MaxPlayerCount];
             cnt_secret = new int[Player.MaxPlayerCount];
 
-            InitStats();
+            dm_frags = new int[Player.MaxPlayerCount][];
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                dm_frags[i] = new int[Player.MaxPlayerCount];
+            }
+            dm_totals = new int[Player.MaxPlayerCount];
+
+            if (options.Deathmatch != 0)
+            {
+                WI_initDeathmatchStats();
+            }
+            else
+            {
+                InitStats();
+            }
         }
 
         private void InitStats()
@@ -66,6 +84,44 @@ namespace ManagedDoom
 
             // WI_initAnimatedBack();
         }
+
+        private void WI_initDeathmatchStats()
+        {
+            state = IntermissionState.StatCount;
+            acceleratestage = false;
+            dm_state = 1;
+
+            cnt_pause = GameConstants.TicRate;
+
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                if (players[i].InGame)
+                {
+                    for (var j = 0; j < Player.MaxPlayerCount; j++)
+                    {
+                        if (players[j].InGame)
+                        {
+                            dm_frags[i][j] = 0;
+                        }
+                    }
+
+                    dm_totals[i] = 0;
+                }
+            }
+
+            //WI_initAnimatedBack();
+        }
+
+
+
+
+
+
+
+
+
+
+
 
         private bool end = false;
 
@@ -82,7 +138,7 @@ namespace ManagedDoom
                 case IntermissionState.StatCount:
                     if (options.Deathmatch != 0)
                     {
-                        //WI_updateDeathmatchStats();
+                        WI_updateDeathmatchStats();
                     }
                     else if (options.NetGame)
                     {
@@ -226,6 +282,160 @@ namespace ManagedDoom
             }
         }
 
+
+
+
+
+
+
+
+        private void WI_updateDeathmatchStats()
+        {
+            bool stillticking;
+
+            //WI_updateAnimatedBack();
+
+            if (acceleratestage && dm_state != 4)
+            {
+                acceleratestage = false;
+
+                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                {
+                    if (players[i].InGame)
+                    {
+                        for (var j = 0; j < Player.MaxPlayerCount; j++)
+                        {
+                            if (players[j].InGame)
+                            {
+                                dm_frags[i][j] = plrs[i].Frags[j];
+                            }
+                        }
+
+                        dm_totals[i] = WI_fragSum(i);
+                    }
+                }
+
+                StartSound(Sfx.BAREXP);
+
+                dm_state = 4;
+            }
+
+            if (dm_state == 2)
+            {
+                if ((bcnt & 3) == 0)
+                {
+                    StartSound(Sfx.PISTOL);
+                }
+
+                stillticking = false;
+
+                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                {
+                    if (players[i].InGame)
+                    {
+                        for (var j = 0; j < Player.MaxPlayerCount; j++)
+                        {
+                            if (players[j].InGame && dm_frags[i][j] != plrs[i].Frags[j])
+                            {
+                                if (plrs[i].Frags[j] < 0)
+                                {
+                                    dm_frags[i][j]--;
+                                }
+                                else
+                                {
+                                    dm_frags[i][j]++;
+                                }
+
+                                if (dm_frags[i][j] > 99)
+                                {
+                                    dm_frags[i][j] = 99;
+                                }
+
+                                if (dm_frags[i][j] < -99)
+                                {
+                                    dm_frags[i][j] = -99;
+                                }
+
+                                stillticking = true;
+                            }
+                        }
+
+                        dm_totals[i] = WI_fragSum(i);
+
+                        if (dm_totals[i] > 99)
+                        {
+                            dm_totals[i] = 99;
+                        }
+
+                        if (dm_totals[i] < -99)
+                        {
+                            dm_totals[i] = -99;
+                        }
+                    }
+
+                }
+
+                if (!stillticking)
+                {
+                    StartSound(Sfx.BAREXP);
+                    dm_state++;
+                }
+
+            }
+            else if (dm_state == 4)
+            {
+                if (acceleratestage)
+                {
+                    StartSound(Sfx.SLOP);
+
+                    if (options.GameMode == GameMode.Commercial)
+                    {
+                        WI_initNoState();
+                    }
+                    else
+                    {
+                        WI_initShowNextLoc();
+                    }
+                }
+            }
+            else if ((dm_state & 1) != 0)
+            {
+                if (--cnt_pause == 0)
+                {
+                    dm_state++;
+                    cnt_pause = GameConstants.TicRate;
+                }
+            }
+        }
+
+        private int WI_fragSum(int playernum)
+        {
+            var frags = 0;
+
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                if (players[i].InGame && i != playernum)
+                {
+                    frags += plrs[playernum].Frags[i];
+                }
+            }
+
+            frags -= plrs[playernum].Frags[playernum];
+
+            return frags;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         private void WI_updateShowNextLoc()
         {
             //WI_updateAnimatedBack();
@@ -325,8 +535,9 @@ namespace ManagedDoom
 
         public IntermissionInfo Wbs => wbs;
         public GameOptions Options => options;
-
-
+        public Player[] Players => players;
+        public int[][] DM_Frags => dm_frags;
+        public int[] DM_Totals => dm_totals;
 
 
 

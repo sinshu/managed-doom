@@ -139,8 +139,6 @@ namespace ManagedDoom
             Array.Clear(Cards, 0, Cards.Length);
             Backpack = false;
 
-            Array.Clear(Frags, 0, Frags.Length);
-
             ReadyWeapon = WeaponType.Pistol;
             PendingWeapon = WeaponType.Pistol;
 
