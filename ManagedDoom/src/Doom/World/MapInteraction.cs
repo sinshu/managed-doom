@@ -75,7 +75,7 @@ namespace ManagedDoom
 
 				case 117: // Blazing door raise
 				case 118: // Blazing door open
-					sa.EV_VerticalDoor(line, thing);
+					sa.VerticalDoor(line, thing);
 					break;
 
 				//UNUSED - Door Slide Open&Close
@@ -156,7 +156,7 @@ namespace ManagedDoom
 
 				case 29:
 					// Raise Door
-					if (sa.EV_DoDoor(line, VlDoorType.Normal))
+					if (sa.DoDoor(line, VlDoorType.Normal))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -188,7 +188,7 @@ namespace ManagedDoom
 
 				case 50:
 					// Close Door
-					if (sa.EV_DoDoor(line, VlDoorType.Close))
+					if (sa.DoDoor(line, VlDoorType.Close))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -226,7 +226,7 @@ namespace ManagedDoom
 
 				case 103:
 					// Open Door
-					if (sa.EV_DoDoor(line, VlDoorType.Open))
+					if (sa.DoDoor(line, VlDoorType.Open))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -234,7 +234,7 @@ namespace ManagedDoom
 
 				case 111:
 					// Blazing Door Raise (faster than TURBO!)
-					if (sa.EV_DoDoor(line, VlDoorType.BlazeRaise))
+					if (sa.DoDoor(line, VlDoorType.BlazeRaise))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -242,7 +242,7 @@ namespace ManagedDoom
 
 				case 112:
 					// Blazing Door Open (faster than TURBO!)
-					if (sa.EV_DoDoor(line, VlDoorType.BlazeOpen))
+					if (sa.DoDoor(line, VlDoorType.BlazeOpen))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -250,7 +250,7 @@ namespace ManagedDoom
 
 				case 113:
 					// Blazing Door Close (faster than TURBO!)
-					if (sa.EV_DoDoor(line, VlDoorType.BlazeClose))
+					if (sa.DoDoor(line, VlDoorType.BlazeClose))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -286,7 +286,7 @@ namespace ManagedDoom
 				// BlzOpenDoor RED
 				case 137:
 					// BlzOpenDoor YELLOW
-					if (sa.EV_DoLockedDoor(line, VlDoorType.BlazeOpen, thing))
+					if (sa.DoLockedDoor(line, VlDoorType.BlazeOpen, thing))
 					{
 						specials.ChangeSwitchTexture(line, false);
 					}
@@ -303,7 +303,7 @@ namespace ManagedDoom
 				// BUTTONS
 				case 42:
 					// Close Door
-					if (sa.EV_DoDoor(line, VlDoorType.Close))
+					if (sa.DoDoor(line, VlDoorType.Close))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -335,7 +335,7 @@ namespace ManagedDoom
 
 				case 61:
 					// Open Door
-					if (sa.EV_DoDoor(line, VlDoorType.Open))
+					if (sa.DoDoor(line, VlDoorType.Open))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -351,7 +351,7 @@ namespace ManagedDoom
 
 				case 63:
 					// Raise Door
-					if (sa.EV_DoDoor(line, VlDoorType.Normal))
+					if (sa.DoDoor(line, VlDoorType.Normal))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -415,7 +415,7 @@ namespace ManagedDoom
 
 				case 114:
 					// Blazing Door Raise (faster than TURBO!)
-					if (sa.EV_DoDoor(line, VlDoorType.BlazeRaise))
+					if (sa.DoDoor(line, VlDoorType.BlazeRaise))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -423,7 +423,7 @@ namespace ManagedDoom
 
 				case 115:
 					// Blazing Door Open (faster than TURBO!)
-					if (sa.EV_DoDoor(line, VlDoorType.BlazeOpen))
+					if (sa.DoDoor(line, VlDoorType.BlazeOpen))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -431,7 +431,7 @@ namespace ManagedDoom
 
 				case 116:
 					// Blazing Door Close (faster than TURBO!)
-					if (sa.EV_DoDoor(line, VlDoorType.BlazeClose))
+					if (sa.DoDoor(line, VlDoorType.BlazeClose))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -459,7 +459,7 @@ namespace ManagedDoom
 				// BlzOpenDoor RED
 				case 136:
 					// BlzOpenDoor YELLOW
-					if (sa.EV_DoLockedDoor(line, VlDoorType.BlazeOpen, thing))
+					if (sa.DoLockedDoor(line, VlDoorType.BlazeOpen, thing))
 					{
 						specials.ChangeSwitchTexture(line, true);
 					}
@@ -608,19 +608,19 @@ namespace ManagedDoom
 				// All from here to RETRIGGERS.
 				case 2:
 					// Open Door
-					sa.EV_DoDoor(line, VlDoorType.Open);
+					sa.DoDoor(line, VlDoorType.Open);
 					line.Special = 0;
 					break;
 
 				case 3:
 					// Close Door
-					sa.EV_DoDoor(line, VlDoorType.Close);
+					sa.DoDoor(line, VlDoorType.Close);
 					line.Special = 0;
 					break;
 
 				case 4:
 					// Raise Door
-					sa.EV_DoDoor(line, VlDoorType.Normal);
+					sa.DoDoor(line, VlDoorType.Normal);
 					line.Special = 0;
 					break;
 
@@ -662,7 +662,7 @@ namespace ManagedDoom
 
 				case 16:
 					// Close Door 30
-					sa.EV_DoDoor(line, VlDoorType.Close30ThenOpen);
+					sa.DoDoor(line, VlDoorType.Close30ThenOpen);
 					line.Special = 0;
 					break;
 
@@ -789,13 +789,13 @@ namespace ManagedDoom
 
 				case 108:
 					// Blazing Door Raise (faster than TURBO!)
-					sa.EV_DoDoor(line, VlDoorType.BlazeRaise);
+					sa.DoDoor(line, VlDoorType.BlazeRaise);
 					line.Special = 0;
 					break;
 
 				case 109:
 					// Blazing Door Open (faster than TURBO!)
-					sa.EV_DoDoor(line, VlDoorType.BlazeOpen);
+					sa.DoDoor(line, VlDoorType.BlazeOpen);
 					line.Special = 0;
 					break;
 
@@ -807,7 +807,7 @@ namespace ManagedDoom
 
 				case 110:
 					// Blazing Door Close (faster than TURBO!)
-					sa.EV_DoDoor(line, VlDoorType.BlazeClose);
+					sa.DoDoor(line, VlDoorType.BlazeClose);
 					line.Special = 0;
 					break;
 
@@ -867,12 +867,12 @@ namespace ManagedDoom
 
 				case 75:
 					// Close Door
-					sa.EV_DoDoor(line, VlDoorType.Close);
+					sa.DoDoor(line, VlDoorType.Close);
 					break;
 
 				case 76:
 					// Close Door 30
-					sa.EV_DoDoor(line, VlDoorType.Close30ThenOpen);
+					sa.DoDoor(line, VlDoorType.Close30ThenOpen);
 					break;
 
 				case 77:
@@ -912,7 +912,7 @@ namespace ManagedDoom
 
 				case 86:
 					// Open Door
-					sa.EV_DoDoor(line, VlDoorType.Open);
+					sa.DoDoor(line, VlDoorType.Open);
 					break;
 
 				case 87:
@@ -932,7 +932,7 @@ namespace ManagedDoom
 
 				case 90:
 					// Raise Door
-					sa.EV_DoDoor(line, VlDoorType.Normal);
+					sa.DoDoor(line, VlDoorType.Normal);
 					break;
 
 				case 91:
@@ -979,17 +979,17 @@ namespace ManagedDoom
 
 				case 105:
 					// Blazing Door Raise (faster than TURBO!)
-					sa.EV_DoDoor(line, VlDoorType.BlazeRaise);
+					sa.DoDoor(line, VlDoorType.BlazeRaise);
 					break;
 
 				case 106:
 					// Blazing Door Open (faster than TURBO!)
-					sa.EV_DoDoor(line, VlDoorType.BlazeOpen);
+					sa.DoDoor(line, VlDoorType.BlazeOpen);
 					break;
 
 				case 107:
 					// Blazing Door Close (faster than TURBO!)
-					sa.EV_DoDoor(line, VlDoorType.BlazeClose);
+					sa.DoDoor(line, VlDoorType.BlazeClose);
 					break;
 
 				case 120:
@@ -1058,7 +1058,7 @@ namespace ManagedDoom
 
 				case 46:
 					// OPEN DOOR
-					sa.EV_DoDoor(line, VlDoorType.Open);
+					sa.DoDoor(line, VlDoorType.Open);
 					specials.ChangeSwitchTexture(line, true);
 					break;
 

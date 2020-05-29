@@ -9,38 +9,40 @@ namespace ManagedDoom
 		public SectorAction(World world)
 		{
 			this.world = world;
+
+			InitSectorChange();
 		}
 
-		//
-		// P_ThingHeightClip
-		// Takes a valid thing and adjusts the thing->floorz,
-		// thing->ceilingz, and possibly thing->z.
-		// This is called for all nearby monsters
-		// whenever a sector changes height.
-		// If the thing doesn't fit,
-		// the z will be set to the lowest value
-		// and false will be returned.
-		//
-		private bool P_ThingHeightClip(Mobj thing)
+
+		private bool crushChange;
+		private bool noFit;
+		private Func<Mobj, bool> crushThingFunc;
+
+		private void InitSectorChange()
 		{
+			crushThingFunc = CrushThing;
+		}
+
+		private bool ThingHeightClip(Mobj thing)
+		{
+			var onFloor = (thing.Z == thing.FloorZ);
+
 			var tm = world.ThingMovement;
 
-			var onfloor = (thing.Z == thing.FloorZ);
-
 			tm.CheckPosition(thing, thing.X, thing.Y);
-			// what about stranding a monster partially off an edge?
+			// What about stranding a monster partially off an edge?
 
 			thing.FloorZ = tm.CurrentFloorZ;
 			thing.CeilingZ = tm.CurrentCeilingZ;
 
-			if (onfloor)
+			if (onFloor)
 			{
-				// walking monsters rise and fall with the floor
+				// Walking monsters rise and fall with the floor.
 				thing.Z = thing.FloorZ;
 			}
 			else
 			{
-				// don't adjust a floating monster unless forced to
+				// Don't adjust a floating monster unless forced to.
 				if (thing.Z + thing.Height > thing.CeilingZ)
 				{
 					thing.Z = thing.CeilingZ - thing.Height;
@@ -55,38 +57,15 @@ namespace ManagedDoom
 			return true;
 		}
 
-
-
-		//
-		// SECTOR HEIGHT CHANGING
-		// After modifying a sectors floor or ceiling height,
-		// call this routine to adjust the positions
-		// of all things that touch the sector.
-		//
-		// If anything doesn't fit anymore, true will be returned.
-		// If crunch is true, they will take damage
-		//  as they are being crushed.
-		// If Crunch is false, you should set the sector height back
-		//  the way it was and call P_ChangeSector again
-		//  to undo the changes.
-		//
-		public bool crushchange;
-		public bool nofit;
-
-
-		//
-		// PIT_ChangeSector
-		//
-		private bool PIT_ChangeSector(Mobj thing)
+		private bool CrushThing(Mobj thing)
 		{
-			if (P_ThingHeightClip(thing))
+			if (ThingHeightClip(thing))
 			{
-				// keep checking
+				// Keep checking.
 				return true;
 			}
 
-
-			// crunch bodies to giblets
+			// Crunch bodies to giblets.
 			if (thing.Health <= 0)
 			{
 				thing.SetState(MobjState.Gibs);
@@ -95,75 +74,66 @@ namespace ManagedDoom
 				thing.Height = Fixed.Zero;
 				thing.Radius = Fixed.Zero;
 
-				// keep checking
+				// Keep checking.
 				return true;
 			}
 
-			// crunch dropped items
+			// Crunch dropped items.
 			if ((thing.Flags & MobjFlags.Dropped) != 0)
 			{
 				world.ThingAllocation.RemoveMobj(thing);
 
-				// keep checking
+				// Keep checking.
 				return true;
 			}
 
 			if ((thing.Flags & MobjFlags.Shootable) == 0)
 			{
-				// assume it is bloody gibs or something
+				// Assume it is bloody gibs or something.
 				return true;
 			}
 
-			nofit = true;
+			noFit = true;
 
-			if (crushchange && (world.levelTime & 3) == 0)
+			if (crushChange && (world.levelTime & 3) == 0)
 			{
 				world.ThingInteraction.DamageMobj(thing, null, null, 10);
 
-				// spray blood in a random direction
-				var mo = world.ThingAllocation.SpawnMobj(
+				// Spray blood in a random direction.
+				var blood = world.ThingAllocation.SpawnMobj(
 					thing.X,
 					thing.Y,
-					thing.Z + thing.Height / 2, MobjType.Blood);
+					thing.Z + thing.Height / 2,
+					MobjType.Blood);
 
-				mo.MomX = new Fixed((world.Random.Next() - world.Random.Next()) << 12);
-				mo.MomY = new Fixed((world.Random.Next() - world.Random.Next()) << 12);
+				var random = world.Random;
+
+				blood.MomX = new Fixed((random.Next() - random.Next()) << 12);
+				blood.MomY = new Fixed((random.Next() - random.Next()) << 12);
 			}
 
-			// keep checking (crush other things)	
+			// Keep checking (crush other things).	
 			return true;
 		}
 
-
-
-		//
-		// P_ChangeSector
-		//
 		public bool ChangeSector(Sector sector, bool crunch)
 		{
-			nofit = false;
-			crushchange = crunch;
+			noFit = false;
+			crushChange = crunch;
 
-			// re-check heights for all things near the moving sector
+			// Re-check heights for all things near the moving sector.
 			for (var x = sector.BlockBox[Box.Left]; x <= sector.BlockBox[Box.Right]; x++)
 			{
 				for (var y = sector.BlockBox[Box.Bottom]; y <= sector.BlockBox[Box.Top]; y++)
 				{
-					world.Map.BlockMap.IterateThings(x, y, mo => PIT_ChangeSector(mo));
+					world.Map.BlockMap.IterateThings(x, y, crushThingFunc);
 				}
 			}
 
-			return nofit;
+			return noFit;
 		}
 
 
-
-
-
-
-		//
-		// Move a plane (floor or ceiling) and check for crushing
-		//
 		public SectorActionResult MovePlane(
 			Sector sector,
 			Fixed speed,
@@ -182,25 +152,22 @@ namespace ManagedDoom
 							// DOWN
 							if (sector.FloorHeight - speed < dest)
 							{
-								var lastpos = sector.FloorHeight;
+								var lastPos = sector.FloorHeight;
 								sector.FloorHeight = dest;
-								var flag = ChangeSector(sector, crush);
-								if (flag)
+								if (ChangeSector(sector, crush))
 								{
-									sector.FloorHeight = lastpos;
+									sector.FloorHeight = lastPos;
 									ChangeSector(sector, crush);
-									//return crushed;
 								}
 								return SectorActionResult.PastDestination;
 							}
 							else
 							{
-								var lastpos = sector.FloorHeight;
+								var lastPos = sector.FloorHeight;
 								sector.FloorHeight -= speed;
-								var flag = ChangeSector(sector, crush);
-								if (flag)
+								if (ChangeSector(sector, crush))
 								{
-									sector.FloorHeight = lastpos;
+									sector.FloorHeight = lastPos;
 									ChangeSector(sector, crush);
 									return SectorActionResult.Crushed;
 								}
@@ -211,30 +178,27 @@ namespace ManagedDoom
 							// UP
 							if (sector.FloorHeight + speed > dest)
 							{
-								var lastpos = sector.FloorHeight;
+								var lastPos = sector.FloorHeight;
 								sector.FloorHeight = dest;
-								var flag = ChangeSector(sector, crush);
-								if (flag)
+								if (ChangeSector(sector, crush))
 								{
-									sector.FloorHeight = lastpos;
+									sector.FloorHeight = lastPos;
 									ChangeSector(sector, crush);
-									//return crushed;
 								}
 								return SectorActionResult.PastDestination;
 							}
 							else
 							{
 								// COULD GET CRUSHED
-								var lastpos = sector.FloorHeight;
+								var lastPos = sector.FloorHeight;
 								sector.FloorHeight += speed;
-								var flag = ChangeSector(sector, crush);
-								if (flag)
+								if (ChangeSector(sector, crush))
 								{
 									if (crush)
 									{
 										return SectorActionResult.Crushed;
 									}
-									sector.FloorHeight = lastpos;
+									sector.FloorHeight = lastPos;
 									ChangeSector(sector, crush);
 									return SectorActionResult.Crushed;
 								}
@@ -251,32 +215,27 @@ namespace ManagedDoom
 							// DOWN
 							if (sector.CeilingHeight - speed < dest)
 							{
-								var lastpos = sector.CeilingHeight;
+								var lastPos = sector.CeilingHeight;
 								sector.CeilingHeight = dest;
-								var flag = ChangeSector(sector, crush);
-
-								if (flag)
+								if (ChangeSector(sector, crush))
 								{
-									sector.CeilingHeight = lastpos;
+									sector.CeilingHeight = lastPos;
 									ChangeSector(sector, crush);
-									//return crushed;
 								}
 								return SectorActionResult.PastDestination;
 							}
 							else
 							{
 								// COULD GET CRUSHED
-								var lastpos = sector.CeilingHeight;
+								var lastPos = sector.CeilingHeight;
 								sector.CeilingHeight -= speed;
-								var flag = ChangeSector(sector, crush);
-
-								if (flag)
+								if (ChangeSector(sector, crush))
 								{
 									if (crush)
 									{
 										return SectorActionResult.Crushed;
 									}
-									sector.CeilingHeight = lastpos;
+									sector.CeilingHeight = lastPos;
 									ChangeSector(sector, crush);
 									return SectorActionResult.Crushed;
 								}
@@ -287,39 +246,29 @@ namespace ManagedDoom
 							// UP
 							if (sector.CeilingHeight + speed > dest)
 							{
-								var lastpos = sector.CeilingHeight;
+								var lastPos = sector.CeilingHeight;
 								sector.CeilingHeight = dest;
-								var flag = ChangeSector(sector, crush);
-								if (flag)
+								if (ChangeSector(sector, crush))
 								{
-									sector.CeilingHeight = lastpos;
+									sector.CeilingHeight = lastPos;
 									ChangeSector(sector, crush);
-									//return crushed;
 								}
 								return SectorActionResult.PastDestination;
 							}
 							else
 							{
-								var lastpos = sector.CeilingHeight;
 								sector.CeilingHeight += speed;
-								var flag = ChangeSector(sector, crush);
+								ChangeSector(sector, crush);
 							}
 							break;
 					}
 					break;
-
 			}
+
 			return SectorActionResult.OK;
 		}
 
 
-
-
-		//
-		// getNextSector()
-		// Return sector_t * of sector next to current.
-		// NULL if not two-sided line
-		//
 		private Sector GetNextSector(LineDef line, Sector sec)
 		{
 			if ((line.Flags & LineFlags.TwoSided) == 0)
@@ -335,19 +284,14 @@ namespace ManagedDoom
 			return line.FrontSector;
 		}
 
-
-
-		//
-		// P_FindLowestFloorSurrounding()
-		// FIND LOWEST FLOOR HEIGHT IN SURROUNDING SECTORS
-		//
-		public Fixed FindLowestFloorSurrounding(Sector sec)
+		private Fixed FindLowestFloorSurrounding(Sector sec)
 		{
 			var floor = sec.FloorHeight;
 
 			for (var i = 0; i < sec.Lines.Length; i++)
 			{
 				var check = sec.Lines[i];
+
 				var other = GetNextSector(check, sec);
 
 				if (other == null)
@@ -360,20 +304,18 @@ namespace ManagedDoom
 					floor = other.FloorHeight;
 				}
 			}
+
 			return floor;
 		}
 
-		//
-		// P_FindHighestFloorSurrounding()
-		// FIND HIGHEST FLOOR HEIGHT IN SURROUNDING SECTORS
-		//
-		public Fixed FindHighestFloorSurrounding(Sector sec)
+		private Fixed FindHighestFloorSurrounding(Sector sec)
 		{
 			var floor = Fixed.FromInt(-500);
 
 			for (var i = 0; i < sec.Lines.Length; i++)
 			{
 				var check = sec.Lines[i];
+
 				var other = GetNextSector(check, sec);
 
 				if (other == null)
@@ -386,21 +328,18 @@ namespace ManagedDoom
 					floor = other.FloorHeight;
 				}
 			}
+
 			return floor;
 		}
 
-
-
-		//
-		// FIND LOWEST CEILING IN THE SURROUNDING SECTORS
-		//
-		public Fixed FindLowestCeilingSurrounding(Sector sec)
+		private Fixed FindLowestCeilingSurrounding(Sector sec)
 		{
 			var height = Fixed.MaxValue;
 
 			for (var i = 0; i < sec.Lines.Length; i++)
 			{
 				var check = sec.Lines[i];
+
 				var other = GetNextSector(check, sec);
 
 				if (other == null)
@@ -413,20 +352,18 @@ namespace ManagedDoom
 					height = other.CeilingHeight;
 				}
 			}
+
 			return height;
 		}
 
-
-		//
-		// FIND HIGHEST CEILING IN THE SURROUNDING SECTORS
-		//
-		public Fixed FindHighestCeilingSurrounding(Sector sec)
+		private Fixed FindHighestCeilingSurrounding(Sector sec)
 		{
 			var height = Fixed.Zero;
 
 			for (var i = 0; i < sec.Lines.Length; i++)
 			{
 				var check = sec.Lines[i];
+
 				var other = GetNextSector(check, sec);
 
 				if (other == null)
@@ -439,192 +376,11 @@ namespace ManagedDoom
 					height = other.CeilingHeight;
 				}
 			}
+
 			return height;
 		}
 
-		private static readonly Fixed VDOORSPEED = Fixed.FromInt(2);
-		private static readonly int VDOORWAIT = 150;
-
-		//
-		// EV_VerticalDoor : open a door manually, no tag value
-		//
-		public void EV_VerticalDoor(LineDef line, Mobj thing)
-		{
-			VlDoor door;
-
-			// only front sides can be used
-			var side = 0;
-
-			//	Check for locks
-			var player = thing.Player;
-
-			switch ((int)line.Special)
-			{
-				case 26: // Blue Lock
-				case 32:
-					if (player == null)
-					{
-						return;
-					}
-
-					if (!player.Cards[(int)CardType.BlueCard]
-						&& !player.Cards[(int)CardType.BlueSkull])
-					{
-						//player.Message = PD_BLUEK;
-						world.StartSound(null, Sfx.OOF);
-						return;
-					}
-					break;
-
-				case 27: // Yellow Lock
-				case 34:
-					if (player == null)
-					{
-						return;
-					}
-
-					if (!player.Cards[(int)CardType.YellowCard]
-						&& !player.Cards[(int)CardType.YellowSkull])
-					{
-						//player.Message = PD_YELLOWK;
-						world.StartSound(null, Sfx.OOF);
-						return;
-					}
-					break;
-
-				case 28: // Red Lock
-				case 33:
-					if (player == null)
-					{
-						return;
-					}
-
-					if (!player.Cards[(int)CardType.RedCard]
-						&& !player.Cards[(int)CardType.RedSkull])
-					{
-						//player.Message = PD_REDK;
-						world.StartSound(null, Sfx.OOF);
-						return;
-					}
-					break;
-			}
-
-			// if the sector has an active thinker, use it
-			//var sec = sides[line->sidenum[side ^ 1]].sector;
-			var sec = line.Side1.Sector;
-			//secnum = sec - sectors;
-
-			if (sec.SpecialData != null)
-			{
-				door = (VlDoor)sec.SpecialData;
-				switch ((int)line.Special)
-				{
-					case 1: // ONLY FOR "RAISE" DOORS, NOT "OPEN"s
-					case 26:
-					case 27:
-					case 28:
-					case 117:
-						if (door.Direction == -1)
-						{
-							// go back up
-							door.Direction = 1;
-						}
-						else
-						{
-							if (thing.Player == null)
-							{
-								// JDC: bad guys never close doors
-								return;
-							}
-
-							// start going down immediately
-							door.Direction = -1;
-						}
-						return;
-				}
-			}
-
-			// for proper sound
-			switch ((int)line.Special)
-			{
-				case 117: // BLAZING DOOR RAISE
-				case 118: // BLAZING DOOR OPEN
-					world.StartSound(sec.SoundOrigin, Sfx.BDOPN);
-					break;
-
-				case 1: // NORMAL DOOR SOUND
-				case 31:
-					world.StartSound(sec.SoundOrigin, Sfx.DOROPN);
-					break;
-
-				default:    // LOCKED DOOR SOUND
-					world.StartSound(sec.SoundOrigin, Sfx.DOROPN);
-					break;
-			}
-
-
-			// new door thinker
-			door = ThinkerPool.RentVlDoor(world);
-			world.Thinkers.Add(door);
-			sec.SpecialData = door;
-			door.Sector = sec;
-			door.Direction = 1;
-			door.Speed = VDOORSPEED;
-			door.TopWait = VDOORWAIT;
-
-			switch ((int)line.Special)
-			{
-				case 1:
-				case 26:
-				case 27:
-				case 28:
-					door.Type = VlDoorType.Normal;
-					break;
-
-				case 31:
-				case 32:
-				case 33:
-				case 34:
-					door.Type = VlDoorType.Open;
-					line.Special = 0;
-					break;
-
-				case 117:   // blazing door raise
-					door.Type = VlDoorType.BlazeRaise;
-					door.Speed = VDOORSPEED * 4;
-					break;
-				case 118:   // blazing door open
-					door.Type = VlDoorType.BlazeOpen;
-					line.Special = 0;
-					door.Speed = VDOORSPEED * 4;
-					break;
-			}
-
-			// find the top and bottom of the movement range
-			door.TopHeight = FindLowestCeilingSurrounding(sec);
-			door.TopHeight -= Fixed.FromInt(4);
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		//
-		// RETURN NEXT SECTOR # THAT LINE TAG REFERS TO
-		//
-		public int FindSectorFromLineTag(LineDef line, int start)
+		private int FindSectorFromLineTag(LineDef line, int start)
 		{
 			var sectors = world.Map.Sectors;
 
@@ -635,35 +391,189 @@ namespace ManagedDoom
 					return i;
 				}
 			}
+
 			return -1;
 		}
 
 
+		private static readonly Fixed doorSpeed = Fixed.FromInt(2);
+		private static readonly int doorWait = 150;
 
-
-
-
-
-
-
-
-
-		//
-		// P_FindNextHighestFloor
-		// FIND NEXT HIGHEST FLOOR IN SURROUNDING SECTORS
-		// Note: this should be doable w/o a fixed array.
-
-		// 20 adjoining sectors max!
-		private static readonly int MAX_ADJOINING_SECTORS = 30;
-		private Fixed[] heightlist = new Fixed[MAX_ADJOINING_SECTORS];
-
-		public Fixed FindNextHighestFloor(Sector sec, Fixed currentheight)
+		public void VerticalDoor(LineDef line, Mobj thing)
 		{
-			var height = currentheight;
+			//	Check for locks.
+			var player = thing.Player;
+
+			switch ((int)line.Special)
+			{
+				// Blue Lock.
+				case 26:
+				case 32:
+					if (player == null)
+					{
+						return;
+					}
+
+					if (!player.Cards[(int)CardType.BlueCard] &&
+						!player.Cards[(int)CardType.BlueSkull])
+					{
+						//player.Message = PD_BLUEK;
+						world.StartSound(null, Sfx.OOF);
+						return;
+					}
+					break;
+
+				// Yellow Lock
+				case 27:
+				case 34:
+					if (player == null)
+					{
+						return;
+					}
+
+					if (!player.Cards[(int)CardType.YellowCard] &&
+						!player.Cards[(int)CardType.YellowSkull])
+					{
+						//player.Message = PD_YELLOWK;
+						world.StartSound(null, Sfx.OOF);
+						return;
+					}
+					break;
+
+				// Red Lock
+				case 28:
+				case 33:
+					if (player == null)
+					{
+						return;
+					}
+
+					if (!player.Cards[(int)CardType.RedCard] &&
+						!player.Cards[(int)CardType.RedSkull])
+					{
+						//player.Message = PD_REDK;
+						world.StartSound(null, Sfx.OOF);
+						return;
+					}
+					break;
+			}
+
+			var sector = line.Side1.Sector;
+
+			// If the sector has an active thinker, use it.
+			if (sector.SpecialData != null)
+			{
+				var door = (VlDoor)sector.SpecialData;
+				switch ((int)line.Special)
+				{
+					// Only for "raise" doors, not "open"s.
+					case 1:
+					case 26:
+					case 27:
+					case 28:
+					case 117:
+						if (door.Direction == -1)
+						{
+							// Go back up.
+							door.Direction = 1;
+						}
+						else
+						{
+							if (thing.Player == null)
+							{
+								// Bad guys never close doors.
+								return;
+							}
+
+							// Start going down immediately.
+							door.Direction = -1;
+						}
+						return;
+				}
+			}
+
+			// For proper sound.
+			switch ((int)line.Special)
+			{
+				// Blazing door raise.
+				case 117:
+
+				// Blazing door open.
+				case 118:
+					world.StartSound(sector.SoundOrigin, Sfx.BDOPN);
+					break;
+
+				// Normal door sound.
+				case 1:
+				case 31:
+					world.StartSound(sector.SoundOrigin, Sfx.DOROPN);
+					break;
+
+				// Locked door sound.
+				default:
+					world.StartSound(sector.SoundOrigin, Sfx.DOROPN);
+					break;
+			}
+
+			// New door thinker.
+			var newDoor = ThinkerPool.RentVlDoor(world);
+			world.Thinkers.Add(newDoor);
+			sector.SpecialData = newDoor;
+			newDoor.Sector = sector;
+			newDoor.Direction = 1;
+			newDoor.Speed = doorSpeed;
+			newDoor.TopWait = doorWait;
+
+			switch ((int)line.Special)
+			{
+				case 1:
+				case 26:
+				case 27:
+				case 28:
+					newDoor.Type = VlDoorType.Normal;
+					break;
+
+				case 31:
+				case 32:
+				case 33:
+				case 34:
+					newDoor.Type = VlDoorType.Open;
+					line.Special = 0;
+					break;
+
+				// Blazing door raise.
+				case 117:
+					newDoor.Type = VlDoorType.BlazeRaise;
+					newDoor.Speed = doorSpeed * 4;
+					break;
+
+				// Blazing door open.
+				case 118:
+					newDoor.Type = VlDoorType.BlazeOpen;
+					line.Special = 0;
+					newDoor.Speed = doorSpeed * 4;
+					break;
+			}
+
+			// Find the top and bottom of the movement range.
+			newDoor.TopHeight = FindLowestCeilingSurrounding(sector);
+			newDoor.TopHeight -= Fixed.FromInt(4);
+		}
+
+
+		private static readonly int maxAdjoiningSectorCount = 40;
+		private Fixed[] heightList = new Fixed[maxAdjoiningSectorCount];
+
+		private Fixed FindNextHighestFloor(Sector sec, Fixed currentHeight)
+		{
+			var height = currentHeight;
+
 			var h = 0;
+
 			for (var i = 0; i < sec.Lines.Length; i++)
 			{
 				var check = sec.Lines[i];
+
 				var other = GetNextSector(check, sec);
 
 				if (other == null)
@@ -673,30 +583,31 @@ namespace ManagedDoom
 
 				if (other.FloorHeight > height)
 				{
-					heightlist[h++] = other.FloorHeight;
+					heightList[h++] = other.FloorHeight;
 				}
 
-				// Check for overflow. Exit.
-				if (h >= heightlist.Length)
+				// Check for overflow.
+				if (h >= heightList.Length)
 				{
-					throw new Exception("Sector with more than 20 adjoining sectors");
+					// Exit.
+					throw new Exception("Sector with more than 40 adjoining sectors");
 				}
 			}
 
-			// Find lowest height in list
+			// Find lowest height in list.
 			if (h == 0)
 			{
-				return currentheight;
+				return currentHeight;
 			}
 
-			var min = heightlist[0];
+			var min = heightList[0];
 
 			// Range checking? 
 			for (var i = 1; i < h; i++)
 			{
-				if (heightlist[i] < min)
+				if (heightList[i] < min)
 				{
-					min = heightlist[i];
+					min = heightList[i];
 				}
 			}
 
@@ -704,53 +615,52 @@ namespace ManagedDoom
 		}
 
 
-
-		private static readonly Fixed DOORSPEED = Fixed.FromInt(2);
-
-		public bool EV_DoDoor(LineDef line, VlDoorType type)
+		public bool DoDoor(LineDef line, VlDoorType type)
 		{
-			var secnum = -1;
-			var rtn = false;
+			var setcorNumber = -1;
+			var result = false;
 
 			var sectors = world.Map.Sectors;
-			while ((secnum = FindSectorFromLineTag(line, secnum)) >= 0)
+
+			while ((setcorNumber = FindSectorFromLineTag(line, setcorNumber)) >= 0)
 			{
-				var sec = sectors[secnum];
-				if (sec.SpecialData != null)
+				var sector = sectors[setcorNumber];
+				if (sector.SpecialData != null)
 				{
 					continue;
 				}
 
-				// new door thinker
-				rtn = true;
+				// New door thinker.
+
+				result = true;
+
 				var door = ThinkerPool.RentVlDoor(world);
 				world.Thinkers.Add(door);
-				sec.SpecialData = door;
-
-				door.Sector = sec;
+				sector.SpecialData = door;
+				door.Sector = sector;
 				door.Type = type;
-				door.TopWait = VDOORWAIT;
-				door.Speed = VDOORSPEED;
+				door.TopWait = doorWait;
+				door.Speed = doorSpeed;
 
 				switch (type)
 				{
 					case VlDoorType.BlazeClose:
-						door.TopHeight = FindLowestCeilingSurrounding(sec);
+						door.TopHeight = FindLowestCeilingSurrounding(sector);
 						door.TopHeight -= Fixed.FromInt(4);
 						door.Direction = -1;
-						door.Speed = VDOORSPEED * 4;
+						door.Speed = doorSpeed * 4;
 						world.StartSound(door.Sector.SoundOrigin, Sfx.BDCLS);
 						break;
 
 					case VlDoorType.Close:
-						door.TopHeight = FindLowestCeilingSurrounding(sec);
+						door.TopHeight = FindLowestCeilingSurrounding(sector);
 						door.TopHeight -= Fixed.FromInt(4);
 						door.Direction = -1;
 						world.StartSound(door.Sector.SoundOrigin, Sfx.DORCLS);
 						break;
 
 					case VlDoorType.Close30ThenOpen:
-						door.TopHeight = sec.CeilingHeight;
+						door.TopHeight = sector.CeilingHeight;
 						door.Direction = -1;
 						world.StartSound(door.Sector.SoundOrigin, Sfx.DORCLS);
 						break;
@@ -758,10 +668,10 @@ namespace ManagedDoom
 					case VlDoorType.BlazeRaise:
 					case VlDoorType.BlazeOpen:
 						door.Direction = 1;
-						door.TopHeight = FindLowestCeilingSurrounding(sec);
+						door.TopHeight = FindLowestCeilingSurrounding(sector);
 						door.TopHeight -= Fixed.FromInt(4);
-						door.Speed = VDOORSPEED * 4;
-						if (door.TopHeight != sec.CeilingHeight)
+						door.Speed = doorSpeed * 4;
+						if (door.TopHeight != sector.CeilingHeight)
 						{
 							world.StartSound(door.Sector.SoundOrigin, Sfx.BDOPN);
 						}
@@ -770,9 +680,9 @@ namespace ManagedDoom
 					case VlDoorType.Normal:
 					case VlDoorType.Open:
 						door.Direction = 1;
-						door.TopHeight = FindLowestCeilingSurrounding(sec);
+						door.TopHeight = FindLowestCeilingSurrounding(sector);
 						door.TopHeight -= Fixed.FromInt(4);
-						if (door.TopHeight != sec.CeilingHeight)
+						if (door.TopHeight != sector.CeilingHeight)
 						{
 							world.StartSound(door.Sector.SoundOrigin, Sfx.DOROPN);
 						}
@@ -783,34 +693,30 @@ namespace ManagedDoom
 				}
 
 			}
-			return rtn;
+
+			return result;
 		}
 
-
-
-		//
-		// EV_DoLockedDoor
-		// Move a locked door up/down
-		//
-
-		public bool EV_DoLockedDoor(LineDef line, VlDoorType type, Mobj thing)
+		public bool DoLockedDoor(LineDef line, VlDoorType type, Mobj thing)
 		{
-			var p = thing.Player;
+			var player = thing.Player;
 
-			if (p == null)
+			if (player == null)
 			{
 				return false;
 			}
 
 			switch ((int)line.Special)
 			{
-				case 99: // Blue Lock
+				// Blue Lock
+				case 99:
 				case 133:
-					if (p == null)
+					if (player == null)
 					{
 						return false;
 					}
-					if (!p.Cards[(int)CardType.BlueCard] && !p.Cards[(int)CardType.BlueSkull])
+					if (!player.Cards[(int)CardType.BlueCard] &&
+						!player.Cards[(int)CardType.BlueSkull])
 					{
 						//p->message = PD_BLUEO;
 						world.StartSound(null, Sfx.OOF);
@@ -818,13 +724,15 @@ namespace ManagedDoom
 					}
 					break;
 
-				case 134: // Red Lock
+				// Red Lock
+				case 134:
 				case 135:
-					if (p == null)
+					if (player == null)
 					{
 						return false;
 					}
-					if (!p.Cards[(int)CardType.RedCard] && !p.Cards[(int)CardType.RedSkull])
+					if (!player.Cards[(int)CardType.RedCard] &&
+						!player.Cards[(int)CardType.RedSkull])
 					{
 						//p->message = PD_REDO;
 						world.StartSound(null, Sfx.OOF);
@@ -832,13 +740,15 @@ namespace ManagedDoom
 					}
 					break;
 
-				case 136: // Yellow Lock
+				// Yellow Lock
+				case 136:
 				case 137:
-					if (p == null)
+					if (player == null)
 					{
 						return false;
 					}
-					if (!p.Cards[(int)CardType.YellowCard] && !p.Cards[(int)CardType.YellowSkull])
+					if (!player.Cards[(int)CardType.YellowCard] &&
+						!player.Cards[(int)CardType.YellowSkull])
 					{
 						//p->message = PD_YELLOWO;
 						world.StartSound(null, Sfx.OOF);
@@ -847,7 +757,7 @@ namespace ManagedDoom
 					break;
 			}
 
-			return EV_DoDoor(line, type);
+			return DoDoor(line, type);
 		}
 
 
@@ -1821,7 +1731,7 @@ namespace ManagedDoom
 			door.Sector = sec;
 			door.Direction = 0;
 			door.Type = VlDoorType.Normal;
-			door.Speed = VDOORSPEED;
+			door.Speed = doorSpeed;
 			door.TopCountDown = 30 * 35;
 		}
 
@@ -1840,10 +1750,10 @@ namespace ManagedDoom
 			door.Sector = sec;
 			door.Direction = 2;
 			door.Type = VlDoorType.RaiseIn5Mins;
-			door.Speed = VDOORSPEED;
+			door.Speed = doorSpeed;
 			door.TopHeight = FindLowestCeilingSurrounding(sec);
 			door.TopHeight -= Fixed.FromInt(4);
-			door.TopWait = VDOORWAIT;
+			door.TopWait = doorWait;
 			door.TopCountDown = 5 * 60 * 35;
 		}
 	}
