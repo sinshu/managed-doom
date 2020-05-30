@@ -46,6 +46,8 @@ namespace ManagedDoom
         private int[][] dm_frags;
         private int[] dm_totals;
 
+        private bool snl_pointeron;
+
         private Player[] players;
         private DoomRandom random;
 
@@ -685,7 +687,7 @@ namespace ManagedDoom
             }
             else
             {
-                //snl_pointeron = (cnt & 31) < 20;
+                snl_pointeron = (cnt & 31) < 20;
             }
         }
 
@@ -797,7 +799,7 @@ namespace ManagedDoom
         public bool DoFrags => dofrags;
         public DoomRandom Random => random;
         public Animation[] Animations => animations;
-
+        public bool Snl_PointerOn => snl_pointeron;
 
 
 

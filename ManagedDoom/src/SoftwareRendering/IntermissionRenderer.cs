@@ -356,13 +356,13 @@ namespace ManagedDoom.SoftwareRendering
             DrawBackground(im);
 
             // draw animated background
-            //WI_drawAnimatedBack();
+            WI_drawAnimatedBack(im);
 
             if (im.Options.GameMode != GameMode.Commercial)
             {
                 if (im.Wbs.Epsd > 2)
                 {
-                    //WI_drawEL();
+                    WI_drawEL(im);
                     return;
                 }
 
@@ -371,19 +371,25 @@ namespace ManagedDoom.SoftwareRendering
                 // draw a splat on taken cities.
                 for (var i = 0; i <= last; i++)
                 {
-                    //WI_drawOnLnode(i, &splat);
+                    var x = WorldMap.Locations[im.Wbs.Epsd][i].X;
+                    var y = WorldMap.Locations[im.Wbs.Epsd][i].Y;
+                    DrawPatch(patches.Splat, x, y);
                 }
 
                 // splat the secret level?
                 if (im.Wbs.DidSecret)
                 {
-                    //WI_drawOnLnode(8, &splat);
+                    var x = WorldMap.Locations[im.Wbs.Epsd][8].X;
+                    var y = WorldMap.Locations[im.Wbs.Epsd][8].Y;
+                    DrawPatch(patches.Splat, x, y);
                 }
 
                 // draw flashing ptr
-                //if (snl_pointeron)
+                if (im.Snl_PointerOn)
                 {
-                    //WI_drawOnLnode(wbs->next, yah);
+                    var x = WorldMap.Locations[im.Wbs.Epsd][im.Wbs.Next].X;
+                    var y = WorldMap.Locations[im.Wbs.Epsd][im.Wbs.Next].Y;
+                    WI_drawOnLnode(patches.YouAreHere, x, y);
                 }
             }
 
@@ -607,6 +613,40 @@ namespace ManagedDoom.SoftwareRendering
         }
 
 
+        private void WI_drawOnLnode(IReadOnlyList<Patch> c, int x, int y)
+        {
+            var fits = false;
+            var i = 0;
+            do
+            {
+                var left = x - c[i].LeftOffset;
+                var top = y - c[i].TopOffset;
+                var right = left + c[i].Width;
+                var bottom = top + c[i].Height;
+
+                if (left >= 0 && right < 320 && top >= 0 && bottom < 320)
+                {
+                    fits = true;
+                }
+                else
+                {
+                    i++;
+                }
+
+            } while (!fits && i != 2);
+
+            if (fits && i < 2)
+            {
+                DrawPatch(c[i], x, y);
+            }
+            else
+            {
+                // DEBUG
+                throw new Exception("Could not place patch!");
+            }
+        }
+
+
 
 
         private class Patches
@@ -656,8 +696,7 @@ namespace ManagedDoom.SoftwareRendering
 
 
             // You Are Here graphic
-            private Patch youAreHere1;
-            private Patch youAreHere2;
+            private Patch[] youAreHere;
 
             // splat
             private Patch splat;
@@ -755,8 +794,9 @@ namespace ManagedDoom.SoftwareRendering
                         }
                     }
 
-                    youAreHere1 = Patch.FromWad("WIURH0", wad);
-                    youAreHere2 = Patch.FromWad("WIURH1", wad);
+                    youAreHere = new Patch[2];
+                    youAreHere[0] = Patch.FromWad("WIURH0", wad);
+                    youAreHere[1] = Patch.FromWad("WIURH1", wad);
                     splat = Patch.FromWad("WISPLAT", wad);
                 }
 
@@ -809,6 +849,9 @@ namespace ManagedDoom.SoftwareRendering
             public IReadOnlyList<Patch> BP => bp;
 
             public IReadOnlyList<IReadOnlyList<Patch>> LevelNames => lnames;
+
+            public Patch Splat => splat;
+            public IReadOnlyList<Patch> YouAreHere => youAreHere;
         }
     }
 }
