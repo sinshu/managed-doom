@@ -47,6 +47,7 @@ namespace ManagedDoom
         private int[] dm_totals;
 
         private Player[] players;
+        private DoomRandom random;
 
         public Intermission(Player[] players, IntermissionInfo wbs, GameOptions options)
         {
@@ -80,6 +81,8 @@ namespace ManagedDoom
             {
                 InitStats();
             }
+
+            random = new DoomRandom();
         }
 
         private void InitStats()
@@ -767,7 +770,7 @@ namespace ManagedDoom
         public int[][] DM_Frags => dm_frags;
         public int[] DM_Totals => dm_totals;
         public bool DoFrags => dofrags;
-
+        public DoomRandom Random => random;
 
 
 

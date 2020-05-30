@@ -7,6 +7,7 @@ namespace ManagedDoom
     {
         public static readonly IReadOnlyList<IReadOnlyList<Point>> Locations = new Point[][]
         {
+            // Episode 0 world map.
             new Point[]
             {
                 new Point(185, 164), // location of level 0 (CJ)
@@ -20,6 +21,7 @@ namespace ManagedDoom
 	            new Point(71, 24)    // location of level 8 (CJ)
             },
 
+            // Episode 1 world map should go here.
             new Point[]
             {
                 new Point(254, 25),  // location of level 0 (CJ)
@@ -33,6 +35,7 @@ namespace ManagedDoom
 	            new Point(235, 158)  // location of level 8 (CJ)
             },
 
+            // Episode 2 world map should go here.
             new Point[]
             {
                 new Point(156, 168), // location of level 0 (CJ)
