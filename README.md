@@ -62,7 +62,7 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [x] Status bar
     * [x] Automap
     * [x] Title screen
-    * [ ] Intermission screen
+    * [x] Intermission screen
     * [x] Menu screen
     * [ ] Save / load
     * [ ] DeHackEd support
