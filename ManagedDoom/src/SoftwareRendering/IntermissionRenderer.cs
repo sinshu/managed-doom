@@ -40,24 +40,42 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-
-
+        private Wad wad;
         private DrawScreen screen;
         private Patches patches;
 
         private int scale;
 
+        private Dictionary<string, Patch> cache;
+
         public IntermissionRenderer(Wad wad, DrawScreen screen)
         {
+            this.wad = wad;
             this.screen = screen;
 
             patches = new Patches(wad);
 
             scale = screen.Width / 320;
+
+            cache = new Dictionary<string, Patch>();
         }
 
         private void DrawPatch(Patch patch, int x, int y)
         {
+            screen.DrawPatch(patch, scale * x, scale * y, scale);
+        }
+
+        private void DrawPatch(string name, int x, int y)
+        {
+            Patch patch;
+            if (!cache.TryGetValue(name, out patch))
+            {
+                Console.WriteLine("Patch loaded: " + name);
+                patch = Patch.FromWad(name, wad);
+                cache.Add(name, patch);
+            }
+
+            var scale = screen.Width / 320;
             screen.DrawPatch(patch, scale * x, scale * y, scale);
         }
 
@@ -121,7 +139,7 @@ namespace ManagedDoom.SoftwareRendering
             var lh = (3 * patches.Numbers[0].Height) / 2;
 
             // draw animated background
-            //WI_drawAnimatedBack();
+            WI_drawAnimatedBack(im);
 
             WI_drawLF(im);
 
@@ -544,6 +562,49 @@ namespace ManagedDoom.SoftwareRendering
         }
 
 
+
+        private void WI_updateAnimatedBack(Intermission im)
+        {
+            if (im.Options.GameMode == GameMode.Commercial)
+            {
+                return;
+            }
+
+            if (im.Wbs.Epsd > 2)
+            {
+                return;
+            }
+
+            for (var i = 0; i < im.Animations.Length; i++)
+            {
+                var a = im.Animations[i];
+
+            }
+
+        }
+
+        private void WI_drawAnimatedBack(Intermission im)
+        {
+            if (im.Options.GameMode == GameMode.Commercial)
+            {
+                return;
+            }
+
+            if (im.Wbs.Epsd > 2)
+            {
+                return;
+            }
+
+            for (var i = 0; i < im.Animations.Length; i++)
+            {
+                var a = im.Animations[i];
+
+                if (a.ctr >= 0)
+                {
+                    DrawPatch(a.p[a.ctr], a.locX, a.locY);
+                }
+            }
+        }
 
 
 

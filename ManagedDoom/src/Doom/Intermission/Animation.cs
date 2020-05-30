@@ -12,7 +12,7 @@ namespace ManagedDoom
 		public int locY;
 		public int data1;
 		public int data2;
-		public Patch[] p;
+		public string[] p;
 		public int nexttic;
 		public int lastdrawn;
 		public int ctr;
@@ -45,6 +45,21 @@ namespace ManagedDoom
 			else if (type == AnimationType.Level)
 			{
 				nexttic = bcnt + 1;
+			}
+
+			p = new string[nanims];
+			for (var i = 0; i < p.Length; i++)
+			{
+				// MONDO HACK!
+				if (im.Wbs.Epsd != 1 || number != 8)
+				{
+					p[i] = "WIA" + im.Wbs.Epsd + number.ToString("00") + i.ToString("00");
+				}
+				else
+				{
+					// HACK ALERT!
+					p[i] = "WIA104" + i.ToString("00");
+				}
 			}
 		}
 

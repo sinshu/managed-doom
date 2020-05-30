@@ -49,6 +49,8 @@ namespace ManagedDoom
         private Player[] players;
         private DoomRandom random;
 
+        private Animation[] animations;
+
         public Intermission(Player[] players, IntermissionInfo wbs, GameOptions options)
         {
             this.players = players;
@@ -83,6 +85,12 @@ namespace ManagedDoom
             }
 
             random = new DoomRandom();
+
+            animations = new Animation[AnimationInfo.Episodes[wbs.Epsd].Count];
+            for (var i = 0; i < animations.Length; i++)
+            {
+                animations[i] = new Animation(this, AnimationInfo.Episodes[wbs.Epsd][i], i, bcnt);
+            }
         }
 
         private void InitStats()
@@ -203,7 +211,7 @@ namespace ManagedDoom
 
         private void UpdateStats()
         {
-            //WI_updateAnimatedBack();
+            WI_updateAnimatedBack();
 
             if (acceleratestage && sp_state != 10)
             {
@@ -326,7 +334,7 @@ namespace ManagedDoom
         {
             bool stillticking;
 
-            //WI_updateAnimatedBack();
+            WI_updateAnimatedBack();
 
             if (acceleratestage && ng_state != 10)
             {
@@ -524,7 +532,7 @@ namespace ManagedDoom
         {
             bool stillticking;
 
-            //WI_updateAnimatedBack();
+            WI_updateAnimatedBack();
 
             if (acceleratestage && dm_state != 4)
             {
@@ -669,7 +677,7 @@ namespace ManagedDoom
 
         private void WI_updateShowNextLoc()
         {
-            //WI_updateAnimatedBack();
+            WI_updateAnimatedBack();
 
             if (--cnt == 0 || acceleratestage)
             {
@@ -684,7 +692,7 @@ namespace ManagedDoom
         private void WI_updateNoState()
         {
 
-            //WI_updateAnimatedBack();
+            WI_updateAnimatedBack();
 
             if (--cnt == 0)
             {
@@ -694,6 +702,23 @@ namespace ManagedDoom
             }
         }
 
+        private void WI_updateAnimatedBack()
+        {
+            if (options.GameMode == GameMode.Commercial)
+            {
+                return;
+            }
+
+            if (wbs.Epsd > 2)
+            {
+                return;
+            }
+
+            foreach (var a in animations)
+            {
+                a.Update(bcnt);
+            }
+        }
 
 
 
@@ -771,7 +796,7 @@ namespace ManagedDoom
         public int[] DM_Totals => dm_totals;
         public bool DoFrags => dofrags;
         public DoomRandom Random => random;
-
+        public Animation[] Animations => animations;
 
 
 
