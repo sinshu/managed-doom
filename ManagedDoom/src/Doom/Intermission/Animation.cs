@@ -21,7 +21,7 @@ namespace ManagedDoom
 		private Intermission im;
 		private int number;
 
-		public Animation(Intermission intermission, AnimationInfo info, int number, int bcnt)
+		public Animation(Intermission intermission, AnimationInfo info, int number)
 		{
 			im = intermission;
 			this.number = number;
@@ -32,22 +32,6 @@ namespace ManagedDoom
 			locX = info.X;
 			locY = info.Y;
 			data1 = info.Data;
-
-			ctr = -1;
-
-			// specify the next time to draw it
-			if (type == AnimationType.Always)
-			{
-				nexttic = bcnt + 1 + (im.Random.Next() % period);
-			}
-			else if (type == AnimationType.Random)
-			{
-				nexttic = bcnt + 1 + data2 + (im.Random.Next() % data1);
-			}
-			else if (type == AnimationType.Level)
-			{
-				nexttic = bcnt + 1;
-			}
 
 			p = new string[nanims];
 			for (var i = 0; i < p.Length; i++)
@@ -62,6 +46,25 @@ namespace ManagedDoom
 					// HACK ALERT!
 					p[i] = "WIA104" + i.ToString("00");
 				}
+			}
+		}
+
+		public void Reset(int bcnt)
+		{
+			ctr = -1;
+
+			// specify the next time to draw it
+			if (type == AnimationType.Always)
+			{
+				nexttic = bcnt + 1 + (im.Random.Next() % period);
+			}
+			else if (type == AnimationType.Random)
+			{
+				nexttic = bcnt + 1 + data2 + (im.Random.Next() % data1);
+			}
+			else if (type == AnimationType.Level)
+			{
+				nexttic = bcnt + 1;
 			}
 		}
 
@@ -101,8 +104,8 @@ namespace ManagedDoom
 							{
 								ctr--;
 							}
+							nexttic = bcnt + period;
 						}
-						nexttic = bcnt + period;
 						break;
 				}
 			}

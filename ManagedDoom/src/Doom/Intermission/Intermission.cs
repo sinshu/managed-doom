@@ -55,6 +55,8 @@ namespace ManagedDoom
 
         public Intermission(Player[] players, IntermissionInfo wbs, GameOptions options)
         {
+            Console.WriteLine("START_INTER");
+
             this.players = players;
             this.wbs = wbs;
             this.options = options;
@@ -73,6 +75,14 @@ namespace ManagedDoom
             }
             dm_totals = new int[Player.MaxPlayerCount];
 
+            animations = new Animation[AnimationInfo.Episodes[wbs.Epsd].Count];
+            for (var i = 0; i < animations.Length; i++)
+            {
+                animations[i] = new Animation(this, AnimationInfo.Episodes[wbs.Epsd][i], i);
+            }
+
+            random = new DoomRandom();
+
             if (options.Deathmatch != 0)
             {
                 WI_initDeathmatchStats();
@@ -85,14 +95,6 @@ namespace ManagedDoom
             {
                 InitStats();
             }
-
-            random = new DoomRandom();
-
-            animations = new Animation[AnimationInfo.Episodes[wbs.Epsd].Count];
-            for (var i = 0; i < animations.Length; i++)
-            {
-                animations[i] = new Animation(this, AnimationInfo.Episodes[wbs.Epsd][i], i, bcnt);
-            }
         }
 
         private void InitStats()
@@ -104,7 +106,7 @@ namespace ManagedDoom
             cnt_time = cnt_par = -1;
             cnt_pause = GameConstants.TicRate;
 
-            // WI_initAnimatedBack();
+            WI_initAnimatedBack();
         }
 
         private void WI_InitNetgameStats()
@@ -129,7 +131,7 @@ namespace ManagedDoom
 
             dofrags = frags > 0;
 
-            //WI_initAnimatedBack();
+            WI_initAnimatedBack();
         }
 
         private void WI_initDeathmatchStats()
@@ -156,7 +158,7 @@ namespace ManagedDoom
                 }
             }
 
-            //WI_initAnimatedBack();
+            WI_initAnimatedBack();
         }
 
 
@@ -205,8 +207,6 @@ namespace ManagedDoom
                     WI_updateNoState();
                     break;
             }
-
-            //Console.WriteLine(bcnt + ": " + cnt_kills[0] + ", " + cnt_items[0] + ", " + cnt_secret[0] + ", " + cnt_time);
 
             return end;
         }
@@ -740,7 +740,7 @@ namespace ManagedDoom
             acceleratestage = false;
             cnt = SHOWNEXTLOCDELAY * GameConstants.TicRate;
 
-            //WI_initAnimatedBack();
+            WI_initAnimatedBack();
         }
 
 
@@ -778,6 +778,24 @@ namespace ManagedDoom
                         player.UseDown = false;
                     }
                 }
+            }
+        }
+
+        private void WI_initAnimatedBack()
+        {
+            if (options.GameMode == GameMode.Commercial)
+            {
+                return;
+            }
+
+            if (wbs.Epsd > 2)
+            {
+                return;
+            }
+
+            foreach (var animation in animations)
+            {
+                animation.Reset(bcnt);
             }
         }
 
