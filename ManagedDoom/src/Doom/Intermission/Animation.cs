@@ -101,8 +101,8 @@ namespace ManagedDoom
 							{
 								ctr--;
 							}
-							nexttic = bcnt + period;
 						}
+						nexttic = bcnt + period;
 						break;
 				}
 			}
