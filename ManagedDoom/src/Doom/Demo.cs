@@ -52,9 +52,18 @@ namespace ManagedDoom
             }
         }
 
-        public Demo(string fileName)
-            : this(File.ReadAllBytes(fileName))
+        public Demo(string fileName) : this(File.ReadAllBytes(fileName))
         {
+        }
+
+        public Demo(byte[] data, GameMode gameMode) : this(data)
+        {
+            options.GameMode = gameMode;
+        }
+
+        public Demo(string fileName, GameMode gameMode) : this(File.ReadAllBytes(fileName))
+        {
+            options.GameMode = gameMode;
         }
 
         public bool ReadCmd(TicCmd[] cmds)

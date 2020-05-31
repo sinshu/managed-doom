@@ -14,8 +14,7 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using (var resource = CommonResource.CreateDummy(WadPath.Doom1, @"data\multilevel_test_doom1.wad"))
             {
-                var demo = new Demo(@"data\multilevel_test_doom1.lmp");
-                demo.Options.GameMode = resource.Wad.GameMode;
+                var demo = new Demo(@"data\multilevel_test_doom1.lmp", resource.Wad.GameMode);
                 var players = DoomTest.GetDefaultPlayers();
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(players, resource, demo.Options);
