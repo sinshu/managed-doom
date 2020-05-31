@@ -24,8 +24,6 @@ namespace ManagedDoom
 
 		private int levelstarttic;
 
-		private bool secretexit;
-
 		public DoomGame(Player[] players, CommonResource resource, GameOptions options)
 		{
 			this.resource = resource;
@@ -547,7 +545,7 @@ namespace ManagedDoom
 			// wminfo.next is 0 biased, unlike gamemap
 			if (gameMode == GameMode.Commercial)
 			{
-				if (secretexit)
+				if (world.SecretExit)
 				{
 					switch (options.Map)
 					{
@@ -575,7 +573,7 @@ namespace ManagedDoom
 			}
 			else
 			{
-				if (secretexit)
+				if (world.SecretExit)
 				{
 					// go to secret level 
 					wminfo.Next = 8;
@@ -679,7 +677,7 @@ namespace ManagedDoom
 		{
 			gameAction = GameAction.WorldDone;
 
-			if (secretexit)
+			if (world.SecretExit)
 			{
 				players[options.ConsolePlayer].DidSecret = true;
 			}

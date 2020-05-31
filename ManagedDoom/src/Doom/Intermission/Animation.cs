@@ -33,6 +33,8 @@ namespace ManagedDoom
 			locY = info.Y;
 			data1 = info.Data;
 
+			ctr = -1;
+
 			// specify the next time to draw it
 			if (type == AnimationType.Always)
 			{

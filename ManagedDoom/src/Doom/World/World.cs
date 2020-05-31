@@ -401,9 +401,17 @@ namespace ManagedDoom
         }
 
 
+        private bool secretexit = false;
+
         public void G_ExitLevel()
         {
-            //secretexit = false;
+            secretexit = false;
+            gameAction = GameAction.Completed;
+        }
+
+        public void G_SecretExitLevel()
+        {
+            secretexit = true;
             gameAction = GameAction.Completed;
         }
 
@@ -460,6 +468,8 @@ namespace ManagedDoom
 
         public MapThing[] PlayerStarts => playerStarts;
         public MapThing[] DeathmatchStarts => deathmatchStarts;
+
+        public bool SecretExit => secretexit;
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);
         public static readonly Fixed MELEERANGE = Fixed.FromInt(64);

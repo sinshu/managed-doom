@@ -567,28 +567,6 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-
-
-        private void WI_updateAnimatedBack(Intermission im)
-        {
-            if (im.Options.GameMode == GameMode.Commercial)
-            {
-                return;
-            }
-
-            if (im.Wbs.Epsd > 2)
-            {
-                return;
-            }
-
-            for (var i = 0; i < im.Animations.Length; i++)
-            {
-                var a = im.Animations[i];
-
-            }
-
-        }
-
         private void WI_drawAnimatedBack(Intermission im)
         {
             if (im.Options.GameMode == GameMode.Commercial)
