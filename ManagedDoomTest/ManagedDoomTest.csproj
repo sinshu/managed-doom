@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="data\" />
     <Folder Include="demos\" />
   </ItemGroup>
 
@@ -125,10 +124,16 @@
     <None Update="data\lostsoul_test_final2.lmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="data\multi_level_test.lmp">
+    <None Update="data\multilevel_test_doom1.lmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="data\multi_level_test.wad">
+    <None Update="data\multilevel_test_doom1.wad">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="data\multilevel_test_doom2.lmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="data\multilevel_test_doom2.wad">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="data\nightmare_test.lmp">
