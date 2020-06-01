@@ -69,7 +69,6 @@ namespace ManagedDoom
 			if (thing.Health <= 0)
 			{
 				thing.SetState(MobjState.Gibs);
-
 				thing.Flags &= ~MobjFlags.Solid;
 				thing.Height = Fixed.Zero;
 				thing.Radius = Fixed.Zero;
@@ -107,7 +106,6 @@ namespace ManagedDoom
 					MobjType.Blood);
 
 				var random = world.Random;
-
 				blood.MomX = new Fixed((random.Next() - random.Next()) << 12);
 				blood.MomY = new Fixed((random.Next() - random.Next()) << 12);
 			}
@@ -121,12 +119,15 @@ namespace ManagedDoom
 			noFit = false;
 			crushChange = crunch;
 
+			var bm = world.Map.BlockMap;
+			var blockBox = sector.BlockBox;
+
 			// Re-check heights for all things near the moving sector.
-			for (var x = sector.BlockBox[Box.Left]; x <= sector.BlockBox[Box.Right]; x++)
+			for (var x = blockBox.Left(); x <= blockBox.Right(); x++)
 			{
-				for (var y = sector.BlockBox[Box.Bottom]; y <= sector.BlockBox[Box.Top]; y++)
+				for (var y = blockBox.Bottom(); y <= blockBox.Top(); y++)
 				{
-					world.Map.BlockMap.IterateThings(x, y, crushThingFunc);
+					bm.IterateThings(x, y, crushThingFunc);
 				}
 			}
 
@@ -269,14 +270,14 @@ namespace ManagedDoom
 		}
 
 
-		private Sector GetNextSector(LineDef line, Sector sec)
+		private Sector GetNextSector(LineDef line, Sector sector)
 		{
 			if ((line.Flags & LineFlags.TwoSided) == 0)
 			{
 				return null;
 			}
 
-			if (line.FrontSector == sec)
+			if (line.FrontSector == sector)
 			{
 				return line.BackSector;
 			}
@@ -284,16 +285,15 @@ namespace ManagedDoom
 			return line.FrontSector;
 		}
 
-		private Fixed FindLowestFloorSurrounding(Sector sec)
+		private Fixed FindLowestFloorSurrounding(Sector sector)
 		{
-			var floor = sec.FloorHeight;
+			var floor = sector.FloorHeight;
 
-			for (var i = 0; i < sec.Lines.Length; i++)
+			for (var i = 0; i < sector.Lines.Length; i++)
 			{
-				var check = sec.Lines[i];
+				var check = sector.Lines[i];
 
-				var other = GetNextSector(check, sec);
-
+				var other = GetNextSector(check, sector);
 				if (other == null)
 				{
 					continue;
@@ -308,16 +308,15 @@ namespace ManagedDoom
 			return floor;
 		}
 
-		private Fixed FindHighestFloorSurrounding(Sector sec)
+		private Fixed FindHighestFloorSurrounding(Sector sector)
 		{
 			var floor = Fixed.FromInt(-500);
 
-			for (var i = 0; i < sec.Lines.Length; i++)
+			for (var i = 0; i < sector.Lines.Length; i++)
 			{
-				var check = sec.Lines[i];
+				var check = sector.Lines[i];
 
-				var other = GetNextSector(check, sec);
-
+				var other = GetNextSector(check, sector);
 				if (other == null)
 				{
 					continue;
@@ -332,16 +331,15 @@ namespace ManagedDoom
 			return floor;
 		}
 
-		private Fixed FindLowestCeilingSurrounding(Sector sec)
+		private Fixed FindLowestCeilingSurrounding(Sector sector)
 		{
 			var height = Fixed.MaxValue;
 
-			for (var i = 0; i < sec.Lines.Length; i++)
+			for (var i = 0; i < sector.Lines.Length; i++)
 			{
-				var check = sec.Lines[i];
+				var check = sector.Lines[i];
 
-				var other = GetNextSector(check, sec);
-
+				var other = GetNextSector(check, sector);
 				if (other == null)
 				{
 					continue;
@@ -356,16 +354,15 @@ namespace ManagedDoom
 			return height;
 		}
 
-		private Fixed FindHighestCeilingSurrounding(Sector sec)
+		private Fixed FindHighestCeilingSurrounding(Sector sector)
 		{
 			var height = Fixed.Zero;
 
-			for (var i = 0; i < sec.Lines.Length; i++)
+			for (var i = 0; i < sector.Lines.Length; i++)
 			{
-				var check = sec.Lines[i];
+				var check = sector.Lines[i];
 
-				var other = GetNextSector(check, sec);
-
+				var other = GetNextSector(check, sector);
 				if (other == null)
 				{
 					continue;
@@ -564,18 +561,16 @@ namespace ManagedDoom
 		private static readonly int maxAdjoiningSectorCount = 40;
 		private Fixed[] heightList = new Fixed[maxAdjoiningSectorCount];
 
-		private Fixed FindNextHighestFloor(Sector sec, Fixed currentHeight)
+		private Fixed FindNextHighestFloor(Sector sector, Fixed currentHeight)
 		{
 			var height = currentHeight;
-
 			var h = 0;
 
-			for (var i = 0; i < sec.Lines.Length; i++)
+			for (var i = 0; i < sector.Lines.Length; i++)
 			{
-				var check = sec.Lines[i];
+				var check = sector.Lines[i];
 
-				var other = GetNextSector(check, sec);
-
+				var other = GetNextSector(check, sector);
 				if (other == null)
 				{
 					continue;
@@ -617,10 +612,9 @@ namespace ManagedDoom
 
 		public bool DoDoor(LineDef line, VlDoorType type)
 		{
+			var sectors = world.Map.Sectors;
 			var setcorNumber = -1;
 			var result = false;
-
-			var sectors = world.Map.Sectors;
 
 			while ((setcorNumber = FindSectorFromLineTag(line, setcorNumber)) >= 0)
 			{
@@ -699,7 +693,6 @@ namespace ManagedDoom
 		public bool DoLockedDoor(LineDef line, VlDoorType type, Mobj thing)
 		{
 			var player = thing.Player;
-
 			if (player == null)
 			{
 				return false;
@@ -776,15 +769,13 @@ namespace ManagedDoom
 					break;
 			}
 
+			var sectors = world.Map.Sectors;
 			var sectorNumber = -1;
 			var result = false;
-
-			var sectors = world.Map.Sectors;
 
 			while ((sectorNumber = FindSectorFromLineTag(line, sectorNumber)) >= 0)
 			{
 				var sector = sectors[sectorNumber];
-
 				if (sector.SpecialData != null)
 				{
 					continue;
@@ -931,7 +922,6 @@ namespace ManagedDoom
 					activePlatforms[i].Sector.SpecialData = null;
 					world.Thinkers.Remove(activePlatforms[i]);
 					activePlatforms[i] = null;
-
 					return;
 				}
 			}
@@ -954,8 +944,8 @@ namespace ManagedDoom
 				return false;
 			}
 
-			var tag = line.Tag;
 			var sectors = world.Map.Sectors;
+			var tag = line.Tag;
 
 			for (var i = 0; i < sectors.Length; i++)
 			{
@@ -963,21 +953,21 @@ namespace ManagedDoom
 				{
 					foreach (var thinker in world.Thinkers)
 					{
-						var m = thinker as Mobj;
+						var dest = thinker as Mobj;
 
-						if (m == null)
+						if (dest == null)
 						{
 							// Not a mobj.
 							continue;
 						}
 
 						// Not a teleportman.
-						if (m.Type != MobjType.Teleportman)
+						if (dest.Type != MobjType.Teleportman)
 						{
 							continue;
 						}
 
-						var sector = m.Subsector.Sector;
+						var sector = dest.Subsector.Sector;
 
 						// Wrong sector.
 						if (sector.Number != i)
@@ -989,7 +979,7 @@ namespace ManagedDoom
 						var oldY = thing.Y;
 						var oldZ = thing.Z;
 
-						if (!world.ThingMovement.TeleportMove(thing, m.X, m.Y))
+						if (!world.ThingMovement.TeleportMove(thing, dest.X, dest.Y))
 						{
 							return false;
 						}
@@ -1001,8 +991,10 @@ namespace ManagedDoom
 							thing.Player.ViewZ = thing.Z + thing.Player.ViewHeight;
 						}
 
+						var ta = world.ThingAllocation;
+
 						// Spawn teleport fog at source position.
-						var fog1 = world.ThingAllocation.SpawnMobj(
+						var fog1 = ta.SpawnMobj(
 							oldX,
 							oldY,
 							oldZ,
@@ -1010,10 +1002,10 @@ namespace ManagedDoom
 						world.StartSound(fog1, Sfx.TELEPT);
 
 						// Destination position.
-						var angle = m.Angle;
-						var fog2 = world.ThingAllocation.SpawnMobj(
-							m.X + 20 * Trig.Cos(angle),
-							m.Y + 20 * Trig.Sin(angle),
+						var angle = dest.Angle;
+						var fog2 = ta.SpawnMobj(
+							dest.X + 20 * Trig.Cos(angle),
+							dest.Y + 20 * Trig.Sin(angle),
 							thing.Z,
 							MobjType.Tfog);
 						world.StartSound(fog2, Sfx.TELEPT);
@@ -1024,7 +1016,7 @@ namespace ManagedDoom
 							thing.ReactionTime = 18;
 						}
 
-						thing.Angle = m.Angle;
+						thing.Angle = dest.Angle;
 						thing.MomX = thing.MomY = thing.MomZ = Fixed.Zero;
 
 						return true;
@@ -1038,11 +1030,12 @@ namespace ManagedDoom
 
 		public void StartLightStrobing(LineDef line)
 		{
+			var sectors = world.Map.Sectors;
 			var sectorNumber = -1;
 
 			while ((sectorNumber = FindSectorFromLineTag(line, sectorNumber)) >= 0)
 			{
-				var sector = world.Map.Sectors[sectorNumber];
+				var sector = sectors[sectorNumber];
 
 				if (sector.SpecialData != null)
 				{
@@ -1068,7 +1061,6 @@ namespace ManagedDoom
 					for (var j = 0; j < sector.Lines.Length; j++)
 					{
 						var target = GetNextSector(sector.Lines[j], sector);
-
 						if (target == null)
 						{
 							continue;
@@ -1101,7 +1093,6 @@ namespace ManagedDoom
 						for (var j = 0; j < sector.Lines.Length; j++)
 						{
 							var target = GetNextSector(sector.Lines[j], sector);
-
 							if (target == null)
 							{
 								continue;
@@ -1124,12 +1115,13 @@ namespace ManagedDoom
 
 		public bool DoFloor(LineDef line, FloorMoveType type)
 		{
+			var sectors = world.Map.Sectors;
 			var sectorNumber = -1;
 			var result = false;
 
 			while ((sectorNumber = FindSectorFromLineTag(line, sectorNumber)) >= 0)
 			{
-				var sector = world.Map.Sectors[sectorNumber];
+				var sector = sectors[sectorNumber];
 
 				// ALREADY MOVING?  IF SO, KEEP GOING...
 				if (sector.SpecialData != null)
@@ -1228,36 +1220,34 @@ namespace ManagedDoom
 						break;
 
 					case FloorMoveType.RaiseToTexture:
+						var min = int.MaxValue;
+						floor.Direction = 1;
+						floor.Sector = sector;
+						floor.Speed = floorSpeed;
+						var textures = world.Map.Textures;
+						for (var i = 0; i < sector.Lines.Length; i++)
 						{
-							var min = int.MaxValue;
-							floor.Direction = 1;
-							floor.Sector = sector;
-							floor.Speed = floorSpeed;
-							var textures = world.Map.Textures;
-							for (var i = 0; i < sector.Lines.Length; i++)
+							if ((sector.Lines[i].Flags & LineFlags.TwoSided) != 0)
 							{
-								if ((sector.Lines[i].Flags & LineFlags.TwoSided) != 0)
+								var frontSide = sector.Lines[i].Side0;
+								if (frontSide.BottomTexture >= 0)
 								{
-									var side = sector.Lines[i].Side0;
-									if (side.BottomTexture >= 0)
+									if (textures[frontSide.BottomTexture].Height < min)
 									{
-										if (textures[side.BottomTexture].Height < min)
-										{
-											min = textures[side.BottomTexture].Height;
-										}
+										min = textures[frontSide.BottomTexture].Height;
 									}
-									side = sector.Lines[i].Side1;
-									if (side.BottomTexture >= 0)
+								}
+								var backSide = sector.Lines[i].Side1;
+								if (backSide.BottomTexture >= 0)
+								{
+									if (textures[backSide.BottomTexture].Height < min)
 									{
-										if (textures[side.BottomTexture].Height < min)
-										{
-											min = textures[side.BottomTexture].Height;
-										}
+										min = textures[backSide.BottomTexture].Height;
 									}
 								}
 							}
-							floor.FloorDestHeight = floor.Sector.FloorHeight + Fixed.FromInt(min);
 						}
+						floor.FloorDestHeight = floor.Sector.FloorHeight + Fixed.FromInt(min);
 						break;
 
 					case FloorMoveType.LowerAndChange:
@@ -1273,7 +1263,6 @@ namespace ManagedDoom
 								if (sector.Lines[i].Side0.Sector.Number == sectorNumber)
 								{
 									sector = sector.Lines[i].Side1.Sector;
-
 									if (sector.FloorHeight == floor.FloorDestHeight)
 									{
 										floor.Texture = sector.FloorFlat;
@@ -1284,7 +1273,6 @@ namespace ManagedDoom
 								else
 								{
 									sector = sector.Lines[i].Side0.Sector;
-
 									if (sector.FloorHeight == floor.FloorDestHeight)
 									{
 										floor.Texture = sector.FloorFlat;
@@ -1304,12 +1292,13 @@ namespace ManagedDoom
 
 		public bool BuildStairs(LineDef line, StairType type)
 		{
+			var sectors = world.Map.Sectors;
 			var sectorNumber = -1;
 			var result = false;
 
 			while ((sectorNumber = FindSectorFromLineTag(line, sectorNumber)) >= 0)
 			{
-				var sector = world.Map.Sectors[sectorNumber];
+				var sector = sectors[sectorNumber];
 
 				// ALREADY MOVING?  IF SO, KEEP GOING...
 				if (sector.SpecialData != null)
@@ -1483,9 +1472,6 @@ namespace ManagedDoom
 
 		public bool DoCeiling(LineDef line, CeilingMoveType type)
 		{
-			var sectorNumber = -1;
-			var result = false;
-
 			//	Reactivate in-stasis ceilings...for certain types.
 			switch (type)
 			{
@@ -1498,9 +1484,13 @@ namespace ManagedDoom
 					break;
 			}
 
+			var sectors = world.Map.Sectors;
+			var sectorNumber = -1;
+			var result = false;
+
 			while ((sectorNumber = FindSectorFromLineTag(line, sectorNumber)) >= 0)
 			{
-				var sector = world.Map.Sectors[sectorNumber];
+				var sector = sectors[sectorNumber];
 				if (sector.SpecialData != null)
 				{
 					continue;
@@ -1563,7 +1553,6 @@ namespace ManagedDoom
 		public bool DoDonut(LineDef line)
 		{
 			var sectors = world.Map.Sectors;
-
 			var sectorNumber = -1;
 			var result = false;
 
