@@ -11,8 +11,6 @@ namespace ManagedDoom
             this.world = world;
         }
 
-        private static readonly int BONUSADD = 6;
-
 
 
         //
@@ -131,22 +129,25 @@ namespace ManagedDoom
         }
 
 
+
         //
         // P_GiveWeapon
         // The weapon name may have a MF_DROPPED flag ored in.
         //
+
+        private static readonly int bonusAdd = 6;
+
         public bool GiveWeapon(Player player, WeaponType weapon, bool dropped)
         {
-            if (world.Options.NetGame && (world.Options.Deathmatch != 2)
-             && !dropped)
+            if (world.Options.NetGame && (world.Options.Deathmatch != 2) && !dropped)
             {
-                // leave placed weapons forever on net games
+                // Leave placed weapons forever on net games.
                 if (player.WeaponOwned[(int)weapon])
                 {
                     return false;
                 }
 
-                player.BonusCount += BONUSADD;
+                player.BonusCount += bonusAdd;
                 player.WeaponOwned[(int)weapon] = true;
 
                 if (world.Options.Deathmatch != 0)
@@ -168,38 +169,37 @@ namespace ManagedDoom
                 return false;
             }
 
-            bool gaveammo;
+            bool gaveAmmo;
             if (DoomInfo.WeaponInfos[(int)weapon].Ammo != AmmoType.NoAmmo)
             {
-                // give one clip with a dropped weapon,
-                // two clips with a found weapon
+                // Give one clip with a dropped weapon, two clips with a found weapon.
                 if (dropped)
                 {
-                    gaveammo = GiveAmmo(player, DoomInfo.WeaponInfos[(int)weapon].Ammo, 1);
+                    gaveAmmo = GiveAmmo(player, DoomInfo.WeaponInfos[(int)weapon].Ammo, 1);
                 }
                 else
                 {
-                    gaveammo = GiveAmmo(player, DoomInfo.WeaponInfos[(int)weapon].Ammo, 2);
+                    gaveAmmo = GiveAmmo(player, DoomInfo.WeaponInfos[(int)weapon].Ammo, 2);
                 }
             }
             else
             {
-                gaveammo = false;
+                gaveAmmo = false;
             }
 
-            bool gaveweapon;
+            bool gaveWeapon;
             if (player.WeaponOwned[(int)weapon])
             {
-                gaveweapon = false;
+                gaveWeapon = false;
             }
             else
             {
-                gaveweapon = true;
+                gaveWeapon = true;
                 player.WeaponOwned[(int)weapon] = true;
                 player.PendingWeapon = weapon;
             }
 
-            return (gaveweapon || gaveammo);
+            return (gaveWeapon || gaveAmmo);
         }
 
 
@@ -208,14 +208,14 @@ namespace ManagedDoom
         // P_GiveBody
         // Returns false if the body isn't needed at all
         //
-        public bool GiveBody(Player player, int num)
+        private bool GiveHealth(Player player, int amount)
         {
             if (player.Health >= Player.MAXHEALTH)
             {
                 return false;
             }
 
-            player.Health += num;
+            player.Health += amount;
             if (player.Health > Player.MAXHEALTH)
             {
                 player.Health = Player.MAXHEALTH;
@@ -233,17 +233,17 @@ namespace ManagedDoom
         // Returns false if the armor is worse
         // than the current armor.
         //
-        public bool GiveArmor(Player player, int armortype)
+        private bool GiveArmor(Player player, int type)
         {
-            var hits = armortype * 100;
+            var hits = type * 100;
 
             if (player.ArmorPoints >= hits)
             {
-                // don't pick up
+                // Don't pick up.
                 return false;
             }
 
-            player.ArmorType = armortype;
+            player.ArmorType = type;
             player.ArmorPoints = hits;
 
             return true;
@@ -261,7 +261,7 @@ namespace ManagedDoom
                 return;
             }
 
-            player.BonusCount = BONUSADD;
+            player.BonusCount = bonusAdd;
             player.Cards[(int)card] = true;
         }
 
@@ -269,47 +269,47 @@ namespace ManagedDoom
         //
         // P_GivePower
         //
-        public bool GivePower(Player player, PowerType power)
+        private bool GivePower(Player player, PowerType type)
         {
-            if (power == PowerType.Invulnerability)
+            if (type == PowerType.Invulnerability)
             {
-                player.Powers[(int)power] = DoomInfo.PowerDuration.Invulnerability;
+                player.Powers[(int)type] = DoomInfo.PowerDuration.Invulnerability;
                 return true;
             }
 
-            if (power == PowerType.Invisibility)
+            if (type == PowerType.Invisibility)
             {
-                player.Powers[(int)power] = DoomInfo.PowerDuration.Invisibility;
+                player.Powers[(int)type] = DoomInfo.PowerDuration.Invisibility;
                 player.Mobj.Flags |= MobjFlags.Shadow;
                 return true;
             }
 
-            if (power == PowerType.Infrared)
+            if (type == PowerType.Infrared)
             {
-                player.Powers[(int)power] = DoomInfo.PowerDuration.Infrared;
+                player.Powers[(int)type] = DoomInfo.PowerDuration.Infrared;
                 return true;
             }
 
-            if (power == PowerType.IronFeet)
+            if (type == PowerType.IronFeet)
             {
-                player.Powers[(int)power] = DoomInfo.PowerDuration.IronFeet;
+                player.Powers[(int)type] = DoomInfo.PowerDuration.IronFeet;
                 return true;
             }
 
-            if (power == PowerType.Strength)
+            if (type == PowerType.Strength)
             {
-                GiveBody(player, 100);
-                player.Powers[(int)power] = 1;
+                GiveHealth(player, 100);
+                player.Powers[(int)type] = 1;
                 return true;
             }
 
-            if (player.Powers[(int)power] != 0)
+            if (player.Powers[(int)type] != 0)
             {
-                // already got it
+                // Already got it.
                 return false;
             }
 
-            player.Powers[(int)power] = 1;
+            player.Powers[(int)type] = 1;
 
             return true;
         }
@@ -325,10 +325,9 @@ namespace ManagedDoom
         {
             var delta = special.Z - toucher.Z;
 
-            if (delta > toucher.Height
-                || delta < Fixed.FromInt(-8))
+            if (delta > toucher.Height || delta < Fixed.FromInt(-8))
             {
-                // out of reach
+                // Out of reach.
                 return;
             }
 
@@ -345,7 +344,7 @@ namespace ManagedDoom
             // Identify by sprite.
             switch (special.Sprite)
             {
-                // armor
+                // Armor.
                 case Sprite.ARM1:
                     if (!GiveArmor(player, 1))
                     {
@@ -362,9 +361,10 @@ namespace ManagedDoom
                     //player.Message = GOTMEGA;
                     break;
 
-                // bonus items
+                // Bonus items.
                 case Sprite.BON1:
-                    player.Health++; // can go over 100%
+                    // Can go over 100%.
+                    player.Health++;
                     if (player.Health > 200)
                     {
                         player.Health = 200;
@@ -374,7 +374,8 @@ namespace ManagedDoom
                     break;
 
                 case Sprite.BON2:
-                    player.ArmorPoints++; // can go over 100%
+                    // Can go over 100%.
+                    player.ArmorPoints++;
                     if (player.ArmorPoints > 200)
                     {
                         player.ArmorPoints = 200;
@@ -410,8 +411,8 @@ namespace ManagedDoom
                     sound = Sfx.GETPOW;
                     break;
 
-                // cards
-                // leave cards for everyone
+                // Cards.
+                // Leave cards for everyone.
                 case Sprite.BKEY:
                     if (!player.Cards[(int)CardType.BlueCard])
                     {
@@ -484,9 +485,9 @@ namespace ManagedDoom
                     }
                     return;
 
-                // medikits, heals
+                // Medikits, heals.
                 case Sprite.STIM:
-                    if (!GiveBody(player, 10))
+                    if (!GiveHealth(player, 10))
                     {
                         return;
                     }
@@ -494,7 +495,7 @@ namespace ManagedDoom
                     break;
 
                 case Sprite.MEDI:
-                    if (!GiveBody(player, 25))
+                    if (!GiveHealth(player, 25))
                     {
                         return;
                     }
@@ -509,7 +510,7 @@ namespace ManagedDoom
                     break;
 
 
-                // power ups
+                // Power ups.
                 case Sprite.PINV:
                     if (!GivePower(player, PowerType.Invulnerability))
                     {
@@ -568,7 +569,7 @@ namespace ManagedDoom
                     sound = Sfx.GETPOW;
                     break;
 
-                // ammo
+                // Ammo.
                 case Sprite.CLIP:
                     if ((special.Flags & MobjFlags.Dropped) != 0)
                     {
@@ -659,7 +660,7 @@ namespace ManagedDoom
                     //player.Message = GOTBACKPACK;
                     break;
 
-                // weapons
+                // Weapons.
                 case Sprite.BFUG:
                     if (!GiveWeapon(player, WeaponType.Bfg, false))
                     {
@@ -724,7 +725,7 @@ namespace ManagedDoom
                     break;
 
                 default:
-                    throw new Exception("P_SpecialThing: Unknown gettable thing");
+                    throw new Exception("Unknown gettable thing!");
             }
 
             if ((special.Flags & MobjFlags.CountItem) != 0)
@@ -734,7 +735,7 @@ namespace ManagedDoom
 
             world.ThingAllocation.RemoveMobj(special);
 
-            player.BonusCount += BONUSADD;
+            player.BonusCount += bonusAdd;
 
             if (player == world.Players[world.consoleplayer])
             {

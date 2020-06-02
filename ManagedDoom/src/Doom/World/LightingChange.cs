@@ -117,14 +117,14 @@ namespace ManagedDoom
         }
 
 
-        private Sector GetNextSector(LineDef line, Sector sec)
+        private Sector GetNextSector(LineDef line, Sector sector)
         {
             if ((line.Flags & LineFlags.TwoSided) == 0)
             {
                 return null;
             }
 
-            if (line.FrontSector == sec)
+            if (line.FrontSector == sector)
             {
                 return line.BackSector;
             }
