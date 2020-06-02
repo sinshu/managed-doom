@@ -5,8 +5,8 @@ namespace ManagedDoom
 {
     public class Specials
     {
-        private static readonly int MAXBUTTONS = 16;
-        private static readonly int BUTTONTIME = 35;
+        private static readonly int maxButtonCount = 21;
+        private static readonly int buttonTime = 35;
 
         private World world;
 
@@ -16,7 +16,7 @@ namespace ManagedDoom
         {
             this.world = world;
 
-            buttonList = new Button[MAXBUTTONS];
+            buttonList = new Button[maxButtonCount];
             for (var i = 0; i < buttonList.Length; i++)
             {
                 buttonList[i] = new Button();
@@ -30,9 +30,10 @@ namespace ManagedDoom
                 line.Special = 0;
             }
 
-            var texTop = line.Side0.TopTexture;
-            var texMid = line.Side0.MiddleTexture;
-            var texBot = line.Side0.BottomTexture;
+            var frontSide = line.Side0;
+            var topTexture = frontSide.TopTexture;
+            var middleTexture = frontSide.MiddleTexture;
+            var bottomTexture = frontSide.BottomTexture;
 
             var sound = Sfx.SWTCHN;
 
@@ -46,42 +47,42 @@ namespace ManagedDoom
 
             for (var i = 0; i < switchList.Length; i++)
             {
-                if (switchList[i] == texTop)
+                if (switchList[i] == topTexture)
                 {
                     world.StartSound(line.SoundOrigin, sound);
-                    line.Side0.TopTexture = switchList[i ^ 1];
+                    frontSide.TopTexture = switchList[i ^ 1];
 
                     if (useAgain)
                     {
-                        StartButton(line, ButtonPosition.Top, switchList[i], BUTTONTIME);
+                        StartButton(line, ButtonPosition.Top, switchList[i], buttonTime);
                     }
 
                     return;
                 }
                 else
                 {
-                    if (switchList[i] == texMid)
+                    if (switchList[i] == middleTexture)
                     {
                         world.StartSound(line.SoundOrigin, sound);
-                        line.Side0.MiddleTexture = switchList[i ^ 1];
+                        frontSide.MiddleTexture = switchList[i ^ 1];
 
                         if (useAgain)
                         {
-                            StartButton(line, ButtonPosition.Middle, switchList[i], BUTTONTIME);
+                            StartButton(line, ButtonPosition.Middle, switchList[i], buttonTime);
                         }
 
                         return;
                     }
                     else
                     {
-                        if (switchList[i] == texBot)
+                        if (switchList[i] == bottomTexture)
                         {
                             world.StartSound(line.SoundOrigin, sound);
-                            line.Side0.BottomTexture = switchList[i ^ 1];
+                            frontSide.BottomTexture = switchList[i ^ 1];
 
                             if (useAgain)
                             {
-                                StartButton(line, ButtonPosition.Bottom, switchList[i], BUTTONTIME);
+                                StartButton(line, ButtonPosition.Bottom, switchList[i], buttonTime);
                             }
 
                             return;
@@ -93,8 +94,8 @@ namespace ManagedDoom
 
         private void StartButton(LineDef line, ButtonPosition w, int texture, int time)
         {
-            // See if button is already pressed
-            for (var i = 0; i < MAXBUTTONS; i++)
+            // See if button is already pressed.
+            for (var i = 0; i < maxButtonCount; i++)
             {
                 if (buttonList[i].Timer != 0 && buttonList[i].Line == line)
                 {
@@ -102,7 +103,7 @@ namespace ManagedDoom
                 }
             }
 
-            for (var i = 0; i < MAXBUTTONS; i++)
+            for (var i = 0; i < maxButtonCount; i++)
             {
                 if (buttonList[i].Timer == 0)
                 {
@@ -115,7 +116,7 @@ namespace ManagedDoom
                 }
             }
 
-            throw new Exception("P_StartButton: no button slots left!");
+            throw new Exception("No button slots left!");
         }
 
 
@@ -176,12 +177,13 @@ namespace ManagedDoom
             }
             */
 
-            //	DO BUTTONS
-            for (var i = 0; i < MAXBUTTONS; i++)
+            // Do buttons.
+            for (var i = 0; i < maxButtonCount; i++)
             {
                 if (buttonList[i].Timer > 0)
                 {
                     buttonList[i].Timer--;
+
                     if (buttonList[i].Timer == 0)
                     {
                         switch (buttonList[i].Position)
@@ -198,6 +200,7 @@ namespace ManagedDoom
                                 buttonList[i].Line.Side0.BottomTexture = buttonList[i].Texture;
                                 break;
                         }
+
                         world.StartSound(buttonList[i].SoundOrigin, Sfx.SWTCHN);
                         buttonList[i].Clear();
                     }

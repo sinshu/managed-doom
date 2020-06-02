@@ -9,6 +9,8 @@ namespace ManagedDoom
 		public MapInteraction(World world)
 		{
 			this.world = world;
+
+			InitUse();
 		}
 
 		//
@@ -484,44 +486,42 @@ namespace ManagedDoom
 
 
 
+		private Mobj useThing;
+		private Func<Intercept, bool> useTraverseFunc;
 
+		private void InitUse()
+		{
+			useTraverseFunc = UseTraverse;
+		}
 
-		//
-		// USE LINES
-		//
-		Mobj usething;
-
-		private bool PTR_UseTraverse(Intercept ic)
+		private bool UseTraverse(Intercept intercept)
 		{
 			var mc = world.MapCollision;
 
-			if (ic.Line.Special == 0)
+			if (intercept.Line.Special == 0)
 			{
-				mc.LineOpening(ic.Line);
+				mc.LineOpening(intercept.Line);
 				if (mc.OpenRange <= Fixed.Zero)
 				{
-					world.StartSound(usething, Sfx.NOWAY);
+					world.StartSound(useThing, Sfx.NOWAY);
 
-					// can't use through a wall
+					// Can't use through a wall.
 					return false;
 				}
 
-				// not a special line, but keep checking
+				// Not a special line, but keep checking.
 				return true;
 			}
 
 			var side = 0;
-			if (Geometry.PointOnLineSide(usething.X, usething.Y, ic.Line) == 1)
+			if (Geometry.PointOnLineSide(useThing.X, useThing.Y, intercept.Line) == 1)
 			{
 				side = 1;
 			}
 
-			// don't use back side
-			//return false;
+			UseSpecialLine(useThing, intercept.Line, side);
 
-			UseSpecialLine(usething, ic.Line, side);
-
-			// can't use for than one special line in a row
+			// Can't use for than one special line in a row.
 			return false;
 		}
 
@@ -533,16 +533,16 @@ namespace ManagedDoom
 		{
 			var pt = world.PathTraversal;
 
-			usething = player.Mobj;
+			useThing = player.Mobj;
 
-			var angle = player.Mobj.Angle; // >> ANGLETOFINESHIFT;
+			var angle = player.Mobj.Angle;
 
 			var x1 = player.Mobj.X;
 			var y1 = player.Mobj.Y;
-			var x2 = x1 + (World.USERANGE.Data >> Fixed.FracBits) * Trig.Cos(angle); // finecosine[angle];
-			var y2 = y1 + (World.USERANGE.Data >> Fixed.FracBits) * Trig.Sin(angle); // finesine[angle];
+			var x2 = x1 + World.USERANGE.ToIntFloor() * Trig.Cos(angle);
+			var y2 = y1 + World.USERANGE.ToIntFloor() * Trig.Sin(angle);
 
-			pt.PathTraverse(x1, y1, x2, y2, PathTraverseFlags.AddLines, ic => PTR_UseTraverse(ic));
+			pt.PathTraverse(x1, y1, x2, y2, PathTraverseFlags.AddLines, useTraverseFunc);
 		}
 
 
