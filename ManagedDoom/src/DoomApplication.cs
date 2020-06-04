@@ -60,6 +60,7 @@ namespace ManagedDoom
                 options = new GameOptions();
                 options.Skill = GameSkill.Hard;
                 options.GameMode = resource.Wad.GameMode;
+                options.MissionPack = resource.Wad.MissionPack;
                 options.Episode = 1;
                 options.Map = 1;
 

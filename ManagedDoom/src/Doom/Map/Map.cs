@@ -69,14 +69,14 @@ namespace ManagedDoom
             {
                 switch (options.MissionPack)
                 {
-                    case MissionPack.Doom2:
-                        title = DoomInfo.MapTitles.Doom2[options.Map - 1];
-                        break;
                     case MissionPack.Plutonia:
                         title = DoomInfo.MapTitles.Plutonia[options.Map - 1];
                         break;
                     case MissionPack.Tnt:
                         title = DoomInfo.MapTitles.Tnt[options.Map - 1];
+                        break;
+                    default:
+                        title = DoomInfo.MapTitles.Doom2[options.Map - 1];
                         break;
                 }
             }

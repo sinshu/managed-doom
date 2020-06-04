@@ -11,6 +11,7 @@ namespace ManagedDoom
         private List<Stream> streams;
         private List<LumpInfo> lumpInfos;
         private GameMode gameMode;
+        private MissionPack missionPack;
 
         public Wad(params string[] fileNames)
         {
@@ -31,6 +32,7 @@ namespace ManagedDoom
             }
 
             gameMode = GetGameMode(names);
+            missionPack = GetMissionPack(names);
         }
 
         private void AddFile(string fileName)
@@ -143,8 +145,8 @@ namespace ManagedDoom
                 switch (name.ToLower())
                 {
                     case "doom2":
-                    case "tnt":
                     case "plutonia":
+                    case "tnt":
                         return GameMode.Commercial;
                     case "doomu":
                         return GameMode.Retail;
@@ -158,8 +160,25 @@ namespace ManagedDoom
             return GameMode.Indetermined;
         }
 
+        private static MissionPack GetMissionPack(IReadOnlyList<string> names)
+        {
+            foreach (var name in names)
+            {
+                switch (name.ToLower())
+                {
+                    case "plutonia":
+                        return MissionPack.Plutonia;
+                    case "tnt":
+                        return MissionPack.Tnt;
+                }
+            }
+
+            return MissionPack.Doom2;
+        }
+
         public IReadOnlyList<string> Names => names;
         public IReadOnlyList<LumpInfo> LumpInfos => lumpInfos;
         public GameMode GameMode => gameMode;
+        public MissionPack MissionPack => missionPack;
     }
 }
