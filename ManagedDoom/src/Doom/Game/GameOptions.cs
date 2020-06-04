@@ -17,6 +17,7 @@ namespace ManagedDoom
         public int ConsolePlayer = 0;
         public GameVersion Version = GameVersion.Doom19;
         public bool[] PlayerInGame = new bool[Player.MaxPlayerCount];
+        public MissionPack MissionPack = MissionPack.Doom2;
 
         public DoomRandom Random = new DoomRandom();
         public int GameTic = 0;

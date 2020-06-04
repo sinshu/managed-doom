@@ -84,7 +84,9 @@ namespace ManagedDoom.SoftwareRendering
         private float viewY;
         private float zoom;
 
-        public AutoMapRenderer(DrawScreen screen)
+        private Patch[] markNumbers;
+
+        public AutoMapRenderer(Wad wad, DrawScreen screen)
         {
             this.screen = screen;
 
@@ -92,6 +94,12 @@ namespace ManagedDoom.SoftwareRendering
             amWidth = screen.Width;
             amHeight = screen.Height - scale * StatusBar.Height;
             ppu = (float)scale / 16;
+
+            markNumbers = new Patch[10];
+            for (var i = 0; i < markNumbers.Length; i++)
+            {
+                markNumbers[i] = Patch.FromWad("AMMNUM" + i, wad);
+            }
         }
 
         public void Render(Player player)
@@ -174,6 +182,16 @@ namespace ManagedDoom.SoftwareRendering
                 }
             }
 
+            for (var i = 0; i < am.Marks.Count; i++)
+            {
+                var pos = ToScreenPos(am.Marks[i]);
+                screen.DrawPatch(
+                    markNumbers[i],
+                    (int)MathF.Round(pos.X),
+                    (int)MathF.Round(pos.Y),
+                    scale);
+            }
+
             if (am.State == AutoMapState.AllThings)
             {
                 DrawThings(world);
@@ -193,6 +211,12 @@ namespace ManagedDoom.SoftwareRendering
                     amWidth / 2, amHeight / 2 + 2 * scale,
                     grays);
             }
+
+            screen.DrawText(
+                world.Map.Title,
+                0,
+                amHeight - scale,
+                scale);
         }
 
         private void DrawPlayers(World world)

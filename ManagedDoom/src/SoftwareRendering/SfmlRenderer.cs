@@ -85,7 +85,7 @@ namespace ManagedDoom.SoftwareRendering
             statusBar = new StatusBarRenderer(resource.Wad, screen);
             intermission = new IntermissionRenderer(resource.Wad, screen);
             openingSequence = new OpeningSequenceRenderer(resource.Wad, screen, this);
-            autoMap = new AutoMapRenderer(screen);
+            autoMap = new AutoMapRenderer(resource.Wad, screen);
         }
 
         private static uint[] InitColors(Palette palette)

@@ -24,6 +24,8 @@ namespace ManagedDoom
 
         private Texture skyTexture;
 
+        private string title;
+
         public Map(CommonResource resorces, World world)
             : this(resorces.Wad, resorces.Textures, resorces.Flats, world)
         {
@@ -62,6 +64,26 @@ namespace ManagedDoom
             GroupLines();
 
             skyTexture = GetSkyTextureByMapName(name);
+
+            if (options.GameMode == GameMode.Commercial)
+            {
+                switch (options.MissionPack)
+                {
+                    case MissionPack.Doom2:
+                        title = DoomInfo.MapTitles.Doom2[options.Map - 1];
+                        break;
+                    case MissionPack.Plutonia:
+                        title = DoomInfo.MapTitles.Plutonia[options.Map - 1];
+                        break;
+                    case MissionPack.Tnt:
+                        title = DoomInfo.MapTitles.Tnt[options.Map - 1];
+                        break;
+                }
+            }
+            else
+            {
+                title = DoomInfo.MapTitles.Doom[options.Episode - 1][options.Map - 1];
+            }
         }
 
         private void GroupLines()
@@ -162,5 +184,6 @@ namespace ManagedDoom
         public Reject Reject => reject;
         public Texture SkyTexture => skyTexture;
         public int SkyFlatNumber => flats.SkyFlatNumber;
+        public string Title => title;
     }
 }

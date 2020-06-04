@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ManagedDoom
 {
@@ -27,6 +28,9 @@ namespace ManagedDoom
         private bool right;
         private bool up;
         private bool down;
+
+        private List<Vertex> marks;
+        private int nextMarkNumber;
 
         public AutoMap(World world)
         {
@@ -74,6 +78,9 @@ namespace ManagedDoom
             right = false;
             up = false;
             down = false;
+
+            marks = new List<Vertex>();
+            nextMarkNumber = 0;
         }
 
         public void Update()
@@ -231,6 +238,35 @@ namespace ManagedDoom
                     return true;
                 }
             }
+            else if (e.Key == DoomKeys.M)
+            {
+                if (e.Type == EventType.KeyDown)
+                {
+                    if (marks.Count < 10)
+                    {
+                        marks.Add(new Vertex(viewX, viewY));
+                    }
+                    else
+                    {
+                        marks[nextMarkNumber] = new Vertex(viewX, viewY);
+                    }
+                    nextMarkNumber++;
+                    if (nextMarkNumber == 10)
+                    {
+                        nextMarkNumber = 0;
+                    }
+                    return true;
+                }
+            }
+            else if (e.Key == DoomKeys.C)
+            {
+                if (e.Type == EventType.KeyDown)
+                {
+                    marks.Clear();
+                    nextMarkNumber = 0;
+                    return true;
+                }
+            }
 
             return false;
         }
@@ -270,5 +306,6 @@ namespace ManagedDoom
         public bool Follow => follow;
         public bool Visible => visible;
         public AutoMapState State => state;
+        public IReadOnlyList<Vertex> Marks => marks;
     }
 }
