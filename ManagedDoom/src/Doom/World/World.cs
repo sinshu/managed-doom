@@ -44,7 +44,7 @@ namespace ManagedDoom
         private MapThing[] playerStarts;
         private MapThing[] deathmatchStarts;
 
-        private GameAction gameAction;
+        private bool completed;
 
         public World(CommonResource resorces, GameOptions options, Player[] players)
         {
@@ -109,12 +109,12 @@ namespace ManagedDoom
             }
 
             SpawnSpecials();
+
+            completed = false;
         }
 
-        public GameAction Update()
+        public bool Update()
         {
-            gameAction = GameAction.Nothing;
-
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (Players[i].InGame)
@@ -134,7 +134,7 @@ namespace ManagedDoom
             var sectorHash = DoomDebug.GetSectorHash(this);
             //Console.WriteLine(levelTime + ": " + mobjHash.ToString("x8") + ", " + sectorHash.ToString("x8"));
 
-            return gameAction;
+            return completed;
         }
 
         private void LoadThings()
@@ -406,13 +406,13 @@ namespace ManagedDoom
         public void G_ExitLevel()
         {
             secretexit = false;
-            gameAction = GameAction.Completed;
+            completed = true;
         }
 
         public void G_SecretExitLevel()
         {
             secretexit = true;
-            gameAction = GameAction.Completed;
+            completed = true;
         }
 
 

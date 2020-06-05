@@ -172,15 +172,14 @@ namespace ManagedDoom
 			switch (gameState)
 			{
 				case GameState.Level:
-					gameAction = world.Update();
-					//ST_Ticker();
-					//AM_Ticker();
-					//HU_Ticker();
+					if (world.Update())
+					{
+						LevelComplete();
+					}
 					break;
 
 				case GameState.Intermission:
-					var end = intermission.Update();
-					if (end)
+					if (intermission.Update())
 					{
 						G_WorldDone();
 					}
@@ -481,6 +480,10 @@ namespace ManagedDoom
 
 
 
+		private void LevelComplete()
+		{
+			gameAction = GameAction.Completed;
+		}
 
 		private void G_DoCompleted()
 		{
@@ -494,13 +497,6 @@ namespace ManagedDoom
 					G_PlayerFinishLevel(i);
 				}
 			}
-
-			/*
-			if (automapactive)
-			{
-				AM_Stop();
-			}
-			*/
 
 			if (gameMode != GameMode.Commercial)
 			{
@@ -629,17 +625,6 @@ namespace ManagedDoom
 			}
 
 			gameState = GameState.Intermission;
-			//viewactive = false;
-			//automapactive = false;
-
-			/*
-			if (statcopy)
-			{
-				memcpy(statcopy, &wminfo, sizeof(wminfo));
-			}
-			*/
-
-			//WI_Start(&wminfo);
 			intermission = new Intermission(players, wminfo, options);
 		}
 
@@ -708,7 +693,6 @@ namespace ManagedDoom
 			options.Map = options.wminfo.Next + 1;
 			G_DoLoadLevel();
 			gameAction = GameAction.Nothing;
-			//viewactive = true;
 		}
 
 		public void DoAction(GameAction action)
