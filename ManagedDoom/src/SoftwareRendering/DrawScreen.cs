@@ -135,6 +135,36 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
+        public void DrawChar(char ch, int x, int y, int scale)
+        {
+            var drawX = x;
+            var drawY = y - 7 * scale;
+
+            if (ch >= chars.Length)
+            {
+                return;
+            }
+
+            if (ch == 32)
+            {
+                return;
+            }
+
+            var index = (int)ch;
+            if ('a' <= index && index <= 'z')
+            {
+                index = index - 'a' + 'A';
+            }
+
+            var patch = chars[index];
+            if (patch == null)
+            {
+                return;
+            }
+
+            DrawPatch(patch, drawX, drawY, scale);
+        }
+
         public void DrawText(string text, int x, int y, int scale)
         {
             var drawX = x;
@@ -168,6 +198,33 @@ namespace ManagedDoom.SoftwareRendering
 
                 drawX += scale * patch.Width;
             }
+        }
+
+        public int MeasureChar(char ch, int scale)
+        {
+            if (ch >= chars.Length)
+            {
+                return 0;
+            }
+
+            if (ch == 32)
+            {
+                return 4 * scale;
+            }
+
+            var index = (int)ch;
+            if ('a' <= index && index <= 'z')
+            {
+                index = index - 'a' + 'A';
+            }
+
+            var patch = chars[index];
+            if (patch == null)
+            {
+                return 0;
+            }
+
+            return scale * patch.Width;
         }
 
         public int MeasureText(IReadOnlyList<char> text, int scale)

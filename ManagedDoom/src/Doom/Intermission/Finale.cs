@@ -4,8 +4,8 @@ namespace ManagedDoom
 {
 	public sealed class Finale
 	{
-		private static readonly int textWait = 3;
-		private static readonly int textSpeed = 250;
+		public static readonly int TextSpeed = 3;
+		public static readonly int TextWait = 250;
 
 		private DoomGame game;
 
@@ -156,7 +156,7 @@ namespace ManagedDoom
 				return false;
 			}
 
-			if (finalestage == 0 && finalecount > finaletext.Length * textSpeed + textWait)
+			if (finalestage == 0 && finalecount > finaletext.Length * TextSpeed + TextWait)
 			{
 				finalecount = 0;
 				finalestage = 1;
@@ -174,5 +174,6 @@ namespace ManagedDoom
 		public int Count => finalecount;
 		public int Stage => finalestage;
 		public string Flat => finaleflat;
+		public GameOptions Options => game.Options;
 	}
 }

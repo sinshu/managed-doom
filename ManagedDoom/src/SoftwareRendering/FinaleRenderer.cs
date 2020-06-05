@@ -9,6 +9,7 @@ namespace ManagedDoom.SoftwareRendering
         private SpriteLookup sprites;
 
         private DrawScreen screen;
+        private int scale;
 
         public FinaleRenderer(CommonResource resource, DrawScreen screen)
         {
@@ -17,11 +18,86 @@ namespace ManagedDoom.SoftwareRendering
             sprites = resource.Sprites;
 
             this.screen = screen;
+            scale = screen.Width / 320;
         }
 
         public void Render(Finale finale)
         {
+            if (finale.Stage == 2)
+            {
+                //F_CastDrawer();
+                return;
+            }
+
+            if (finale.Stage == 0)
+            {
+                TextWrite(finale);
+            }
+            else
+            {
+                switch (finale.Options.Episode)
+                {
+                    case 1:
+                        if (finale.Options.GameMode == GameMode.Retail)
+                        {
+                            // "CREDIT"
+                        }
+                        else
+                        {
+                            // "HELP2"
+                        }
+                        break;
+
+                    case 2:
+                        // "VICTORY2"
+                        break;
+
+                    case 3:
+                        // F_BunnyScroll();
+                        break;
+
+                    case 4:
+                        // "ENDPIC"
+                        break;
+                }
+            }
+        }
+
+        private void TextWrite(Finale finale)
+        {
             FillFlat(flats[finale.Flat]);
+
+            // draw some of the text onto the screen
+            var cx = 10 * scale;
+            var cy = 17 * scale;
+            var ch = 0;
+
+            var count = (finale.Count - 10) / Finale.TextSpeed;
+            if (count < 0)
+            {
+                count = 0;
+            }
+
+            for (; count > 0; count--)
+            {
+                if (ch == finale.Text.Length)
+                {
+                    break;
+                }
+
+                var c = finale.Text[ch++];
+
+                if (c == '\n')
+                {
+                    cx = 10 * scale;
+                    cy += 11 * scale;
+                    continue;
+                }
+
+                screen.DrawChar(c, cx, cy, scale);
+
+                cx += screen.MeasureChar(c, scale);
+            }
         }
 
         private void FillFlat(Flat flat)
