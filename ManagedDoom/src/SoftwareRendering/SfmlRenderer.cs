@@ -35,6 +35,7 @@ namespace ManagedDoom.SoftwareRendering
         private IntermissionRenderer intermission;
         private OpeningSequenceRenderer openingSequence;
         private AutoMapRenderer autoMap;
+        private FinaleRenderer finale;
 
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
         {
@@ -86,6 +87,7 @@ namespace ManagedDoom.SoftwareRendering
             intermission = new IntermissionRenderer(resource.Wad, screen);
             openingSequence = new OpeningSequenceRenderer(resource.Wad, screen, this);
             autoMap = new AutoMapRenderer(resource.Wad, screen);
+            finale = new FinaleRenderer(resource, screen);
         }
 
         private static uint[] InitColors(Palette palette)
@@ -137,6 +139,10 @@ namespace ManagedDoom.SoftwareRendering
             else if (game.gameState == GameState.Intermission)
             {
                 intermission.Render(game.Intermission);
+            }
+            else if (game.gameState == GameState.Finale)
+            {
+                finale.Render(game.Finale);
             }
         }
 

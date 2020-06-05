@@ -55,8 +55,6 @@ namespace ManagedDoom
 
         public Intermission(Player[] players, IntermissionInfo wbs, GameOptions options)
         {
-            Console.WriteLine("START_INTER");
-
             this.players = players;
             this.wbs = wbs;
             this.options = options;

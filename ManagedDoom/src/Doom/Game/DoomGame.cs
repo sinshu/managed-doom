@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace ManagedDoom
 {
@@ -9,6 +10,7 @@ namespace ManagedDoom
 		private Player[] players;
 		private World world;
 		private Intermission intermission;
+		private Finale finale;
 		private GameAction gameAction;
 
 		private bool demoplayback;
@@ -18,7 +20,6 @@ namespace ManagedDoom
 
 		private GameOptions options;
 		public GameState gameState;
-		private GameMode gameMode;
 
 		private bool paused;
 
@@ -70,7 +71,7 @@ namespace ManagedDoom
 						G_DoCompleted();
 						break;
 					case GameAction.Victory:
-						//F_StartFinale();
+						StartFinale();
 						break;
 					case GameAction.WorldDone:
 						G_DoWorldDone();
@@ -186,7 +187,10 @@ namespace ManagedDoom
 					break;
 
 				case GameState.Finale:
-					//F_Ticker();
+					if (finale.Update())
+					{
+						gameAction = GameAction.WorldDone;
+					}
 					break;
 
 				case GameState.DemoScreen:
@@ -378,14 +382,14 @@ namespace ManagedDoom
 				episode = 1;
 			}
 
-			if (gameMode == GameMode.Retail)
+			if (options.GameMode == GameMode.Retail)
 			{
 				if (episode > 4)
 				{
 					episode = 4;
 				}
 			}
-			else if (gameMode == GameMode.Shareware)
+			else if (options.GameMode == GameMode.Shareware)
 			{
 				if (episode > 1)
 				{
@@ -408,7 +412,7 @@ namespace ManagedDoom
 				map = 1;
 			}
 
-			if ((map > 9) && (gameMode != GameMode.Commercial))
+			if ((map > 9) && (options.GameMode != GameMode.Commercial))
 			{
 				map = 9;
 			}
@@ -498,7 +502,7 @@ namespace ManagedDoom
 				}
 			}
 
-			if (gameMode != GameMode.Commercial)
+			if (options.GameMode != GameMode.Commercial)
 			{
 				switch (options.Map)
 				{
@@ -515,14 +519,14 @@ namespace ManagedDoom
 			}
 
 			//#if 0  Hmmm - why?
-			if ((options.Map == 8) && (gameMode != GameMode.Commercial))
+			if ((options.Map == 8) && (options.GameMode != GameMode.Commercial))
 			{
 				// victory 
 				gameAction = GameAction.Victory;
 				return;
 			}
 
-			if ((options.Map == 9) && (gameMode != GameMode.Commercial))
+			if ((options.Map == 9) && (options.GameMode != GameMode.Commercial))
 			{
 				// exit secret level 
 				for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -539,7 +543,7 @@ namespace ManagedDoom
 			wminfo.Last = options.Map - 1;
 
 			// wminfo.next is 0 biased, unlike gamemap
-			if (gameMode == GameMode.Commercial)
+			if (options.GameMode == GameMode.Commercial)
 			{
 				if (world.SecretExit)
 				{
@@ -604,7 +608,7 @@ namespace ManagedDoom
 			wminfo.maxItems = world.totalItems;
 			wminfo.maxSecret = world.totalSecrets;
 			wminfo.maxFrags = 0;
-			if (gameMode == GameMode.Commercial)
+			if (options.GameMode == GameMode.Commercial)
 			{
 				wminfo.ParTime = 35 * 30; //cpars[gamemap - 1];
 			}
@@ -667,23 +671,25 @@ namespace ManagedDoom
 				players[options.ConsolePlayer].DidSecret = true;
 			}
 
-			if (gameMode == GameMode.Commercial)
+			if (options.GameMode == GameMode.Commercial)
 			{
-				/*
 				switch (options.Map)
 				{
-					case 15:
-					case 31:
-						if (!secretexit)
-							break;
 					case 6:
 					case 11:
 					case 20:
 					case 30:
-						F_StartFinale();
+						StartFinale();
+						break;
+
+					case 15:
+					case 31:
+						if (world.SecretExit)
+						{
+							StartFinale();
+						}
 						break;
 				}
-				*/
 			}
 		}
 
@@ -699,6 +705,18 @@ namespace ManagedDoom
 		{
 			gameAction = action;
 		}
+
+
+
+
+
+		private void StartFinale()
+		{
+			gameAction = GameAction.Nothing;
+			gameState = GameState.Finale;
+			finale = new Finale(this);
+		}
+
 
 
 
@@ -741,7 +759,7 @@ namespace ManagedDoom
 		public GameOptions Options => options;
 		public World World => world;
 		public Intermission Intermission => intermission;
-
+		public Finale Finale => finale;
 
 
 		private SfmlAudio audio;
