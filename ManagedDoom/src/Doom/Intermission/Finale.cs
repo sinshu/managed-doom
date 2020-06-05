@@ -173,5 +173,6 @@ namespace ManagedDoom
 		public string Text => finaletext;
 		public int Count => finalecount;
 		public int Stage => finalestage;
+		public string Flat => finaleflat;
 	}
 }
