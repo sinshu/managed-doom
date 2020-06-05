@@ -250,5 +250,127 @@ namespace ManagedDoomTest.CompatibilityTests
                 }
             }
         }
+
+        [TestMethod]
+        public void FinaleTest1()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\finale_test.wad"))
+            {
+                var demo = new Demo(@"data\finale_test1.lmp");
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(players, resource, demo.Options);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+
+                // MAP06
+                {
+                    for (var i = 0; i < 430; i++)
+                    {
+                        demo.ReadCmd(cmds);
+                        game.Update(cmds);
+                        lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                        aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    }
+
+                    Assert.AreEqual(0x8acb1b96u, (uint)lastMobjHash);
+                    Assert.AreEqual(0xf67d1a1bu, (uint)aggMobjHash);
+                }
+
+                // Intermission
+                {
+                    for (var i = 0; i < 156; i++)
+                    {
+                        demo.ReadCmd(cmds);
+                        game.Update(cmds);
+                    }
+                }
+
+                // Finale
+                {
+                    for (var i = 0; i < 237; i++)
+                    {
+                        demo.ReadCmd(cmds);
+                        game.Update(cmds);
+                    }
+                }
+
+                // MAP07
+                {
+                    for (var i = 0; i < 872; i++)
+                    {
+                        demo.ReadCmd(cmds);
+                        game.Update(cmds);
+                        lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                        aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    }
+
+                    Assert.AreEqual(0xfed7679fu, (uint)lastMobjHash);
+                    Assert.AreEqual(0x21340096u, (uint)aggMobjHash);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void FinaleTest2()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\finale_test.wad"))
+            {
+                var demo = new Demo(@"data\finale_test2.lmp");
+                var players = DoomTest.GetDefaultPlayers();
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(players, resource, demo.Options);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+
+                // MAP06
+                {
+                    for (var i = 0; i < 475; i++)
+                    {
+                        demo.ReadCmd(cmds);
+                        game.Update(cmds);
+                        lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                        aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    }
+
+                    Assert.AreEqual(0x4ea33dfbu, (uint)lastMobjHash);
+                    Assert.AreEqual(0x7dd3df51u, (uint)aggMobjHash);
+                }
+
+                // Intermission
+                {
+                    for (var i = 0; i < 21; i++)
+                    {
+                        demo.ReadCmd(cmds);
+                        game.Update(cmds);
+                    }
+                }
+
+                // Finale
+                {
+                    for (var i = 0; i < 52; i++)
+                    {
+                        demo.ReadCmd(cmds);
+                        game.Update(cmds);
+                    }
+                }
+
+                // MAP07
+                {
+                    for (var i = 0; i < 494; i++)
+                    {
+                        demo.ReadCmd(cmds);
+                        game.Update(cmds);
+                        lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                        aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    }
+
+                    Assert.AreEqual(0xa7c0a6eau, (uint)lastMobjHash);
+                    Assert.AreEqual(0xe89c0706u, (uint)aggMobjHash);
+                }
+            }
+        }
     }
 }
