@@ -153,5 +153,77 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0x1b989de0u, (uint)aggSectorHash);
             }
         }
+
+        [TestMethod]
+        public void Map30Brain()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            {
+                var demo = new Demo(@"demos\map30_brain_test.lmp");
+                var players = DoomTest.GetDefaultPlayers(demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(players, resource, demo.Options);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd(cmds))
+                    {
+                        break;
+                    }
+
+                    game.Update(cmds);
+                    lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    lastSectorHash = DoomDebug.GetSectorHash(game.World);
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0xfc44fcceu, (uint)lastMobjHash);
+                Assert.AreEqual(0x72c0e74fu, (uint)aggMobjHash);
+                Assert.AreEqual(0x0a37e32au, (uint)lastSectorHash);
+                Assert.AreEqual(0xb640d706u, (uint)aggSectorHash);
+            }
+        }
+
+        [TestMethod]
+        public void Map32Keen()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            {
+                var demo = new Demo(@"demos\map32_keen_test.lmp");
+                var players = DoomTest.GetDefaultPlayers(demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(players, resource, demo.Options);
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd(cmds))
+                    {
+                        break;
+                    }
+
+                    game.Update(cmds);
+                    lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    lastSectorHash = DoomDebug.GetSectorHash(game.World);
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0xd0b51d34u, (uint)lastMobjHash);
+                Assert.AreEqual(0xec0bc144u, (uint)aggMobjHash);
+                Assert.AreEqual(0xab146fa3u, (uint)lastSectorHash);
+                Assert.AreEqual(0x3ede64ccu, (uint)aggSectorHash);
+            }
+        }
     }
 }
