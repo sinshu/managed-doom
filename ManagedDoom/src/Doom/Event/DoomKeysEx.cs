@@ -214,5 +214,138 @@ namespace ManagedDoom
                     return "unknown";
             }
         }
+
+        public static char GetChar(this DoomKeys key)
+        {
+            switch (key)
+            {
+                case DoomKeys.A:
+                    return 'a';
+                case DoomKeys.B:
+                    return 'b';
+                case DoomKeys.C:
+                    return 'c';
+                case DoomKeys.D:
+                    return 'd';
+                case DoomKeys.E:
+                    return 'e';
+                case DoomKeys.F:
+                    return 'f';
+                case DoomKeys.G:
+                    return 'g';
+                case DoomKeys.H:
+                    return 'h';
+                case DoomKeys.I:
+                    return 'i';
+                case DoomKeys.J:
+                    return 'j';
+                case DoomKeys.K:
+                    return 'k';
+                case DoomKeys.L:
+                    return 'l';
+                case DoomKeys.M:
+                    return 'm';
+                case DoomKeys.N:
+                    return 'n';
+                case DoomKeys.O:
+                    return 'o';
+                case DoomKeys.P:
+                    return 'p';
+                case DoomKeys.Q:
+                    return 'q';
+                case DoomKeys.R:
+                    return 'r';
+                case DoomKeys.S:
+                    return 's';
+                case DoomKeys.T:
+                    return 't';
+                case DoomKeys.U:
+                    return 'u';
+                case DoomKeys.V:
+                    return 'v';
+                case DoomKeys.W:
+                    return 'w';
+                case DoomKeys.X:
+                    return 'x';
+                case DoomKeys.Y:
+                    return 'y';
+                case DoomKeys.Z:
+                    return 'z';
+                case DoomKeys.Num0:
+                    return '0';
+                case DoomKeys.Num1:
+                    return '1';
+                case DoomKeys.Num2:
+                    return '2';
+                case DoomKeys.Num3:
+                    return '3';
+                case DoomKeys.Num4:
+                    return '4';
+                case DoomKeys.Num5:
+                    return '5';
+                case DoomKeys.Num6:
+                    return '6';
+                case DoomKeys.Num7:
+                    return '7';
+                case DoomKeys.Num8:
+                    return '8';
+                case DoomKeys.Num9:
+                    return '9';
+                case DoomKeys.LBracket:
+                    return '[';
+                case DoomKeys.RBracket:
+                    return ']';
+                case DoomKeys.Semicolon:
+                    return ';';
+                case DoomKeys.Comma:
+                    return ',';
+                case DoomKeys.Period:
+                    return '.';
+                case DoomKeys.Quote:
+                    return '"';
+                case DoomKeys.Slash:
+                    return '/';
+                case DoomKeys.Backslash:
+                    return '\\';
+                case DoomKeys.Tilde:
+                    return '~';
+                case DoomKeys.Equal:
+                    return '=';
+                case DoomKeys.Hyphen:
+                    return '-';
+                case DoomKeys.Space:
+                    return ' ';
+                case DoomKeys.Add:
+                    return '+';
+                case DoomKeys.Subtract:
+                    return '-';
+                case DoomKeys.Multiply:
+                    return '*';
+                case DoomKeys.Divide:
+                    return '/';
+                case DoomKeys.Numpad0:
+                    return '0';
+                case DoomKeys.Numpad1:
+                    return '1';
+                case DoomKeys.Numpad2:
+                    return '2';
+                case DoomKeys.Numpad3:
+                    return '3';
+                case DoomKeys.Numpad4:
+                    return '4';
+                case DoomKeys.Numpad5:
+                    return '5';
+                case DoomKeys.Numpad6:
+                    return '6';
+                case DoomKeys.Numpad7:
+                    return '7';
+                case DoomKeys.Numpad8:
+                    return '8';
+                case DoomKeys.Numpad9:
+                    return '9';
+                default:
+                    return '\0';
+            }
+        }
     }
 }

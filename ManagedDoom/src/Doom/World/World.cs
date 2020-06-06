@@ -40,6 +40,7 @@ namespace ManagedDoom
         private LightingChange lightingChange;
         private StatusBar statusBar;
         private AutoMap autoMap;
+        private Cheat cheat;
 
         private MapThing[] playerStarts;
         private MapThing[] deathmatchStarts;
@@ -76,6 +77,7 @@ namespace ManagedDoom
             lightingChange = new LightingChange(this);
             statusBar = new StatusBar(this);
             autoMap = new AutoMap(this);
+            cheat = new Cheat(this);
 
             totalKills = 0;
             totalItems = 0;
@@ -443,6 +445,37 @@ namespace ManagedDoom
             return validCount;
         }
 
+
+        public bool DoEvent(DoomEvent e)
+        {
+            cheat.DoEvent(e);
+
+            if (autoMap.Visible)
+            {
+                if (autoMap.DoEvent(e))
+                {
+                    return true;
+                }
+            }
+
+            if (e.Key == DoomKeys.Tab && e.Type == EventType.KeyDown)
+            {
+                if (autoMap.Visible)
+                {
+                    autoMap.Close();
+                }
+                else
+                {
+                    autoMap.Open();
+                }
+                return true;
+            }
+
+            return false;
+        }
+
+
+
         public Map Map => map;
         public DoomRandom Random => random;
 
@@ -465,6 +498,7 @@ namespace ManagedDoom
         public LightingChange LightingChange => lightingChange;
         public StatusBar StatusBar => statusBar;
         public AutoMap AutoMap => autoMap;
+        public Cheat Cheat => cheat;
 
         public MapThing[] PlayerStarts => playerStarts;
         public MapThing[] DeathmatchStarts => deathmatchStarts;

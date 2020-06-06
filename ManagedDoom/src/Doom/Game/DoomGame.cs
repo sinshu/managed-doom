@@ -725,29 +725,7 @@ namespace ManagedDoom
 		{
 			if (gameState == GameState.Level)
 			{
-				var am = world.AutoMap;
-
-				if (am.Visible)
-				{
-					if (am.DoEvent(e))
-					{
-						return true;
-					}
-				}
-
-				if (e.Key == DoomKeys.Tab && e.Type == EventType.KeyDown)
-				{
-					if (am.Visible)
-					{
-						am.Close();
-					}
-					else
-					{
-						am.Open();
-					}
-				}
-
-				return true;
+				return world.DoEvent(e);
 			}
 
 			return false;
