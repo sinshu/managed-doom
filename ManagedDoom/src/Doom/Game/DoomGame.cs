@@ -727,6 +727,10 @@ namespace ManagedDoom
 			{
 				return world.DoEvent(e);
 			}
+			else if (gameState == GameState.Finale)
+			{
+				return finale.DoEvent(e);
+			}
 
 			return false;
 		}

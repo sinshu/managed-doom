@@ -128,15 +128,14 @@ namespace ManagedDoom
 					}
 				}
 
-				if (i < Player.MaxPlayerCount)
+				if (i < Player.MaxPlayerCount && finalestage != 2)
 				{
 					if (options.Map == 30)
 					{
-						//F_StartCast();
+						StartCast();
 					}
 					else
 					{
-						//gameaction = ga_worlddone;
 						return true;
 					}
 				}
@@ -147,7 +146,7 @@ namespace ManagedDoom
 
 			if (finalestage == 2)
 			{
-				//F_CastTicker();
+				CastTicker();
 				return false;
 			}
 
@@ -170,10 +169,264 @@ namespace ManagedDoom
 			return false;
 		}
 
+
+
+		private static readonly CastInfo[] castorder = new CastInfo[]
+		{
+			new CastInfo(DoomInfo.Strings.CC_ZOMBIE, MobjType.Possessed),
+			new CastInfo(DoomInfo.Strings.CC_SHOTGUN, MobjType.Shotguy),
+			new CastInfo(DoomInfo.Strings.CC_HEAVY, MobjType.Chainguy),
+			new CastInfo(DoomInfo.Strings.CC_IMP, MobjType.Troop),
+			new CastInfo(DoomInfo.Strings.CC_DEMON, MobjType.Sergeant),
+			new CastInfo(DoomInfo.Strings.CC_LOST, MobjType.Skull),
+			new CastInfo(DoomInfo.Strings.CC_CACO, MobjType.Head),
+			new CastInfo(DoomInfo.Strings.CC_HELL, MobjType.Knight),
+			new CastInfo(DoomInfo.Strings.CC_BARON, MobjType.Bruiser),
+			new CastInfo(DoomInfo.Strings.CC_ARACH, MobjType.Baby),
+			new CastInfo(DoomInfo.Strings.CC_PAIN, MobjType.Pain),
+			new CastInfo(DoomInfo.Strings.CC_REVEN, MobjType.Undead),
+			new CastInfo(DoomInfo.Strings.CC_MANCU, MobjType.Fatso),
+			new CastInfo(DoomInfo.Strings.CC_ARCH, MobjType.Vile),
+			new CastInfo(DoomInfo.Strings.CC_SPIDER, MobjType.Spider),
+			new CastInfo(DoomInfo.Strings.CC_CYBER, MobjType.Cyborg),
+			new CastInfo(DoomInfo.Strings.CC_HERO, MobjType.Player)
+		};
+
+		private int castnum;
+		private int casttics;
+		private MobjStateDef caststate;
+		private bool castdeath;
+		private int castframes;
+		private bool castonmelee;
+		private bool castattacking;
+
+		private void StartCast()
+		{
+			// wipegamestate = -1; // force a screen wipe
+			castnum = 0;
+			caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeState];
+			casttics = caststate.Tics;
+			castdeath = false;
+			finalestage = 2;
+			castframes = 0;
+			castonmelee = false;
+			castattacking = false;
+			// S_ChangeMusic(mus_evil, true);
+		}
+
+		private void CastTicker()
+		{
+			if (--casttics > 0)
+			{
+				// not time to change state yet
+				return;
+			}
+
+			if (caststate.Tics == -1 || caststate.Next == MobjState.Null)
+			{
+				// switch from deathstate to next monster
+				castnum++;
+				castdeath = false;
+				if (castnum == castorder.Length)
+				{
+					castnum = 0;
+				}
+				if (DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeSound != 0)
+				{
+					//S_StartSound(NULL, mobjinfo[castorder[castnum].type].seesound);
+				}
+				caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeState];
+				castframes = 0;
+			}
+			else
+			{
+				// just advance to next state in animation
+				if (caststate == DoomInfo.States[(int)MobjState.PlayAtk1])
+				{
+					// Oh, gross hack!
+					castattacking = false;
+					castframes = 0;
+					caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeState];
+					goto stopattack;
+				}
+				var st = caststate.Next;
+				caststate = DoomInfo.States[(int)st];
+				castframes++;
+
+				// sound hacks....
+				Sfx sfx;
+				switch (st)
+				{
+					case MobjState.PlayAtk1:
+						sfx = Sfx.DSHTGN;
+						break;
+					case MobjState.PossAtk2:
+						sfx = Sfx.PISTOL;
+						break;
+					case MobjState.SposAtk2:
+						sfx = Sfx.SHOTGN;
+						break;
+					case MobjState.VileAtk2:
+						sfx = Sfx.VILATK;
+						break;
+					case MobjState.SkelFist2:
+						sfx = Sfx.SKESWG;
+						break;
+					case MobjState.SkelFist4:
+						sfx = Sfx.SKEPCH;
+						break;
+					case MobjState.SkelMiss2:
+						sfx = Sfx.SKEATK;
+						break;
+					case MobjState.FattAtk8:
+					case MobjState.FattAtk5:
+					case MobjState.FattAtk2:
+						sfx = Sfx.FIRSHT;
+						break;
+					case MobjState.CposAtk2:
+					case MobjState.CposAtk3:
+					case MobjState.CposAtk4:
+						sfx = Sfx.SHOTGN;
+						break;
+					case MobjState.TrooAtk3:
+						sfx = Sfx.CLAW;
+						break;
+					case MobjState.SargAtk2:
+						sfx = Sfx.SGTATK;
+						break;
+					case MobjState.BossAtk2:
+					case MobjState.Bos2Atk2:
+					case MobjState.HeadAtk2:
+						sfx = Sfx.FIRSHT;
+						break;
+					case MobjState.SkullAtk2:
+						sfx = Sfx.SKLATK;
+						break;
+					case MobjState.SpidAtk2:
+					case MobjState.SpidAtk3:
+						sfx = Sfx.SHOTGN;
+						break;
+					case MobjState.BspiAtk2:
+						sfx = Sfx.PLASMA;
+						break;
+					case MobjState.CyberAtk2:
+					case MobjState.CyberAtk4:
+					case MobjState.CyberAtk6:
+						sfx = Sfx.RLAUNC;
+						break;
+					case MobjState.PainAtk3:
+						sfx = Sfx.SKLATK;
+						break;
+					default:
+						sfx = 0;
+						break;
+				}
+
+				if (sfx != 0)
+				{
+					// S_StartSound(NULL, sfx);
+				}
+			}
+
+			if (castframes == 12)
+			{
+				// go into attack frame
+				castattacking = true;
+				if (castonmelee)
+				{
+					caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].MeleeState];
+				}
+				else
+				{
+					caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].MissileState];
+				}
+				castonmelee = !castonmelee;
+				if (caststate == DoomInfo.States[(int)MobjState.Null])
+				{
+					if (castonmelee)
+					{
+						caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].MeleeState];
+					}
+					else
+					{
+						caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].MissileState];
+					}
+				}
+			}
+
+			if (castattacking)
+			{
+				if (castframes == 24 ||
+					caststate == DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeState])
+				{
+					castattacking = false;
+					castframes = 0;
+					caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeState];
+				}
+			}
+
+		stopattack:
+
+			casttics = caststate.Tics;
+			if (casttics == -1)
+			{
+				casttics = 15;
+			}
+		}
+
+		public bool DoEvent(DoomEvent e)
+		{
+			if (finalestage != 2)
+			{
+				return false;
+			}
+
+			if (e.Type == EventType.KeyDown)
+			{
+				if (castdeath)
+				{
+					// already in dying frames
+					return true;
+				}
+
+				// go into death frame
+				castdeath = true;
+				caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].DeathState];
+				casttics = caststate.Tics;
+				castframes = 0;
+				castattacking = false;
+				if (DoomInfo.MobjInfos[(int)castorder[castnum].Type].DeathSound != 0)
+				{
+					// S_StartSound(NULL, mobjinfo[castorder[castnum].type].deathsound);
+				}
+
+				return true;
+			}
+
+			return false;
+		}
+
+
+
 		public string Text => finaletext;
 		public int Count => finalecount;
 		public int Stage => finalestage;
 		public string Flat => finaleflat;
 		public GameOptions Options => game.Options;
+		public MobjStateDef CastState => caststate;
+
+
+
+		private class CastInfo
+		{
+			public string Name;
+			public MobjType Type;
+
+			public CastInfo(string name, MobjType type)
+			{
+				Name = name;
+				Type = type;
+			}
+		}
 	}
 }

@@ -25,7 +25,7 @@ namespace ManagedDoom.SoftwareRendering
         {
             if (finale.Stage == 2)
             {
-                //F_CastDrawer();
+                RenderCast(finale);
                 return;
             }
 
@@ -121,6 +121,15 @@ namespace ManagedDoom.SoftwareRendering
                 }
                 xFrac += step;
             }
+        }
+
+        private void RenderCast(Finale finale)
+        {
+            screen.FillRect(0, 0, screen.Width, screen.Height, 120);
+            var frame = finale.CastState.Frame & 0x7fff;
+            var patch = sprites[finale.CastState.Sprite].Frames[frame].Patches[0];
+            screen.DrawPatch(
+                patch, screen.Width / 2, screen.Height - 32, 1);
         }
     }
 }
