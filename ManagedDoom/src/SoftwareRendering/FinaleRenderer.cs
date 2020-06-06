@@ -128,8 +128,22 @@ namespace ManagedDoom.SoftwareRendering
             screen.FillRect(0, 0, screen.Width, screen.Height, 120);
             var frame = finale.CastState.Frame & 0x7fff;
             var patch = sprites[finale.CastState.Sprite].Frames[frame].Patches[0];
-            screen.DrawPatch(
-                patch, screen.Width / 2, screen.Height - 32, 1);
+            if (sprites[finale.CastState.Sprite].Frames[frame].Flip[0])
+            {
+                screen.DrawPatchFlip(
+                    patch,
+                    screen.Width / 2,
+                    screen.Height - 32,
+                    1);
+            }
+            else
+            {
+                screen.DrawPatch(
+                    patch,
+                    screen.Width / 2,
+                    screen.Height - 32,
+                    1);
+            }
         }
     }
 }

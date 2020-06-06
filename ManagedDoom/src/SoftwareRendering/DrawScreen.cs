@@ -60,6 +60,37 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
+        public void DrawPatchFlip(Patch patch, int x, int y, int scale)
+        {
+            var drawX = x - scale * patch.LeftOffset;
+            var drawY = y - scale * patch.TopOffset;
+            var drawWidth = scale * patch.Width;
+
+            var i = 0;
+            var frac = Fixed.One / scale - Fixed.Epsilon;
+            var step = Fixed.One / scale;
+
+            if (drawX < 0)
+            {
+                var exceed = -drawX;
+                frac += exceed * step;
+                i += exceed;
+            }
+
+            if (drawX + drawWidth > width)
+            {
+                var exceed = drawX + drawWidth - width;
+                drawWidth -= exceed;
+            }
+
+            for (; i < drawWidth; i++)
+            {
+                var col = patch.Width - frac.ToIntFloor() - 1;
+                DrawColumn(patch.Columns[col], drawX + i, drawY, scale);
+                frac += step;
+            }
+        }
+
         private void DrawColumn(Column[] source, int x, int y, int scale)
         {
             var step = Fixed.One / scale;
