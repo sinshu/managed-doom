@@ -448,7 +448,7 @@ namespace ManagedDoom
 
         public bool DoEvent(DoomEvent e)
         {
-            if (!Options.NetGame)
+            if (!Options.NetGame && Options.Skill != GameSkill.Nightmare)
             {
                 cheat.DoEvent(e);
             }
