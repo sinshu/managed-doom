@@ -14,6 +14,7 @@ namespace ManagedDoom
 
             InitVile();
             InitBoss();
+            InitBrain();
         }
 
 
@@ -1699,5 +1700,99 @@ namespace ManagedDoom
 
             world.G_ExitLevel();
         }
+
+
+
+
+
+
+
+
+
+        private Mobj[] braintargets;
+        private int numbraintargets;
+        private int braintargeton;
+
+        private void InitBrain()
+        {
+            braintargets = new Mobj[32];
+        }
+
+        public void BrainAwake(Mobj mo)
+        {
+            // find all the target spots
+            numbraintargets = 0;
+            braintargeton = 0;
+
+            foreach (var thinker in world.Thinkers)
+            {
+                var m = thinker as Mobj;
+                if (m == null)
+                {
+                    // not a mobj
+                    continue;
+                }
+
+                if (m.Type == MobjType.Bosstarget)
+                {
+                    braintargets[numbraintargets] = m;
+                    numbraintargets++;
+                }
+            }
+
+            world.StartSound(null, Sfx.BOSSIT);
+        }
+
+        public void BrainPain(Mobj mo)
+        {
+            world.StartSound(null, Sfx.BOSPN);
+        }
+
+        public void BrainScream(Mobj mo)
+        {
+            var random = world.Random;
+
+            for (var x = mo.X - Fixed.FromInt(196); x < mo.X + Fixed.FromInt(320); x += Fixed.FromInt(8))
+            {
+                var y = mo.Y - Fixed.FromInt(320);
+                var z = new Fixed(128) + random.Next() * Fixed.FromInt(2);
+
+                var th = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Rocket);
+                th.MomZ = new Fixed(random.Next() * 512);
+                th.SetState(MobjState.Brainexplode1);
+                th.Tics -= random.Next() & 7;
+                if (th.Tics < 1)
+                {
+                    th.Tics = 1;
+                }
+            }
+
+            world.StartSound(null, Sfx.BOSDTH);
+        }
+
+        public void BrainExplode(Mobj mo)
+        {
+            var random = world.Random;
+
+            var x = mo.X + new Fixed((random.Next() - random.Next()) * 2048);
+            var y = mo.Y;
+            var z = new Fixed(128) + random.Next() * Fixed.FromInt(2);
+
+            var th = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Rocket);
+            th.MomZ = new Fixed(random.Next() * 512);
+            th.SetState(MobjState.Brainexplode1);
+            th.Tics -= random.Next() & 7;
+            if (th.Tics < 1)
+            {
+                th.Tics = 1;
+            }
+        }
+
+        public void BrainDie(Mobj mo)
+        {
+            world.G_ExitLevel();
+        }
+
+
     }
 }

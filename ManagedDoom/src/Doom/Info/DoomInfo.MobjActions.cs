@@ -227,18 +227,22 @@ namespace ManagedDoom
 
             public void BrainPain(World world, Mobj actor)
             {
+                world.MonsterBehavior.BrainPain(actor);
             }
 
             public void BrainScream(World world, Mobj actor)
             {
+                world.MonsterBehavior.BrainScream(actor);
             }
 
             public void BrainDie(World world, Mobj actor)
             {
+                world.MonsterBehavior.BrainDie(actor);
             }
 
             public void BrainAwake(World world, Mobj actor)
             {
+                world.MonsterBehavior.BrainAwake(actor);
             }
 
             public void BrainSpit(World world, Mobj actor)
@@ -255,6 +259,7 @@ namespace ManagedDoom
 
             public void BrainExplode(World world, Mobj actor)
             {
+                world.MonsterBehavior.BrainExplode(actor);
             }
         }
     }
