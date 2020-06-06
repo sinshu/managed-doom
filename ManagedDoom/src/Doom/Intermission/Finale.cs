@@ -21,6 +21,40 @@ namespace ManagedDoom
 		{
 			this.game = game;
 
+			string c1Text;
+			string c2Text;
+			string c3Text;
+			string c4Text;
+			string c5Text;
+			string c6Text;
+			switch (game.Options.MissionPack)
+			{
+				case MissionPack.Plutonia:
+					c1Text = DoomInfo.Strings.P1TEXT;
+					c2Text = DoomInfo.Strings.P2TEXT;
+					c3Text = DoomInfo.Strings.P3TEXT;
+					c4Text = DoomInfo.Strings.P4TEXT;
+					c5Text = DoomInfo.Strings.P5TEXT;
+					c6Text = DoomInfo.Strings.P6TEXT;
+					break;
+				case MissionPack.Tnt:
+					c1Text = DoomInfo.Strings.T1TEXT;
+					c2Text = DoomInfo.Strings.T2TEXT;
+					c3Text = DoomInfo.Strings.T3TEXT;
+					c4Text = DoomInfo.Strings.T4TEXT;
+					c5Text = DoomInfo.Strings.T5TEXT;
+					c6Text = DoomInfo.Strings.T6TEXT;
+					break;
+				default:
+					c1Text = DoomInfo.Strings.C1TEXT;
+					c2Text = DoomInfo.Strings.C2TEXT;
+					c3Text = DoomInfo.Strings.C3TEXT;
+					c4Text = DoomInfo.Strings.C4TEXT;
+					c5Text = DoomInfo.Strings.C5TEXT;
+					c6Text = DoomInfo.Strings.C6TEXT;
+					break;
+			}
+
 			// Okay - IWAD dependend stuff.
 			// This has been changed severly, and
 			//  some stuff might have changed in the process.
@@ -68,27 +102,27 @@ namespace ManagedDoom
 						{
 							case 6:
 								finaleflat = "SLIME16";
-								finaletext = DoomInfo.Strings.C1TEXT;
+								finaletext = c1Text;
 								break;
 							case 11:
 								finaleflat = "RROCK14";
-								finaletext = DoomInfo.Strings.C2TEXT;
+								finaletext = c2Text;
 								break;
 							case 20:
 								finaleflat = "RROCK07";
-								finaletext = DoomInfo.Strings.C3TEXT;
+								finaletext = c3Text;
 								break;
 							case 30:
 								finaleflat = "RROCK17";
-								finaletext = DoomInfo.Strings.C4TEXT;
+								finaletext = c4Text;
 								break;
 							case 15:
 								finaleflat = "RROCK13";
-								finaletext = DoomInfo.Strings.C5TEXT;
+								finaletext = c5Text;
 								break;
 							case 31:
 								finaleflat = "RROCK19";
-								finaletext = DoomInfo.Strings.C6TEXT;
+								finaletext = c6Text;
 								break;
 							default:
 								// Ouch.
