@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ManagedDoom.SoftwareRendering
 {
@@ -11,6 +12,8 @@ namespace ManagedDoom.SoftwareRendering
         private DrawScreen screen;
         private int scale;
 
+        private Dictionary<string, Patch> cache;
+
         public FinaleRenderer(CommonResource resource, DrawScreen screen)
         {
             wad = resource.Wad;
@@ -19,6 +22,8 @@ namespace ManagedDoom.SoftwareRendering
 
             this.screen = screen;
             scale = screen.Width / 320;
+
+            cache = new Dictionary<string, Patch>();
         }
 
         public void Render(Finale finale)
@@ -123,9 +128,23 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
+        private void DrawPatch(string name, int x, int y)
+        {
+            Patch patch;
+            if (!cache.TryGetValue(name, out patch))
+            {
+                patch = Patch.FromWad(name, wad);
+                cache.Add(name, patch);
+            }
+
+            var scale = screen.Width / 320;
+            screen.DrawPatch(patch, scale * x, scale * y, scale);
+        }
+
         private void RenderCast(Finale finale)
         {
-            screen.FillRect(0, 0, screen.Width, screen.Height, 120);
+            DrawPatch("BOSSBACK", 0, 0);
+
             var frame = finale.CastState.Frame & 0x7fff;
             var patch = sprites[finale.CastState.Sprite].Frames[frame].Patches[0];
             if (sprites[finale.CastState.Sprite].Frames[frame].Flip[0])
@@ -133,17 +152,24 @@ namespace ManagedDoom.SoftwareRendering
                 screen.DrawPatchFlip(
                     patch,
                     screen.Width / 2,
-                    screen.Height - 32,
-                    1);
+                    screen.Height - scale * 30,
+                    scale);
             }
             else
             {
                 screen.DrawPatch(
                     patch,
                     screen.Width / 2,
-                    screen.Height - 32,
-                    1);
+                    screen.Height - scale * 30,
+                    scale);
             }
+
+            var width = screen.MeasureText(finale.CastName, scale);
+            screen.DrawText(
+                finale.CastName,
+                (screen.Width - width) / 2,
+                screen.Height - scale * 13,
+                scale);
         }
     }
 }

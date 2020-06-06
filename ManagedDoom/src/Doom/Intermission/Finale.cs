@@ -414,6 +414,7 @@ namespace ManagedDoom
 		public string Flat => finaleflat;
 		public GameOptions Options => game.Options;
 		public MobjStateDef CastState => caststate;
+		public string CastName => castorder[castnum].Name;
 
 
 
