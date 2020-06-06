@@ -134,6 +134,8 @@ namespace ManagedDoom.SoftwareRendering
 
         private NumberWidget wFrags;
 
+        private MultIconWidget[] keyBoxes;
+
         public StatusBarRenderer(Wad wad, DrawScreen screen)
         {
             this.screen = screen;
@@ -228,6 +230,23 @@ namespace ManagedDoom.SoftwareRendering
             wFrags.Width = ST_FRAGSWIDTH;
             wFrags.X = ST_FRAGSX;
             wFrags.Y = ST_FRAGSY;
+
+            keyBoxes = new MultIconWidget[3];
+
+            keyBoxes[0] = new MultIconWidget();
+            keyBoxes[0].X = ST_KEY0X;
+            keyBoxes[0].Y = ST_KEY0Y;
+            keyBoxes[0].Patches = patches.Keys;
+
+            keyBoxes[1] = new MultIconWidget();
+            keyBoxes[1].X = ST_KEY1X;
+            keyBoxes[1].Y = ST_KEY1Y;
+            keyBoxes[1].Patches = patches.Keys;
+
+            keyBoxes[2] = new MultIconWidget();
+            keyBoxes[2].X = ST_KEY2X;
+            keyBoxes[2].Y = ST_KEY2Y;
+            keyBoxes[2].Patches = patches.Keys;
         }
 
         public void Render(StatusBar statusBar, Player player)
@@ -286,6 +305,18 @@ namespace ManagedDoom.SoftwareRendering
                 scale * ST_FACESX,
                 scale * ST_FACESY,
                 scale);
+
+            for (var i = 0; i < 3; i++)
+            {
+                if (player.Cards[i + 3])
+                {
+                    DrawMultIcon(keyBoxes[i], i + 3);
+                }
+                else if (player.Cards[i])
+                {
+                    DrawMultIcon(keyBoxes[i], i);
+                }
+            }
         }
 
         private void DrawNumber(NumberWidget widget, int num)

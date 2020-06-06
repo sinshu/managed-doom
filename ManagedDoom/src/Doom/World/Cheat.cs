@@ -18,6 +18,8 @@ namespace ManagedDoom
 
             list = new Tuple<string, Action>[]
             {
+                Tuple.Create("idfa", new Action(FullAmmo)),
+                Tuple.Create("idkfa", new Action(FullAmmoAndKeys)),
                 Tuple.Create("iddqd", new Action(GodMode)),
                 Tuple.Create("idclip", new Action(NoClip)),
                 Tuple.Create("iddt", new Action(FullMap))
@@ -76,6 +78,31 @@ namespace ManagedDoom
             }
         }
 
+
+        private void FullAmmo()
+        {
+            var player = world.Players[world.Options.ConsolePlayer];
+            for (var i = 0; i < (int)WeaponType.Count; i++)
+            {
+                player.WeaponOwned[i] = true;
+            }
+            player.Backpack = true;
+            for (var i = 0; i < (int)AmmoType.Count; i++)
+            {
+                player.MaxAmmo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
+                player.Ammo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
+            }
+        }
+
+        private void FullAmmoAndKeys()
+        {
+            FullAmmo();
+            var player = world.Players[world.Options.ConsolePlayer];
+            for (var i = 0; i < (int)CardType.Count; i++)
+            {
+                player.Cards[i] = true;
+            }
+        }
 
         private void GodMode()
         {

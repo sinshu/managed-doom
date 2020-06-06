@@ -448,7 +448,10 @@ namespace ManagedDoom
 
         public bool DoEvent(DoomEvent e)
         {
-            cheat.DoEvent(e);
+            if (!Options.NetGame)
+            {
+                cheat.DoEvent(e);
+            }
 
             if (autoMap.Visible)
             {
