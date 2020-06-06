@@ -223,6 +223,7 @@ namespace ManagedDoom
 
             public void KeenDie(World world, Mobj actor)
             {
+                world.MonsterBehavior.KeenDie(actor);
             }
 
             public void BrainPain(World world, Mobj actor)
@@ -247,14 +248,17 @@ namespace ManagedDoom
 
             public void BrainSpit(World world, Mobj actor)
             {
+                world.MonsterBehavior.BrainSpit(actor);
             }
 
             public void SpawnSound(World world, Mobj actor)
             {
+                world.MonsterBehavior.SpawnSound(actor);
             }
 
             public void SpawnFly(World world, Mobj actor)
             {
+                world.MonsterBehavior.SpawnFly(actor);
             }
 
             public void BrainExplode(World world, Mobj actor)

@@ -1701,7 +1701,30 @@ namespace ManagedDoom
             world.G_ExitLevel();
         }
 
+        public void KeenDie(Mobj mo)
+        {
+            Fall(mo);
 
+            // scan the remaining thinkers
+            // to see if all Keens are dead
+            foreach (var thinker in world.Thinkers)
+            {
+                var mo2 = thinker as Mobj;
+                if (mo2 == null)
+                {
+                    continue;
+                }
+
+                if (mo2 != mo && mo2.Type == mo.Type && mo2.Health > 0)
+                {
+                    // other Keen not dead
+                    return;
+                }
+            }
+
+            junk.Tag = 666;
+            world.SectorAction.DoDoor(junk, VlDoorType.Open);
+        }
 
 
 
@@ -1712,10 +1735,12 @@ namespace ManagedDoom
         private Mobj[] braintargets;
         private int numbraintargets;
         private int braintargeton;
+        private bool easy;
 
         private void InitBrain()
         {
             braintargets = new Mobj[32];
+            easy = false;
         }
 
         public void BrainAwake(Mobj mo)
@@ -1793,6 +1818,110 @@ namespace ManagedDoom
             world.G_ExitLevel();
         }
 
+        public void BrainSpit(Mobj mo)
+        {
+            easy = !easy;
+            if (world.Options.Skill <= GameSkill.Easy && (!easy))
+            {
+                return;
+            }
 
+            // shoot a cube at current target
+            var targ = braintargets[braintargeton];
+            braintargeton = (braintargeton + 1) % numbraintargets;
+
+            // spawn brain missile
+            var newmobj = world.ThingAllocation.SpawnMissile(mo, targ, MobjType.Spawnshot);
+            newmobj.Target = targ;
+            newmobj.ReactionTime = ((targ.Y - mo.Y).Data / newmobj.MomY.Data) / newmobj.State.Tics;
+
+            world.StartSound(null, Sfx.BOSPIT);
+        }
+
+        public void SpawnSound(Mobj mo)
+        {
+            world.StartSound(mo, Sfx.BOSCUB);
+            SpawnFly(mo);
+        }
+
+        public void SpawnFly(Mobj mo)
+        {
+            if (--mo.ReactionTime > 0)
+            {
+                // still flying
+                return;
+            }
+
+            var targ = mo.Target;
+
+            var ta = world.ThingAllocation;
+
+            // First spawn teleport fog.
+            var fog = ta.SpawnMobj(targ.X, targ.Y, targ.Z, MobjType.Spawnfire);
+            world.StartSound(fog, Sfx.TELEPT);
+
+            // Randomly select monster to spawn.
+            var r = world.Random.Next();
+
+            // Probability distribution (kind of :),
+            // decreasing likelihood.
+            MobjType type;
+            if (r < 50)
+            {
+                type = MobjType.Troop;
+            }
+            else if (r < 90)
+            {
+                type = MobjType.Sergeant;
+            }
+            else if (r < 120)
+            {
+                type = MobjType.Shadows;
+            }
+            else if (r < 130)
+            {
+                type = MobjType.Pain;
+            }
+            else if (r < 160)
+            {
+                type = MobjType.Head;
+            }
+            else if (r < 162)
+            {
+                type = MobjType.Vile;
+            }
+            else if (r < 172)
+            {
+                type = MobjType.Undead;
+            }
+            else if (r < 192)
+            {
+                type = MobjType.Baby;
+            }
+            else if (r < 222)
+            {
+                type = MobjType.Fatso;
+            }
+            else if (r < 246)
+            {
+                type = MobjType.Knight;
+            }
+            else
+            {
+                type = MobjType.Bruiser;
+            }
+
+            var newmobj = ta.SpawnMobj(targ.X, targ.Y, targ.Z, type);
+            if (LookForPlayers(newmobj, true))
+            {
+                newmobj.SetState(newmobj.Info.SeeState);
+            }
+
+            // telefrag anything in this spot
+            world.ThingMovement.TeleportMove(newmobj, newmobj.X, newmobj.Y);
+
+            // remove self (i.e., cube).
+            world.ThingAllocation.RemoveMobj(mo);
+        }
     }
 }
