@@ -175,14 +175,40 @@ namespace ManagedDoom
 				case GameState.Level:
 					if (world.Update())
 					{
-						LevelComplete();
+						gameAction = GameAction.Completed;
 					}
 					break;
 
 				case GameState.Intermission:
 					if (intermission.Update())
 					{
-						G_WorldDone();
+						gameAction = GameAction.WorldDone;
+
+						if (world.SecretExit)
+						{
+							players[options.ConsolePlayer].DidSecret = true;
+						}
+
+						if (options.GameMode == GameMode.Commercial)
+						{
+							switch (options.Map)
+							{
+								case 6:
+								case 11:
+								case 20:
+								case 30:
+									StartFinale();
+									break;
+
+								case 15:
+								case 31:
+									if (world.SecretExit)
+									{
+										StartFinale();
+									}
+									break;
+							}
+						}
 					}
 					break;
 
@@ -484,10 +510,7 @@ namespace ManagedDoom
 
 
 
-		private void LevelComplete()
-		{
-			gameAction = GameAction.Completed;
-		}
+
 
 		private void G_DoCompleted()
 		{
@@ -659,39 +682,9 @@ namespace ManagedDoom
 			p.BonusCount = 0;
 		}
 
-		//
-		// G_WorldDone 
-		//
-		private void G_WorldDone()
-		{
-			gameAction = GameAction.WorldDone;
 
-			if (world.SecretExit)
-			{
-				players[options.ConsolePlayer].DidSecret = true;
-			}
 
-			if (options.GameMode == GameMode.Commercial)
-			{
-				switch (options.Map)
-				{
-					case 6:
-					case 11:
-					case 20:
-					case 30:
-						StartFinale();
-						break;
 
-					case 15:
-					case 31:
-						if (world.SecretExit)
-						{
-							StartFinale();
-						}
-						break;
-				}
-			}
-		}
 
 		private void G_DoWorldDone()
 		{
