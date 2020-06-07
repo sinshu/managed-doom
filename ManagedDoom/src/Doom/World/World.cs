@@ -506,6 +506,8 @@ namespace ManagedDoom
         public MapThing[] PlayerStarts => playerStarts;
         public MapThing[] DeathmatchStarts => deathmatchStarts;
 
+        public Player ConsolePlayer => Players[Options.ConsolePlayer];
+
         public bool SecretExit => secretexit;
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);

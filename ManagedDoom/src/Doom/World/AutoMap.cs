@@ -235,6 +235,14 @@ namespace ManagedDoom
                 if (e.Type == EventType.KeyDown)
                 {
                     follow = !follow;
+                    if (follow)
+                    {
+                        world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_FOLLOWON);
+                    }
+                    else
+                    {
+                        world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_FOLLOWOFF);
+                    }
                     return true;
                 }
             }
@@ -255,6 +263,7 @@ namespace ManagedDoom
                     {
                         nextMarkNumber = 0;
                     }
+                    world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_MARKEDSPOT);
                     return true;
                 }
             }
@@ -264,6 +273,7 @@ namespace ManagedDoom
                 {
                     marks.Clear();
                     nextMarkNumber = 0;
+                    world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_MARKSCLEARED);
                     return true;
                 }
             }

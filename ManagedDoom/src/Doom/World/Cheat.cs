@@ -92,22 +92,42 @@ namespace ManagedDoom
                 player.MaxAmmo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
                 player.Ammo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
             }
+            player.SendMessage(DoomInfo.Strings.STSTR_FAADDED);
         }
 
         private void FullAmmoAndKeys()
         {
-            FullAmmo();
             var player = world.Players[world.Options.ConsolePlayer];
+            for (var i = 0; i < (int)WeaponType.Count; i++)
+            {
+                player.WeaponOwned[i] = true;
+            }
+            player.Backpack = true;
+            for (var i = 0; i < (int)AmmoType.Count; i++)
+            {
+                player.MaxAmmo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
+                player.Ammo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
+            }
             for (var i = 0; i < (int)CardType.Count; i++)
             {
                 player.Cards[i] = true;
             }
+            player.SendMessage(DoomInfo.Strings.STSTR_KFAADDED);
         }
 
         private void GodMode()
         {
             var player = world.Players[world.Options.ConsolePlayer];
-            player.Cheats |= CheatFlags.GodMode;
+            if ((player.Cheats & CheatFlags.GodMode) != 0)
+            {
+                player.Cheats &= ~CheatFlags.GodMode;
+                player.SendMessage(DoomInfo.Strings.STSTR_DQDOFF);
+            }
+            else
+            {
+                player.Cheats |= CheatFlags.GodMode;
+                player.SendMessage(DoomInfo.Strings.STSTR_DQDON);
+            }
         }
 
         private void NoClip()
@@ -116,10 +136,12 @@ namespace ManagedDoom
             if ((player.Cheats & CheatFlags.NoClip) != 0)
             {
                 player.Cheats &= ~CheatFlags.NoClip;
+                player.SendMessage(DoomInfo.Strings.STSTR_NCOFF);
             }
             else
             {
                 player.Cheats |= CheatFlags.NoClip;
+                player.SendMessage(DoomInfo.Strings.STSTR_NCON);
             }
         }
 
