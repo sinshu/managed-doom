@@ -20,7 +20,7 @@ namespace ManagedDoom
         // Returns false if the ammo can't be picked up at all
         //
 
-        public bool GiveAmmo(Player player, AmmoType ammo, int num)
+        public bool GiveAmmo(Player player, AmmoType ammo, int amount)
         {
             if (ammo == AmmoType.NoAmmo)
             {
@@ -29,7 +29,7 @@ namespace ManagedDoom
 
             if (ammo < 0 || (int)ammo > (int)AmmoType.Count)
             {
-                throw new Exception("P_GiveAmmo: bad type " + ammo);
+                throw new Exception("Bad ammo type: " + ammo);
             }
 
             if (player.Ammo[(int)ammo] == player.MaxAmmo[(int)ammo])
@@ -37,41 +37,37 @@ namespace ManagedDoom
                 return false;
             }
 
-            if (num != 0)
+            if (amount != 0)
             {
-                num *= DoomInfo.AmmoInfos.Clip[(int)ammo];
+                amount *= DoomInfo.AmmoInfos.Clip[(int)ammo];
             }
             else
             {
-                num = DoomInfo.AmmoInfos.Clip[(int)ammo] / 2;
+                amount = DoomInfo.AmmoInfos.Clip[(int)ammo] / 2;
             }
 
-            if (world.Options.Skill == GameSkill.Baby
-                || world.Options.Skill == GameSkill.Nightmare)
+            if (world.Options.Skill == GameSkill.Baby ||
+                world.Options.Skill == GameSkill.Nightmare)
             {
-                // give double ammo in trainer mode,
-                // you'll need in nightmare
-                num <<= 1;
+                // Give double ammo in trainer mode, you'll need in nightmare
+                amount <<= 1;
             }
 
             var oldammo = player.Ammo[(int)ammo];
-            player.Ammo[(int)ammo] += num;
+            player.Ammo[(int)ammo] += amount;
 
             if (player.Ammo[(int)ammo] > player.MaxAmmo[(int)ammo])
             {
                 player.Ammo[(int)ammo] = player.MaxAmmo[(int)ammo];
             }
 
-            // If non zero ammo, 
-            // don't change up weapons,
-            // player was lower on purpose.
+            // If non zero ammo,  don't change up weapons, player was lower on purpose.
             if (oldammo != 0)
             {
                 return true;
             }
 
-            // We were down to zero,
-            // so select a new weapon.
+            // We were down to zero, so select a new weapon.
             // Preferences are not user selectable.
             switch (ammo)
             {
@@ -350,7 +346,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTARMOR;
+                    player.SendMessage(DoomInfo.Strings.GOTARMOR);
                     break;
 
                 case Sprite.ARM2:
@@ -358,7 +354,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTMEGA;
+                    player.SendMessage(DoomInfo.Strings.GOTMEGA);
                     break;
 
                 // Bonus items.
@@ -370,7 +366,7 @@ namespace ManagedDoom
                         player.Health = 200;
                     }
                     player.Mobj.Health = player.Health;
-                    //player.Message = GOTHTHBONUS;
+                    player.SendMessage(DoomInfo.Strings.GOTHTHBONUS);
                     break;
 
                 case Sprite.BON2:
@@ -384,7 +380,7 @@ namespace ManagedDoom
                     {
                         player.ArmorType = 1;
                     }
-                    //player.Message = GOTARMBONUS;
+                    player.SendMessage(DoomInfo.Strings.GOTARMBONUS);
                     break;
 
                 case Sprite.SOUL:
@@ -394,7 +390,7 @@ namespace ManagedDoom
                         player.Health = 200;
                     }
                     player.Mobj.Health = player.Health;
-                    //player.Message = GOTSUPER;
+                    player.SendMessage(DoomInfo.Strings.GOTSUPER);
                     sound = Sfx.GETPOW;
                     break;
 
@@ -407,7 +403,7 @@ namespace ManagedDoom
                     player.Health = 200;
                     player.Mobj.Health = player.Health;
                     GiveArmor(player, 2);
-                    //player.Message = GOTMSPHERE;
+                    player.SendMessage(DoomInfo.Strings.GOTMSPHERE);
                     sound = Sfx.GETPOW;
                     break;
 
@@ -416,7 +412,7 @@ namespace ManagedDoom
                 case Sprite.BKEY:
                     if (!player.Cards[(int)CardType.BlueCard])
                     {
-                        //player.Message = GOTBLUECARD;
+                        player.SendMessage(DoomInfo.Strings.GOTBLUECARD);
                     }
                     GiveCard(player, CardType.BlueCard);
                     if (!world.Options.NetGame)
@@ -428,7 +424,7 @@ namespace ManagedDoom
                 case Sprite.YKEY:
                     if (!player.Cards[(int)CardType.YellowCard])
                     {
-                        //player.Message = GOTYELWCARD;
+                        player.SendMessage(DoomInfo.Strings.GOTYELWCARD);
                     }
                     GiveCard(player, CardType.YellowCard);
                     if (!world.Options.NetGame)
@@ -440,7 +436,7 @@ namespace ManagedDoom
                 case Sprite.RKEY:
                     if (!player.Cards[(int)CardType.RedCard])
                     {
-                        //player.Message = GOTREDCARD;
+                        player.SendMessage(DoomInfo.Strings.GOTREDCARD);
                     }
                     GiveCard(player, CardType.RedCard);
                     if (!world.Options.NetGame)
@@ -452,7 +448,7 @@ namespace ManagedDoom
                 case Sprite.BSKU:
                     if (!player.Cards[(int)CardType.BlueSkull])
                     {
-                        //player.Message = GOTBLUESKUL;
+                        player.SendMessage(DoomInfo.Strings.GOTBLUESKUL);
                     }
                     GiveCard(player, CardType.BlueSkull);
                     if (!world.Options.NetGame)
@@ -464,7 +460,7 @@ namespace ManagedDoom
                 case Sprite.YSKU:
                     if (!player.Cards[(int)CardType.YellowSkull])
                     {
-                        //player.Message = GOTYELWSKUL;
+                        player.SendMessage(DoomInfo.Strings.GOTYELWSKUL);
                     }
                     GiveCard(player, CardType.YellowSkull);
                     if (!world.Options.NetGame)
@@ -476,7 +472,7 @@ namespace ManagedDoom
                 case Sprite.RSKU:
                     if (!player.Cards[(int)CardType.RedSkull])
                     {
-                        //player.Message = GOTREDSKULL;
+                        player.SendMessage(DoomInfo.Strings.GOTREDSKULL);
                     }
                     GiveCard(player, CardType.RedSkull);
                     if (!world.Options.NetGame)
@@ -491,7 +487,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTSTIM;
+                    player.SendMessage(DoomInfo.Strings.GOTSTIM);
                     break;
 
                 case Sprite.MEDI:
@@ -501,11 +497,11 @@ namespace ManagedDoom
                     }
                     if (player.Health < 25)
                     {
-                        //player.Message = GOTMEDINEED;
+                        player.SendMessage(DoomInfo.Strings.GOTMEDINEED);
                     }
                     else
                     {
-                        //player.Message = GOTMEDIKIT;
+                        player.SendMessage(DoomInfo.Strings.GOTMEDIKIT);
                     }
                     break;
 
@@ -516,7 +512,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTINVUL;
+                    player.SendMessage(DoomInfo.Strings.GOTINVUL);
                     sound = Sfx.GETPOW;
                     break;
 
@@ -525,7 +521,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTBERSERK;
+                    player.SendMessage(DoomInfo.Strings.GOTBERSERK);
                     if (player.ReadyWeapon != WeaponType.Fist)
                     {
                         player.PendingWeapon = WeaponType.Fist;
@@ -538,7 +534,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTINVIS;
+                    player.SendMessage(DoomInfo.Strings.GOTINVIS);
                     sound = Sfx.GETPOW;
                     break;
 
@@ -547,7 +543,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTSUIT;
+                    player.SendMessage(DoomInfo.Strings.GOTSUIT);
                     sound = Sfx.GETPOW;
                     break;
 
@@ -556,7 +552,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTMAP;
+                    player.SendMessage(DoomInfo.Strings.GOTMAP);
                     sound = Sfx.GETPOW;
                     break;
 
@@ -565,7 +561,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTVISOR;
+                    player.SendMessage(DoomInfo.Strings.GOTVISOR);
                     sound = Sfx.GETPOW;
                     break;
 
@@ -585,7 +581,7 @@ namespace ManagedDoom
                             return;
                         }
                     }
-                    //player.Message = GOTCLIP;
+                    player.SendMessage(DoomInfo.Strings.GOTCLIP);
                     break;
 
                 case Sprite.AMMO:
@@ -593,7 +589,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTCLIPBOX;
+                    player.SendMessage(DoomInfo.Strings.GOTCLIPBOX);
                     break;
 
                 case Sprite.ROCK:
@@ -601,7 +597,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTROCKET;
+                    player.SendMessage(DoomInfo.Strings.GOTROCKET);
                     break;
 
                 case Sprite.BROK:
@@ -609,7 +605,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTROCKBOX;
+                    player.SendMessage(DoomInfo.Strings.GOTROCKBOX);
                     break;
 
                 case Sprite.CELL:
@@ -617,7 +613,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTCELL;
+                    player.SendMessage(DoomInfo.Strings.GOTCELL);
                     break;
 
                 case Sprite.CELP:
@@ -625,7 +621,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTCELLBOX;
+                    player.SendMessage(DoomInfo.Strings.GOTCELLBOX);
                     break;
 
                 case Sprite.SHEL:
@@ -633,7 +629,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTSHELLS;
+                    player.SendMessage(DoomInfo.Strings.GOTSHELLS);
                     break;
 
                 case Sprite.SBOX:
@@ -641,7 +637,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTSHELLBOX;
+                    player.SendMessage(DoomInfo.Strings.GOTSHELLBOX);
                     break;
 
                 case Sprite.BPAK:
@@ -657,7 +653,7 @@ namespace ManagedDoom
                     {
                         GiveAmmo(player, (AmmoType)i, 1);
                     }
-                    //player.Message = GOTBACKPACK;
+                    player.SendMessage(DoomInfo.Strings.GOTBACKPACK);
                     break;
 
                 // Weapons.
@@ -666,7 +662,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTBFG9000;
+                    player.SendMessage(DoomInfo.Strings.GOTBFG9000);
                     sound = Sfx.WPNUP;
                     break;
 
@@ -675,7 +671,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTCHAINGUN;
+                    player.SendMessage(DoomInfo.Strings.GOTCHAINGUN);
                     sound = Sfx.WPNUP;
                     break;
 
@@ -684,7 +680,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTCHAINSAW;
+                    player.SendMessage(DoomInfo.Strings.GOTCHAINSAW);
                     sound = Sfx.WPNUP;
                     break;
 
@@ -693,7 +689,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTLAUNCHER;
+                    player.SendMessage(DoomInfo.Strings.GOTLAUNCHER);
                     sound = Sfx.WPNUP;
                     break;
 
@@ -702,7 +698,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTPLASMA;
+                    player.SendMessage(DoomInfo.Strings.GOTPLASMA);
                     sound = Sfx.WPNUP;
                     break;
 
@@ -711,7 +707,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTSHOTGUN;
+                    player.SendMessage(DoomInfo.Strings.GOTSHOTGUN);
                     sound = Sfx.WPNUP;
                     break;
 
@@ -720,7 +716,7 @@ namespace ManagedDoom
                     {
                         return;
                     }
-                    //player.Message = GOTSHOTGUN2;
+                    player.SendMessage(DoomInfo.Strings.GOTSHOTGUN2);
                     sound = Sfx.WPNUP;
                     break;
 

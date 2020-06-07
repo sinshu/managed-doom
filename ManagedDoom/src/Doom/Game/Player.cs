@@ -73,6 +73,7 @@ namespace ManagedDoom
 
         // Hint messages.
         public string Message;
+        public int MessageTime;
 
         // For screen flashing (red or bright).
         public int DamageCount;
@@ -163,6 +164,7 @@ namespace ManagedDoom
             Refire = 0;
 
             Message = null;
+            MessageTime = 0;
 
             DamageCount = 0;
             BonusCount = 0;
@@ -181,6 +183,12 @@ namespace ManagedDoom
             }
 
             DidSecret = false;
+        }
+
+        public void SendMessage(string message)
+        {
+            Message = message;
+            MessageTime = 4 * GameConstants.TicRate;
         }
     }
 }

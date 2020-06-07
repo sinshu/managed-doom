@@ -131,6 +131,11 @@ namespace ManagedDoom
 
         public void PlayerThink(Player player)
         {
+            if (player.MessageTime > 0)
+            {
+                player.MessageTime--;
+            }
+
             // FIXME:
             //     Do this in the cheat code.
             if ((player.Cheats & CheatFlags.NoClip) != 0)

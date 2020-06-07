@@ -135,6 +135,11 @@ namespace ManagedDoom.SoftwareRendering
                     threeD.Render(player);
                     statusBar.Render(game.World.StatusBar, player);
                 }
+                if (player.MessageTime > 0)
+                {
+                    int scale = screen.Width / 320;
+                    screen.DrawText(player.Message, 0, 7 * scale, scale);
+                }
             }
             else if (game.gameState == GameState.Intermission)
             {
