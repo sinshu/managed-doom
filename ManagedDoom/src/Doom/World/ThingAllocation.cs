@@ -7,18 +7,23 @@ namespace ManagedDoom
     {
         private World world;
 
-        private MapThing[] playerStarts;
-        private List<MapThing> deathmatchStarts;
-
-
         public ThingAllocation(World world)
         {
             this.world = world;
 
+            InitSpawnMapThing();
+            InitRespawnSpecials();
+        }
+
+
+        private MapThing[] playerStarts;
+        private List<MapThing> deathmatchStarts;
+
+        private void InitSpawnMapThing()
+        {
             playerStarts = new MapThing[Player.MaxPlayerCount];
             deathmatchStarts = new List<MapThing>();
         }
-
 
         public void SpawnMapThing(MapThing mt)
         {
@@ -98,7 +103,7 @@ namespace ManagedDoom
 
             if (i == DoomInfo.MobjInfos.Length)
             {
-                throw new Exception("P_SpawnMapThing: Unknown type!");
+                throw new Exception("Unknown type!");
             }
 
             // Don't spawn keycards and players in deathmatch.
@@ -109,8 +114,8 @@ namespace ManagedDoom
             }
 
             // Don't spawn any monsters if -nomonsters.
-            if (world.Options.NoMonsters && (i == (int)MobjType.Skull ||
-                (DoomInfo.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
+            if (world.Options.NoMonsters &&
+                (i == (int)MobjType.Skull || (DoomInfo.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
             {
                 return;
             }
@@ -154,7 +159,6 @@ namespace ManagedDoom
                 mobj.Flags |= MobjFlags.Ambush;
             }
         }
-
 
         public void SpawnPlayer(MapThing mt)
         {
@@ -213,13 +217,12 @@ namespace ManagedDoom
 
             if (mt.Type - 1 == world.Options.ConsolePlayer)
             {
-                // Wake up the status bar.
                 world.StatusBar.Reset();
-
-                // Wake up the heads up text.
-                // HU_Start();
             }
         }
+
+        public IReadOnlyList<MapThing> PlayerStarts => playerStarts;
+        public IReadOnlyList<MapThing> DeathmatchStarts => deathmatchStarts;
 
 
         public Mobj SpawnMobj(Fixed x, Fixed y, Fixed z, MobjType type)
@@ -277,7 +280,6 @@ namespace ManagedDoom
             return mobj;
         }
 
-
         public void RemoveMobj(Mobj mobj)
         {
             var tm = world.ThingMovement;
@@ -287,13 +289,15 @@ namespace ManagedDoom
                 (mobj.Type != MobjType.Inv) &&
                 (mobj.Type != MobjType.Ins))
             {
-                //itemrespawnque[iquehead] = mobj->spawnpoint;
-                //itemrespawntime[iquehead] = leveltime;
-                //iquehead = (iquehead + 1) & (ITEMQUESIZE - 1);
+                itemrespawnque[iquehead] = mobj.SpawnPoint;
+                itemrespawntime[iquehead] = world.levelTime;
+                iquehead = (iquehead + 1) & (ITEMQUESIZE - 1);
 
-                // lose one off the end?
-                //if (iquehead == iquetail)
-                //    iquetail = (iquetail + 1) & (ITEMQUESIZE - 1);
+                // Lose one off the end?
+                if (iquehead == iquetail)
+                {
+                    iquetail = (iquetail + 1) & (ITEMQUESIZE - 1);
+                }
             }
 
             // Unlink from sector and block lists.
@@ -305,7 +309,6 @@ namespace ManagedDoom
             // Free block.
             world.Thinkers.Remove(mobj);
         }
-
 
         public void CheckMissileSpawn(Mobj missile)
         {
@@ -325,7 +328,6 @@ namespace ManagedDoom
                 world.ThingInteraction.ExplodeMissile(missile);
             }
         }
-
 
         public Mobj SpawnMissile(Mobj source, Mobj dest, MobjType type)
         {
@@ -377,7 +379,6 @@ namespace ManagedDoom
             return missile;
         }
 
-
         private int GetMissileSpeed(MobjType type)
         {
             if (world.Options.FastMonsters || world.Options.Skill == GameSkill.Nightmare)
@@ -397,7 +398,6 @@ namespace ManagedDoom
                 return DoomInfo.MobjInfos[(int)type].Speed;
             }
         }
-
 
         public void SpawnPlayerMissile(Mobj source, MobjType type)
         {
@@ -445,7 +445,78 @@ namespace ManagedDoom
             CheckMissileSpawn(missile);
         }
 
-        public IReadOnlyList<MapThing> PlayerStarts => playerStarts;
-        public IReadOnlyList<MapThing> DeathmatchStarts => deathmatchStarts;
+
+        private static readonly int ITEMQUESIZE = 128;
+        private MapThing[] itemrespawnque;
+        private int[] itemrespawntime;
+        private int iquehead;
+        private int iquetail;
+
+        private void InitRespawnSpecials()
+        {
+            itemrespawnque = new MapThing[ITEMQUESIZE];
+            itemrespawntime = new int[ITEMQUESIZE];
+            iquehead = 0;
+            iquetail = 0;
+        }
+
+        public void RespawnSpecials()
+        {
+            // Only respawn items in deathmatch.
+            if (world.Options.Deathmatch != 2)
+            {
+                return;
+            }
+
+            // Nothing left to respawn?
+            if (iquehead == iquetail)
+            {
+                return;
+            }
+
+            // Wait at least 30 seconds.
+            if (world.levelTime - itemrespawntime[iquetail] < 30 * 35)
+            {
+                return;
+            }
+
+            var mthing = itemrespawnque[iquetail];
+
+            var x = mthing.X;
+            var y = mthing.Y;
+
+            // Spawn a teleport fog at the new spot.
+            var ss = Geometry.PointInSubsector(x, y, world.Map);
+            var mo = SpawnMobj(x, y, ss.Sector.FloorHeight, MobjType.Ifog);
+            world.StartSound(mo, Sfx.ITMBK);
+
+            int i;
+            // Find which type to spawn.
+            for (i = 0; i < DoomInfo.MobjInfos.Length; i++)
+            {
+                if (mthing.Type == DoomInfo.MobjInfos[i].DoomEdNum)
+                {
+                    break;
+                }
+            }
+
+            // Spawn it.
+            Fixed z;
+            if ((DoomInfo.MobjInfos[i].Flags & MobjFlags.SpawnCeiling) != 0)
+            {
+                z = Mobj.OnCeilingZ;
+            }
+            else
+            {
+                z = Mobj.OnFloorZ;
+            }
+
+            mo = SpawnMobj(x, y, z, (MobjType)i);
+            mo.SpawnPoint = mthing;
+            mo.Angle = mthing.Angle;
+
+            // Pull it from the que.
+            iquetail = (iquetail + 1) & (ITEMQUESIZE - 1);
+        }
     }
 }

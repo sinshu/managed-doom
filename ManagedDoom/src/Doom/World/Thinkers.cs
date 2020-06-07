@@ -8,12 +8,18 @@ namespace ManagedDoom
     {
         private World world;
 
-        private Thinker cap;
-
         public Thinkers(World world)
         {
             this.world = world;
 
+            InitThinkers();
+        }
+
+
+        private Thinker cap;
+
+        private void InitThinkers()
+        {
             cap = new Thinker();
             cap.Prev = cap.Next = cap;
         }
@@ -53,6 +59,7 @@ namespace ManagedDoom
                 current = current.Next;
             }
         }
+
 
         public ThinkerEnumerator GetEnumerator()
         {

@@ -127,6 +127,8 @@ namespace ManagedDoom
 
             thinkers.Run();
             specials.Update();
+            thingAllocation.RespawnSpecials();
+
             statusBar.Update();
             autoMap.Update();
 
