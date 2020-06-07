@@ -192,6 +192,7 @@ namespace ManagedDoom
             player.PlayerState = PlayerState.Live;
             player.Refire = 0;
             player.Message = null;
+            player.MessageTime = 0;
             player.DamageCount = 0;
             player.BonusCount = 0;
             player.ExtraLight = 0;

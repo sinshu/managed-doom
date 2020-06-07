@@ -112,7 +112,7 @@ namespace ManagedDoom
 						&& (gametic & 31) == 0
 						&& ((gametic >> 5) & 3) == i)
 					{
-						players[options.ConsolePlayer].Message = "%s is turbo!";
+						players[options.ConsolePlayer].SendMessage("%s is turbo!");
 					}
 
 					/*

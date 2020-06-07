@@ -42,7 +42,7 @@ namespace ManagedDoom
 			// Switches that other things can activate.
 			if (thing.Player == null)
 			{
-				// never open secret doors
+				// Never open secret doors.
 				if ((line.Flags & LineFlags.Secret) != 0)
 				{
 					return false;
@@ -50,7 +50,7 @@ namespace ManagedDoom
 
 				switch ((int)line.Special)
 				{
-					case 1: // MANUAL DOOR RAISE
+					case 1:  // MANUAL DOOR RAISE
 					case 32: // MANUAL BLUE
 					case 33: // MANUAL RED
 					case 34: // MANUAL YELLOW
@@ -65,25 +65,20 @@ namespace ManagedDoom
 			switch ((int)line.Special)
 			{
 				// MANUALS
-				case 1: // Vertical Door
-				case 26: // Blue Door/Locked
-				case 27: // Yellow Door /Locked
-				case 28: // Red Door /Locked
+				case 1:   // Vertical Door
+				case 26:  // Blue Door/Locked
+				case 27:  // Yellow Door /Locked
+				case 28:  // Red Door /Locked
 
-				case 31: // Manual door open
-				case 32: // Blue locked door open
-				case 33: // Red locked door open
-				case 34: // Yellow locked door open
+				case 31:  // Manual door open
+				case 32:  // Blue locked door open
+				case 33:  // Red locked door open
+				case 34:  // Yellow locked door open
 
 				case 117: // Blazing door raise
 				case 118: // Blazing door open
 					sa.VerticalDoor(line, thing);
 					break;
-
-				//UNUSED - Door Slide Open&Close
-				// case 124:
-				// EV_SlidingDoor (line, thing);
-				// break;
 
 				// SWITCHES
 				case 7:
@@ -583,13 +578,13 @@ namespace ManagedDoom
 				var ok = false;
 				switch ((int)line.Special)
 				{
-					case 39:    // TELEPORT TRIGGER
-					case 97:    // TELEPORT RETRIGGER
-					case 125:   // TELEPORT MONSTERONLY TRIGGER
-					case 126:   // TELEPORT MONSTERONLY RETRIGGER
-					case 4: // RAISE DOOR
-					case 10:    // PLAT DOWN-WAIT-UP-STAY TRIGGER
-					case 88:    // PLAT DOWN-WAIT-UP-STAY RETRIGGER
+					case 39:  // TELEPORT TRIGGER
+					case 97:  // TELEPORT RETRIGGER
+					case 125: // TELEPORT MONSTERONLY TRIGGER
+					case 126: // TELEPORT MONSTERONLY RETRIGGER
+					case 4:   // RAISE DOOR
+					case 10:  // PLAT DOWN-WAIT-UP-STAY TRIGGER
+					case 88:  // PLAT DOWN-WAIT-UP-STAY RETRIGGER
 						ok = true;
 						break;
 				}
@@ -691,8 +686,7 @@ namespace ManagedDoom
 					break;
 
 				case 30:
-					// Raise floor to shortest texture height
-					//  on either side of lines.
+					// Raise floor to shortest texture height on either side of lines.
 					sa.DoFloor(line, FloorMoveType.RaiseToTexture);
 					line.Special = 0;
 					break;
@@ -962,8 +956,7 @@ namespace ManagedDoom
 					break;
 
 				case 96:
-					// Raise floor to shortest texture height
-					// on either side of lines.
+					// Raise floor to shortest texture height on either side of lines.
 					sa.DoFloor(line, FloorMoveType.RaiseToTexture);
 					break;
 

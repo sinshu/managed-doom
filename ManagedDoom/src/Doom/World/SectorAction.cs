@@ -414,7 +414,7 @@ namespace ManagedDoom
 					if (!player.Cards[(int)CardType.BlueCard] &&
 						!player.Cards[(int)CardType.BlueSkull])
 					{
-						//player.Message = PD_BLUEK;
+						player.SendMessage(DoomInfo.Strings.PD_BLUEK);
 						world.StartSound(null, Sfx.OOF);
 						return;
 					}
@@ -431,7 +431,7 @@ namespace ManagedDoom
 					if (!player.Cards[(int)CardType.YellowCard] &&
 						!player.Cards[(int)CardType.YellowSkull])
 					{
-						//player.Message = PD_YELLOWK;
+						player.SendMessage(DoomInfo.Strings.PD_YELLOWK);
 						world.StartSound(null, Sfx.OOF);
 						return;
 					}
@@ -448,7 +448,7 @@ namespace ManagedDoom
 					if (!player.Cards[(int)CardType.RedCard] &&
 						!player.Cards[(int)CardType.RedSkull])
 					{
-						//player.Message = PD_REDK;
+						player.SendMessage(DoomInfo.Strings.PD_REDK);
 						world.StartSound(null, Sfx.OOF);
 						return;
 					}
@@ -710,7 +710,7 @@ namespace ManagedDoom
 					if (!player.Cards[(int)CardType.BlueCard] &&
 						!player.Cards[(int)CardType.BlueSkull])
 					{
-						//p->message = PD_BLUEO;
+						player.SendMessage(DoomInfo.Strings.PD_BLUEO);
 						world.StartSound(null, Sfx.OOF);
 						return false;
 					}
@@ -726,7 +726,7 @@ namespace ManagedDoom
 					if (!player.Cards[(int)CardType.RedCard] &&
 						!player.Cards[(int)CardType.RedSkull])
 					{
-						//p->message = PD_REDO;
+						player.SendMessage(DoomInfo.Strings.PD_REDO);
 						world.StartSound(null, Sfx.OOF);
 						return false;
 					}
@@ -742,7 +742,7 @@ namespace ManagedDoom
 					if (!player.Cards[(int)CardType.YellowCard] &&
 						!player.Cards[(int)CardType.YellowSkull])
 					{
-						//p->message = PD_YELLOWO;
+						player.SendMessage(DoomInfo.Strings.PD_YELLOWO);
 						world.StartSound(null, Sfx.OOF);
 						return false;
 					}
