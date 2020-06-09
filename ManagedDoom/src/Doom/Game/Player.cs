@@ -111,8 +111,8 @@ namespace ManagedDoom
             Frags = new int[MaxPlayerCount];
 
             WeaponOwned = new bool[(int)WeaponType.Count];
-            Ammo = new int[(int)WeaponType.Count];
-            MaxAmmo = new int[(int)WeaponType.Count];
+            Ammo = new int[(int)AmmoType.Count];
+            MaxAmmo = new int[(int)AmmoType.Count];
 
             PlayerSprites = new PlayerSpriteDef[(int)PlayerSprite.Count];
             for (var i = 0; i < PlayerSprites.Length; i++)
