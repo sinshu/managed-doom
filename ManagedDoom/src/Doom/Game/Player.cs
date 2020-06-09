@@ -121,6 +121,67 @@ namespace ManagedDoom
             }
         }
 
+        public void Clear()
+        {
+            Mobj = null;
+            PlayerState = 0;
+            Cmd.Clear();
+
+            ViewZ = Fixed.Zero;
+            ViewHeight = Fixed.Zero;
+            DeltaViewHeight = Fixed.Zero;
+            Bob = Fixed.Zero;
+
+            Health = 0;
+            ArmorPoints = 0;
+            ArmorType = 0;
+
+            Array.Clear(Powers, 0, Powers.Length);
+            Array.Clear(Cards, 0, Cards.Length);
+            Backpack = false;
+
+            Array.Clear(Frags, 0, Frags.Length);
+
+            ReadyWeapon = 0;
+            PendingWeapon = 0;
+
+            Array.Clear(WeaponOwned, 0, WeaponOwned.Length);
+            Array.Clear(Ammo, 0, Ammo.Length);
+            Array.Clear(MaxAmmo, 0, MaxAmmo.Length);
+
+            UseDown = false;
+            AttackDown = false;
+
+            Cheats = 0;
+
+            Refire = 0;
+
+            KillCount = 0;
+            ItemCount = 0;
+            SecretCount = 0;
+
+            Message = null;
+            MessageTime = 0;
+
+            DamageCount = 0;
+            BonusCount = 0;
+
+            Attacker = null;
+
+            ExtraLight = 0;
+
+            FixedColorMap = 0;
+
+            ColorMap = 0;
+
+            foreach (var psp in PlayerSprites)
+            {
+                psp.Clear();
+            }
+
+            DidSecret = false;
+        }
+
         public void Reborn()
         {
             Mobj = null;
@@ -155,7 +216,7 @@ namespace ManagedDoom
                 MaxAmmo[i] = DoomInfo.AmmoInfos.Max[i];
             }
 
-            // don't do anything immediately
+            // Don't do anything immediately.
             UseDown = true;
             AttackDown = true;
 

@@ -67,6 +67,8 @@ namespace ManagedDoom
 
         private static int UnArchivePlayer(Player player, byte[] data, int p)
         {
+            player.Clear();
+
             player.ViewZ = new Fixed(BitConverter.ToInt32(data, p + 16));
             player.ViewHeight = new Fixed(BitConverter.ToInt32(data, p + 20));
             player.DeltaViewHeight = new Fixed(BitConverter.ToInt32(data, p + 24));
