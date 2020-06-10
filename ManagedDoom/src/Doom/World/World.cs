@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 
 namespace ManagedDoom
@@ -133,6 +134,14 @@ namespace ManagedDoom
             autoMap.Update();
 
             levelTime++;
+
+            /*
+            if (levelTime == 3 * 35)
+            {
+                new LoadGame(File.ReadAllBytes("doomsav0.dsg"), this);
+                Console.WriteLine("LOAD_TEST!!!");
+            }
+            */
 
             var mobjHash = DoomDebug.GetMobjHash(this);
             var sectorHash = DoomDebug.GetSectorHash(this);

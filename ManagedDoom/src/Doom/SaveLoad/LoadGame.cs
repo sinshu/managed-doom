@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace ManagedDoom
 {
@@ -13,7 +14,7 @@ namespace ManagedDoom
         private GameOptions options;
         private Player[] players;
 
-        public LoadGame(byte[] data)
+        public LoadGame(byte[] data, World world)
         {
             this.data = data;
 
@@ -42,6 +43,7 @@ namespace ManagedDoom
             var levelTime = (a << 16) + (b << 8) + c;
 
             UnArchivePlayers();
+            UnArchiveWorld(world);
 
             Console.WriteLine("END");
         }
@@ -64,6 +66,40 @@ namespace ManagedDoom
             save_p += versionSize;
             return value;
         }
+
+        private void UnArchivePlayers()
+        {
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                if (!options.PlayerInGame[i])
+                {
+                    continue;
+                }
+
+                PADSAVEP();
+
+                save_p = UnArchivePlayer(players[i], data, save_p);
+            }
+        }
+
+        private void UnArchiveWorld(World world)
+        {
+            // Do sectors.
+            var sectors = world.Map.Sectors;
+            for (var i = 0; i < sectors.Length; i++)
+            {
+                save_p = UnArchiveSector(sectors[i], data, save_p);
+            }
+
+            var lines = world.Map.Lines;
+            for (var i = 0; i < lines.Length; i++)
+            {
+                save_p = UnArchiveLine(lines[i], data, save_p);
+            }
+        }
+
+
+
 
         private static int UnArchivePlayer(Player player, byte[] data, int p)
         {
@@ -126,19 +162,50 @@ namespace ManagedDoom
             return p + 280;
         }
 
-        private void UnArchivePlayers()
+        private static int UnArchiveSector(Sector sector, byte[] data, int p)
         {
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            sector.FloorHeight = Fixed.FromInt(BitConverter.ToInt16(data, p));
+            sector.CeilingHeight = Fixed.FromInt(BitConverter.ToInt16(data, p + 2));
+            sector.FloorFlat = BitConverter.ToInt16(data, p + 4);
+            sector.CeilingFlat = BitConverter.ToInt16(data, p + 6);
+            sector.LightLevel = BitConverter.ToInt16(data, p + 8);
+            sector.Special = (SectorSpecial)BitConverter.ToInt16(data, p + 10);
+            sector.Tag = BitConverter.ToInt16(data, p + 12);
+            sector.SpecialData = null;
+            sector.SoundTarget = null;
+            return p + 14;
+        }
+
+        private static int UnArchiveLine(LineDef line, byte[] data, int p)
+        {
+            line.Flags = (LineFlags)BitConverter.ToInt16(data, p);
+            line.Special = (LineSpecial)BitConverter.ToInt16(data, p + 2);
+            line.Tag = BitConverter.ToInt16(data, p + 4);
+            p += 6;
+
+            if (line.Side0 != null)
             {
-                if (!options.PlayerInGame[i])
-                {
-                    continue;
-                }
-
-                PADSAVEP();
-
-                save_p = UnArchivePlayer(players[i], data, save_p);
+                var side = line.Side0;
+                side.TextureOffset = Fixed.FromInt(BitConverter.ToInt16(data, p));
+                side.RowOffset = Fixed.FromInt(BitConverter.ToInt16(data, p + 2));
+                side.TopTexture = BitConverter.ToInt16(data, p + 4);
+                side.BottomTexture = BitConverter.ToInt16(data, p + 6);
+                side.MiddleTexture = BitConverter.ToInt16(data, p + 8);
+                p += 10;
             }
+
+            if (line.Side1 != null)
+            {
+                var side = line.Side1;
+                side.TextureOffset = Fixed.FromInt(BitConverter.ToInt16(data, p));
+                side.RowOffset = Fixed.FromInt(BitConverter.ToInt16(data, p + 2));
+                side.TopTexture = BitConverter.ToInt16(data, p + 4);
+                side.BottomTexture = BitConverter.ToInt16(data, p + 6);
+                side.MiddleTexture = BitConverter.ToInt16(data, p + 8);
+                p += 10;
+            }
+
+            return p;
         }
     }
 }

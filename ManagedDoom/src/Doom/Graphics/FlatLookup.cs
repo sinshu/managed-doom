@@ -7,9 +7,11 @@ namespace ManagedDoom
 {
     public sealed class FlatLookup : IReadOnlyList<Flat>
     {
-        private List<Flat> flats;
+        private Flat[] flats;
+
         private Dictionary<string, Flat> nameToFlat;
         private Dictionary<string, int> nameToNumber;
+
         private int skyFlatNumber;
         private Flat skyFlat;
 
@@ -19,10 +21,6 @@ namespace ManagedDoom
 
         public FlatLookup(Wad wad, bool useDummy)
         {
-            flats = new List<Flat>();
-            nameToFlat = new Dictionary<string, Flat>();
-            nameToNumber = new Dictionary<string, int>();
-
             if (!useDummy)
             {
                 Init(wad);
@@ -35,23 +33,29 @@ namespace ManagedDoom
 
         private void Init(Wad wad)
         {
-            foreach (var lump in EnumerateFlats(wad))
-            {
-                var name = wad.LumpInfos[lump].Name;
+            var firstFlat = wad.GetLumpNumber("F_START") + 1;
+            var lastFlat = wad.GetLumpNumber("F_END") - 1;
+            var count = lastFlat - firstFlat + 1;
 
-                if (nameToFlat.ContainsKey(name))
+            flats = new Flat[count];
+
+            nameToFlat = new Dictionary<string, Flat>();
+            nameToNumber = new Dictionary<string, int>();
+
+            for (var lump = firstFlat; lump <= lastFlat; lump++)
+            {
+                if (wad.GetLumpSize(lump) != 4096)
                 {
                     continue;
                 }
 
-                var data = wad.ReadLump(lump);
+                var number = lump - firstFlat;
+                var name = wad.LumpInfos[lump].Name;
+                var flat = new Flat(name, wad.ReadLump(lump));
 
-                var flat = Flat.FromData(name, data);
-
-                nameToNumber.Add(name, flats.Count);
-                flats.Add(flat);
-                nameToFlat.Add(name, flat);
-
+                flats[number] = flat;
+                nameToFlat[name] = flat;
+                nameToNumber[name] = number;
             }
 
             skyFlatNumber = nameToNumber["F_SKY1"];
@@ -60,57 +64,33 @@ namespace ManagedDoom
 
         private void InitDummy(Wad wad)
         {
-            foreach (var lump in EnumerateFlats(wad))
-            {
-                var name = wad.LumpInfos[lump].Name;
+            var firstFlat = wad.GetLumpNumber("F_START") + 1;
+            var lastFlat = wad.GetLumpNumber("F_END") - 1;
+            var count = lastFlat - firstFlat + 1;
 
-                if (nameToFlat.ContainsKey(name))
+            flats = new Flat[count];
+
+            nameToFlat = new Dictionary<string, Flat>();
+            nameToNumber = new Dictionary<string, int>();
+
+            for (var lump = firstFlat; lump <= lastFlat; lump++)
+            {
+                if (wad.GetLumpSize(lump) != 4096)
                 {
                     continue;
                 }
 
+                var number = lump - firstFlat;
+                var name = wad.LumpInfos[lump].Name;
                 var flat = name != "F_SKY1" ? Dummy.GetFlat() : Dummy.GetSkyFlat();
 
-                nameToNumber.Add(name, flats.Count);
-                flats.Add(flat);
-                nameToFlat.Add(name, flat);
-
+                flats[number] = flat;
+                nameToFlat[name] = flat;
+                nameToNumber[name] = number;
             }
 
             skyFlatNumber = nameToNumber["F_SKY1"];
             skyFlat = nameToFlat["F_SKY1"];
-        }
-
-        private static IEnumerable<int> EnumerateFlats(Wad wad)
-        {
-            var flatSection = false;
-
-            for (var lump = wad.LumpInfos.Count - 1; lump >= 0; lump--)
-            {
-                var name = wad.LumpInfos[lump].Name;
-
-                if (name.StartsWith("F"))
-                {
-                    if (name.EndsWith("_END"))
-                    {
-                        flatSection = true;
-                        continue;
-                    }
-                    else if (name.EndsWith("_START"))
-                    {
-                        flatSection = false;
-                        continue;
-                    }
-                }
-
-                if (flatSection)
-                {
-                    if (wad.LumpInfos[lump].Size == 4096)
-                    {
-                        yield return lump;
-                    }
-                }
-            }
         }
 
         public int GetNumber(string name)
@@ -120,7 +100,7 @@ namespace ManagedDoom
 
         public IEnumerator<Flat> GetEnumerator()
         {
-            return flats.GetEnumerator();
+            return ((IEnumerable<Flat>)flats).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -128,7 +108,7 @@ namespace ManagedDoom
             return flats.GetEnumerator();
         }
 
-        public int Count => flats.Count;
+        public int Count => flats.Length;
         public Flat this[int num] => flats[num];
         public Flat this[string name] => nameToFlat[name];
         public int SkyFlatNumber => skyFlatNumber;
