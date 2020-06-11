@@ -60,6 +60,17 @@ namespace ManagedDoom
             }
         }
 
+        public void Reset()
+        {
+            var current = cap.Next;
+            while (current != cap)
+            {
+                ThinkerPool.Return(current);
+                current = current.Next;
+            }
+
+            cap.Prev = cap.Next = cap;
+        }
 
         public ThinkerEnumerator GetEnumerator()
         {

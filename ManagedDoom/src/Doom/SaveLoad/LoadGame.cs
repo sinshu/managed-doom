@@ -44,6 +44,7 @@ namespace ManagedDoom
 
             UnArchivePlayers();
             UnArchiveWorld(world);
+            UnArchiveThinkers(world);
 
             Console.WriteLine("END");
         }
@@ -91,12 +92,91 @@ namespace ManagedDoom
                 save_p = UnArchiveSector(sectors[i], data, save_p);
             }
 
+            // Do lines.
             var lines = world.Map.Lines;
             for (var i = 0; i < lines.Length; i++)
             {
                 save_p = UnArchiveLine(lines[i], data, save_p);
             }
         }
+
+        private void UnArchiveThinkers(World world)
+        {
+            var thinkers = world.Thinkers;
+            var ta = world.ThingAllocation;
+
+            // Remove all the current thinkers.
+            foreach (var thinker in thinkers)
+            {
+                var mobj = thinker as Mobj;
+                if (mobj != null)
+                {
+                    ta.RemoveMobj(mobj);
+                }
+            }
+            thinkers.Reset();
+
+            // Read in saved thinkers.
+            while (true)
+            {
+                var tclass = (ThinkerClass)data[save_p++];
+                switch (tclass)
+                {
+                    case ThinkerClass.End:
+                        // End of list.
+                        return;
+
+                    case ThinkerClass.Mobj:
+                        PADSAVEP();
+                        var mobj = ThinkerPool.RentMobj(world);
+                        mobj.X = new Fixed(BitConverter.ToInt32(data, save_p + 12));
+                        mobj.Y = new Fixed(BitConverter.ToInt32(data, save_p + 16));
+                        mobj.Z = new Fixed(BitConverter.ToInt32(data, save_p + 20));
+                        mobj.Angle = new Angle(BitConverter.ToInt32(data, save_p + 32));
+                        mobj.Sprite = (Sprite)BitConverter.ToInt32(data, save_p + 36);
+                        mobj.Frame = BitConverter.ToInt32(data, save_p + 40);
+                        mobj.Radius = new Fixed(BitConverter.ToInt32(data, save_p + 64));
+                        mobj.Height = new Fixed(BitConverter.ToInt32(data, save_p + 68));
+                        mobj.MomX = new Fixed(BitConverter.ToInt32(data, save_p + 72));
+                        mobj.MomY = new Fixed(BitConverter.ToInt32(data, save_p + 76));
+                        mobj.MomZ = new Fixed(BitConverter.ToInt32(data, save_p + 80));
+                        mobj.Type = (MobjType)BitConverter.ToInt32(data, save_p + 88);
+                        mobj.Info = DoomInfo.MobjInfos[(int)mobj.Type];
+                        mobj.Tics = BitConverter.ToInt32(data, save_p + 96);
+                        mobj.State = DoomInfo.States[BitConverter.ToInt32(data, save_p + 100)];
+                        mobj.Flags = (MobjFlags)BitConverter.ToInt32(data, save_p + 104);
+                        mobj.Health = BitConverter.ToInt32(data, save_p + 108);
+                        mobj.MoveDir = (Direction)BitConverter.ToInt32(data, save_p + 112);
+                        mobj.MoveCount = BitConverter.ToInt32(data, save_p + 116);
+                        mobj.ReactionTime = BitConverter.ToInt32(data, save_p + 124);
+                        mobj.Threshold = BitConverter.ToInt32(data, save_p + 128);
+                        var playerNumber = BitConverter.ToInt32(data, save_p + 132);
+                        if (playerNumber != 0)
+                        {
+                            mobj.Player = world.Players[playerNumber - 1];
+                            mobj.Player.Mobj = mobj;
+                        }
+                        mobj.LastLook = BitConverter.ToInt32(data, save_p + 136);
+                        mobj.SpawnPoint = new MapThing(
+                            Fixed.FromInt(BitConverter.ToInt16(data, save_p + 140)),
+                            Fixed.FromInt(BitConverter.ToInt16(data, save_p + 142)),
+                            new Angle(Angle.Ang45.Data * (uint)(BitConverter.ToInt16(data, save_p + 144) / 45)),
+                            BitConverter.ToInt16(data, save_p + 146),
+                            (ThingFlags)BitConverter.ToInt16(data, save_p + 148));
+                        save_p += 154;
+
+                        world.ThingMovement.SetThingPosition(mobj);
+                        mobj.FloorZ = mobj.Subsector.Sector.FloorHeight;
+                        mobj.CeilingZ = mobj.Subsector.Sector.CeilingHeight;
+                        thinkers.Add(mobj);
+                        break;
+
+                    default:
+                        throw new Exception("Unknown thinker class in savegame!");
+                }
+            }
+        }
+
 
 
 
