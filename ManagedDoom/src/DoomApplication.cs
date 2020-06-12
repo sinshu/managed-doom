@@ -20,7 +20,6 @@ namespace ManagedDoom
 
         private OpeningSequence opening;
 
-        private Player[] players;
         private TicCmd[] cmds;
         private GameOptions options;
         private DoomGame game;
@@ -48,14 +47,11 @@ namespace ManagedDoom
 
                 opening = new OpeningSequence();
 
-                players = new Player[Player.MaxPlayerCount];
                 cmds = new TicCmd[Player.MaxPlayerCount];
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
                 {
-                    players[i] = new Player(i);
                     cmds[i] = new TicCmd();
                 }
-                players[0].InGame = true;
 
                 options = new GameOptions();
                 options.Skill = GameSkill.Hard;
@@ -63,11 +59,12 @@ namespace ManagedDoom
                 options.MissionPack = resource.Wad.MissionPack;
                 options.Episode = 1;
                 options.Map = 1;
+                options.Players[0].InGame = true;
 
                 //demo = new Demo("test.lmp");
                 //options = demo.Options;
 
-                game = new DoomGame(players, resource, options);
+                game = new DoomGame(resource, options);
                 game.Audio = audio;
 
                 events = new List<DoomEvent>();

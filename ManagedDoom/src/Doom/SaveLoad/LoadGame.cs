@@ -12,7 +12,6 @@ namespace ManagedDoom
         private int save_p;
 
         private GameOptions options;
-        private Player[] players;
 
         public LoadGame(byte[] data, World world)
         {
@@ -21,20 +20,13 @@ namespace ManagedDoom
             var description = ReadDescription();
             var version = ReadVersion();
 
-            options = new GameOptions();
+            options = world.Options;
             options.Skill = (GameSkill)data[save_p++];
             options.Episode = data[save_p++];
             options.Map = data[save_p++];
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                options.PlayerInGame[i] = data[save_p++] != 0;
-            }
-
-            players = new Player[Player.MaxPlayerCount];
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
-            {
-                players[i] = new Player(i);
-                players[i].InGame = options.PlayerInGame[i];
+                options.Players[i].InGame = data[save_p++] != 0;
             }
 
             var a = data[save_p++];
@@ -73,14 +65,14 @@ namespace ManagedDoom
         {
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                if (!options.PlayerInGame[i])
+                if (!options.Players[i].InGame)
                 {
                     continue;
                 }
 
                 PADSAVEP();
 
-                save_p = UnArchivePlayer(players[i], data, save_p);
+                save_p = UnArchivePlayer(options.Players[i], data, save_p);
             }
         }
 
@@ -155,7 +147,7 @@ namespace ManagedDoom
                         var playerNumber = BitConverter.ToInt32(data, save_p + 132);
                         if (playerNumber != 0)
                         {
-                            mobj.Player = world.Players[playerNumber - 1];
+                            mobj.Player = world.Options.Players[playerNumber - 1];
                             mobj.Player.Mobj = mobj;
                         }
                         mobj.LastLook = BitConverter.ToInt32(data, save_p + 136);
@@ -386,6 +378,10 @@ namespace ManagedDoom
             for (var i = 0; i < (int)PlayerSprite.Count; i++)
             {
                 player.PlayerSprites[i].State = DoomInfo.States[BitConverter.ToInt32(data, p + 244 + 16 * i)];
+                if (player.PlayerSprites[i].State.Number == (int)MobjState.Null)
+                {
+                    player.PlayerSprites[i].State = null;
+                }
                 player.PlayerSprites[i].Tics = BitConverter.ToInt32(data, p + 244 + 16 * i + 4);
                 player.PlayerSprites[i].Sx = new Fixed(BitConverter.ToInt32(data, p + 244 + 16 * i + 8));
                 player.PlayerSprites[i].Sy = new Fixed(BitConverter.ToInt32(data, p + 244 + 16 * i + 12));

@@ -18,30 +18,30 @@ namespace ManagedDoomTest.UnitTests
                     var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                     Assert.AreEqual(11, demo.Options.Map);
                     Assert.AreEqual(0, demo.Options.ConsolePlayer);
-                    Assert.AreEqual(true, demo.Options.PlayerInGame[0]);
-                    Assert.AreEqual(false, demo.Options.PlayerInGame[1]);
-                    Assert.AreEqual(false, demo.Options.PlayerInGame[2]);
-                    Assert.AreEqual(false, demo.Options.PlayerInGame[3]);
+                    Assert.AreEqual(true, demo.Options.Players[0].InGame);
+                    Assert.AreEqual(false, demo.Options.Players[1].InGame);
+                    Assert.AreEqual(false, demo.Options.Players[2].InGame);
+                    Assert.AreEqual(false, demo.Options.Players[3].InGame);
                 }
 
                 {
                     var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                     Assert.AreEqual(5, demo.Options.Map);
                     Assert.AreEqual(0, demo.Options.ConsolePlayer);
-                    Assert.AreEqual(true, demo.Options.PlayerInGame[0]);
-                    Assert.AreEqual(false, demo.Options.PlayerInGame[1]);
-                    Assert.AreEqual(false, demo.Options.PlayerInGame[2]);
-                    Assert.AreEqual(false, demo.Options.PlayerInGame[3]);
+                    Assert.AreEqual(true, demo.Options.Players[0].InGame);
+                    Assert.AreEqual(false, demo.Options.Players[1].InGame);
+                    Assert.AreEqual(false, demo.Options.Players[2].InGame);
+                    Assert.AreEqual(false, demo.Options.Players[3].InGame);
                 }
 
                 {
                     var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                     Assert.AreEqual(26, demo.Options.Map);
                     Assert.AreEqual(0, demo.Options.ConsolePlayer);
-                    Assert.AreEqual(true, demo.Options.PlayerInGame[0]);
-                    Assert.AreEqual(false, demo.Options.PlayerInGame[1]);
-                    Assert.AreEqual(false, demo.Options.PlayerInGame[2]);
-                    Assert.AreEqual(false, demo.Options.PlayerInGame[3]);
+                    Assert.AreEqual(true, demo.Options.Players[0].InGame);
+                    Assert.AreEqual(false, demo.Options.Players[1].InGame);
+                    Assert.AreEqual(false, demo.Options.Players[2].InGame);
+                    Assert.AreEqual(false, demo.Options.Players[3].InGame);
                 }
             }
         }

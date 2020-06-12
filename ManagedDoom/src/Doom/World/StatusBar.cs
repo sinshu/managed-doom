@@ -43,7 +43,7 @@ namespace ManagedDoom
 			oldhealth = -1;
 
 			Array.Copy(
-				world.Players[world.Options.ConsolePlayer].WeaponOwned,
+				world.Options.Players[world.Options.ConsolePlayer].WeaponOwned,
 				oldweaponsowned,
 				DoomInfo.WeaponInfos.Length);
 
@@ -59,7 +59,7 @@ namespace ManagedDoom
 			priority = 0;
 			oldhealth = -1;
 			Array.Copy(
-				world.Players[world.Options.ConsolePlayer].WeaponOwned,
+				world.Options.Players[world.Options.ConsolePlayer].WeaponOwned,
 				oldweaponsowned,
 				DoomInfo.WeaponInfos.Length);
 		}
@@ -69,12 +69,12 @@ namespace ManagedDoom
 			//st_clock++;
 			st_randomnumber = random.Next();
 			UpdateFace();
-			st_oldhealth = world.Players[world.Options.ConsolePlayer].Health;
+			st_oldhealth = world.Options.Players[world.Options.ConsolePlayer].Health;
 		}
 
 		private void UpdateFace()
 		{
-			var plyr = world.Players[world.Options.ConsolePlayer];
+			var plyr = world.Options.Players[world.Options.ConsolePlayer];
 
 			if (priority < 10)
 			{
@@ -244,7 +244,7 @@ namespace ManagedDoom
 
 		private int ST_calcPainOffset()
 		{
-			var plyr = world.Players[world.Options.ConsolePlayer];
+			var plyr = world.Options.Players[world.Options.ConsolePlayer];
 
 			var health = plyr.Health > 100 ? 100 : plyr.Health;
 

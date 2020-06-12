@@ -133,7 +133,7 @@ namespace ManagedDoom
         private void SetParam(Sound sound, Mobj mobj)
         {
             var world = mobj.World;
-            var player = world.Players[world.Options.ConsolePlayer].Mobj;
+            var player = world.Options.Players[world.Options.ConsolePlayer].Mobj;
             var x = (mobj.X - player.X).ToDouble();
             var y = (mobj.Y - player.Y).ToDouble();
             var dist = Math.Sqrt(x * x + y * y);

@@ -15,9 +15,9 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\teleporter_test.wad"))
             {
                 var demo = new Demo(@"data\teleporter_test.lmp");
-                var players = DoomTest.GetDefaultPlayers();
-                var cmds = players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options, players);
+                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
+                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -45,9 +45,9 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\localdoor_test.wad"))
             {
                 var demo = new Demo(@"data\localdoor_test.lmp");
-                var players = DoomTest.GetDefaultPlayers();
-                var cmds = players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options, players);
+                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
+                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -81,9 +81,9 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\platform_test.wad"))
             {
                 var demo = new Demo(@"data\platform_test.lmp");
-                var players = DoomTest.GetDefaultPlayers();
-                var cmds = players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options, players);
+                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
+                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
+                var world = new World(resource, demo.Options);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;

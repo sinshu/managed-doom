@@ -16,17 +16,13 @@ namespace ManagedDoomTest.CompatibilityTests
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
+                options.Episode = 1;
                 options.Map = 1;
 
-                var players = new Player[Player.MaxPlayerCount];
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
-                {
-                    players[i] = new Player(i);
-                    players[i].PlayerState = PlayerState.Reborn;
-                }
-                players[0].InGame = true;
+                options.Players[0].InGame = true;
+                options.Players[0].PlayerState = PlayerState.Reborn;
 
-                var world = new World(resource, options, players);
+                var world = new World(resource, options);
 
                 var tics = 350;
 
@@ -53,16 +49,12 @@ namespace ManagedDoomTest.CompatibilityTests
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
+                options.Map = 1;
 
-                var players = new Player[Player.MaxPlayerCount];
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
-                {
-                    players[i] = new Player(i);
-                    players[i].PlayerState = PlayerState.Reborn;
-                }
-                players[0].InGame = true;
+                options.Players[0].InGame = true;
+                options.Players[0].PlayerState = PlayerState.Reborn;
 
-                var world = new World(resource, options, players);
+                var world = new World(resource, options);
 
                 var tics = 350;
 
@@ -88,15 +80,10 @@ namespace ManagedDoomTest.CompatibilityTests
                 options.Map = 11;
                 options.NoMonsters = true;
 
-                var players = new Player[Player.MaxPlayerCount];
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
-                {
-                    players[i] = new Player(i);
-                    players[i].PlayerState = PlayerState.Reborn;
-                }
-                players[0].InGame = true;
+                options.Players[0].InGame = true;
+                options.Players[0].PlayerState = PlayerState.Reborn;
 
-                var world = new World(resource, options, players);
+                var world = new World(resource, options);
 
                 var tics = 350;
 

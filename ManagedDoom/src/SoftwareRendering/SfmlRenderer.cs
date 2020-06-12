@@ -124,7 +124,7 @@ namespace ManagedDoom.SoftwareRendering
         {
             if (game.gameState == GameState.Level)
             {
-                var player = game.World.Players[game.Options.ConsolePlayer];
+                var player = game.World.Options.Players[game.Options.ConsolePlayer];
                 if (game.World.AutoMap.Visible)
                 {
                     autoMap.Render(player);

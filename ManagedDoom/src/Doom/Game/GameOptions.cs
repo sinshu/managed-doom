@@ -16,11 +16,20 @@ namespace ManagedDoom
         public bool NoMonsters = false;
         public int ConsolePlayer = 0;
         public GameVersion Version = GameVersion.Doom19;
-        public bool[] PlayerInGame = new bool[Player.MaxPlayerCount];
+        //public bool[] PlayerInGame = new bool[Player.MaxPlayerCount];
         public MissionPack MissionPack = MissionPack.Doom2;
 
+        public Player[] Players = new Player[Player.MaxPlayerCount];
         public DoomRandom Random = new DoomRandom();
         public int GameTic = 0;
         public IntermissionInfo wminfo = new IntermissionInfo();
+
+        public GameOptions()
+        {
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                Players[i] = new Player(i);
+            }
+        }
     }
 }

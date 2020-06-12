@@ -17,8 +17,7 @@ namespace ManagedDoomTest.UnitTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
             {
                 var options = new GameOptions();
-                var players = DoomTest.GetDefaultPlayers();
-                var world = new World(resource, options, players);
+                var world = new World(resource, options);
                 var map = new Map(resource, world);
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());
@@ -66,8 +65,7 @@ namespace ManagedDoomTest.UnitTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
-                var players = DoomTest.GetDefaultPlayers();
-                var world = new World(resource, options, players);
+                var world = new World(resource, options);
                 var map = new Map(resource, world);
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());

@@ -81,7 +81,7 @@ namespace ManagedDoom
 
         private void FullAmmo()
         {
-            var player = world.Players[world.Options.ConsolePlayer];
+            var player = world.Options.Players[world.Options.ConsolePlayer];
             for (var i = 0; i < (int)WeaponType.Count; i++)
             {
                 player.WeaponOwned[i] = true;
@@ -97,7 +97,7 @@ namespace ManagedDoom
 
         private void FullAmmoAndKeys()
         {
-            var player = world.Players[world.Options.ConsolePlayer];
+            var player = world.Options.Players[world.Options.ConsolePlayer];
             for (var i = 0; i < (int)WeaponType.Count; i++)
             {
                 player.WeaponOwned[i] = true;
@@ -117,7 +117,7 @@ namespace ManagedDoom
 
         private void GodMode()
         {
-            var player = world.Players[world.Options.ConsolePlayer];
+            var player = world.Options.Players[world.Options.ConsolePlayer];
             if ((player.Cheats & CheatFlags.GodMode) != 0)
             {
                 player.Cheats &= ~CheatFlags.GodMode;
@@ -132,7 +132,7 @@ namespace ManagedDoom
 
         private void NoClip()
         {
-            var player = world.Players[world.Options.ConsolePlayer];
+            var player = world.Options.Players[world.Options.ConsolePlayer];
             if ((player.Cheats & CheatFlags.NoClip) != 0)
             {
                 player.Cheats &= ~CheatFlags.NoClip;

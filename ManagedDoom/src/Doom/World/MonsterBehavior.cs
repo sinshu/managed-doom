@@ -27,13 +27,14 @@ namespace ManagedDoom
 
         private bool LookForPlayers(Mobj actor, bool allAround)
         {
-            var count = 0;
+            var players = world.Options.Players;
 
+            var count = 0;
             var stop = (actor.LastLook - 1) & 3;
 
             for (; ; actor.LastLook = (actor.LastLook + 1) & 3)
             {
-                if (!world.Players[actor.LastLook].InGame)
+                if (!players[actor.LastLook].InGame)
                 {
                     continue;
                 }
@@ -44,7 +45,7 @@ namespace ManagedDoom
                     return false;
                 }
 
-                var player = world.Players[actor.LastLook];
+                var player = players[actor.LastLook];
 
                 if (player.Health <= 0)
                 {
@@ -1620,7 +1621,7 @@ namespace ManagedDoom
             }
 
             // Make sure there is a player alive for victory.
-            var players = world.Players;
+            var players = world.Options.Players;
             int i;
             for (i = 0; i < Player.MaxPlayerCount; i++)
             {

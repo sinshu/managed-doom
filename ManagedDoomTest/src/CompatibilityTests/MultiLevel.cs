@@ -15,9 +15,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom1, @"data\multilevel_test_doom1.wad"))
             {
                 var demo = new Demo(@"data\multilevel_test_doom1.lmp", resource.Wad.GameMode);
-                var players = DoomTest.GetDefaultPlayers();
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(players, resource, demo.Options);
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -136,9 +135,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\multilevel_test_doom2.wad"))
             {
                 var demo = new Demo(@"data\multilevel_test_doom2.lmp");
-                var players = DoomTest.GetDefaultPlayers();
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(players, resource, demo.Options);
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -257,9 +255,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\finale_test.wad"))
             {
                 var demo = new Demo(@"data\finale_test1.lmp");
-                var players = DoomTest.GetDefaultPlayers();
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(players, resource, demo.Options);
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -318,9 +315,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\finale_test.wad"))
             {
                 var demo = new Demo(@"data\finale_test2.lmp");
-                var players = DoomTest.GetDefaultPlayers();
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(players, resource, demo.Options);
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;

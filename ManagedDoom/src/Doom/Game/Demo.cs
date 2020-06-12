@@ -33,15 +33,15 @@ namespace ManagedDoom
             options.NoMonsters = data[p++] != 0;
             options.ConsolePlayer = data[p++];
 
-            options.PlayerInGame[0] = data[p++] != 0;
-            options.PlayerInGame[1] = data[p++] != 0;
-            options.PlayerInGame[2] = data[p++] != 0;
-            options.PlayerInGame[3] = data[p++] != 0;
+            options.Players[0].InGame = data[p++] != 0;
+            options.Players[1].InGame = data[p++] != 0;
+            options.Players[2].InGame = data[p++] != 0;
+            options.Players[3].InGame = data[p++] != 0;
 
             playerCount = 0;
-            foreach (var inGame in options.PlayerInGame)
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                if (inGame)
+                if (options.Players[i].InGame)
                 {
                     playerCount++;
                 }
@@ -83,9 +83,10 @@ namespace ManagedDoom
                 return false;
             }
 
+            var players = options.Players;
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                if (options.PlayerInGame[i])
+                if (players[i].InGame)
                 {
                     var cmd = cmds[i];
                     cmd.ForwardMove = (sbyte)data[p++];

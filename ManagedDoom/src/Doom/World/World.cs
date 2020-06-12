@@ -7,7 +7,6 @@ namespace ManagedDoom
     public sealed partial class World
     {
         public GameOptions Options;
-        public Player[] Players;
 
         private Map map;
         private DoomRandom random;
@@ -48,10 +47,9 @@ namespace ManagedDoom
 
         private bool completed;
 
-        public World(CommonResource resorces, GameOptions options, Player[] players)
+        public World(CommonResource resorces, GameOptions options)
         {
             Options = options;
-            Players = players;
 
             map = new Map(resorces, this);
 
@@ -87,14 +85,14 @@ namespace ManagedDoom
             options.wminfo.ParTime = 180;
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                players[i].KillCount = 0;
-                players[i].SecretCount = 0;
-                players[i].ItemCount = 0;
+                options.Players[i].KillCount = 0;
+                options.Players[i].SecretCount = 0;
+                options.Players[i].ItemCount = 0;
             }
 
             // Initial height of PointOfView
             // will be set by player think.
-            players[consoleplayer].ViewZ = new Fixed(1);
+            options.Players[consoleplayer].ViewZ = new Fixed(1);
 
             LoadThings();
 
@@ -103,9 +101,9 @@ namespace ManagedDoom
             {
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
                 {
-                    if (players[i].InGame)
+                    if (options.Players[i].InGame)
                     {
-                        players[i].Mobj = null;
+                        options.Players[i].Mobj = null;
                         G_DeathMatchSpawnPlayer(i);
                     }
                 }
@@ -118,11 +116,12 @@ namespace ManagedDoom
 
         public bool Update()
         {
+            var players = Options.Players;
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                if (Players[i].InGame)
+                if (players[i].InGame)
                 {
-                    playerBehavior.PlayerThink(Players[i]);
+                    playerBehavior.PlayerThink(players[i]);
                 }
             }
 
@@ -208,12 +207,14 @@ namespace ManagedDoom
         //
         public bool G_CheckSpot(int playernum, MapThing mthing)
         {
-            if (Players[playernum].Mobj == null)
+            var players = Options.Players;
+
+            if (players[playernum].Mobj == null)
             {
-                // first spawn of level, before corpses
+                // First spawn of level, before corpses.
                 for (var i = 0; i < playernum; i++)
                 {
-                    if (Players[i].Mobj.X == mthing.X && Players[i].Mobj.Y == mthing.Y)
+                    if (players[i].Mobj.X == mthing.X && players[i].Mobj.Y == mthing.Y)
                     {
                         return false;
                     }
@@ -224,20 +225,20 @@ namespace ManagedDoom
             var x = mthing.X;
             var y = mthing.Y;
 
-            if (!thingMovement.CheckPosition(Players[playernum].Mobj, x, y))
+            if (!thingMovement.CheckPosition(players[playernum].Mobj, x, y))
             {
                 return false;
             }
 
-            // flush an old corpse if needed 
+            // Flush an old corpse if needed.
             if (bodyqueslot >= BODYQUESIZE)
             {
                 thingAllocation.RemoveMobj(bodyque[bodyqueslot % BODYQUESIZE]);
             }
-            bodyque[bodyqueslot % BODYQUESIZE] = Players[playernum].Mobj;
+            bodyque[bodyqueslot % BODYQUESIZE] = players[playernum].Mobj;
             bodyqueslot++;
 
-            // spawn a teleport fog 
+            // Spawn a teleport fog.
             var ss = Geometry.PointInSubsector(x, y, map);
 
             var an = (Angle.Ang45.Data >> Trig.AngleToFineShift) * ((int)Math.Round(mthing.Angle.ToDegree()) / 45);
@@ -279,9 +280,9 @@ namespace ManagedDoom
                 ss.Sector.FloorHeight,
                 MobjType.Tfog);
 
-            if (Players[Options.ConsolePlayer].ViewZ != new Fixed(1))
+            if (players[Options.ConsolePlayer].ViewZ != new Fixed(1))
             {
-                // don't start sound on first frame
+                // Don't start sound on first frame.
                 StartSound(mo, Sfx.TELEPT);
             }
 
@@ -517,7 +518,7 @@ namespace ManagedDoom
         public MapThing[] PlayerStarts => playerStarts;
         public MapThing[] DeathmatchStarts => deathmatchStarts;
 
-        public Player ConsolePlayer => Players[Options.ConsolePlayer];
+        public Player ConsolePlayer => Options.Players[Options.ConsolePlayer];
 
         public bool SecretExit => secretexit;
 

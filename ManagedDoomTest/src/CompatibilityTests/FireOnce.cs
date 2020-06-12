@@ -16,16 +16,12 @@ namespace ManagedDoomTest.CompatibilityTests
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
+                options.Map = 1;
 
-                var players = new Player[Player.MaxPlayerCount];
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
-                {
-                    players[i] = new Player(i);
-                    players[i].PlayerState = PlayerState.Reborn;
-                }
-                players[0].InGame = true;
+                options.Players[0].InGame = true;
+                options.Players[0].PlayerState = PlayerState.Reborn;
 
-                var world = new World(resource, options, players);
+                var world = new World(resource, options);
 
                 var tics = 700;
                 var pressFireUntil = 20;
@@ -35,11 +31,11 @@ namespace ManagedDoomTest.CompatibilityTests
                 {
                     if (i < pressFireUntil)
                     {
-                        players[0].Cmd.Buttons = TicCmdButtons.Attack;
+                        options.Players[0].Cmd.Buttons = TicCmdButtons.Attack;
                     }
                     else
                     {
-                        players[0].Cmd.Buttons = 0;
+                        options.Players[0].Cmd.Buttons = 0;
                     }
 
                     world.Update();

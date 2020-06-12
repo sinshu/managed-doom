@@ -7,7 +7,6 @@ namespace ManagedDoom
 	{
 		private CommonResource resource;
 
-		private Player[] players;
 		private World world;
 		private Intermission intermission;
 		private Finale finale;
@@ -25,11 +24,9 @@ namespace ManagedDoom
 
 		private int levelstarttic;
 
-		public DoomGame(Player[] players, CommonResource resource, GameOptions options)
+		public DoomGame(CommonResource resource, GameOptions options)
 		{
 			this.resource = resource;
-
-			this.players = players;
 
 			this.options = options;
 
@@ -38,7 +35,8 @@ namespace ManagedDoom
 
 		public void Update(TicCmd[] cmds)
 		{
-			// do player reborns if needed
+			// Do player reborns if needed.
+			var players = options.Players;
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
 				if (players[i].InGame && players[i].PlayerState == PlayerState.Reborn)
@@ -244,7 +242,7 @@ namespace ManagedDoom
 				// respawn at the start
 
 				// first dissasociate the corpse
-				players[playernum].Mobj.Player = null;
+				options.Players[playernum].Mobj.Player = null;
 
 				// spawn at random spot if in death match
 				if (options.Deathmatch != 0)
@@ -334,6 +332,7 @@ namespace ManagedDoom
 
 			gameState = GameState.Level;
 
+			var players = options.Players;
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
 				if (players[i].InGame && players[i].PlayerState == PlayerState.Dead)
@@ -346,7 +345,7 @@ namespace ManagedDoom
 			intermission = null;
 
 			// P_SetupLevel(gameepisode, gamemap, 0, gameskill);
-			world = new World(resource, options, players);
+			world = new World(resource, options);
 			world.Audio = audio;
 
 			// view the guy you are playing
@@ -459,7 +458,7 @@ namespace ManagedDoom
 			// force players to be initialized upon first level load         
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
-				players[i].PlayerState = PlayerState.Reborn;
+				options.Players[i].PlayerState = PlayerState.Reborn;
 			}
 
 			//usergame = true; // will be set false if a demo 
@@ -518,7 +517,7 @@ namespace ManagedDoom
 
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
-				if (players[i].InGame)
+				if (options.Players[i].InGame)
 				{
 					// take away cards and stuff
 					G_PlayerFinishLevel(i);
@@ -535,7 +534,7 @@ namespace ManagedDoom
 					case 9:
 						for (var i = 0; i < Player.MaxPlayerCount; i++)
 						{
-							players[i].DidSecret = true;
+							options.Players[i].DidSecret = true;
 						}
 						break;
 				}
@@ -554,14 +553,14 @@ namespace ManagedDoom
 				// exit secret level 
 				for (var i = 0; i < Player.MaxPlayerCount; i++)
 				{
-					players[i].DidSecret = true;
+					options.Players[i].DidSecret = true;
 				}
 			}
 			//#endif
 
 			var wminfo = options.wminfo;
 
-			wminfo.DidSecret = players[options.ConsolePlayer].DidSecret;
+			wminfo.DidSecret = options.Players[options.ConsolePlayer].DidSecret;
 			wminfo.Epsd = options.Episode - 1;
 			wminfo.Last = options.Map - 1;
 
@@ -641,6 +640,7 @@ namespace ManagedDoom
 			}
 			wminfo.PNum = options.ConsolePlayer;
 
+			var players = options.Players;
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
 				wminfo.Plyr[i].InGame = players[i].InGame;
@@ -664,7 +664,7 @@ namespace ManagedDoom
 		//
 		private void G_PlayerFinishLevel(int player)
 		{
-			var p = players[player];
+			var p = options.Players[player];
 			Array.Clear(p.Powers, 0, p.Powers.Length);
 			Array.Clear(p.Cards, 0, p.Cards.Length);
 
@@ -730,7 +730,7 @@ namespace ManagedDoom
 
 
 
-		public Player[] Players => players;
+		public Player[] Players => options.Players;
 		public GameOptions Options => options;
 		public World World => world;
 		public Intermission Intermission => intermission;

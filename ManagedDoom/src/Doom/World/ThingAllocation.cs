@@ -162,19 +162,20 @@ namespace ManagedDoom
 
         public void SpawnPlayer(MapThing mt)
         {
+            var players = world.Options.Players;
             var playerNumber = mt.Type - 1;
 
             // Not playing?
-            if (!world.Players[playerNumber].InGame)
+            if (!players[playerNumber].InGame)
             {
                 return;
             }
 
-            var player = world.Players[playerNumber];
+            var player = players[playerNumber];
 
             if (player.PlayerState == PlayerState.Reborn)
             {
-                world.Players[playerNumber].Reborn();
+                players[playerNumber].Reborn();
             }
 
             var x = mt.X;

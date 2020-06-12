@@ -175,8 +175,7 @@ namespace ManagedDoomTest.UnitTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
             {
                 var options = new GameOptions();
-                var players = DoomTest.GetDefaultPlayers();
-                var world = new World(resource, options, players);
+                var world = new World(resource, options);
                 var map = new Map(resource, world);
 
                 var ok = 0;
@@ -228,8 +227,7 @@ namespace ManagedDoomTest.UnitTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
-                var players = DoomTest.GetDefaultPlayers();
-                var world = new World(resource, options, players);
+                var world = new World(resource, options);
                 var map = new Map(resource, world);
 
                 var ok = 0;

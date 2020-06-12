@@ -44,7 +44,7 @@ namespace ManagedDoom
 			else if (!world.Options.NetGame && (target.Flags & MobjFlags.CountKill) != 0)
 			{
 				// Count all monster deaths, even those caused by other monsters.
-				world.Players[0].KillCount++;
+				world.Options.Players[0].KillCount++;
 			}
 
 			if (target.Player != null)

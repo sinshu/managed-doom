@@ -222,7 +222,7 @@ namespace ManagedDoom.SoftwareRendering
         private void DrawPlayers(World world)
         {
             var options = world.Options;
-            var players = world.Players;
+            var players = options.Players;
             var consolePlayer = players[world.consoleplayer];
             var am = world.AutoMap;
 
