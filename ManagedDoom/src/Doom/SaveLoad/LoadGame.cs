@@ -11,16 +11,18 @@ namespace ManagedDoom
         private byte[] data;
         private int save_p;
 
-        private GameOptions options;
-
-        public LoadGame(byte[] data, World world)
+        public LoadGame(byte[] data)
         {
             this.data = data;
+            save_p = 0;
+        }
 
+        public void Load(World world)
+        {
             var description = ReadDescription();
             var version = ReadVersion();
 
-            options = world.Options;
+            var options = world.Options;
             options.Skill = (GameSkill)data[save_p++];
             options.Episode = data[save_p++];
             options.Map = data[save_p++];
@@ -34,13 +36,18 @@ namespace ManagedDoom
             var c = data[save_p++];
             var levelTime = (a << 16) + (b << 8) + c;
 
-            UnArchivePlayers();
+            UnArchivePlayers(world);
             UnArchiveWorld(world);
             UnArchiveThinkers(world);
             UnArchiveSpecials(world);
 
-            Console.WriteLine("END");
+            if (data[save_p] != 0x1d)
+            {
+                throw new Exception("Bad savegame!");
+            }
         }
+
+
 
         private void PADSAVEP()
         {
@@ -61,18 +68,19 @@ namespace ManagedDoom
             return value;
         }
 
-        private void UnArchivePlayers()
+        private void UnArchivePlayers(World world)
         {
+            var players = world.Options.Players;
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                if (!options.Players[i].InGame)
+                if (!players[i].InGame)
                 {
                     continue;
                 }
 
                 PADSAVEP();
 
-                save_p = UnArchivePlayer(options.Players[i], data, save_p);
+                save_p = UnArchivePlayer(players[i], data, save_p);
             }
         }
 
@@ -176,7 +184,7 @@ namespace ManagedDoom
             var thinkers = world.Thinkers;
             var sa = world.SectorAction;
 
-            // read in saved thinkers
+            // Read in saved thinkers.
             while (true)
             {
                 var tclass = (SpecialClass)data[save_p++];
@@ -311,7 +319,6 @@ namespace ManagedDoom
                 }
             }
         }
-
 
 
 

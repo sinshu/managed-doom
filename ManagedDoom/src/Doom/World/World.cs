@@ -137,13 +137,13 @@ namespace ManagedDoom
             /*
             if (levelTime == 3 * 35)
             {
-                new LoadGame(File.ReadAllBytes("doomsav0.dsg"), this);
-                Console.WriteLine("LOAD_TEST!!!");
+                var load = new LoadGame(File.ReadAllBytes("doomsav0.dsg"));
+                load.Load(this);
             }
             */
 
-            var mobjHash = DoomDebug.GetMobjHash(this);
-            var sectorHash = DoomDebug.GetSectorHash(this);
+            //var mobjHash = DoomDebug.GetMobjHash(this);
+            //var sectorHash = DoomDebug.GetSectorHash(this);
             //Console.WriteLine(levelTime + ": " + mobjHash.ToString("x8") + ", " + sectorHash.ToString("x8"));
 
             return completed;
