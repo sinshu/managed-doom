@@ -45,6 +45,7 @@ namespace ManagedDoom
             UnArchivePlayers();
             UnArchiveWorld(world);
             UnArchiveThinkers(world);
+            UnArchiveSpecials(world);
 
             Console.WriteLine("END");
         }
@@ -129,6 +130,7 @@ namespace ManagedDoom
                     case ThinkerClass.Mobj:
                         PADSAVEP();
                         var mobj = ThinkerPool.RentMobj(world);
+                        mobj.ThinkerState = ReadThinkerState(data, save_p + 8);
                         mobj.X = new Fixed(BitConverter.ToInt32(data, save_p + 12));
                         mobj.Y = new Fixed(BitConverter.ToInt32(data, save_p + 16));
                         mobj.Z = new Fixed(BitConverter.ToInt32(data, save_p + 20));
@@ -177,9 +179,160 @@ namespace ManagedDoom
             }
         }
 
+        private void UnArchiveSpecials(World world)
+        {
+            var thinkers = world.Thinkers;
+            var sa = world.SectorAction;
+
+            // read in saved thinkers
+            while (true)
+            {
+                var tclass = (SpecialClass)data[save_p++];
+                switch (tclass)
+                {
+                    case SpecialClass.EndSpecials:
+                        // End of list.
+                        return;
+
+                    case SpecialClass.Ceiling:
+                        PADSAVEP();
+                        var ceiling = ThinkerPool.RentCeiligMove(world);
+                        ceiling.ThinkerState = ReadThinkerState(data, save_p + 8);
+                        ceiling.Type = (CeilingMoveType)BitConverter.ToInt32(data, save_p + 12);
+                        ceiling.Sector = world.Map.Sectors[BitConverter.ToInt32(data, save_p + 16)];
+                        ceiling.Sector.SpecialData = ceiling;
+                        ceiling.BottomHeight = new Fixed(BitConverter.ToInt32(data, save_p + 20));
+                        ceiling.TopHeight = new Fixed(BitConverter.ToInt32(data, save_p + 24));
+                        ceiling.Speed = new Fixed(BitConverter.ToInt32(data, save_p + 28));
+                        ceiling.Crush = BitConverter.ToInt32(data, save_p + 32) != 0;
+                        ceiling.Direction = BitConverter.ToInt32(data, save_p + 36);
+                        ceiling.Tag = BitConverter.ToInt32(data, save_p + 40);
+                        ceiling.OldDirection = BitConverter.ToInt32(data, save_p + 44);
+                        save_p += 48;
+
+                        thinkers.Add(ceiling);
+                        sa.AddActiveCeiling(ceiling);
+                        break;
+
+                    case SpecialClass.Door:
+                        PADSAVEP();
+                        var door = ThinkerPool.RentVlDoor(world);
+                        door.ThinkerState = ReadThinkerState(data, save_p + 8);
+                        door.Type = (VlDoorType)BitConverter.ToInt32(data, save_p + 12);
+                        door.Sector = world.Map.Sectors[BitConverter.ToInt32(data, save_p + 16)];
+                        door.Sector.SpecialData = door;
+                        door.TopHeight = new Fixed(BitConverter.ToInt32(data, save_p + 20));
+                        door.Speed = new Fixed(BitConverter.ToInt32(data, save_p + 24));
+                        door.Direction = BitConverter.ToInt32(data, save_p + 28);
+                        door.TopWait = BitConverter.ToInt32(data, save_p + 32);
+                        door.TopCountDown = BitConverter.ToInt32(data, save_p + 36);
+                        save_p += 40;
+
+                        thinkers.Add(door);
+                        break;
+
+                    case SpecialClass.Floor:
+                        PADSAVEP();
+                        var floor = ThinkerPool.RentFloorMove(world);
+                        floor.ThinkerState = ReadThinkerState(data, save_p + 8);
+                        floor.Type = (FloorMoveType)BitConverter.ToInt32(data, save_p + 12);
+                        floor.Crush = BitConverter.ToInt32(data, save_p + 16) != 0;
+                        floor.Sector = world.Map.Sectors[BitConverter.ToInt32(data, save_p + 20)];
+                        floor.Sector.SpecialData = floor;
+                        floor.Direction = BitConverter.ToInt32(data, save_p + 24);
+                        floor.NewSpecial = (SectorSpecial)BitConverter.ToInt32(data, save_p + 28);
+                        floor.Texture = BitConverter.ToInt32(data, save_p + 32);
+                        floor.FloorDestHeight = new Fixed(BitConverter.ToInt32(data, save_p + 36));
+                        floor.Speed = new Fixed(BitConverter.ToInt32(data, save_p + 40));
+                        save_p += 44;
+
+                        thinkers.Add(floor);
+                        break;
+
+                    case SpecialClass.Plat:
+                        PADSAVEP();
+                        var plat = ThinkerPool.RentPlatform(world);
+                        plat.ThinkerState = ReadThinkerState(data, save_p + 8);
+                        plat.Sector = world.Map.Sectors[BitConverter.ToInt32(data, save_p + 12)];
+                        plat.Sector.SpecialData = plat;
+                        plat.Speed = new Fixed(BitConverter.ToInt32(data, save_p + 16));
+                        plat.Low = new Fixed(BitConverter.ToInt32(data, save_p + 20));
+                        plat.High = new Fixed(BitConverter.ToInt32(data, save_p + 24));
+                        plat.Wait = BitConverter.ToInt32(data, save_p + 28);
+                        plat.Count = BitConverter.ToInt32(data, save_p + 32);
+                        plat.Status = (PlatformState)BitConverter.ToInt32(data, save_p + 36);
+                        plat.Oldstatus = (PlatformState)BitConverter.ToInt32(data, save_p + 40);
+                        plat.Crush = BitConverter.ToInt32(data, save_p + 44) != 0;
+                        plat.Tag = BitConverter.ToInt32(data, save_p + 48);
+                        plat.Type = (PlatformType)BitConverter.ToInt32(data, save_p + 52);
+                        save_p += 56;
+
+                        thinkers.Add(plat);
+                        sa.AddActivePlatform(plat);
+                        break;
+
+                    case SpecialClass.Flash:
+                        PADSAVEP();
+                        var flash = ThinkerPool.RentLightFlash(world);
+                        flash.ThinkerState = ReadThinkerState(data, save_p + 8);
+                        flash.sector = world.Map.Sectors[BitConverter.ToInt32(data, save_p + 12)];
+                        flash.count = BitConverter.ToInt32(data, save_p + 16);
+                        flash.maxlight = BitConverter.ToInt32(data, save_p + 20);
+                        flash.minlight = BitConverter.ToInt32(data, save_p + 24);
+                        flash.maxtime = BitConverter.ToInt32(data, save_p + 28);
+                        flash.mintime = BitConverter.ToInt32(data, save_p + 32);
+                        save_p += 36;
+
+                        thinkers.Add(flash);
+                        break;
+
+                    case SpecialClass.Strobe:
+                        PADSAVEP();
+                        var strobe = ThinkerPool.RentStrobeFlash(world);
+                        strobe.ThinkerState = ReadThinkerState(data, save_p + 8);
+                        strobe.sector = world.Map.Sectors[BitConverter.ToInt32(data, save_p + 12)];
+                        strobe.count = BitConverter.ToInt32(data, save_p + 16);
+                        strobe.minlight = BitConverter.ToInt32(data, save_p + 20);
+                        strobe.maxlight = BitConverter.ToInt32(data, save_p + 24);
+                        strobe.darktime = BitConverter.ToInt32(data, save_p + 28);
+                        strobe.brighttime = BitConverter.ToInt32(data, save_p + 32);
+                        save_p += 36;
+
+                        thinkers.Add(strobe);
+                        break;
+
+                    case SpecialClass.Glow:
+                        PADSAVEP();
+                        var glow = ThinkerPool.RentGlowLight(world);
+                        glow.ThinkerState = ReadThinkerState(data, save_p + 8);
+                        glow.sector = world.Map.Sectors[BitConverter.ToInt32(data, save_p + 12)];
+                        glow.minlight = BitConverter.ToInt32(data, save_p + 16);
+                        glow.maxlight = BitConverter.ToInt32(data, save_p + 20);
+                        glow.direction = BitConverter.ToInt32(data, save_p + 24);
+                        save_p += 28;
+
+                        thinkers.Add(glow);
+                        break;
+
+                    default:
+                        throw new Exception("Unknown thinker class in savegame!");
+                }
+            }
+        }
 
 
 
+
+        private static ThinkerState ReadThinkerState(byte[] data, int p)
+        {
+            switch (BitConverter.ToInt32(data, p))
+            {
+                case 0:
+                    return ThinkerState.InStasis;
+                default:
+                    return ThinkerState.Active;
+            }
+        }
 
         private static int UnArchivePlayer(Player player, byte[] data, int p)
         {
