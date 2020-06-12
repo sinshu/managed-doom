@@ -15,13 +15,17 @@ namespace ManagedDoom
         {
             this.data = data;
             save_p = 0;
+
+            var description = ReadDescription();
+            var version = ReadVersion();
+            if (version != "VERSION 109")
+            {
+                throw new Exception("Unsupported version!");
+            }
         }
 
         public void Load(World world)
         {
-            var description = ReadDescription();
-            var version = ReadVersion();
-
             var options = world.Options;
             options.Skill = (GameSkill)data[save_p++];
             options.Episode = data[save_p++];
