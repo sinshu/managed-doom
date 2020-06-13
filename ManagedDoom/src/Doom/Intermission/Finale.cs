@@ -17,6 +17,10 @@ namespace ManagedDoom
 		private string finaleflat;
 		private string finaletext;
 
+		private int scrolled;
+		private int laststage;
+		private bool showEnd;
+
 		public Finale(DoomGame game)
 		{
 			this.game = game;
@@ -142,6 +146,10 @@ namespace ManagedDoom
 
 			finalestage = 0;
 			finalecount = 0;
+
+			scrolled = 0;
+			laststage = 0;
+			showEnd = false;
 		}
 
 
@@ -200,7 +208,49 @@ namespace ManagedDoom
 				}
 			}
 
+			if (finalestage == 1 && options.Episode == 3)
+			{
+				BunnyScroll();
+			}
+
 			return false;
+		}
+
+		private void BunnyScroll()
+		{
+			scrolled = 320 - (finalecount - 230) / 2;
+			if (scrolled > 320)
+			{
+				scrolled = 320;
+			}
+			if (scrolled < 0)
+			{
+				scrolled = 0;
+			}
+
+			if (finalecount < 1130)
+			{
+				return;
+			}
+
+			showEnd = true;
+
+			if (finalecount < 1180)
+			{
+				laststage = 0;
+				return;
+			}
+
+			var stage = (finalecount - 1180) / 5;
+			if (stage > 6)
+			{
+				stage = 6;
+			}
+			if (stage > laststage)
+			{
+				//S_StartSound(NULL, sfx_pistol);
+				laststage = stage;
+			}
 		}
 
 
@@ -449,7 +499,9 @@ namespace ManagedDoom
 		public GameOptions Options => game.Options;
 		public MobjStateDef CastState => caststate;
 		public string CastName => castorder[castnum].Name;
-
+		public int Scrolled => scrolled;
+		public int EndGameNum => laststage;
+		public bool ShowEndGame => showEnd;
 
 
 		private class CastInfo

@@ -43,26 +43,19 @@ namespace ManagedDoom.SoftwareRendering
                 switch (finale.Options.Episode)
                 {
                     case 1:
-                        if (finale.Options.GameMode == GameMode.Retail)
-                        {
-                            // "CREDIT"
-                        }
-                        else
-                        {
-                            // "HELP2"
-                        }
+                        DrawPatch("CREDIT", 0, 0);
                         break;
 
                     case 2:
-                        // "VICTORY2"
+                        DrawPatch("VICTORY2", 0, 0);
                         break;
 
                     case 3:
-                        // F_BunnyScroll();
+                        BunnyScroll(finale);
                         break;
 
                     case 4:
-                        // "ENDPIC"
+                        DrawPatch("ENDPIC", 0, 0);
                         break;
                 }
             }
@@ -104,6 +97,45 @@ namespace ManagedDoom.SoftwareRendering
                 cx += screen.MeasureChar(c, scale);
             }
         }
+
+        private void BunnyScroll(Finale finale)
+        {
+            var scroll = 320 - finale.Scrolled;
+            DrawPatch("PFUB2", scroll - 320, 0);
+            DrawPatch("PFUB1", scroll, 0);
+
+            if (finale.ShowEndGame)
+            {
+                string patch = "END0";
+                switch (finale.EndGameNum)
+                {
+                    case 1:
+                        patch = "END1";
+                        break;
+                    case 2:
+                        patch = "END2";
+                        break;
+                    case 3:
+                        patch = "END3";
+                        break;
+                    case 4:
+                        patch = "END4";
+                        break;
+                    case 5:
+                        patch = "END5";
+                        break;
+                    case 6:
+                        patch = "END6";
+                        break;
+                }
+                DrawPatch(
+                    patch,
+                    (320 - 13 * 8) / 2,
+                    (240 - 8 * 8) / 2);
+            }
+        }
+
+
 
         private void FillFlat(Flat flat)
         {
