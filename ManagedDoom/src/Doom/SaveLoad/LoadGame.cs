@@ -16,7 +16,8 @@ namespace ManagedDoom
             this.data = data;
             save_p = 0;
 
-            var description = ReadDescription();
+            ReadDescription();
+
             var version = ReadVersion();
             if (version != "VERSION 109")
             {
@@ -341,6 +342,7 @@ namespace ManagedDoom
         {
             player.Clear();
 
+            player.PlayerState = (PlayerState)BitConverter.ToInt32(data, p + 4);
             player.ViewZ = new Fixed(BitConverter.ToInt32(data, p + 16));
             player.ViewHeight = new Fixed(BitConverter.ToInt32(data, p + 20));
             player.DeltaViewHeight = new Fixed(BitConverter.ToInt32(data, p + 24));

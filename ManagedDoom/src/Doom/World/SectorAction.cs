@@ -1436,6 +1436,24 @@ namespace ManagedDoom
 			}
 		}
 
+		public bool CheckActiveCeiling(CeilingMove ceiling)
+		{
+			if (ceiling == null)
+			{
+				return false;
+			}
+
+			for (var i = 0; i < activeCeilings.Length; i++)
+			{
+				if (activeCeilings[i] == ceiling)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		public void ActivateInStasisCeiling(LineDef line)
 		{
 			for (var i = 0; i < activeCeilings.Length; i++)

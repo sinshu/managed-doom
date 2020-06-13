@@ -135,9 +135,15 @@ namespace ManagedDoom
             levelTime++;
 
             /*
-            if (levelTime == 3 * 35)
+            var period = 3 * 35;
+            if (levelTime % period == period - 1)
             {
-                var load = new LoadGame(File.ReadAllBytes("doomsav0.dsg"));
+                Console.WriteLine("SAVE!");
+                var save = new SaveGame("TEST!");
+                save.Save(this, "test.dsg");
+
+                Console.WriteLine("LOAD!");
+                var load = new LoadGame(File.ReadAllBytes("test.dsg"));
                 load.Load(this);
             }
             */
