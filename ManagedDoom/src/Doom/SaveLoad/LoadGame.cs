@@ -142,6 +142,8 @@ namespace ManagedDoom
                         mobj.Angle = new Angle(BitConverter.ToInt32(data, save_p + 32));
                         mobj.Sprite = (Sprite)BitConverter.ToInt32(data, save_p + 36);
                         mobj.Frame = BitConverter.ToInt32(data, save_p + 40);
+                        mobj.FloorZ = new Fixed(BitConverter.ToInt32(data, save_p + 56));
+                        mobj.CeilingZ = new Fixed(BitConverter.ToInt32(data, save_p + 60));
                         mobj.Radius = new Fixed(BitConverter.ToInt32(data, save_p + 64));
                         mobj.Height = new Fixed(BitConverter.ToInt32(data, save_p + 68));
                         mobj.MomX = new Fixed(BitConverter.ToInt32(data, save_p + 72));
@@ -173,8 +175,8 @@ namespace ManagedDoom
                         save_p += 154;
 
                         world.ThingMovement.SetThingPosition(mobj);
-                        mobj.FloorZ = mobj.Subsector.Sector.FloorHeight;
-                        mobj.CeilingZ = mobj.Subsector.Sector.CeilingHeight;
+                        // mobj.FloorZ = mobj.Subsector.Sector.FloorHeight;
+                        // mobj.CeilingZ = mobj.Subsector.Sector.CeilingHeight;
                         thinkers.Add(mobj);
                         break;
 

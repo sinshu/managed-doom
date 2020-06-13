@@ -130,6 +130,8 @@ namespace ManagedDoom
                     Write(data, save_p + 32, mobj.Angle.Data);
                     Write(data, save_p + 36, (int)mobj.Sprite);
                     Write(data, save_p + 40, mobj.Frame);
+                    Write(data, save_p + 56, mobj.FloorZ.Data);
+                    Write(data, save_p + 60, mobj.CeilingZ.Data);
                     Write(data, save_p + 64, mobj.Radius.Data);
                     Write(data, save_p + 68, mobj.Height.Data);
                     Write(data, save_p + 72, mobj.MomX.Data);
