@@ -970,6 +970,11 @@ namespace ManagedDoom
 
         public void FatAttack1(Mobj actor)
         {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
             FaceTarget(actor);
 
             var ta = world.ThingAllocation;
@@ -988,6 +993,11 @@ namespace ManagedDoom
 
         public void FatAttack2(Mobj actor)
         {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
             FaceTarget(actor);
 
             var ta = world.ThingAllocation;
@@ -1006,6 +1016,11 @@ namespace ManagedDoom
 
         public void FatAttack3(Mobj actor)
         {
+            if (actor.Target == null)
+            {
+                return;
+            }
+
             FaceTarget(actor);
 
             var ta = world.ThingAllocation;
@@ -1421,7 +1436,7 @@ namespace ManagedDoom
         }
 
 
-        public void PainShootSkull(Mobj actor, Angle angle)
+        private void PainShootSkull(Mobj actor, Angle angle)
         {
             // Count total number of skull currently on the level.
             var count = 0;
