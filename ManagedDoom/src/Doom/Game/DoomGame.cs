@@ -651,7 +651,7 @@ namespace ManagedDoom
 			}
 
 			gameState = GameState.Intermission;
-			intermission = new Intermission(players, wminfo, options);
+			intermission = new Intermission(options, wminfo);
 		}
 
 

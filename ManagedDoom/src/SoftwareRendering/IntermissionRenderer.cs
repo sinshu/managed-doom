@@ -82,7 +82,7 @@ namespace ManagedDoom.SoftwareRendering
         public void Render(Intermission intermission)
         {
             var im = intermission;
-            switch (im.state)
+            switch (im.State)
             {
                 case IntermissionState.StatCount:
                     if (im.Options.Deathmatch != 0)
@@ -144,18 +144,18 @@ namespace ManagedDoom.SoftwareRendering
             WI_drawLF(im);
 
             DrawPatch(patches.Kills, SP_STATSX, SP_STATSY);
-            WI_drawPercent(320 - SP_STATSX, SP_STATSY, im.cnt_kills[0]);
+            WI_drawPercent(320 - SP_STATSX, SP_STATSY, im.KillCount[0]);
 
             DrawPatch(patches.Items, SP_STATSX, SP_STATSY + lh);
-            WI_drawPercent(320 - SP_STATSX, SP_STATSY + lh, im.cnt_items[0]);
+            WI_drawPercent(320 - SP_STATSX, SP_STATSY + lh, im.ItemCount[0]);
 
             DrawPatch(patches.SP_Secret, SP_STATSX, SP_STATSY + 2 * lh);
-            WI_drawPercent(320 - SP_STATSX, SP_STATSY + 2 * lh, im.cnt_secret[0]);
+            WI_drawPercent(320 - SP_STATSX, SP_STATSY + 2 * lh, im.SecretCount[0]);
 
             DrawPatch(patches.Time, SP_TIMEX, SP_TIMEY);
-            WI_drawTime(320 / 2 - SP_TIMEX, SP_TIMEY, im.cnt_time);
+            WI_drawTime(320 / 2 - SP_TIMEX, SP_TIMEY, im.TimeCount);
 
-            if (im.Wbs.Episode < 3)
+            if (im.Info.Episode < 3)
             {
                 //V_DrawPatch(SCREENWIDTH / 2 + SP_TIMEX, SP_TIMEY, FB, par);
                 //WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
@@ -208,7 +208,7 @@ namespace ManagedDoom.SoftwareRendering
 
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                if (!im.Players[i].InGame)
+                if (!im.Options.Players[i].InGame)
                 {
                     continue;
                 }
@@ -230,18 +230,18 @@ namespace ManagedDoom.SoftwareRendering
 
                 x += NG_SPACINGX;
 
-                WI_drawPercent(x - pwidth, y + 10, im.cnt_kills[i]);
+                WI_drawPercent(x - pwidth, y + 10, im.KillCount[i]);
                 x += NG_SPACINGX;
 
-                WI_drawPercent(x - pwidth, y + 10, im.cnt_items[i]);
+                WI_drawPercent(x - pwidth, y + 10, im.ItemCount[i]);
                 x += NG_SPACINGX;
 
-                WI_drawPercent(x - pwidth, y + 10, im.cnt_secret[i]);
+                WI_drawPercent(x - pwidth, y + 10, im.SecretCount[i]);
                 x += NG_SPACINGX;
 
                 if (im.DoFrags)
                 {
-                    WI_drawNum(x, y + 10, im.cnt_frags[i], -1);
+                    WI_drawNum(x, y + 10, im.FragCount[i], -1);
                 }
 
                 y += WI_SPACINGY;
@@ -281,7 +281,7 @@ namespace ManagedDoom.SoftwareRendering
 
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                if (im.Players[i].InGame)
+                if (im.Options.Players[i].InGame)
                 {
                     DrawPatch(
                         patches.P[i],
@@ -326,19 +326,19 @@ namespace ManagedDoom.SoftwareRendering
             {
                 x = DM_MATRIXX + DM_SPACINGX;
 
-                if (im.Players[i].InGame)
+                if (im.Options.Players[i].InGame)
                 {
                     for (var j = 0; j < Player.MaxPlayerCount; j++)
                     {
-                        if (im.Players[j].InGame)
+                        if (im.Options.Players[j].InGame)
                         {
-                            WI_drawNum(x + w, y, im.DM_Frags[i][j], 2);
+                            WI_drawNum(x + w, y, im.DeathmatchFrags[i][j], 2);
                         }
 
                         x += DM_SPACINGX;
                     }
 
-                    WI_drawNum(DM_TOTALSX + w, y, im.DM_Totals[i], 2);
+                    WI_drawNum(DM_TOTALSX + w, y, im.DeathmatchTotals[i], 2);
                 }
 
                 y += WI_SPACINGY;
@@ -360,41 +360,41 @@ namespace ManagedDoom.SoftwareRendering
 
             if (im.Options.GameMode != GameMode.Commercial)
             {
-                if (im.Wbs.Episode > 2)
+                if (im.Info.Episode > 2)
                 {
                     WI_drawEL(im);
                     return;
                 }
 
-                var last = (im.Wbs.LastLevel == 8) ? im.Wbs.NextLevel - 1 : im.Wbs.LastLevel;
+                var last = (im.Info.LastLevel == 8) ? im.Info.NextLevel - 1 : im.Info.LastLevel;
 
                 // draw a splat on taken cities.
                 for (var i = 0; i <= last; i++)
                 {
-                    var x = WorldMap.Locations[im.Wbs.Episode][i].X;
-                    var y = WorldMap.Locations[im.Wbs.Episode][i].Y;
+                    var x = WorldMap.Locations[im.Info.Episode][i].X;
+                    var y = WorldMap.Locations[im.Info.Episode][i].Y;
                     DrawPatch(patches.Splat, x, y);
                 }
 
                 // splat the secret level?
-                if (im.Wbs.DidSecret)
+                if (im.Info.DidSecret)
                 {
-                    var x = WorldMap.Locations[im.Wbs.Episode][8].X;
-                    var y = WorldMap.Locations[im.Wbs.Episode][8].Y;
+                    var x = WorldMap.Locations[im.Info.Episode][8].X;
+                    var y = WorldMap.Locations[im.Info.Episode][8].Y;
                     DrawPatch(patches.Splat, x, y);
                 }
 
                 // draw flashing ptr
-                if (im.Snl_PointerOn)
+                if (im.ShowYouAreHere)
                 {
-                    var x = WorldMap.Locations[im.Wbs.Episode][im.Wbs.NextLevel].X;
-                    var y = WorldMap.Locations[im.Wbs.Episode][im.Wbs.NextLevel].Y;
+                    var x = WorldMap.Locations[im.Info.Episode][im.Info.NextLevel].X;
+                    var y = WorldMap.Locations[im.Info.Episode][im.Info.NextLevel].Y;
                     WI_drawOnLnode(patches.YouAreHere, x, y);
                 }
             }
 
             // draws which level you are entering..
-            if ((im.Options.GameMode != GameMode.Commercial) || im.Wbs.NextLevel != 30)
+            if ((im.Options.GameMode != GameMode.Commercial) || im.Info.NextLevel != 30)
             {
                 WI_drawEL(im);
             }
@@ -403,7 +403,7 @@ namespace ManagedDoom.SoftwareRendering
         // Draws "<Levelname> Finished!"
         private void WI_drawLF(Intermission intermission)
         {
-            var wbs = intermission.Wbs;
+            var wbs = intermission.Info;
             var y = WI_TITLEY;
 
             var e = 0;
@@ -442,11 +442,11 @@ namespace ManagedDoom.SoftwareRendering
                 (320 - patches.Entering.Width) / 2, y);
 
             // draw level
-            y += (5 * patches.LevelNames[e][im.Wbs.NextLevel].Height) / 4;
+            y += (5 * patches.LevelNames[e][im.Info.NextLevel].Height) / 4;
 
             DrawPatch(
-                patches.LevelNames[e][im.Wbs.NextLevel],
-                (320 - patches.LevelNames[e][im.Wbs.NextLevel].Width) / 2, y);
+                patches.LevelNames[e][im.Info.NextLevel],
+                (320 - patches.LevelNames[e][im.Info.NextLevel].Width) / 2, y);
         }
 
 
@@ -574,7 +574,7 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            if (im.Wbs.Episode > 2)
+            if (im.Info.Episode > 2)
             {
                 return;
             }

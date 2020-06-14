@@ -22,14 +22,14 @@ namespace ManagedDoom
         // The par time.
         private int parTime;
 
-        private PlayerIntermissionInfo[] players;
+        private PlayerScores[] players;
 
         public IntermissionInfo()
         {
-            players = new PlayerIntermissionInfo[Player.MaxPlayerCount];
+            players = new PlayerScores[Player.MaxPlayerCount];
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
-                players[i] = new PlayerIntermissionInfo();
+                players[i] = new PlayerScores();
             }
         }
 
@@ -87,7 +87,7 @@ namespace ManagedDoom
             set => parTime = value;
         }
 
-        public PlayerIntermissionInfo[] Players
+        public PlayerScores[] Players
         {
             get => players;
         }

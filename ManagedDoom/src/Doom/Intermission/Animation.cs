@@ -37,9 +37,9 @@ namespace ManagedDoom
 			for (var i = 0; i < p.Length; i++)
 			{
 				// MONDO HACK!
-				if (im.Wbs.Episode != 1 || number != 8)
+				if (im.Info.Episode != 1 || number != 8)
 				{
-					p[i] = "WIA" + im.Wbs.Episode + number.ToString("00") + i.ToString("00");
+					p[i] = "WIA" + im.Info.Episode + number.ToString("00") + i.ToString("00");
 				}
 				else
 				{
@@ -97,7 +97,7 @@ namespace ManagedDoom
 
 					case AnimationType.Level:
 						// Gawd-awful hack for level anims.
-						if (!(im.state == IntermissionState.StatCount && number == 7) && im.Wbs.NextLevel == data1)
+						if (!(im.State == IntermissionState.StatCount && number == 7) && im.Info.NextLevel == data1)
 						{
 							ctr++;
 							if (ctr == nanims)
