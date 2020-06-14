@@ -706,7 +706,7 @@ namespace ManagedDoom
 		{
 			gameAction = GameAction.Nothing;
 			gameState = GameState.Finale;
-			finale = new Finale(this);
+			finale = new Finale(options);
 		}
 
 

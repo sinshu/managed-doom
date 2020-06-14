@@ -7,7 +7,7 @@ namespace ManagedDoom
 		public static readonly int TextSpeed = 3;
 		public static readonly int TextWait = 250;
 
-		private DoomGame game;
+		private GameOptions options;
 
 		// Stage of animation:
 		//  0 = text, 1 = art screen, 2 = character cast
@@ -21,9 +21,9 @@ namespace ManagedDoom
 		private int laststage;
 		private bool showEnd;
 
-		public Finale(DoomGame game)
+		public Finale(GameOptions options)
 		{
-			this.game = game;
+			this.options = options;
 
 			string c1Text;
 			string c2Text;
@@ -31,7 +31,7 @@ namespace ManagedDoom
 			string c4Text;
 			string c5Text;
 			string c6Text;
-			switch (game.Options.MissionPack)
+			switch (options.MissionPack)
 			{
 				case MissionPack.Plutonia:
 					c1Text = DoomInfo.Strings.P1TEXT;
@@ -62,7 +62,7 @@ namespace ManagedDoom
 			// Okay - IWAD dependend stuff.
 			// This has been changed severly, and
 			//  some stuff might have changed in the process.
-			switch (game.Options.GameMode)
+			switch (options.GameMode)
 			{
 
 				// DOOM 1 - E1, E3 or E4, but each nine missions
@@ -72,7 +72,7 @@ namespace ManagedDoom
 					{
 						//S_ChangeMusic(mus_victor, true);
 
-						switch (game.Options.Episode)
+						switch (options.Episode)
 						{
 							case 1:
 								finaleflat = "FLOOR4_8";
@@ -102,7 +102,7 @@ namespace ManagedDoom
 					{
 						//S_ChangeMusic(mus_read_m, true);
 
-						switch (game.Options.Map)
+						switch (options.Map)
 						{
 							case 6:
 								finaleflat = "SLIME16";
@@ -155,8 +155,6 @@ namespace ManagedDoom
 
 		public bool Update()
 		{
-			var options = game.Options;
-
 			// check for skipping
 			int i;
 			if (options.GameMode == GameMode.Commercial && finalecount > 50)
@@ -164,7 +162,7 @@ namespace ManagedDoom
 				// go on to the next level
 				for (i = 0; i < Player.MaxPlayerCount; i++)
 				{
-					if (game.Players[i].Cmd.Buttons != 0)
+					if (options.Players[i].Cmd.Buttons != 0)
 					{
 						break;
 					}
@@ -496,7 +494,7 @@ namespace ManagedDoom
 		public int Count => finalecount;
 		public int Stage => finalestage;
 		public string Flat => finaleflat;
-		public GameOptions Options => game.Options;
+		public GameOptions Options => options;
 		public MobjStateDef CastState => caststate;
 		public string CastName => castorder[castnum].Name;
 		public int Scrolled => scrolled;
