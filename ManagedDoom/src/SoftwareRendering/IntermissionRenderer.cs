@@ -583,9 +583,9 @@ namespace ManagedDoom.SoftwareRendering
             {
                 var a = im.Animations[i];
 
-                if (a.ctr >= 0)
+                if (a.PatchNumber >= 0)
                 {
-                    DrawPatch(a.p[a.ctr], a.locX, a.locY);
+                    DrawPatch(a.Patches[a.PatchNumber], a.LocationX, a.LocationY);
                 }
             }
         }
