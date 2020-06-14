@@ -155,7 +155,7 @@ namespace ManagedDoom.SoftwareRendering
             DrawPatch(patches.Time, SP_TIMEX, SP_TIMEY);
             WI_drawTime(320 / 2 - SP_TIMEX, SP_TIMEY, im.cnt_time);
 
-            if (im.Wbs.Epsd < 3)
+            if (im.Wbs.Episode < 3)
             {
                 //V_DrawPatch(SCREENWIDTH / 2 + SP_TIMEX, SP_TIMEY, FB, par);
                 //WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
@@ -360,41 +360,41 @@ namespace ManagedDoom.SoftwareRendering
 
             if (im.Options.GameMode != GameMode.Commercial)
             {
-                if (im.Wbs.Epsd > 2)
+                if (im.Wbs.Episode > 2)
                 {
                     WI_drawEL(im);
                     return;
                 }
 
-                var last = (im.Wbs.Last == 8) ? im.Wbs.Next - 1 : im.Wbs.Last;
+                var last = (im.Wbs.LastLevel == 8) ? im.Wbs.NextLevel - 1 : im.Wbs.LastLevel;
 
                 // draw a splat on taken cities.
                 for (var i = 0; i <= last; i++)
                 {
-                    var x = WorldMap.Locations[im.Wbs.Epsd][i].X;
-                    var y = WorldMap.Locations[im.Wbs.Epsd][i].Y;
+                    var x = WorldMap.Locations[im.Wbs.Episode][i].X;
+                    var y = WorldMap.Locations[im.Wbs.Episode][i].Y;
                     DrawPatch(patches.Splat, x, y);
                 }
 
                 // splat the secret level?
                 if (im.Wbs.DidSecret)
                 {
-                    var x = WorldMap.Locations[im.Wbs.Epsd][8].X;
-                    var y = WorldMap.Locations[im.Wbs.Epsd][8].Y;
+                    var x = WorldMap.Locations[im.Wbs.Episode][8].X;
+                    var y = WorldMap.Locations[im.Wbs.Episode][8].Y;
                     DrawPatch(patches.Splat, x, y);
                 }
 
                 // draw flashing ptr
                 if (im.Snl_PointerOn)
                 {
-                    var x = WorldMap.Locations[im.Wbs.Epsd][im.Wbs.Next].X;
-                    var y = WorldMap.Locations[im.Wbs.Epsd][im.Wbs.Next].Y;
+                    var x = WorldMap.Locations[im.Wbs.Episode][im.Wbs.NextLevel].X;
+                    var y = WorldMap.Locations[im.Wbs.Episode][im.Wbs.NextLevel].Y;
                     WI_drawOnLnode(patches.YouAreHere, x, y);
                 }
             }
 
             // draws which level you are entering..
-            if ((im.Options.GameMode != GameMode.Commercial) || im.Wbs.Next != 30)
+            if ((im.Options.GameMode != GameMode.Commercial) || im.Wbs.NextLevel != 30)
             {
                 WI_drawEL(im);
             }
@@ -414,11 +414,11 @@ namespace ManagedDoom.SoftwareRendering
 
             // draw <LevelName> 
             DrawPatch(
-                patches.LevelNames[e][wbs.Last],
-                (320 - patches.LevelNames[e][wbs.Last].Width) / 2, y);
+                patches.LevelNames[e][wbs.LastLevel],
+                (320 - patches.LevelNames[e][wbs.LastLevel].Width) / 2, y);
 
             // draw "Finished!"
-            y += (5 * patches.LevelNames[e][wbs.Last].Height) / 4;
+            y += (5 * patches.LevelNames[e][wbs.LastLevel].Height) / 4;
 
             DrawPatch(
                 patches.Finished,
@@ -442,11 +442,11 @@ namespace ManagedDoom.SoftwareRendering
                 (320 - patches.Entering.Width) / 2, y);
 
             // draw level
-            y += (5 * patches.LevelNames[e][im.Wbs.Next].Height) / 4;
+            y += (5 * patches.LevelNames[e][im.Wbs.NextLevel].Height) / 4;
 
             DrawPatch(
-                patches.LevelNames[e][im.Wbs.Next],
-                (320 - patches.LevelNames[e][im.Wbs.Next].Width) / 2, y);
+                patches.LevelNames[e][im.Wbs.NextLevel],
+                (320 - patches.LevelNames[e][im.Wbs.NextLevel].Width) / 2, y);
         }
 
 
@@ -574,7 +574,7 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            if (im.Wbs.Epsd > 2)
+            if (im.Wbs.Episode > 2)
             {
                 return;
             }

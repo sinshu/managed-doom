@@ -561,8 +561,8 @@ namespace ManagedDoom
 			var wminfo = options.wminfo;
 
 			wminfo.DidSecret = options.Players[options.ConsolePlayer].DidSecret;
-			wminfo.Epsd = options.Episode - 1;
-			wminfo.Last = options.Map - 1;
+			wminfo.Episode = options.Episode - 1;
+			wminfo.LastLevel = options.Map - 1;
 
 			// wminfo.next is 0 biased, unlike gamemap
 			if (options.GameMode == GameMode.Commercial)
@@ -572,10 +572,10 @@ namespace ManagedDoom
 					switch (options.Map)
 					{
 						case 15:
-							wminfo.Next = 30;
+							wminfo.NextLevel = 30;
 							break;
 						case 31:
-							wminfo.Next = 31;
+							wminfo.NextLevel = 31;
 							break;
 					}
 				}
@@ -585,10 +585,10 @@ namespace ManagedDoom
 					{
 						case 31:
 						case 32:
-							wminfo.Next = 15;
+							wminfo.NextLevel = 15;
 							break;
 						default:
-							wminfo.Next = options.Map;
+							wminfo.NextLevel = options.Map;
 							break;
 					}
 				}
@@ -598,7 +598,7 @@ namespace ManagedDoom
 				if (world.SecretExit)
 				{
 					// go to secret level 
-					wminfo.Next = 8;
+					wminfo.NextLevel = 8;
 				}
 				else if (options.Map == 9)
 				{
@@ -606,30 +606,30 @@ namespace ManagedDoom
 					switch (options.Episode)
 					{
 						case 1:
-							wminfo.Next = 3;
+							wminfo.NextLevel = 3;
 							break;
 						case 2:
-							wminfo.Next = 5;
+							wminfo.NextLevel = 5;
 							break;
 						case 3:
-							wminfo.Next = 6;
+							wminfo.NextLevel = 6;
 							break;
 						case 4:
-							wminfo.Next = 2;
+							wminfo.NextLevel = 2;
 							break;
 					}
 				}
 				else
 				{
 					// go to next level
-					wminfo.Next = options.Map;
+					wminfo.NextLevel = options.Map;
 				}
 			}
 
-			wminfo.maxKills = world.totalKills;
-			wminfo.maxItems = world.totalItems;
-			wminfo.maxSecret = world.totalSecrets;
-			wminfo.maxFrags = 0;
+			wminfo.MaxKillCount = world.totalKills;
+			wminfo.MaxItemCount = world.totalItems;
+			wminfo.MaxSecretCount = world.totalSecrets;
+			wminfo.TotalFrags = 0;
 			if (options.GameMode == GameMode.Commercial)
 			{
 				wminfo.ParTime = 35 * 30; //cpars[gamemap - 1];
@@ -638,17 +638,16 @@ namespace ManagedDoom
 			{
 				wminfo.ParTime = 35 * 30; //pars[gameepisode][gamemap];
 			}
-			wminfo.PNum = options.ConsolePlayer;
 
 			var players = options.Players;
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
-				wminfo.Plyr[i].InGame = players[i].InGame;
-				wminfo.Plyr[i].Skills = players[i].KillCount;
-				wminfo.Plyr[i].SItems = players[i].ItemCount;
-				wminfo.Plyr[i].SSecret = players[i].SecretCount;
-				wminfo.Plyr[i].STime = world.levelTime;
-				Array.Copy(players[i].Frags, wminfo.Plyr[i].Frags, Player.MaxPlayerCount);
+				wminfo.Players[i].InGame = players[i].InGame;
+				wminfo.Players[i].KillCount = players[i].KillCount;
+				wminfo.Players[i].ItemCount = players[i].ItemCount;
+				wminfo.Players[i].SecretCount = players[i].SecretCount;
+				wminfo.Players[i].Time = world.levelTime;
+				Array.Copy(players[i].Frags, wminfo.Players[i].Frags, Player.MaxPlayerCount);
 			}
 
 			gameState = GameState.Intermission;
@@ -689,7 +688,7 @@ namespace ManagedDoom
 		private void G_DoWorldDone()
 		{
 			gameState = GameState.Level;
-			options.Map = options.wminfo.Next + 1;
+			options.Map = options.wminfo.NextLevel + 1;
 			G_DoLoadLevel();
 			gameAction = GameAction.Nothing;
 		}

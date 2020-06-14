@@ -59,7 +59,7 @@ namespace ManagedDoom
             this.wbs = wbs;
             this.options = options;
 
-            plrs = wbs.Plyr;
+            plrs = wbs.Players;
 
             cnt_kills = new int[Player.MaxPlayerCount];
             cnt_items = new int[Player.MaxPlayerCount];
@@ -73,10 +73,10 @@ namespace ManagedDoom
             }
             dm_totals = new int[Player.MaxPlayerCount];
 
-            animations = new Animation[AnimationInfo.Episodes[wbs.Epsd].Count];
+            animations = new Animation[AnimationInfo.Episodes[wbs.Episode].Count];
             for (var i = 0; i < animations.Length; i++)
             {
-                animations[i] = new Animation(this, AnimationInfo.Episodes[wbs.Epsd][i], i);
+                animations[i] = new Animation(this, AnimationInfo.Episodes[wbs.Episode][i], i);
             }
 
             random = new DoomRandom();
@@ -216,10 +216,10 @@ namespace ManagedDoom
             if (acceleratestage && sp_state != 10)
             {
                 acceleratestage = false;
-                cnt_kills[0] = (plrs[me].Skills * 100) / wbs.MaxKills;
-                cnt_items[0] = (plrs[me].SItems * 100) / wbs.MaxItems;
-                cnt_secret[0] = (plrs[me].SSecret * 100) / wbs.MaxSecret;
-                cnt_time = plrs[me].STime / GameConstants.TicRate;
+                cnt_kills[0] = (plrs[me].KillCount * 100) / wbs.MaxKillCount;
+                cnt_items[0] = (plrs[me].ItemCount * 100) / wbs.MaxItemCount;
+                cnt_secret[0] = (plrs[me].SecretCount * 100) / wbs.MaxSecretCount;
+                cnt_time = plrs[me].Time / GameConstants.TicRate;
                 cnt_par = wbs.ParTime / GameConstants.TicRate;
                 StartSound(Sfx.BAREXP);
                 sp_state = 10;
@@ -234,9 +234,9 @@ namespace ManagedDoom
                     StartSound(Sfx.PISTOL);
                 }
 
-                if (cnt_kills[0] >= (plrs[me].Skills * 100) / wbs.MaxKills)
+                if (cnt_kills[0] >= (plrs[me].KillCount * 100) / wbs.MaxKillCount)
                 {
-                    cnt_kills[0] = (plrs[me].Skills * 100) / wbs.MaxKills;
+                    cnt_kills[0] = (plrs[me].KillCount * 100) / wbs.MaxKillCount;
                     StartSound(Sfx.BAREXP);
                     sp_state++;
                 }
@@ -250,9 +250,9 @@ namespace ManagedDoom
                     StartSound(Sfx.PISTOL);
                 }
 
-                if (cnt_items[0] >= (plrs[me].SItems * 100) / wbs.MaxItems)
+                if (cnt_items[0] >= (plrs[me].ItemCount * 100) / wbs.MaxItemCount)
                 {
-                    cnt_items[0] = (plrs[me].SItems * 100) / wbs.MaxItems;
+                    cnt_items[0] = (plrs[me].ItemCount * 100) / wbs.MaxItemCount;
                     StartSound(Sfx.BAREXP);
                     sp_state++;
                 }
@@ -266,9 +266,9 @@ namespace ManagedDoom
                     StartSound(Sfx.PISTOL);
                 }
 
-                if (cnt_secret[0] >= (plrs[me].SSecret * 100) / wbs.MaxSecret)
+                if (cnt_secret[0] >= (plrs[me].SecretCount * 100) / wbs.MaxSecretCount)
                 {
-                    cnt_secret[0] = (plrs[me].SSecret * 100) / wbs.MaxSecret;
+                    cnt_secret[0] = (plrs[me].SecretCount * 100) / wbs.MaxSecretCount;
                     StartSound(Sfx.BAREXP);
                     sp_state++;
                 }
@@ -283,9 +283,9 @@ namespace ManagedDoom
 
                 cnt_time += 3;
 
-                if (cnt_time >= plrs[me].STime / GameConstants.TicRate)
+                if (cnt_time >= plrs[me].Time / GameConstants.TicRate)
                 {
-                    cnt_time = plrs[me].STime / GameConstants.TicRate;
+                    cnt_time = plrs[me].Time / GameConstants.TicRate;
                 }
 
                 cnt_par += 3;
@@ -294,7 +294,7 @@ namespace ManagedDoom
                 {
                     cnt_par = wbs.ParTime / GameConstants.TicRate;
 
-                    if (cnt_time >= plrs[me].STime / GameConstants.TicRate)
+                    if (cnt_time >= plrs[me].Time / GameConstants.TicRate)
                     {
                         StartSound(Sfx.BAREXP);
                         sp_state++;
@@ -347,9 +347,9 @@ namespace ManagedDoom
                         continue;
                     }
 
-                    cnt_kills[i] = (plrs[i].Skills * 100) / wbs.MaxKills;
-                    cnt_items[i] = (plrs[i].SItems * 100) / wbs.MaxItems;
-                    cnt_secret[i] = (plrs[i].SSecret * 100) / wbs.MaxSecret;
+                    cnt_kills[i] = (plrs[i].KillCount * 100) / wbs.MaxKillCount;
+                    cnt_items[i] = (plrs[i].ItemCount * 100) / wbs.MaxItemCount;
+                    cnt_secret[i] = (plrs[i].SecretCount * 100) / wbs.MaxSecretCount;
                 }
 
                 StartSound(Sfx.BAREXP);
@@ -375,9 +375,9 @@ namespace ManagedDoom
 
                     cnt_kills[i] += 2;
 
-                    if (cnt_kills[i] >= (plrs[i].Skills * 100) / wbs.MaxKills)
+                    if (cnt_kills[i] >= (plrs[i].KillCount * 100) / wbs.MaxKillCount)
                     {
-                        cnt_kills[i] = (plrs[i].Skills * 100) / wbs.MaxKills;
+                        cnt_kills[i] = (plrs[i].KillCount * 100) / wbs.MaxKillCount;
                     }
                     else
                     {
@@ -408,9 +408,9 @@ namespace ManagedDoom
                     }
 
                     cnt_items[i] += 2;
-                    if (cnt_items[i] >= (plrs[i].SItems * 100) / wbs.MaxItems)
+                    if (cnt_items[i] >= (plrs[i].ItemCount * 100) / wbs.MaxItemCount)
                     {
-                        cnt_items[i] = (plrs[i].SItems * 100) / wbs.MaxItems;
+                        cnt_items[i] = (plrs[i].ItemCount * 100) / wbs.MaxItemCount;
                     }
                     else
                     {
@@ -442,9 +442,9 @@ namespace ManagedDoom
 
                     cnt_secret[i] += 2;
 
-                    if (cnt_secret[i] >= (plrs[i].SSecret * 100) / wbs.MaxSecret)
+                    if (cnt_secret[i] >= (plrs[i].SecretCount * 100) / wbs.MaxSecretCount)
                     {
-                        cnt_secret[i] = (plrs[i].SSecret * 100) / wbs.MaxSecret;
+                        cnt_secret[i] = (plrs[i].SecretCount * 100) / wbs.MaxSecretCount;
                     }
                     else
                     {
@@ -709,7 +709,7 @@ namespace ManagedDoom
                 return;
             }
 
-            if (wbs.Epsd > 2)
+            if (wbs.Episode > 2)
             {
                 return;
             }
@@ -786,7 +786,7 @@ namespace ManagedDoom
                 return;
             }
 
-            if (wbs.Epsd > 2)
+            if (wbs.Episode > 2)
             {
                 return;
             }
