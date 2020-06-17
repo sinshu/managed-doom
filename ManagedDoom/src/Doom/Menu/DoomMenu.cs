@@ -8,6 +8,7 @@ namespace ManagedDoom
         private DoomApplication app;
 
         private MenuDef main;
+        private MenuDef episode;
         private MenuDef skill;
         private MenuDef options;
         private MenuDef volume;
@@ -32,6 +33,15 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_HURT", 16, 90, 48, 95, () => app.NewGame(), null),
                 new SimpleMenuItem("M_ULTRA", 16, 106, 48, 111, () => app.NewGame(), null),
                 new SimpleMenuItem("M_NMARE", 16, 122, 48, 127, () => app.NewGame(), null));
+
+            episode = new MenuDef(
+                this,
+                "M_EPISOD", 54, 38,
+                0,
+                new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, null, skill),
+                new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, skill),
+                new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, skill),
+                new SimpleMenuItem("M_EPI4", 16, 106, 48, 111, null, skill));
 
             volume = new MenuDef(
                 this,
@@ -72,11 +82,20 @@ namespace ManagedDoom
                 new TextBoxMenuItem("test???", 48, 113, 72, 125),
                 new TextBoxMenuItem("testtest___", 48, 129, 72, 141));
 
+            MenuDef newGameMenu;
+            if (app.GameMode == GameMode.Commercial)
+            {
+                newGameMenu = skill;
+            }
+            else
+            {
+                newGameMenu = episode;
+            }
             main = new MenuDef(
                 this,
                 "M_DOOM", 94, 2,
                 0,
-                new SimpleMenuItem("M_NGAME", 65, 67, 97, 72, null, skill),
+                new SimpleMenuItem("M_NGAME", 65, 67, 97, 72, null, newGameMenu),
                 new SimpleMenuItem("M_OPTION", 65, 83, 97, 88, null, options),
                 new SimpleMenuItem("M_LOADG", 65, 99, 97, 104, null, load),
                 new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null, save),
