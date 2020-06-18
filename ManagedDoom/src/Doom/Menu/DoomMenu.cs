@@ -34,14 +34,27 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_ULTRA", 16, 106, 48, 111, () => app.NewGame(), null),
                 new SimpleMenuItem("M_NMARE", 16, 122, 48, 127, () => app.NewGame(), null));
 
-            episode = new MenuDef(
-                this,
-                "M_EPISOD", 54, 38,
-                0,
-                new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, null, skill),
-                new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, skill),
-                new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, skill),
-                new SimpleMenuItem("M_EPI4", 16, 106, 48, 111, null, skill));
+            if (app.GameMode == GameMode.Registered)
+            {
+                episode = new MenuDef(
+                    this,
+                    "M_EPISOD", 54, 38,
+                    0,
+                    new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, null, skill),
+                    new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, skill),
+                    new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, skill),
+                    new SimpleMenuItem("M_EPI4", 16, 106, 48, 111, null, skill));
+            }
+            else
+            {
+                episode = new MenuDef(
+                    this,
+                    "M_EPISOD", 54, 38,
+                    0,
+                    new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, null, skill),
+                    new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, skill),
+                    new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, skill));
+            }
 
             volume = new MenuDef(
                 this,
