@@ -34,7 +34,7 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_ULTRA", 16, 106, 48, 111, () => app.NewGame(), null),
                 new SimpleMenuItem("M_NMARE", 16, 122, 48, 127, () => app.NewGame(), null));
 
-            if (app.GameMode == GameMode.Registered)
+            if (app.GameMode == GameMode.Retail)
             {
                 episode = new MenuDef(
                     this,

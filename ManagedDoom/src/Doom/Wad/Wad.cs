@@ -148,10 +148,8 @@ namespace ManagedDoom
                     case "plutonia":
                     case "tnt":
                         return GameMode.Commercial;
-                    case "doomu":
-                        return GameMode.Retail;
                     case "doom":
-                        return GameMode.Registered;
+                        return GameMode.Retail;
                     case "doom1":
                         return GameMode.Shareware;
                 }
