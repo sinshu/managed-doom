@@ -79,10 +79,10 @@ namespace ManagedDoom.SoftwareRendering
 
         private PatchCache cache;
 
-        Patch minus;
-        Patch[] numbers;
-        Patch percent;
-        Patch colon;
+        private Patch minus;
+        private Patch[] numbers;
+        private Patch percent;
+        private Patch colon;
 
         private int scale;
 
