@@ -82,7 +82,7 @@ namespace ManagedDoom
 				if (plyr.Health == 0)
 				{
 					priority = 9;
-					st_faceindex = DoomInfo.FaceInfos.ST_DEADFACE;
+					st_faceindex = Face.ST_DEADFACE;
 					st_facecount = 1;
 				}
 			}
@@ -106,8 +106,8 @@ namespace ManagedDoom
 					{
 						// evil grin if just picked up weapon
 						priority = 8;
-						st_facecount = DoomInfo.FaceInfos.ST_EVILGRINCOUNT;
-						st_faceindex = ST_calcPainOffset() + DoomInfo.FaceInfos.ST_EVILGRINOFFSET;
+						st_facecount = Face.ST_EVILGRINCOUNT;
+						st_faceindex = ST_calcPainOffset() + Face.ST_EVILGRINOFFSET;
 					}
 				}
 
@@ -122,10 +122,10 @@ namespace ManagedDoom
 					// being attacked
 					priority = 7;
 
-					if (plyr.Health - st_oldhealth > DoomInfo.FaceInfos.ST_MUCHPAIN)
+					if (plyr.Health - st_oldhealth > Face.ST_MUCHPAIN)
 					{
-						st_facecount = DoomInfo.FaceInfos.ST_TURNCOUNT;
-						st_faceindex = ST_calcPainOffset() + DoomInfo.FaceInfos.ST_OUCHOFFSET;
+						st_facecount = Face.ST_TURNCOUNT;
+						st_faceindex = ST_calcPainOffset() + Face.ST_OUCHOFFSET;
 					}
 					else
 					{
@@ -149,23 +149,23 @@ namespace ManagedDoom
 							i = diffang <= Angle.Ang180;
 						} // confusing, aint it?
 
-						st_facecount = DoomInfo.FaceInfos.ST_TURNCOUNT;
+						st_facecount = Face.ST_TURNCOUNT;
 						st_faceindex = ST_calcPainOffset();
 
 						if (diffang < Angle.Ang45)
 						{
 							// head-on    
-							st_faceindex += DoomInfo.FaceInfos.ST_RAMPAGEOFFSET;
+							st_faceindex += Face.ST_RAMPAGEOFFSET;
 						}
 						else if (i)
 						{
 							// turn face right
-							st_faceindex += DoomInfo.FaceInfos.ST_TURNOFFSET;
+							st_faceindex += Face.ST_TURNOFFSET;
 						}
 						else
 						{
 							// turn face left
-							st_faceindex += DoomInfo.FaceInfos.ST_TURNOFFSET + 1;
+							st_faceindex += Face.ST_TURNOFFSET + 1;
 						}
 					}
 				}
@@ -176,17 +176,17 @@ namespace ManagedDoom
 				// getting hurt because of your own damn stupidity
 				if (plyr.DamageCount != 0)
 				{
-					if (plyr.Health - st_oldhealth > DoomInfo.FaceInfos.ST_MUCHPAIN)
+					if (plyr.Health - st_oldhealth > Face.ST_MUCHPAIN)
 					{
 						priority = 7;
-						st_facecount = DoomInfo.FaceInfos.ST_TURNCOUNT;
-						st_faceindex = ST_calcPainOffset() + DoomInfo.FaceInfos.ST_OUCHOFFSET;
+						st_facecount = Face.ST_TURNCOUNT;
+						st_faceindex = ST_calcPainOffset() + Face.ST_OUCHOFFSET;
 					}
 					else
 					{
 						priority = 6;
-						st_facecount = DoomInfo.FaceInfos.ST_TURNCOUNT;
-						st_faceindex = ST_calcPainOffset() + DoomInfo.FaceInfos.ST_RAMPAGEOFFSET;
+						st_facecount = Face.ST_TURNCOUNT;
+						st_faceindex = ST_calcPainOffset() + Face.ST_RAMPAGEOFFSET;
 					}
 
 				}
@@ -200,12 +200,12 @@ namespace ManagedDoom
 				{
 					if (lastattackdown == -1)
 					{
-						lastattackdown = DoomInfo.FaceInfos.ST_RAMPAGEDELAY;
+						lastattackdown = Face.ST_RAMPAGEDELAY;
 					}
 					else if (--lastattackdown == 0)
 					{
 						priority = 5;
-						st_faceindex = ST_calcPainOffset() + DoomInfo.FaceInfos.ST_RAMPAGEOFFSET;
+						st_faceindex = ST_calcPainOffset() + Face.ST_RAMPAGEOFFSET;
 						st_facecount = 1;
 						lastattackdown = 1;
 					}
@@ -224,7 +224,7 @@ namespace ManagedDoom
 				{
 					priority = 4;
 
-					st_faceindex = DoomInfo.FaceInfos.ST_GODFACE;
+					st_faceindex = Face.ST_GODFACE;
 					st_facecount = 1;
 
 				}
@@ -235,7 +235,7 @@ namespace ManagedDoom
 			if (st_facecount == 0)
 			{
 				st_faceindex = ST_calcPainOffset() + (st_randomnumber % 3);
-				st_facecount = DoomInfo.FaceInfos.ST_STRAIGHTFACECOUNT;
+				st_facecount = Face.ST_STRAIGHTFACECOUNT;
 				priority = 0;
 			}
 
@@ -250,13 +250,44 @@ namespace ManagedDoom
 
 			if (health != oldhealth)
 			{
-				lastcalc = DoomInfo.FaceInfos.ST_FACESTRIDE
-					* (((100 - health) * DoomInfo.FaceInfos.ST_NUMPAINFACES) / 101);
+				lastcalc = Face.ST_FACESTRIDE
+					* (((100 - health) * Face.ST_NUMPAINFACES) / 101);
 				oldhealth = health;
 			}
 			return lastcalc;
 		}
 
-		public int Face => st_faceindex;
+		public int FaceIndex => st_faceindex;
+
+
+
+		public static class Face
+		{
+			public static readonly int ST_NUMPAINFACES = 5;
+			public static readonly int ST_NUMSTRAIGHTFACES = 3;
+			public static readonly int ST_NUMTURNFACES = 2;
+			public static readonly int ST_NUMSPECIALFACES = 3;
+
+			public static readonly int ST_FACESTRIDE = (ST_NUMSTRAIGHTFACES + ST_NUMTURNFACES + ST_NUMSPECIALFACES);
+
+			public static readonly int ST_NUMEXTRAFACES = 2;
+
+			public static readonly int ST_NUMFACES = (ST_FACESTRIDE * ST_NUMPAINFACES + ST_NUMEXTRAFACES);
+
+			public static readonly int ST_TURNOFFSET = (ST_NUMSTRAIGHTFACES);
+			public static readonly int ST_OUCHOFFSET = (ST_TURNOFFSET + ST_NUMTURNFACES);
+			public static readonly int ST_EVILGRINOFFSET = (ST_OUCHOFFSET + 1);
+			public static readonly int ST_RAMPAGEOFFSET = (ST_EVILGRINOFFSET + 1);
+			public static readonly int ST_GODFACE = (ST_NUMPAINFACES * ST_FACESTRIDE);
+			public static readonly int ST_DEADFACE = (ST_GODFACE + 1);
+
+			public static readonly int ST_EVILGRINCOUNT = (2 * GameConstants.TicRate);
+			public static readonly int ST_STRAIGHTFACECOUNT = (GameConstants.TicRate / 2);
+			public static readonly int ST_TURNCOUNT = (1 * GameConstants.TicRate);
+			public static readonly int ST_OUCHCOUNT = (1 * GameConstants.TicRate);
+			public static readonly int ST_RAMPAGEDELAY = (2 * GameConstants.TicRate);
+
+			public static readonly int ST_MUCHPAIN = 20;
+		}
 	}
 }

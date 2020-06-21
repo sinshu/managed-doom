@@ -251,7 +251,7 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Render(StatusBar statusBar, Player player)
         {
-            screen.DrawPatch(patches.StatusBar, 0, scale * (200 - 32), scale);
+            screen.DrawPatch(patches.Background, 0, scale * (200 - 32), scale);
 
             if (DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo != AmmoType.NoAmmo)
             {
@@ -301,7 +301,7 @@ namespace ManagedDoom.SoftwareRendering
             }
 
             screen.DrawPatch(
-                patches.Faces[statusBar.Face],
+                patches.Faces[statusBar.FaceIndex],
                 scale * ST_FACESX,
                 scale * ST_FACESY,
                 scale);
@@ -475,11 +475,11 @@ namespace ManagedDoom.SoftwareRendering
                     faceBacks[i] = Patch.FromWad("STFB" + i, wad);
                 }
 
-                faces = new Patch[DoomInfo.FaceInfos.ST_NUMFACES];
+                faces = new Patch[StatusBar.Face.ST_NUMFACES];
                 var facenum = 0;
-                for (var i = 0; i < DoomInfo.FaceInfos.ST_NUMPAINFACES; i++)
+                for (var i = 0; i < StatusBar.Face.ST_NUMPAINFACES; i++)
                 {
-                    for (var j = 0; j < DoomInfo.FaceInfos.ST_NUMSTRAIGHTFACES; j++)
+                    for (var j = 0; j < StatusBar.Face.ST_NUMSTRAIGHTFACES; j++)
                     {
                         faces[facenum++] = Patch.FromWad("STFST" + i + j, wad);
                     }
@@ -499,7 +499,7 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-            public Patch StatusBar => statusBar;
+            public Patch Background => statusBar;
             public Patch[] TallNumbers => tallNumbers;
             public Patch[] ShortNumbers => shortNumbers;
             public Patch TallMinus => tallMinus;

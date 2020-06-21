@@ -631,7 +631,8 @@ namespace ManagedDoom.SoftwareRendering
                     {
                         DrawPatch(colon, x, y);
                     }
-                } while (t / div != 0);
+                }
+                while (t / div != 0);
             }
             else
             {
