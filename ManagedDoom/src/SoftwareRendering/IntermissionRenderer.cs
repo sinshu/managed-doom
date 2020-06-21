@@ -42,7 +42,7 @@ namespace ManagedDoom.SoftwareRendering
             "STPB0",
             "STPB1",
             "STPB2",
-            "STPB3",
+            "STPB3"
         };
 
         private static readonly string[] youAreHere = new string[]
@@ -233,8 +233,16 @@ namespace ManagedDoom.SoftwareRendering
 
             if (im.Info.Episode < 3)
             {
-                //V_DrawPatch(SCREENWIDTH / 2 + SP_TIMEX, SP_TIMEY, FB, par);
-                //WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
+
+                DrawPatch(
+                    "WIPAR", // PAR
+                    320 / 2 + spTimeX,
+                    spTimeY);
+
+                DrawTime(
+                320 - spTimeX,
+                spTimeY,
+                im.ParCount);
             }
         }
 
@@ -458,7 +466,7 @@ namespace ManagedDoom.SoftwareRendering
                     DrawPatch("WISPLAT", x, y);
                 }
 
-                // Draw flashing ptr.
+                // Draw "you are here".
                 if (im.ShowYouAreHere)
                 {
                     var x = WorldMap.Locations[im.Info.Episode][im.Info.NextLevel].X;

@@ -773,6 +773,7 @@ namespace ManagedDoom
         public IReadOnlyList<int> SecretCount => secretCount;
         public IReadOnlyList<int> FragCount => fragCount;
         public int TimeCount => timeCount;
+        public int ParCount => parCount;
         public int[][] DeathmatchFrags => dmFragCount;
         public int[] DeathmatchTotals => dmTotalCount;
         public bool DoFrags => doFrags;
