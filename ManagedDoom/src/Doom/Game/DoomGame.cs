@@ -632,11 +632,11 @@ namespace ManagedDoom
 			wminfo.TotalFrags = 0;
 			if (options.GameMode == GameMode.Commercial)
 			{
-				wminfo.ParTime = 35 * 30; //cpars[gamemap - 1];
+				wminfo.ParTime = 35 * DoomInfo.ParTimes.Doom2[options.Map - 1];
 			}
 			else
 			{
-				wminfo.ParTime = 35 * 30; //pars[gameepisode][gamemap];
+				wminfo.ParTime = 35 * DoomInfo.ParTimes.Doom1[options.Episode - 1][options.Map - 1];
 			}
 
 			var players = options.Players;

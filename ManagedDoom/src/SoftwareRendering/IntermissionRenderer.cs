@@ -240,9 +240,9 @@ namespace ManagedDoom.SoftwareRendering
                     spTimeY);
 
                 DrawTime(
-                320 - spTimeX,
-                spTimeY,
-                im.ParCount);
+                    320 - spTimeX,
+                    spTimeY,
+                    im.ParCount);
             }
         }
 
@@ -687,8 +687,8 @@ namespace ManagedDoom.SoftwareRendering
                 {
                     i++;
                 }
-
-            } while (!fits && i != 2);
+            }
+            while (!fits && i != 2);
 
             if (fits && i < 2)
             {
