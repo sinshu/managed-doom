@@ -128,12 +128,12 @@ namespace ManagedDoom.SoftwareRendering
                 if (game.World.AutoMap.Visible)
                 {
                     autoMap.Render(player);
-                    statusBar.Render(game.World.StatusBar, player);
+                    statusBar.Render(player);
                 }
                 else
                 {
                     threeD.Render(player);
-                    statusBar.Render(game.World.StatusBar, player);
+                    statusBar.Render(player);
                 }
                 if (player.MessageTime > 0)
                 {

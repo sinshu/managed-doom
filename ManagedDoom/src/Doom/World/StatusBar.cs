@@ -4,8 +4,6 @@ namespace ManagedDoom
 {
 	public sealed class StatusBar
 	{
-		public static readonly int Height = 32;
-
 		private World world;
 
 		// Used for appopriately pained face.

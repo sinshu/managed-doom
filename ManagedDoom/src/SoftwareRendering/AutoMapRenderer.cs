@@ -92,7 +92,7 @@ namespace ManagedDoom.SoftwareRendering
 
             scale = screen.Width / 320;
             amWidth = screen.Width;
-            amHeight = screen.Height - scale * StatusBar.Height;
+            amHeight = screen.Height - scale * StatusBarRenderer.Height;
             ppu = (float)scale / 16;
 
             markNumbers = new Patch[10];
