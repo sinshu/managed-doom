@@ -92,7 +92,7 @@ namespace ManagedDoom
 
             // Initial height of PointOfView
             // will be set by player think.
-            options.Players[consoleplayer].ViewZ = new Fixed(1);
+            options.Players[consoleplayer].ViewZ = Fixed.Epsilon;
 
             LoadThings();
 
@@ -286,7 +286,7 @@ namespace ManagedDoom
                 ss.Sector.FloorHeight,
                 MobjType.Tfog);
 
-            if (players[Options.ConsolePlayer].ViewZ != new Fixed(1))
+            if (!FirstTicIsNotYetDone)
             {
                 // Don't start sound on first frame.
                 StartSound(mo, Sfx.TELEPT);
@@ -525,7 +525,7 @@ namespace ManagedDoom
         public MapThing[] DeathmatchStarts => deathmatchStarts;
 
         public Player ConsolePlayer => Options.Players[Options.ConsolePlayer];
-
+        public bool FirstTicIsNotYetDone => ConsolePlayer.ViewZ == Fixed.Epsilon;
         public bool SecretExit => secretexit;
 
         public static readonly Fixed USERANGE = Fixed.FromInt(64);
