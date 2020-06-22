@@ -475,11 +475,11 @@ namespace ManagedDoom.SoftwareRendering
                     faceBacks[i] = Patch.FromWad("STFB" + i, wad);
                 }
 
-                faces = new Patch[StatusBar.Face.ST_NUMFACES];
+                faces = new Patch[StatusBar.Face.FaceCount];
                 var facenum = 0;
-                for (var i = 0; i < StatusBar.Face.ST_NUMPAINFACES; i++)
+                for (var i = 0; i < StatusBar.Face.PainFaceCount; i++)
                 {
-                    for (var j = 0; j < StatusBar.Face.ST_NUMSTRAIGHTFACES; j++)
+                    for (var j = 0; j < StatusBar.Face.StraightFaceCount; j++)
                     {
                         faces[facenum++] = Patch.FromWad("STFST" + i + j, wad);
                     }
