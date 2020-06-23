@@ -7,14 +7,18 @@ namespace ManagedDoom
     {
         private DoomApplication app;
 
-        private MenuDef main;
-        private MenuDef episode;
-        private MenuDef skill;
-        private MenuDef options;
-        private MenuDef volume;
-        private MenuDef load;
-        private MenuDef save;
+        private SelectableMenu main;
+        private SelectableMenu episode;
+        private SelectableMenu skill;
+        private SelectableMenu options;
+        private SelectableMenu volume;
+        private SelectableMenu load;
+        private SelectableMenu save;
+
+        private YesNoConfirm nightmareConfirm;
+
         private MenuDef current;
+
         private bool active;
 
         private int tics;
@@ -22,6 +26,11 @@ namespace ManagedDoom
         public DoomMenu(DoomApplication app)
         {
             this.app = app;
+
+            nightmareConfirm = new YesNoConfirm(
+                this,
+                DoomInfo.Strings.NIGHTMARE,
+                () => app.NewGame());
 
             skill = new SelectableMenu(
                 this,
@@ -32,7 +41,7 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_ROUGH", 16, 74, 48, 79, () => app.NewGame(), null),
                 new SimpleMenuItem("M_HURT", 16, 90, 48, 95, () => app.NewGame(), null),
                 new SimpleMenuItem("M_ULTRA", 16, 106, 48, 111, () => app.NewGame(), null),
-                new SimpleMenuItem("M_NMARE", 16, 122, 48, 127, () => app.NewGame(), null));
+                new SimpleMenuItem("M_NMARE", 16, 122, 48, 127, null, nightmareConfirm));
 
             if (app.GameMode == GameMode.Retail)
             {

@@ -27,6 +27,12 @@ namespace ManagedDoom.SoftwareRendering
             {
                 DrawSelectableMenu(selectable);
             }
+
+            var yesNo = menu.Current as YesNoConfirm;
+            if (yesNo != null)
+            {
+                DrawText(yesNo.Text);
+            }
         }
 
         private void DrawSelectableMenu(SelectableMenu selectable)
@@ -134,6 +140,19 @@ namespace ManagedDoom.SoftwareRendering
             {
                 var textWidth = screen.MeasureText(item.Text, 1);
                 DrawMenuText(cursor, item.ItemX + 8 + textWidth, item.ItemY);
+            }
+        }
+
+        private void DrawText(IReadOnlyList<string> text)
+        {
+            var scale = screen.Width / 320;
+            var height = 7 * scale * text.Count;
+
+            for (var i = 0; i < text.Count; i++)
+            {
+                var x = (screen.Width - screen.MeasureText(text[i], scale)) / 2;
+                var y = (screen.Height - height) / 2 + 7 * scale * (i + 1);
+                screen.DrawText(text[i], x, y, scale);
             }
         }
     }
