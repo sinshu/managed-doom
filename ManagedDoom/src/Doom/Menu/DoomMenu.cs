@@ -170,11 +170,9 @@ namespace ManagedDoom
         {
             active = true;
 
-            if (!app.Options.NetGame &&
-                app.State == ApplicationState.Game &&
-                !app.Game.Paused)
+            if (!app.Options.NetGame)
             {
-                app.SendPause();
+                app.PauseGame();
             }
         }
 
@@ -182,11 +180,9 @@ namespace ManagedDoom
         {
             active = false;
 
-            if (!app.Options.NetGame &&
-                app.State == ApplicationState.Game &&
-                app.Game.Paused)
+            if (!app.Options.NetGame)
             {
-                app.SendPause();
+                app.ResumeGame();
             }
         }
 

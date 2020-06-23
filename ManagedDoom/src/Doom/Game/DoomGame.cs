@@ -390,11 +390,13 @@ namespace ManagedDoom
 
 		private void G_InitNew(GameSkill skill, int episode, int map)
 		{
+			/*
 			if (paused)
 			{
 				paused = false;
 				//S_ResumeSound();
 			}
+			*/
 
 
 			if (skill > GameSkill.Nightmare)

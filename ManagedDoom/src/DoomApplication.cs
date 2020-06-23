@@ -175,9 +175,24 @@ namespace ManagedDoom
             }
         }
 
-        public void SendPause()
+        public void PauseGame()
         {
-            sendPause = true;
+            if (state == ApplicationState.Game &&
+                game.gameState == GameState.Level &&
+                !game.Paused && !sendPause)
+            {
+                sendPause = true;
+            }
+        }
+
+        public void ResumeGame()
+        {
+            if (state == ApplicationState.Game &&
+                game.gameState == GameState.Level &&
+                game.Paused && !sendPause)
+            {
+                sendPause = true;
+            }
         }
 
         public void Dispose()
