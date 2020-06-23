@@ -10,31 +10,42 @@ namespace ManagedDoom.SoftwareRendering
         private Wad wad;
         private DrawScreen screen;
 
-        private Dictionary<string, Patch> patches;
+        private PatchCache cache;
 
         public MenuRenderer(Wad wad, DrawScreen screen)
         {
             this.wad = wad;
             this.screen = screen;
 
-            patches = new Dictionary<string, Patch>();
+            cache = new PatchCache(wad);
         }
 
         public void Render(DoomMenu menu)
         {
-            var current = menu.Current;
-            for (var i = 0; i < current.Name.Count; i++)
+            var selectable = menu.Current as SelectableMenu;
+            if (selectable != null)
             {
-                DrawMenuPatch(current.Name[i], current.TitleX[i], current.TitleY[i]);
+                DrawSelectableMenu(selectable);
+            }
+        }
+
+        private void DrawSelectableMenu(SelectableMenu selectable)
+        {
+            for (var i = 0; i < selectable.Name.Count; i++)
+            {
+                DrawMenuPatch(
+                    selectable.Name[i],
+                    selectable.TitleX[i],
+                    selectable.TitleY[i]);
             }
 
-            foreach (var item in current.Items)
+            foreach (var item in selectable.Items)
             {
-                DrawMenuItem(menu, item);
+                DrawMenuItem(selectable.Menu, item);
             }
 
-            var choice = current.Choice;
-            var skull = menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
+            var choice = selectable.Choice;
+            var skull = selectable.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
             DrawMenuPatch(skull, choice.SkullX, choice.SkullY);
         }
 
@@ -67,16 +78,8 @@ namespace ManagedDoom.SoftwareRendering
 
         private void DrawMenuPatch(string name, int x, int y)
         {
-            Patch patch;
-            if (!patches.TryGetValue(name, out patch))
-            {
-                Console.WriteLine("Patch loaded: " + name);
-                patch = Patch.FromWad(name, wad);
-                patches.Add(name, patch);
-            }
-
             var scale = screen.Width / 320;
-            screen.DrawPatch(patch, scale * x, scale * y, scale);
+            screen.DrawPatch(cache[name], scale * x, scale * y, scale);
         }
 
         private void DrawMenuText(IReadOnlyList<char> text, int x, int y)

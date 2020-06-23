@@ -23,7 +23,7 @@ namespace ManagedDoom
         {
             this.app = app;
 
-            skill = new MenuDef(
+            skill = new SelectableMenu(
                 this,
                 "M_NEWG", 96, 14,
                 "M_SKILL", 54, 38,
@@ -36,7 +36,7 @@ namespace ManagedDoom
 
             if (app.GameMode == GameMode.Retail)
             {
-                episode = new MenuDef(
+                episode = new SelectableMenu(
                     this,
                     "M_EPISOD", 54, 38,
                     0,
@@ -47,7 +47,7 @@ namespace ManagedDoom
             }
             else
             {
-                episode = new MenuDef(
+                episode = new SelectableMenu(
                     this,
                     "M_EPISOD", 54, 38,
                     0,
@@ -56,14 +56,14 @@ namespace ManagedDoom
                     new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, skill));
             }
 
-            volume = new MenuDef(
+            volume = new SelectableMenu(
                 this,
                 "M_SVOL", 60, 38,
                 0,
                 new SliderMenuItem("M_SFXVOL", 48, 59, 80, 64, 16, 8),
                 new SliderMenuItem("M_MUSVOL", 48, 91, 80, 96, 16, 8));
 
-            options = new MenuDef(
+            options = new SelectableMenu(
                 this,
                 "M_OPTTTL", 108, 15,
                 0,
@@ -73,7 +73,7 @@ namespace ManagedDoom
                 new SliderMenuItem("M_MSENS", 28, 112 - 16, 60, 117 - 16, 10, 3),
                 new SimpleMenuItem("M_SVOL", 28, 144 - 16, 60, 149 - 16, null, volume));
 
-            load = new MenuDef(
+            load = new SelectableMenu(
                 this,
                 "M_LOADG", 72, 28,
                 0,
@@ -84,7 +84,7 @@ namespace ManagedDoom
                 new TextBoxMenuItem("TEST!!!", 48, 113, 72, 125),
                 new TextBoxMenuItem("TEST!!!", 48, 129, 72, 141));
 
-            save = new MenuDef(
+            save = new SelectableMenu(
                 this,
                 "M_SAVEG", 72, 28,
                 0,
@@ -104,7 +104,7 @@ namespace ManagedDoom
             {
                 newGameMenu = episode;
             }
-            main = new MenuDef(
+            main = new SelectableMenu(
                 this,
                 "M_DOOM", 94, 2,
                 0,
