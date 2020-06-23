@@ -28,6 +28,8 @@ namespace ManagedDoom
 
         //private Demo demo;
 
+        private bool sendPause;
+
         public DoomApplication()
         {
             try
@@ -75,6 +77,8 @@ namespace ManagedDoom
                 window.KeyReleased += KeyReleased;
 
                 window.SetFramerateLimit(35);
+
+                sendPause = false;
             }
             catch (Exception e)
             {
@@ -109,12 +113,19 @@ namespace ManagedDoom
 
                 if (state == ApplicationState.Game)
                 {
+                    if (e.Key == DoomKeys.P && e.Type == EventType.KeyDown)
+                    {
+                        sendPause = true;
+                        continue;
+                    }
+
                     if (game.DoEvent(e))
                     {
                         continue;
                     }
                 }
             }
+
             events.Clear();
         }
 
@@ -128,7 +139,13 @@ namespace ManagedDoom
             }
             else if (state == ApplicationState.Game)
             {
-                UserInput.BuildTicCmd(cmds[0]);
+                UserInput.BuildTicCmd(cmds[options.ConsolePlayer]);
+                if (sendPause)
+                {
+                    sendPause = false;
+                    cmds[options.ConsolePlayer].Buttons |= TicCmdButtons.Special | TicCmdButtons.Pause;
+                }
+
                 //demo.ReadCmd(cmds);
                 game.Update(cmds);
             }
@@ -156,6 +173,11 @@ namespace ManagedDoom
                 de.Key = (DoomKeys)e.Code;
                 events.Add(de);
             }
+        }
+
+        public void SendPause()
+        {
+            sendPause = true;
         }
 
         public void Dispose()
@@ -187,6 +209,7 @@ namespace ManagedDoom
 
         public ApplicationState State => state;
         public OpeningSequence Opening => opening;
+        public GameOptions Options => options;
         public DoomGame Game => game;
         public DoomMenu Menu => menu;
         public GameMode GameMode => resource.Wad.GameMode;

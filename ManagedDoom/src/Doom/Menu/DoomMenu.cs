@@ -169,11 +169,25 @@ namespace ManagedDoom
         public void Open()
         {
             active = true;
+
+            if (!app.Options.NetGame &&
+                app.State == ApplicationState.Game &&
+                !app.Game.Paused)
+            {
+                app.SendPause();
+            }
         }
 
         public void Close()
         {
             active = false;
+
+            if (!app.Options.NetGame &&
+                app.State == ApplicationState.Game &&
+                app.Game.Paused)
+            {
+                app.SendPause();
+            }
         }
 
         public MenuDef Current => current;

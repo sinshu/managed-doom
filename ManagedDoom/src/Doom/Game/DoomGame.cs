@@ -171,9 +171,12 @@ namespace ManagedDoom
 			switch (gameState)
 			{
 				case GameState.Level:
-					if (world.Update())
+					if (!paused || world.FirstTicIsNotYetDone)
 					{
-						gameAction = GameAction.Completed;
+						if (world.Update())
+						{
+							gameAction = GameAction.Completed;
+						}
 					}
 					break;
 
@@ -734,6 +737,7 @@ namespace ManagedDoom
 		public World World => world;
 		public Intermission Intermission => intermission;
 		public Finale Finale => finale;
+		public bool Paused => paused;
 
 
 		private SfmlAudio audio;

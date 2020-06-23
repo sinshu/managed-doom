@@ -37,6 +37,8 @@ namespace ManagedDoom.SoftwareRendering
         private AutoMapRenderer autoMap;
         private FinaleRenderer finale;
 
+        private Patch pause;
+
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
         {
             sfmlWindow = window;
@@ -88,6 +90,8 @@ namespace ManagedDoom.SoftwareRendering
             openingSequence = new OpeningSequenceRenderer(resource.Wad, screen, this);
             autoMap = new AutoMapRenderer(resource.Wad, screen);
             finale = new FinaleRenderer(resource, screen);
+
+            pause = Patch.FromWad("M_PAUSE", resource.Wad);
         }
 
         private static uint[] InitColors(Palette palette)
@@ -106,20 +110,6 @@ namespace ManagedDoom.SoftwareRendering
             return colors;
         }
 
-        /*
-        public void BindWorld(World world)
-        {
-            this.world = world;
-
-            threeD.BindWorld(world);
-        }
-
-        public void UnbindWorld()
-        {
-            threeD.UnbindWorld();
-        }
-        */
-
         public void RenderGame(DoomGame game)
         {
             if (game.gameState == GameState.Level)
@@ -135,9 +125,10 @@ namespace ManagedDoom.SoftwareRendering
                     threeD.Render(player);
                     statusBar.Render(player);
                 }
+
+                var scale = screen.Width / 320;
                 if (player.MessageTime > 0)
                 {
-                    int scale = screen.Width / 320;
                     screen.DrawText(player.Message, 0, 7 * scale, scale);
                 }
             }
@@ -166,6 +157,20 @@ namespace ManagedDoom.SoftwareRendering
             {
                 menu.Render(app.Menu);
             }
+            else
+            {
+                if (app.State == ApplicationState.Game &&
+                    app.Game.gameState == GameState.Level &&
+                    app.Game.Paused)
+                {
+                    var scale = screen.Width / 320;
+                    screen.DrawPatch(
+                        pause,
+                        (screen.Width - scale * pause.Width) / 2,
+                        4 * scale,
+                        scale);
+                }
+            }
 
             var screenData = screen.Data;
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
@@ -173,29 +178,8 @@ namespace ManagedDoom.SoftwareRendering
             {
                 p[i] = colors[screenData[i]];
             }
-
             sfmlTexture.Update(sfmlTextureData, (uint)screen.Height, (uint)screen.Width, 0, 0);
-
             sfmlWindow.Draw(sfmlSprite, sfmlStates);
-
-            sfmlWindow.Display();
-        }
-
-        public void IntermissionRenderTest(Intermission im)
-        {
-            intermission.Render(im);
-
-            var screenData = screen.Data;
-            var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
-            for (var i = 0; i < p.Length; i++)
-            {
-                p[i] = colors[screenData[i]];
-            }
-
-            sfmlTexture.Update(sfmlTextureData, (uint)screen.Height, (uint)screen.Width, 0, 0);
-
-            sfmlWindow.Draw(sfmlSprite, sfmlStates);
-
             sfmlWindow.Display();
         }
 
@@ -212,8 +196,6 @@ namespace ManagedDoom.SoftwareRendering
                 sfmlTexture.Dispose();
                 sfmlTexture = null;
             }
-
-            Console.WriteLine("SFML resources are disposed.");
         }
     }
 }
