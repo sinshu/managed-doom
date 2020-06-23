@@ -10,16 +10,17 @@ namespace ManagedDoom
 		private GameOptions options;
 
 		// Stage of animation:
-		//  0 = text, 1 = art screen, 2 = character cast
-		private int finalestage;
-		private int finalecount;
+		// 0 = text, 1 = art screen, 2 = character cast.
+		private int stage;
+		private int count;
 
-		private string finaleflat;
-		private string finaletext;
+		private string flat;
+		private string text;
 
+		// For bunny scroll.
 		private int scrolled;
-		private int laststage;
-		private bool showEnd;
+		private bool showTheEnd;
+		private int theEndIndex;
 
 		public Finale(GameOptions options)
 		{
@@ -41,6 +42,7 @@ namespace ManagedDoom
 					c5Text = DoomInfo.Strings.P5TEXT;
 					c6Text = DoomInfo.Strings.P6TEXT;
 					break;
+
 				case MissionPack.Tnt:
 					c1Text = DoomInfo.Strings.T1TEXT;
 					c2Text = DoomInfo.Strings.T2TEXT;
@@ -49,6 +51,7 @@ namespace ManagedDoom
 					c5Text = DoomInfo.Strings.T5TEXT;
 					c6Text = DoomInfo.Strings.T6TEXT;
 					break;
+
 				default:
 					c1Text = DoomInfo.Strings.C1TEXT;
 					c2Text = DoomInfo.Strings.C2TEXT;
@@ -59,107 +62,101 @@ namespace ManagedDoom
 					break;
 			}
 
-			// Okay - IWAD dependend stuff.
-			// This has been changed severly, and
-			//  some stuff might have changed in the process.
 			switch (options.GameMode)
 			{
-
-				// DOOM 1 - E1, E3 or E4, but each nine missions
 				case GameMode.Shareware:
 				case GameMode.Registered:
 				case GameMode.Retail:
+					//S_ChangeMusic(mus_victor, true);
+					switch (options.Episode)
 					{
-						//S_ChangeMusic(mus_victor, true);
+						case 1:
+							flat = "FLOOR4_8";
+							text = DoomInfo.Strings.E1TEXT;
+							break;
 
-						switch (options.Episode)
-						{
-							case 1:
-								finaleflat = "FLOOR4_8";
-								finaletext = DoomInfo.Strings.E1TEXT;
-								break;
-							case 2:
-								finaleflat = "SFLR6_1";
-								finaletext = DoomInfo.Strings.E2TEXT;
-								break;
-							case 3:
-								finaleflat = "MFLR8_4";
-								finaletext = DoomInfo.Strings.E3TEXT;
-								break;
-							case 4:
-								finaleflat = "MFLR8_3";
-								finaletext = DoomInfo.Strings.E4TEXT;
-								break;
-							default:
-								// Ouch.
-								break;
-						}
-						break;
+						case 2:
+							flat = "SFLR6_1";
+							text = DoomInfo.Strings.E2TEXT;
+							break;
+
+						case 3:
+							flat = "MFLR8_4";
+							text = DoomInfo.Strings.E3TEXT;
+							break;
+
+						case 4:
+							flat = "MFLR8_3";
+							text = DoomInfo.Strings.E4TEXT;
+							break;
+
+						default:
+							break;
 					}
+					break;
 
-				// DOOM II and missions packs with E1, M34
 				case GameMode.Commercial:
+					//S_ChangeMusic(mus_read_m, true);
+					switch (options.Map)
 					{
-						//S_ChangeMusic(mus_read_m, true);
+						case 6:
+							flat = "SLIME16";
+							text = c1Text;
+							break;
 
-						switch (options.Map)
-						{
-							case 6:
-								finaleflat = "SLIME16";
-								finaletext = c1Text;
-								break;
-							case 11:
-								finaleflat = "RROCK14";
-								finaletext = c2Text;
-								break;
-							case 20:
-								finaleflat = "RROCK07";
-								finaletext = c3Text;
-								break;
-							case 30:
-								finaleflat = "RROCK17";
-								finaletext = c4Text;
-								break;
-							case 15:
-								finaleflat = "RROCK13";
-								finaletext = c5Text;
-								break;
-							case 31:
-								finaleflat = "RROCK19";
-								finaletext = c6Text;
-								break;
-							default:
-								// Ouch.
-								break;
-						}
-						break;
+						case 11:
+							flat = "RROCK14";
+							text = c2Text;
+							break;
+
+						case 20:
+							flat = "RROCK07";
+							text = c3Text;
+							break;
+
+						case 30:
+							flat = "RROCK17";
+							text = c4Text;
+							break;
+
+						case 15:
+							flat = "RROCK13";
+							text = c5Text;
+							break;
+
+						case 31:
+							flat = "RROCK19";
+							text = c6Text;
+							break;
+
+						default:
+							break;
 					}
+					break;
 
-
-				// Indeterminate.
 				default:
 					//S_ChangeMusic(mus_read_m, true);
-					finaleflat = "F_SKY1"; // Not used anywhere else.
-					finaletext = DoomInfo.Strings.C1TEXT;  // FIXME - other text, music?
+					flat = "F_SKY1";
+					text = DoomInfo.Strings.C1TEXT;
 					break;
 			}
 
-			finalestage = 0;
-			finalecount = 0;
+			stage = 0;
+			count = 0;
 
 			scrolled = 0;
-			laststage = 0;
-			showEnd = false;
+			showTheEnd = false;
+			theEndIndex = 0;
 		}
-
 
 		public bool Update()
 		{
-			// check for skipping
-			int i;
-			if (options.GameMode == GameMode.Commercial && finalecount > 50)
+			// Check for skipping.
+			if (options.GameMode == GameMode.Commercial && count > 50)
 			{
-				// go on to the next level
+				int i;
+
+				// Go on to the next level.
 				for (i = 0; i < Player.MaxPlayerCount; i++)
 				{
 					if (options.Players[i].Cmd.Buttons != 0)
@@ -168,7 +165,7 @@ namespace ManagedDoom
 					}
 				}
 
-				if (i < Player.MaxPlayerCount && finalestage != 2)
+				if (i < Player.MaxPlayerCount && stage != 2)
 				{
 					if (options.Map == 30)
 					{
@@ -181,12 +178,12 @@ namespace ManagedDoom
 				}
 			}
 
-			// advance animation
-			finalecount++;
+			// Advance animation.
+			count++;
 
-			if (finalestage == 2)
+			if (stage == 2)
 			{
-				CastTicker();
+				UpdateCast();
 				return false;
 			}
 
@@ -195,18 +192,18 @@ namespace ManagedDoom
 				return false;
 			}
 
-			if (finalestage == 0 && finalecount > finaletext.Length * TextSpeed + TextWait)
+			if (stage == 0 && count > text.Length * TextSpeed + TextWait)
 			{
-				finalecount = 0;
-				finalestage = 1;
-				//wipegamestate = -1;     // force a wipe
+				count = 0;
+				stage = 1;
+				//wipegamestate = -1; // force a wipe
 				if (options.Episode == 3)
 				{
 					//S_StartMusic(mus_bunny);
 				}
 			}
 
-			if (finalestage == 1 && options.Episode == 3)
+			if (stage == 1 && options.Episode == 3)
 			{
 				BunnyScroll();
 			}
@@ -216,7 +213,7 @@ namespace ManagedDoom
 
 		private void BunnyScroll()
 		{
-			scrolled = 320 - (finalecount - 230) / 2;
+			scrolled = 320 - (count - 230) / 2;
 			if (scrolled > 320)
 			{
 				scrolled = 320;
@@ -226,28 +223,28 @@ namespace ManagedDoom
 				scrolled = 0;
 			}
 
-			if (finalecount < 1130)
+			if (count < 1130)
 			{
 				return;
 			}
 
-			showEnd = true;
+			showTheEnd = true;
 
-			if (finalecount < 1180)
+			if (count < 1180)
 			{
-				laststage = 0;
+				theEndIndex = 0;
 				return;
 			}
 
-			var stage = (finalecount - 1180) / 5;
+			var stage = (count - 1180) / 5;
 			if (stage > 6)
 			{
 				stage = 6;
 			}
-			if (stage > laststage)
+			if (stage > theEndIndex)
 			{
 				//S_StartSound(NULL, sfx_pistol);
-				laststage = stage;
+				theEndIndex = stage;
 			}
 		}
 
@@ -274,131 +271,150 @@ namespace ManagedDoom
 			new CastInfo(DoomInfo.Strings.CC_HERO, MobjType.Player)
 		};
 
-		private int castnum;
-		private int casttics;
-		private MobjStateDef caststate;
-		private bool castdeath;
-		private int castframes;
-		private bool castonmelee;
-		private bool castattacking;
+		private int castNumber;
+		private MobjStateDef castState;
+		private int castTics;
+		private int castFrames;
+		private bool castDeath;
+		private bool castOnMelee;
+		private bool castAttacking;
 
 		private void StartCast()
 		{
+			stage = 2;
+			
+			castNumber = 0;
+			castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].SeeState];
+			castTics = castState.Tics;
+			castFrames = 0;
+			castDeath = false;		
+			castOnMelee = false;
+			castAttacking = false;
+
 			// wipegamestate = -1; // force a screen wipe
-			castnum = 0;
-			caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeState];
-			casttics = caststate.Tics;
-			castdeath = false;
-			finalestage = 2;
-			castframes = 0;
-			castonmelee = false;
-			castattacking = false;
 			// S_ChangeMusic(mus_evil, true);
 		}
 
-		private void CastTicker()
+		private void UpdateCast()
 		{
-			if (--casttics > 0)
+			if (--castTics > 0)
 			{
-				// not time to change state yet
+				// Not time to change state yet.
 				return;
 			}
 
-			if (caststate.Tics == -1 || caststate.Next == MobjState.Null)
+			if (castState.Tics == -1 || castState.Next == MobjState.Null)
 			{
-				// switch from deathstate to next monster
-				castnum++;
-				castdeath = false;
-				if (castnum == castorder.Length)
+				// Switch from deathstate to next monster.
+				castNumber++;
+				castDeath = false;
+				if (castNumber == castorder.Length)
 				{
-					castnum = 0;
+					castNumber = 0;
 				}
-				if (DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeSound != 0)
+				if (DoomInfo.MobjInfos[(int)castorder[castNumber].Type].SeeSound != 0)
 				{
 					//S_StartSound(NULL, mobjinfo[castorder[castnum].type].seesound);
 				}
-				caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeState];
-				castframes = 0;
+				castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].SeeState];
+				castFrames = 0;
 			}
 			else
 			{
-				// just advance to next state in animation
-				if (caststate == DoomInfo.States[(int)MobjState.PlayAtk1])
+				// Just advance to next state in animation.
+				if (castState == DoomInfo.States[(int)MobjState.PlayAtk1])
 				{
 					// Oh, gross hack!
-					castattacking = false;
-					castframes = 0;
-					caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeState];
-					goto stopattack;
+					castAttacking = false;
+					castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].SeeState];
+					castFrames = 0;
+					goto stopAttack;
 				}
-				var st = caststate.Next;
-				caststate = DoomInfo.States[(int)st];
-				castframes++;
+				var st = castState.Next;
+				castState = DoomInfo.States[(int)st];
+				castFrames++;
 
-				// sound hacks....
+				// Sound hacks....
 				Sfx sfx;
 				switch (st)
 				{
 					case MobjState.PlayAtk1:
 						sfx = Sfx.DSHTGN;
 						break;
+
 					case MobjState.PossAtk2:
 						sfx = Sfx.PISTOL;
 						break;
+
 					case MobjState.SposAtk2:
 						sfx = Sfx.SHOTGN;
 						break;
+
 					case MobjState.VileAtk2:
 						sfx = Sfx.VILATK;
 						break;
+
 					case MobjState.SkelFist2:
 						sfx = Sfx.SKESWG;
 						break;
+
 					case MobjState.SkelFist4:
 						sfx = Sfx.SKEPCH;
 						break;
+
 					case MobjState.SkelMiss2:
 						sfx = Sfx.SKEATK;
 						break;
+
 					case MobjState.FattAtk8:
 					case MobjState.FattAtk5:
 					case MobjState.FattAtk2:
 						sfx = Sfx.FIRSHT;
 						break;
+
 					case MobjState.CposAtk2:
 					case MobjState.CposAtk3:
 					case MobjState.CposAtk4:
 						sfx = Sfx.SHOTGN;
 						break;
+
 					case MobjState.TrooAtk3:
 						sfx = Sfx.CLAW;
 						break;
+
 					case MobjState.SargAtk2:
 						sfx = Sfx.SGTATK;
 						break;
+
 					case MobjState.BossAtk2:
 					case MobjState.Bos2Atk2:
 					case MobjState.HeadAtk2:
 						sfx = Sfx.FIRSHT;
 						break;
+
 					case MobjState.SkullAtk2:
 						sfx = Sfx.SKLATK;
 						break;
+
 					case MobjState.SpidAtk2:
 					case MobjState.SpidAtk3:
 						sfx = Sfx.SHOTGN;
 						break;
+
 					case MobjState.BspiAtk2:
 						sfx = Sfx.PLASMA;
 						break;
+
 					case MobjState.CyberAtk2:
 					case MobjState.CyberAtk4:
 					case MobjState.CyberAtk6:
 						sfx = Sfx.RLAUNC;
 						break;
+
 					case MobjState.PainAtk3:
 						sfx = Sfx.SKLATK;
 						break;
+
 					default:
 						sfx = 0;
 						break;
@@ -410,74 +426,75 @@ namespace ManagedDoom
 				}
 			}
 
-			if (castframes == 12)
+			if (castFrames == 12)
 			{
-				// go into attack frame
-				castattacking = true;
-				if (castonmelee)
+				// Go into attack frame.
+				castAttacking = true;
+				if (castOnMelee)
 				{
-					caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].MeleeState];
+					castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].MeleeState];
 				}
 				else
 				{
-					caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].MissileState];
+					castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].MissileState];
 				}
-				castonmelee = !castonmelee;
-				if (caststate == DoomInfo.States[(int)MobjState.Null])
+
+				castOnMelee = !castOnMelee;
+				if (castState == DoomInfo.States[(int)MobjState.Null])
 				{
-					if (castonmelee)
+					if (castOnMelee)
 					{
-						caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].MeleeState];
+						castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].MeleeState];
 					}
 					else
 					{
-						caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].MissileState];
+						castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].MissileState];
 					}
 				}
 			}
 
-			if (castattacking)
+			if (castAttacking)
 			{
-				if (castframes == 24 ||
-					caststate == DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeState])
+				if (castFrames == 24 ||
+					castState == DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].SeeState])
 				{
-					castattacking = false;
-					castframes = 0;
-					caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].SeeState];
+					castAttacking = false;
+					castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].SeeState];
+					castFrames = 0;
 				}
 			}
 
-		stopattack:
+		stopAttack:
 
-			casttics = caststate.Tics;
-			if (casttics == -1)
+			castTics = castState.Tics;
+			if (castTics == -1)
 			{
-				casttics = 15;
+				castTics = 15;
 			}
 		}
 
 		public bool DoEvent(DoomEvent e)
 		{
-			if (finalestage != 2)
+			if (stage != 2)
 			{
 				return false;
 			}
 
 			if (e.Type == EventType.KeyDown)
 			{
-				if (castdeath)
+				if (castDeath)
 				{
-					// already in dying frames
+					// Already in dying frames.
 					return true;
 				}
 
-				// go into death frame
-				castdeath = true;
-				caststate = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castnum].Type].DeathState];
-				casttics = caststate.Tics;
-				castframes = 0;
-				castattacking = false;
-				if (DoomInfo.MobjInfos[(int)castorder[castnum].Type].DeathSound != 0)
+				// Go into death frame.
+				castDeath = true;
+				castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].DeathState];
+				castTics = castState.Tics;
+				castFrames = 0;
+				castAttacking = false;
+				if (DoomInfo.MobjInfos[(int)castorder[castNumber].Type].DeathSound != 0)
 				{
 					// S_StartSound(NULL, mobjinfo[castorder[castnum].type].deathsound);
 				}
@@ -490,16 +507,21 @@ namespace ManagedDoom
 
 
 
-		public string Text => finaletext;
-		public int Count => finalecount;
-		public int Stage => finalestage;
-		public string Flat => finaleflat;
 		public GameOptions Options => options;
-		public MobjStateDef CastState => caststate;
-		public string CastName => castorder[castnum].Name;
+		public string Flat => flat;
+		public string Text => text;
+		public int Count => count;
+		public int Stage => stage;
+
+		// For cast.
+		public string CastName => castorder[castNumber].Name;
+		public MobjStateDef CastState => castState;
+
+		// For bunny scroll.
 		public int Scrolled => scrolled;
-		public int EndGameNum => laststage;
-		public bool ShowEndGame => showEnd;
+		public int TheEndIndex => theEndIndex;
+		public bool ShowTheEnd => showTheEnd;
+
 
 
 		private class CastInfo

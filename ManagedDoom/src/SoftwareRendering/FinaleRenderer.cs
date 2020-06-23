@@ -104,10 +104,10 @@ namespace ManagedDoom.SoftwareRendering
             DrawPatch("PFUB2", scroll - 320, 0);
             DrawPatch("PFUB1", scroll, 0);
 
-            if (finale.ShowEndGame)
+            if (finale.ShowTheEnd)
             {
                 string patch = "END0";
-                switch (finale.EndGameNum)
+                switch (finale.TheEndIndex)
                 {
                     case 1:
                         patch = "END1";

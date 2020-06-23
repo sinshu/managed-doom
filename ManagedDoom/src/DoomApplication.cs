@@ -113,7 +113,7 @@ namespace ManagedDoom
 
                 if (state == ApplicationState.Game)
                 {
-                    if (e.Key == DoomKeys.P && e.Type == EventType.KeyDown)
+                    if (e.Key == DoomKeys.F12 && e.Type == EventType.KeyDown)
                     {
                         sendPause = true;
                         continue;
