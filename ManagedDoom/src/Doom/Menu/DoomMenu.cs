@@ -15,6 +15,7 @@ namespace ManagedDoom
         private SelectableMenu load;
         private SelectableMenu save;
 
+        private QuitConfirm quitConfirm;
         private YesNoConfirm nightmareConfirm;
 
         private MenuDef current;
@@ -31,6 +32,10 @@ namespace ManagedDoom
                 this,
                 DoomInfo.Strings.NIGHTMARE,
                 () => app.NewGame());
+
+            quitConfirm = new QuitConfirm(
+                this,
+                app);
 
             skill = new SelectableMenu(
                 this,
@@ -121,7 +126,7 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_OPTION", 65, 83, 97, 88, null, options),
                 new SimpleMenuItem("M_LOADG", 65, 99, 97, 104, null, load),
                 new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null, save),
-                new SimpleMenuItem("M_QUITG", 65, 131, 97, 136, null, null));
+                new SimpleMenuItem("M_QUITG", 65, 131, 97, 136, null, quitConfirm));
 
             current = main;
             active = false;
@@ -173,6 +178,7 @@ namespace ManagedDoom
         public void SetCurrent(MenuDef next)
         {
             current = next;
+            current.Open();
         }
 
         public void Open()

@@ -30,6 +30,8 @@ namespace ManagedDoom
 
         private bool sendPause;
 
+        private bool quit;
+
         public DoomApplication()
         {
             try
@@ -79,6 +81,8 @@ namespace ManagedDoom
                 window.SetFramerateLimit(35);
 
                 sendPause = false;
+
+                quit = false;
             }
             catch (Exception e)
             {
@@ -92,7 +96,10 @@ namespace ManagedDoom
             {
                 window.DispatchEvents();
                 DoEvents();
-                Update();
+                if (Update())
+                {
+                    return;
+                }
             }
         }
 
@@ -129,9 +136,14 @@ namespace ManagedDoom
             events.Clear();
         }
 
-        private void Update()
+        private bool Update()
         {
             menu.Update();
+
+            if (quit)
+            {
+                return true;
+            }
 
             if (state == ApplicationState.Opening)
             {
@@ -151,6 +163,8 @@ namespace ManagedDoom
             }
 
             renderer.Render(this);
+
+            return false;
         }
 
         private void KeyPressed(object sender, KeyEventArgs e)
@@ -193,6 +207,11 @@ namespace ManagedDoom
             {
                 sendPause = true;
             }
+        }
+
+        public void Quit()
+        {
+            quit = true;
         }
 
         public void Dispose()

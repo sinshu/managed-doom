@@ -34,6 +34,11 @@ namespace ManagedDoom
             index = 0;
         }
 
+        public DoomRandom(int seed)
+        {
+            index = seed & 0xff;
+        }
+
         public int Next()
         {
             index = (index + 1) & 0xff;

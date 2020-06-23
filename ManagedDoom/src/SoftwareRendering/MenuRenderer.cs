@@ -33,6 +33,12 @@ namespace ManagedDoom.SoftwareRendering
             {
                 DrawText(yesNo.Text);
             }
+
+            var quit = menu.Current as QuitConfirm;
+            if (quit != null)
+            {
+                DrawText(quit.Text);
+            }
         }
 
         private void DrawSelectableMenu(SelectableMenu selectable)
