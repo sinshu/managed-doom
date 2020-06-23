@@ -12,7 +12,7 @@ namespace ManagedDoom.SoftwareRendering
         private DrawScreen screen;
         private int scale;
 
-        private Dictionary<string, Patch> cache;
+        private PatchCache cache;
 
         public FinaleRenderer(CommonResource resource, DrawScreen screen)
         {
@@ -23,7 +23,7 @@ namespace ManagedDoom.SoftwareRendering
             this.screen = screen;
             scale = screen.Width / 320;
 
-            cache = new Dictionary<string, Patch>();
+            cache = new PatchCache(wad);
         }
 
         public void Render(Finale finale)
@@ -36,7 +36,7 @@ namespace ManagedDoom.SoftwareRendering
 
             if (finale.Stage == 0)
             {
-                TextWrite(finale);
+                RenderTextScreen(finale);
             }
             else
             {
@@ -61,11 +61,11 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        private void TextWrite(Finale finale)
+        private void RenderTextScreen(Finale finale)
         {
             FillFlat(flats[finale.Flat]);
 
-            // draw some of the text onto the screen
+            // Draw some of the text onto the screen.
             var cx = 10 * scale;
             var cy = 17 * scale;
             var ch = 0;
@@ -128,14 +128,13 @@ namespace ManagedDoom.SoftwareRendering
                         patch = "END6";
                         break;
                 }
+
                 DrawPatch(
                     patch,
                     (320 - 13 * 8) / 2,
                     (240 - 8 * 8) / 2);
             }
         }
-
-
 
         private void FillFlat(Flat flat)
         {
@@ -162,15 +161,8 @@ namespace ManagedDoom.SoftwareRendering
 
         private void DrawPatch(string name, int x, int y)
         {
-            Patch patch;
-            if (!cache.TryGetValue(name, out patch))
-            {
-                patch = Patch.FromWad(name, wad);
-                cache.Add(name, patch);
-            }
-
             var scale = screen.Width / 320;
-            screen.DrawPatch(patch, scale * x, scale * y, scale);
+            screen.DrawPatch(cache[name], scale * x, scale * y, scale);
         }
 
         private void RenderCast(Finale finale)
