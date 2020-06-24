@@ -1,13 +1,35 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace ManagedDoom
 {
     public sealed class Cheat
     {
-        private World world;
+        private static Tuple<string, Action<Cheat>>[] list = new Tuple<string, Action<Cheat>>[]
+        {
+            Tuple.Create("idfa", (Action<Cheat>)(cheat => cheat.FullAmmo())),
+            Tuple.Create("idkfa", (Action<Cheat>)(cheat => cheat.FullAmmoAndKeys())),
+            Tuple.Create("iddqd", (Action<Cheat>)(cheat => cheat.GodMode())),
+            Tuple.Create("idclip", (Action<Cheat>)(cheat => cheat.NoClip())),
+            Tuple.Create("idspispopd", (Action<Cheat>)(cheat => cheat.NoClip())),
+            Tuple.Create("iddt", (Action<Cheat>)(cheat => cheat.FullMap())),
+            Tuple.Create("idbehold", (Action<Cheat>)(cheat => cheat.ShowPowerUpList())),
+            Tuple.Create("idbeholdv", (Action<Cheat>)(cheat => cheat.ToggleInvulnerability())),
+            Tuple.Create("idbeholds", (Action<Cheat>)(cheat => cheat.ToggleStrength())),
+            Tuple.Create("idbeholdi", (Action<Cheat>)(cheat => cheat.ToggleInvisibility())),
+            Tuple.Create("idbeholdr", (Action<Cheat>)(cheat => cheat.ToggleIronFeet())),
+            Tuple.Create("idbeholda", (Action<Cheat>)(cheat => cheat.ToggleAllMap())),
+            Tuple.Create("idbeholdl", (Action<Cheat>)(cheat => cheat.ToggleInfrared())),
+            Tuple.Create("idchoppers", (Action<Cheat>)(cheat => cheat.GiveChainsaw())),
+            Tuple.Create("tntem", (Action<Cheat>)(cheat => cheat.KillMonsters())),
+            Tuple.Create("killem", (Action<Cheat>)(cheat => cheat.KillMonsters())),
+            Tuple.Create("fhhall", (Action<Cheat>)(cheat => cheat.KillMonsters()))
+        };
 
-        private Tuple<string, Action>[] list;
+        private static readonly int maxLength = list.Max(tuple => tuple.Item1.Length);
+
+        private World world;
 
         private char[] buffer;
         private int p;
@@ -16,37 +38,7 @@ namespace ManagedDoom
         {
             this.world = world;
 
-            list = new Tuple<string, Action>[]
-            {
-                Tuple.Create("idfa", new Action(FullAmmo)),
-                Tuple.Create("idkfa", new Action(FullAmmoAndKeys)),
-                Tuple.Create("iddqd", new Action(GodMode)),
-                Tuple.Create("idclip", new Action(NoClip)),
-                Tuple.Create("idspispopd", new Action(NoClip)),
-                Tuple.Create("iddt", new Action(FullMap)),
-                Tuple.Create("idbehold", new Action(ShowPowerUpList)),
-                Tuple.Create("idbeholdv", new Action(ToggleInvulnerability)),
-                Tuple.Create("idbeholds", new Action(ToggleStrength)),
-                Tuple.Create("idbeholdi", new Action(ToggleInvisibility)),
-                Tuple.Create("idbeholdr", new Action(ToggleIronFeet)),
-                Tuple.Create("idbeholda", new Action(ToggleAllMap)),
-                Tuple.Create("idbeholdl", new Action(ToggleInfrared)),
-                Tuple.Create("idchoppers", new Action(GiveChainsaw)),
-                Tuple.Create("tntem", new Action(KillMonsters)),
-                Tuple.Create("killem", new Action(KillMonsters)),
-                Tuple.Create("fhhall", new Action(KillMonsters))
-            };
-
-            var max = 0;
-            foreach (var tuple in list)
-            {
-                if (tuple.Item1.Length > max)
-                {
-                    max = tuple.Item1.Length;
-                }
-            }
-            buffer = new char[max];
-
+            buffer = new char[maxLength];
             p = 0;
         }
 
@@ -85,11 +77,10 @@ namespace ManagedDoom
                 }
                 if (j == code.Length)
                 {
-                    list[i].Item2();
+                    list[i].Item2(this);
                 }
             }
         }
-
 
         private void FullAmmo()
         {
