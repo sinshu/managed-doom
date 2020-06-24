@@ -15,8 +15,9 @@ namespace ManagedDoom
         private SelectableMenu load;
         private SelectableMenu save;
 
-        private QuitConfirm quitConfirm;
+        private PressAnyKey thisIsShareware;
         private YesNoConfirm nightmareConfirm;
+        private QuitConfirm quitConfirm;
 
         private MenuDef current;
 
@@ -27,6 +28,11 @@ namespace ManagedDoom
         public DoomMenu(DoomApplication app)
         {
             this.app = app;
+
+            thisIsShareware = new PressAnyKey(
+                this,
+                DoomInfo.Strings.SWSTRING,
+                null);
 
             nightmareConfirm = new YesNoConfirm(
                 this,
@@ -61,13 +67,26 @@ namespace ManagedDoom
             }
             else
             {
-                episode = new SelectableMenu(
-                    this,
-                    "M_EPISOD", 54, 38,
-                    0,
-                    new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, null, skill),
-                    new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, skill),
-                    new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, skill));
+                if (app.GameMode == GameMode.Shareware)
+                {
+                    episode = new SelectableMenu(
+                        this,
+                        "M_EPISOD", 54, 38,
+                        0,
+                        new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, null, skill),
+                        new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, thisIsShareware),
+                        new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, thisIsShareware));
+                }
+                else
+                {
+                    episode = new SelectableMenu(
+                        this,
+                        "M_EPISOD", 54, 38,
+                        0,
+                        new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, null, skill),
+                        new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, skill),
+                        new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, skill));
+                }
             }
 
             volume = new SelectableMenu(

@@ -34,6 +34,12 @@ namespace ManagedDoom.SoftwareRendering
                 DrawText(yesNo.Text);
             }
 
+            var pressAnyKey = menu.Current as PressAnyKey;
+            if (pressAnyKey != null)
+            {
+                DrawText(pressAnyKey.Text);
+            }
+
             var quit = menu.Current as QuitConfirm;
             if (quit != null)
             {
