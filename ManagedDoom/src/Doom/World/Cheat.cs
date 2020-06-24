@@ -22,7 +22,19 @@ namespace ManagedDoom
                 Tuple.Create("idkfa", new Action(FullAmmoAndKeys)),
                 Tuple.Create("iddqd", new Action(GodMode)),
                 Tuple.Create("idclip", new Action(NoClip)),
-                Tuple.Create("iddt", new Action(FullMap))
+                Tuple.Create("idspispopd", new Action(NoClip)),
+                Tuple.Create("iddt", new Action(FullMap)),
+                Tuple.Create("idbehold", new Action(ShowPowerUpList)),
+                Tuple.Create("idbeholdv", new Action(ToggleInvulnerability)),
+                Tuple.Create("idbeholds", new Action(ToggleStrength)),
+                Tuple.Create("idbeholdi", new Action(ToggleInvisibility)),
+                Tuple.Create("idbeholdr", new Action(ToggleIronFeet)),
+                Tuple.Create("idbeholda", new Action(ToggleAllMap)),
+                Tuple.Create("idbeholdl", new Action(ToggleInfrared)),
+                Tuple.Create("idchoppers", new Action(GiveChainsaw)),
+                Tuple.Create("tntem", new Action(KillMonsters)),
+                Tuple.Create("killem", new Action(KillMonsters)),
+                Tuple.Create("fhhall", new Action(KillMonsters))
             };
 
             var max = 0;
@@ -81,7 +93,7 @@ namespace ManagedDoom
 
         private void FullAmmo()
         {
-            var player = world.Options.Players[world.Options.ConsolePlayer];
+            var player = world.ConsolePlayer;
             for (var i = 0; i < (int)WeaponType.Count; i++)
             {
                 player.WeaponOwned[i] = true;
@@ -97,7 +109,7 @@ namespace ManagedDoom
 
         private void FullAmmoAndKeys()
         {
-            var player = world.Options.Players[world.Options.ConsolePlayer];
+            var player = world.ConsolePlayer;
             for (var i = 0; i < (int)WeaponType.Count; i++)
             {
                 player.WeaponOwned[i] = true;
@@ -117,7 +129,7 @@ namespace ManagedDoom
 
         private void GodMode()
         {
-            var player = world.Options.Players[world.Options.ConsolePlayer];
+            var player = world.ConsolePlayer;
             if ((player.Cheats & CheatFlags.GodMode) != 0)
             {
                 player.Cheats &= ~CheatFlags.GodMode;
@@ -132,7 +144,7 @@ namespace ManagedDoom
 
         private void NoClip()
         {
-            var player = world.Options.Players[world.Options.ConsolePlayer];
+            var player = world.ConsolePlayer;
             if ((player.Cheats & CheatFlags.NoClip) != 0)
             {
                 player.Cheats &= ~CheatFlags.NoClip;
@@ -148,6 +160,120 @@ namespace ManagedDoom
         private void FullMap()
         {
             world.AutoMap.ToggleCheat();
+        }
+
+        private void ShowPowerUpList()
+        {
+            var player = world.ConsolePlayer;
+            player.SendMessage(DoomInfo.Strings.STSTR_BEHOLD);
+        }
+
+        private void ToggleInvulnerability()
+        {
+            var player = world.ConsolePlayer;
+            if (player.Powers[(int)PowerType.Invulnerability] > 0)
+            {
+                player.Powers[(int)PowerType.Invulnerability] = 0;
+            }
+            else
+            {
+                player.Powers[(int)PowerType.Invulnerability] = DoomInfo.PowerDuration.Invulnerability;
+            }
+            player.SendMessage(DoomInfo.Strings.STSTR_BEHOLDX);
+        }
+
+        private void ToggleStrength()
+        {
+            var player = world.ConsolePlayer;
+            if (player.Powers[(int)PowerType.Strength] != 0)
+            {
+                player.Powers[(int)PowerType.Strength] = 0;
+            }
+            else
+            {
+                player.Powers[(int)PowerType.Strength] = 1;
+            }
+            player.SendMessage(DoomInfo.Strings.STSTR_BEHOLDX);
+        }
+
+        private void ToggleInvisibility()
+        {
+            var player = world.ConsolePlayer;
+            if (player.Powers[(int)PowerType.Invisibility] > 0)
+            {
+                player.Powers[(int)PowerType.Invisibility] = 0;
+                player.Mobj.Flags &= ~MobjFlags.Shadow;
+            }
+            else
+            {
+                player.Powers[(int)PowerType.Invisibility] = DoomInfo.PowerDuration.Invisibility;
+                player.Mobj.Flags |= MobjFlags.Shadow;
+            }
+            player.SendMessage(DoomInfo.Strings.STSTR_BEHOLDX);
+        }
+
+        private void ToggleIronFeet()
+        {
+            var player = world.ConsolePlayer;
+            if (player.Powers[(int)PowerType.IronFeet] > 0)
+            {
+                player.Powers[(int)PowerType.IronFeet] = 0;
+            }
+            else
+            {
+                player.Powers[(int)PowerType.IronFeet] = DoomInfo.PowerDuration.IronFeet;
+            }
+            player.SendMessage(DoomInfo.Strings.STSTR_BEHOLDX);
+        }
+
+        private void ToggleAllMap()
+        {
+            var player = world.ConsolePlayer;
+            if (player.Powers[(int)PowerType.AllMap] != 0)
+            {
+                player.Powers[(int)PowerType.AllMap] = 0;
+            }
+            else
+            {
+                player.Powers[(int)PowerType.AllMap] = 1;
+            }
+            player.SendMessage(DoomInfo.Strings.STSTR_BEHOLDX);
+        }
+
+        private void ToggleInfrared()
+        {
+            var player = world.ConsolePlayer;
+            if (player.Powers[(int)PowerType.Infrared] > 0)
+            {
+                player.Powers[(int)PowerType.Infrared] = 0;
+            }
+            else
+            {
+                player.Powers[(int)PowerType.Infrared] = DoomInfo.PowerDuration.Infrared;
+            }
+            player.SendMessage(DoomInfo.Strings.STSTR_BEHOLDX);
+        }
+
+        private void GiveChainsaw()
+        {
+            var player = world.ConsolePlayer;
+            player.WeaponOwned[(int)WeaponType.Chainsaw] = true;
+            player.SendMessage(DoomInfo.Strings.STSTR_CHOPPERS);
+        }
+
+        private void KillMonsters()
+        {
+            var player = world.ConsolePlayer.Mobj;
+            foreach (var thinker in world.Thinkers)
+            {
+                var mobj = thinker as Mobj;
+                if (mobj != null &&
+                    mobj.Player == null &&
+                    ((mobj.Flags & MobjFlags.CountKill) != 0 || mobj.Type == MobjType.Skull))
+                {
+                    world.ThingInteraction.DamageMobj(mobj, null, player, 10000);
+                }
+            }
         }
     }
 }

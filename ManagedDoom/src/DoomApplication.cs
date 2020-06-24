@@ -41,7 +41,7 @@ namespace ManagedDoom
                 window.Clear(new Color(128, 128, 128));
                 window.Display();
 
-                resource = new CommonResource("DOOM.WAD");
+                resource = new CommonResource("DOOM2.WAD");
                 renderer = new SfmlRenderer(window, resource, true);
                 audio = new SfmlAudio(resource.Wad);
 
