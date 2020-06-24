@@ -263,7 +263,8 @@ namespace ManagedDoom
 
         private void KillMonsters()
         {
-            var player = world.ConsolePlayer.Mobj;
+            var player = world.ConsolePlayer;
+            var count = 0;
             foreach (var thinker in world.Thinkers)
             {
                 var mobj = thinker as Mobj;
@@ -271,9 +272,11 @@ namespace ManagedDoom
                     mobj.Player == null &&
                     ((mobj.Flags & MobjFlags.CountKill) != 0 || mobj.Type == MobjType.Skull))
                 {
-                    world.ThingInteraction.DamageMobj(mobj, null, player, 10000);
+                    world.ThingInteraction.DamageMobj(mobj, null, player.Mobj, 10000);
+                    count++;
                 }
             }
+            player.SendMessage(count + " monsters killed");
         }
     }
 }
