@@ -528,7 +528,6 @@ namespace ManagedDoom
         public bool FirstTicIsNotYetDone => ConsolePlayer.ViewZ == Fixed.Epsilon;
         public bool SecretExit => secretexit;
 
-        public static readonly Fixed USERANGE = Fixed.FromInt(64);
         public static readonly Fixed MELEERANGE = Fixed.FromInt(64);
         public static readonly Fixed MISSILERANGE = Fixed.FromInt(32 * 64);
 

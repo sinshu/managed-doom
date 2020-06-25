@@ -4,6 +4,8 @@ namespace ManagedDoom
 {
 	public sealed class MapInteraction
 	{
+		private static readonly Fixed useRange = Fixed.FromInt(64);
+
 		private World world;
 
 		public MapInteraction(World world)
@@ -71,8 +73,8 @@ namespace ManagedDoom
 
 			var x1 = player.Mobj.X;
 			var y1 = player.Mobj.Y;
-			var x2 = x1 + World.USERANGE.ToIntFloor() * Trig.Cos(angle);
-			var y2 = y1 + World.USERANGE.ToIntFloor() * Trig.Sin(angle);
+			var x2 = x1 + useRange.ToIntFloor() * Trig.Cos(angle);
+			var y2 = y1 + useRange.ToIntFloor() * Trig.Sin(angle);
 
 			pt.PathTraverse(x1, y1, x2, y2, PathTraverseFlags.AddLines, useTraverseFunc);
 		}
