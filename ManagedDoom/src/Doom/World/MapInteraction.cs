@@ -13,473 +13,11 @@ namespace ManagedDoom
 			InitUse();
 		}
 
-		//
-		// P_UseSpecialLine
-		// Called when a thing uses a special line.
-		// Only the front sides of lines are usable.
-		//
-		public bool UseSpecialLine(Mobj thing, LineDef line, int side)
-		{
-			var specials = world.Specials;
-			var sa = world.SectorAction;
-
-			// Err...
-			// Use the back sides of VERY SPECIAL lines...
-			if (side != 0)
-			{
-				switch ((int)line.Special)
-				{
-					case 124:
-						// Sliding door open&close
-						// UNUSED?
-						break;
-
-					default:
-						return false;
-				}
-			}
-
-			// Switches that other things can activate.
-			if (thing.Player == null)
-			{
-				// Never open secret doors.
-				if ((line.Flags & LineFlags.Secret) != 0)
-				{
-					return false;
-				}
-
-				switch ((int)line.Special)
-				{
-					case 1:  // MANUAL DOOR RAISE
-					case 32: // MANUAL BLUE
-					case 33: // MANUAL RED
-					case 34: // MANUAL YELLOW
-						break;
-
-					default:
-						return false;
-				}
-			}
-
-			// do something  
-			switch ((int)line.Special)
-			{
-				// MANUALS
-				case 1:   // Vertical Door
-				case 26:  // Blue Door/Locked
-				case 27:  // Yellow Door /Locked
-				case 28:  // Red Door /Locked
-
-				case 31:  // Manual door open
-				case 32:  // Blue locked door open
-				case 33:  // Red locked door open
-				case 34:  // Yellow locked door open
-
-				case 117: // Blazing door raise
-				case 118: // Blazing door open
-					sa.VerticalDoor(line, thing);
-					break;
-
-				// SWITCHES
-				case 7:
-					// Build Stairs
-					if (sa.BuildStairs(line, StairType.Build8))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 9:
-					// Change Donut
-					if (sa.DoDonut(line))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 11:
-					// Exit level
-					specials.ChangeSwitchTexture(line, false);
-					world.G_ExitLevel();
-					break;
-
-				case 14:
-					// Raise Floor 32 and change texture
-					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 32))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 15:
-					// Raise Floor 24 and change texture
-					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 24))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 18:
-					// Raise Floor to next highest floor
-					if (sa.DoFloor(line, FloorMoveType.RaiseFloorToNearest))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 20:
-					// Raise Plat next highest floor and change texture
-					if (sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 21:
-					// PlatDownWaitUpStay
-					if (sa.DoPlatform(line, PlatformType.DownWaitUpStay, 0))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 23:
-					// Lower Floor to Lowest
-					if (sa.DoFloor(line, FloorMoveType.LowerFloorToLowest))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 29:
-					// Raise Door
-					if (sa.DoDoor(line, VlDoorType.Normal))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 41:
-					// Lower Ceiling to Floor
-					if (sa.DoCeiling(line, CeilingMoveType.LowerToFloor))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 71:
-					// Turbo Lower Floor
-					if (sa.DoFloor(line, FloorMoveType.TurboLower))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 49:
-					// Ceiling Crush And Raise
-					if (sa.DoCeiling(line, CeilingMoveType.CrushAndRaise))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 50:
-					// Close Door
-					if (sa.DoDoor(line, VlDoorType.Close))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 51:
-					// Secret EXIT
-					specials.ChangeSwitchTexture(line, false);
-					world.G_SecretExitLevel();
-					break;
-
-				case 55:
-					// Raise Floor Crush
-					if (sa.DoFloor(line, FloorMoveType.RaiseFloorCrush))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 101:
-					// Raise Floor
-					if (sa.DoFloor(line, FloorMoveType.RaiseFloor))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 102:
-					// Lower Floor to Surrounding floor height
-					if (sa.DoFloor(line, FloorMoveType.LowerFloor))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 103:
-					// Open Door
-					if (sa.DoDoor(line, VlDoorType.Open))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 111:
-					// Blazing Door Raise (faster than TURBO!)
-					if (sa.DoDoor(line, VlDoorType.BlazeRaise))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 112:
-					// Blazing Door Open (faster than TURBO!)
-					if (sa.DoDoor(line, VlDoorType.BlazeOpen))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 113:
-					// Blazing Door Close (faster than TURBO!)
-					if (sa.DoDoor(line, VlDoorType.BlazeClose))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 122:
-					// Blazing PlatDownWaitUpStay
-					if (sa.DoPlatform(line, PlatformType.BlazeDwus, 0))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 127:
-					// Build Stairs Turbo 16
-					if (sa.BuildStairs(line, StairType.Turbo16))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 131:
-					// Raise Floor Turbo
-					if (sa.DoFloor(line, FloorMoveType.RaiseFloorTurbo))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 133:
-				// BlzOpenDoor BLUE
-				case 135:
-				// BlzOpenDoor RED
-				case 137:
-					// BlzOpenDoor YELLOW
-					if (sa.DoLockedDoor(line, VlDoorType.BlazeOpen, thing))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				case 140:
-					// Raise Floor 512
-					if (sa.DoFloor(line, FloorMoveType.RaiseFloor512))
-					{
-						specials.ChangeSwitchTexture(line, false);
-					}
-					break;
-
-				// BUTTONS
-				case 42:
-					// Close Door
-					if (sa.DoDoor(line, VlDoorType.Close))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 43:
-					// Lower Ceiling to Floor
-					if (sa.DoCeiling(line, CeilingMoveType.LowerToFloor))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 45:
-					// Lower Floor to Surrounding floor height
-					if (sa.DoFloor(line, FloorMoveType.LowerFloor))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 60:
-					// Lower Floor to Lowest
-					if (sa.DoFloor(line, FloorMoveType.LowerFloorToLowest))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 61:
-					// Open Door
-					if (sa.DoDoor(line, VlDoorType.Open))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 62:
-					// PlatDownWaitUpStay
-					if (sa.DoPlatform(line, PlatformType.DownWaitUpStay, 1))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 63:
-					// Raise Door
-					if (sa.DoDoor(line, VlDoorType.Normal))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 64:
-					// Raise Floor to ceiling
-					if (sa.DoFloor(line, FloorMoveType.RaiseFloor))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 66:
-					// Raise Floor 24 and change texture
-					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 24))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 67:
-					// Raise Floor 32 and change texture
-					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 32))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 65:
-					// Raise Floor Crush
-					if (sa.DoFloor(line, FloorMoveType.RaiseFloorCrush))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 68:
-					// Raise Plat to next highest floor and change texture
-					if (sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 69:
-					// Raise Floor to next highest floor
-					if (sa.DoFloor(line, FloorMoveType.RaiseFloorToNearest))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 70:
-					// Turbo Lower Floor
-					if (sa.DoFloor(line, FloorMoveType.TurboLower))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 114:
-					// Blazing Door Raise (faster than TURBO!)
-					if (sa.DoDoor(line, VlDoorType.BlazeRaise))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 115:
-					// Blazing Door Open (faster than TURBO!)
-					if (sa.DoDoor(line, VlDoorType.BlazeOpen))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 116:
-					// Blazing Door Close (faster than TURBO!)
-					if (sa.DoDoor(line, VlDoorType.BlazeClose))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 123:
-					// Blazing PlatDownWaitUpStay
-					if (sa.DoPlatform(line, PlatformType.BlazeDwus, 0))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 132:
-					// Raise Floor Turbo
-					if (sa.DoFloor(line, FloorMoveType.RaiseFloorTurbo))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 99:
-				// BlzOpenDoor BLUE
-				case 134:
-				// BlzOpenDoor RED
-				case 136:
-					// BlzOpenDoor YELLOW
-					if (sa.DoLockedDoor(line, VlDoorType.BlazeOpen, thing))
-					{
-						specials.ChangeSwitchTexture(line, true);
-					}
-					break;
-
-				case 138:
-					// Light Turn On
-					sa.LightTurnOn(line, 255);
-					specials.ChangeSwitchTexture(line, true);
-					break;
-
-				case 139:
-					// Light Turn Off
-					sa.LightTurnOn(line, 35);
-					specials.ChangeSwitchTexture(line, true);
-					break;
-			}
-
-			return true;
-		}
 
 
-
+		////////////////////////////////////////////////////////////
+		// Line use
+		////////////////////////////////////////////////////////////
 
 		private Mobj useThing;
 		private Func<Intercept, bool> useTraverseFunc;
@@ -520,10 +58,9 @@ namespace ManagedDoom
 			return false;
 		}
 
-		//
-		// P_UseLines
-		// Looks for special lines in front of the player to activate.
-		//
+		/// <summary>
+		/// Looks for special lines in front of the player to activate.
+		/// </summary>
 		public void UseLines(Player player)
 		{
 			var pt = world.PathTraversal;
@@ -540,25 +77,482 @@ namespace ManagedDoom
 			pt.PathTraverse(x1, y1, x2, y2, PathTraverseFlags.AddLines, useTraverseFunc);
 		}
 
+		/// <summary>
+		/// Called when a thing uses a special line.
+		/// Only the front sides of lines are usable.
+		/// </summary>
+		public bool UseSpecialLine(Mobj thing, LineDef line, int side)
+		{
+			var specials = world.Specials;
+			var sa = world.SectorAction;
+
+			// Err...
+			// Use the back sides of VERY SPECIAL lines...
+			if (side != 0)
+			{
+				switch ((int)line.Special)
+				{
+					case 124:
+						// Sliding door open and close (unused).
+						break;
+
+					default:
+						return false;
+				}
+			}
+
+			// Switches that other things can activate.
+			if (thing.Player == null)
+			{
+				// Never open secret doors.
+				if ((line.Flags & LineFlags.Secret) != 0)
+				{
+					return false;
+				}
+
+				switch ((int)line.Special)
+				{
+					case 1:  // Manual door raise.
+					case 32: // Manual blue.
+					case 33: // Manual red.
+					case 34: // Manual yellow.
+						break;
+
+					default:
+						return false;
+				}
+			}
+
+			// Do something.
+			switch ((int)line.Special)
+			{
+				// MANUALS
+				case 1:   // Vertical door.
+				case 26:  // Blue door (locked).
+				case 27:  // Yellow door (locked).
+				case 28:  // Red door (locked).
+
+				case 31:  // Manual door open.
+				case 32:  // Blue locked door open.
+				case 33:  // Red locked door open.
+				case 34:  // Yellow locked door open.
+
+				case 117: // Blazing door raise.
+				case 118: // Blazing door open.
+					sa.VerticalDoor(line, thing);
+					break;
+
+				// SWITCHES
+				case 7:
+					// Build stairs.
+					if (sa.BuildStairs(line, StairType.Build8))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 9:
+					// Change donut.
+					if (sa.DoDonut(line))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 11:
+					// Exit level.
+					specials.ChangeSwitchTexture(line, false);
+					world.G_ExitLevel();
+					break;
+
+				case 14:
+					// Raise floor 32 and change texture.
+					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 32))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 15:
+					// Raise floor 24 and change texture.
+					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 24))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 18:
+					// Raise floor to next highest floor.
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorToNearest))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 20:
+					// Raise platform next highest floor and change texture.
+					if (sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 21:
+					// Platform down, wait, up and stay.
+					if (sa.DoPlatform(line, PlatformType.DownWaitUpStay, 0))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 23:
+					// Lower floor to Lowest.
+					if (sa.DoFloor(line, FloorMoveType.LowerFloorToLowest))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 29:
+					// Raise door.
+					if (sa.DoDoor(line, VlDoorType.Normal))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 41:
+					// Lower ceiling to floor.
+					if (sa.DoCeiling(line, CeilingMoveType.LowerToFloor))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 71:
+					// Turbo lower floor.
+					if (sa.DoFloor(line, FloorMoveType.TurboLower))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 49:
+					// Ceiling crush and raise.
+					if (sa.DoCeiling(line, CeilingMoveType.CrushAndRaise))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 50:
+					// Close door.
+					if (sa.DoDoor(line, VlDoorType.Close))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 51:
+					// Secret exit.
+					specials.ChangeSwitchTexture(line, false);
+					world.G_SecretExitLevel();
+					break;
+
+				case 55:
+					// Raise floor crush.
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorCrush))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 101:
+					// Raise floor.
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloor))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 102:
+					// Lower floor to surrounding floor height.
+					if (sa.DoFloor(line, FloorMoveType.LowerFloor))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 103:
+					// Open door.
+					if (sa.DoDoor(line, VlDoorType.Open))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 111:
+					// Blazing door raise (faster than turbo).
+					if (sa.DoDoor(line, VlDoorType.BlazeRaise))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 112:
+					// Blazing door open (faster than turbo).
+					if (sa.DoDoor(line, VlDoorType.BlazeOpen))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 113:
+					// Blazing door close (faster than turbo).
+					if (sa.DoDoor(line, VlDoorType.BlazeClose))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 122:
+					// Blazing platform down, wait, up and stay.
+					if (sa.DoPlatform(line, PlatformType.BlazeDwus, 0))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 127:
+					// Build stairs turbo 16.
+					if (sa.BuildStairs(line, StairType.Turbo16))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 131:
+					// Raise floor turbo.
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorTurbo))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 133:
+				// Blazing open door (blue).
+				case 135:
+				// Blazing open door (red).
+				case 137:
+					// Blazing open door (yellow).
+					if (sa.DoLockedDoor(line, VlDoorType.BlazeOpen, thing))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				case 140:
+					// Raise floor 512.
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloor512))
+					{
+						specials.ChangeSwitchTexture(line, false);
+					}
+					break;
+
+				// BUTTONS
+				case 42:
+					// Close door.
+					if (sa.DoDoor(line, VlDoorType.Close))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 43:
+					// Lower ceiling to floor.
+					if (sa.DoCeiling(line, CeilingMoveType.LowerToFloor))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 45:
+					// lower floor to surrounding floor height.
+					if (sa.DoFloor(line, FloorMoveType.LowerFloor))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 60:
+					// Lower floor to Lowest.
+					if (sa.DoFloor(line, FloorMoveType.LowerFloorToLowest))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 61:
+					// Open door.
+					if (sa.DoDoor(line, VlDoorType.Open))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 62:
+					// Platform down, wait, up and stay.
+					if (sa.DoPlatform(line, PlatformType.DownWaitUpStay, 1))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 63:
+					// Raise door.
+					if (sa.DoDoor(line, VlDoorType.Normal))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 64:
+					// Raise floor to ceiling.
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloor))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 66:
+					// Raise floor 24 and change texture.
+					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 24))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 67:
+					// Raise floor 32 and change texture.
+					if (sa.DoPlatform(line, PlatformType.RaiseAndChange, 32))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 65:
+					// Raise floor crush.
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorCrush))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 68:
+					// Raise platform to next highest floor and change texture.
+					if (sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 69:
+					// Raise floor to next highest floor.
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorToNearest))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 70:
+					// Turbo lower floor.
+					if (sa.DoFloor(line, FloorMoveType.TurboLower))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 114:
+					// Blazing door raise (faster than turbo).
+					if (sa.DoDoor(line, VlDoorType.BlazeRaise))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 115:
+					// Blazing door open (faster than turbo).
+					if (sa.DoDoor(line, VlDoorType.BlazeOpen))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 116:
+					// Blazing door close (faster than turbo).
+					if (sa.DoDoor(line, VlDoorType.BlazeClose))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 123:
+					// Blazing platform down, wait, up and stay.
+					if (sa.DoPlatform(line, PlatformType.BlazeDwus, 0))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 132:
+					// Raise floor turbo.
+					if (sa.DoFloor(line, FloorMoveType.RaiseFloorTurbo))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 99:
+				// Blazing open door (blue).
+				case 134:
+				// Blazing open door (red).
+				case 136:
+					// Blazing open door (yellow).
+					if (sa.DoLockedDoor(line, VlDoorType.BlazeOpen, thing))
+					{
+						specials.ChangeSwitchTexture(line, true);
+					}
+					break;
+
+				case 138:
+					// Light turn on.
+					sa.LightTurnOn(line, 255);
+					specials.ChangeSwitchTexture(line, true);
+					break;
+
+				case 139:
+					// Light turn Off.
+					sa.LightTurnOn(line, 35);
+					specials.ChangeSwitchTexture(line, true);
+					break;
+			}
+
+			return true;
+		}
 
 
 
+		////////////////////////////////////////////////////////////
+		// Line crossing
+		////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-		//
-		// P_CrossSpecialLine - TRIGGER
-		// Called every time a thing origin is about
-		//  to cross a line with a non 0 special.
-		//
+		/// <summary>
+		/// Called every time a thing origin is about to cross a line
+		/// with a non zero special.
+		/// </summary>
 		public void CrossSpecialLine(LineDef line, int side, Mobj thing)
 		{
-			//	Triggers that other things can activate
+			//	Triggers that other things can activate.
 			if (thing.Player == null)
 			{
 				// Things that should NOT trigger specials...
@@ -602,85 +596,85 @@ namespace ManagedDoom
 				// TRIGGERS.
 				// All from here to RETRIGGERS.
 				case 2:
-					// Open Door
+					// Open door.
 					sa.DoDoor(line, VlDoorType.Open);
 					line.Special = 0;
 					break;
 
 				case 3:
-					// Close Door
+					// Close door.
 					sa.DoDoor(line, VlDoorType.Close);
 					line.Special = 0;
 					break;
 
 				case 4:
-					// Raise Door
+					// Raise door.
 					sa.DoDoor(line, VlDoorType.Normal);
 					line.Special = 0;
 					break;
 
 				case 5:
-					// Raise Floor
+					// Raise floor.
 					sa.DoFloor(line, FloorMoveType.RaiseFloor);
 					line.Special = 0;
 					break;
 
 				case 6:
-					// Fast Ceiling Crush & Raise
+					// Fast ceiling crush and raise.
 					sa.DoCeiling(line, CeilingMoveType.FastCrushAndRaise);
 					line.Special = 0;
 					break;
 
 				case 8:
-					// Build Stairs
+					// Build stairs.
 					sa.BuildStairs(line, StairType.Build8);
 					line.Special = 0;
 					break;
 
 				case 10:
-					// PlatDownWaitUp
+					// Platform down, wait, up and stay.
 					sa.DoPlatform(line, PlatformType.DownWaitUpStay, 0);
 					line.Special = 0;
 					break;
 
 				case 12:
-					// Light Turn On - brightest near
+					// Light turn on - brightest near.
 					sa.LightTurnOn(line, 0);
 					line.Special = 0;
 					break;
 
 				case 13:
-					// Light Turn On 255
+					// Light turn on 255.
 					sa.LightTurnOn(line, 255);
 					line.Special = 0;
 					break;
 
 				case 16:
-					// Close Door 30
+					// Close door 30.
 					sa.DoDoor(line, VlDoorType.Close30ThenOpen);
 					line.Special = 0;
 					break;
 
 				case 17:
-					// Start Light Strobing
+					// Start light strobing.
 					sa.StartLightStrobing(line);
 					line.Special = 0;
 					break;
 
 				case 19:
-					// Lower Floor
+					// Lower floor.
 					sa.DoFloor(line, FloorMoveType.LowerFloor);
 					line.Special = 0;
 					break;
 
 				case 22:
-					// Raise floor to nearest height and change texture
+					// Raise floor to nearest height and change texture.
 					sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0);
 					line.Special = 0;
 					break;
 
 				case 25:
-					// Ceiling Crush and Raise
+					// Ceiling crush and raise.
 					sa.DoCeiling(line, CeilingMoveType.CrushAndRaise);
 					line.Special = 0;
 					break;
@@ -692,138 +686,138 @@ namespace ManagedDoom
 					break;
 
 				case 35:
-					// Lights Very Dark
+					// Lights very dark.
 					sa.LightTurnOn(line, 35);
 					line.Special = 0;
 					break;
 
 				case 36:
-					// Lower Floor (TURBO)
+					// Lower floor (turbo).
 					sa.DoFloor(line, FloorMoveType.TurboLower);
 					line.Special = 0;
 					break;
 
 				case 37:
-					// LowerAndChange
+					// Lower and change.
 					sa.DoFloor(line, FloorMoveType.LowerAndChange);
 					line.Special = 0;
 					break;
 
 				case 38:
-					// Lower Floor To Lowest
+					// Lower floor to lowest.
 					sa.DoFloor(line, FloorMoveType.LowerFloorToLowest);
 					line.Special = 0;
 					break;
 
 				case 39:
-					// TELEPORT!
+					// Do teleport.
 					sa.Teleport(line, side, thing);
 					line.Special = 0;
 					break;
 
 				case 40:
-					// RaiseCeilingLowerFloor
+					// Raise ceiling and lower floor.
 					sa.DoCeiling(line, CeilingMoveType.RaiseToHighest);
 					sa.DoFloor(line, FloorMoveType.LowerFloorToLowest);
 					line.Special = 0;
 					break;
 
 				case 44:
-					// Ceiling Crush
+					// Ceiling crush.
 					sa.DoCeiling(line, CeilingMoveType.LowerAndCrush);
 					line.Special = 0;
 					break;
 
 				case 52:
-					// EXIT!
+					// Do exit.
 					world.G_ExitLevel();
 					break;
 
 				case 53:
-					// Perpetual Platform Raise
+					// Perpetual platform raise.
 					sa.DoPlatform(line, PlatformType.PerpetualRaise, 0);
 					line.Special = 0;
 					break;
 
 				case 54:
-					// Platform Stop
+					// Platform stop.
 					sa.StopPlatform(line);
 					line.Special = 0;
 					break;
 
 				case 56:
-					// Raise Floor Crush
+					// Raise floor crush.
 					sa.DoFloor(line, FloorMoveType.RaiseFloorCrush);
 					line.Special = 0;
 					break;
 
 				case 57:
-					// Ceiling Crush Stop
+					// Ceiling crush stop.
 					sa.CeilingCrushStop(line);
 					line.Special = 0;
 					break;
 
 				case 58:
-					// Raise Floor 24
+					// Raise floor 24.
 					sa.DoFloor(line, FloorMoveType.RaiseFloor24);
 					line.Special = 0;
 					break;
 
 				case 59:
-					// Raise Floor 24 And Change
+					// Raise floor 24 and change.
 					sa.DoFloor(line, FloorMoveType.RaiseFloor24AndChange);
 					line.Special = 0;
 					break;
 
 				case 104:
-					// Turn lights off in sector(tag)
+					// Turn lights off in sector (tag).
 					sa.TurnTagLightsOff(line);
 					line.Special = 0;
 					break;
 
 				case 108:
-					// Blazing Door Raise (faster than TURBO!)
+					// Blazing door raise (faster than turbo).
 					sa.DoDoor(line, VlDoorType.BlazeRaise);
 					line.Special = 0;
 					break;
 
 				case 109:
-					// Blazing Door Open (faster than TURBO!)
+					// Blazing door open (faster than turbo).
 					sa.DoDoor(line, VlDoorType.BlazeOpen);
 					line.Special = 0;
 					break;
 
 				case 100:
-					// Build Stairs Turbo 16
+					// Build stairs turbo 16.
 					sa.BuildStairs(line, StairType.Turbo16);
 					line.Special = 0;
 					break;
 
 				case 110:
-					// Blazing Door Close (faster than TURBO!)
+					// Blazing door close (faster than turbo).
 					sa.DoDoor(line, VlDoorType.BlazeClose);
 					line.Special = 0;
 					break;
 
 				case 119:
-					// Raise floor to nearest surr. floor
+					// Raise floor to nearest surrounding floor.
 					sa.DoFloor(line, FloorMoveType.RaiseFloorToNearest);
 					line.Special = 0;
 					break;
 
 				case 121:
-					// Blazing PlatDownWaitUpStay
+					// Blazing platform down, wait, up and stay.
 					sa.DoPlatform(line, PlatformType.BlazeDwus, 0);
 					line.Special = 0;
 					break;
 
 				case 124:
-					// Secret EXIT
+					// Secret exit.
 					world.G_SecretExitLevel();
 					break;
 
 				case 125:
-					// TELEPORT MonsterONLY
+					// Teleport monster only.
 					if (thing.Player == null)
 					{
 						sa.Teleport(line, side, thing);
@@ -832,115 +826,115 @@ namespace ManagedDoom
 					break;
 
 				case 130:
-					// Raise Floor Turbo
+					// Raise floor turbo.
 					sa.DoFloor(line, FloorMoveType.RaiseFloorTurbo);
 					line.Special = 0;
 					break;
 
 				case 141:
-					// Silent Ceiling Crush & Raise
+					// Silent ceiling crush and raise.
 					sa.DoCeiling(line, CeilingMoveType.SilentCrushAndRaise);
 					line.Special = 0;
 					break;
 
-				// RETRIGGERS.  All from here till end.
+				// RETRIGGERS. All from here till end.
 				case 72:
-					// Ceiling Crush
+					// Ceiling crush.
 					sa.DoCeiling(line, CeilingMoveType.LowerAndCrush);
 					break;
 
 				case 73:
-					// Ceiling Crush and Raise
+					// Ceiling crush and raise.
 					sa.DoCeiling(line, CeilingMoveType.CrushAndRaise);
 					break;
 
 				case 74:
-					// Ceiling Crush Stop
+					// Ceiling crush stop.
 					sa.CeilingCrushStop(line);
 					break;
 
 				case 75:
-					// Close Door
+					// Close door.
 					sa.DoDoor(line, VlDoorType.Close);
 					break;
 
 				case 76:
-					// Close Door 30
+					// Close door 30.
 					sa.DoDoor(line, VlDoorType.Close30ThenOpen);
 					break;
 
 				case 77:
-					// Fast Ceiling Crush & Raise
+					// Fast ceiling crush and raise.
 					sa.DoCeiling(line, CeilingMoveType.FastCrushAndRaise);
 					break;
 
 				case 79:
-					// Lights Very Dark
+					// Lights very dark.
 					sa.LightTurnOn(line, 35);
 					break;
 
 				case 80:
-					// Light Turn On - brightest near
+					// Light turn on - brightest near.
 					sa.LightTurnOn(line, 0);
 					break;
 
 				case 81:
-					// Light Turn On 255
+					// Light turn on 255.
 					sa.LightTurnOn(line, 255);
 					break;
 
 				case 82:
-					// Lower Floor To Lowest
+					// Lower floor to lowest.
 					sa.DoFloor(line, FloorMoveType.LowerFloorToLowest);
 					break;
 
 				case 83:
-					// Lower Floor
+					// Lower floor.
 					sa.DoFloor(line, FloorMoveType.LowerFloor);
 					break;
 
 				case 84:
-					// LowerAndChange
+					// Lower and change.
 					sa.DoFloor(line, FloorMoveType.LowerAndChange);
 					break;
 
 				case 86:
-					// Open Door
+					// Open door.
 					sa.DoDoor(line, VlDoorType.Open);
 					break;
 
 				case 87:
-					// Perpetual Platform Raise
+					// Perpetual platform raise.
 					sa.DoPlatform(line, PlatformType.PerpetualRaise, 0);
 					break;
 
 				case 88:
-					// PlatDownWaitUp
+					// Platform down, wait, up and stay.
 					sa.DoPlatform(line, PlatformType.DownWaitUpStay, 0);
 					break;
 
 				case 89:
-					// Platform Stop
+					// Platform stop.
 					sa.StopPlatform(line);
 					break;
 
 				case 90:
-					// Raise Door
+					// Raise door.
 					sa.DoDoor(line, VlDoorType.Normal);
 					break;
 
 				case 91:
-					// Raise Floor
+					// Raise floor.
 					sa.DoFloor(line, FloorMoveType.RaiseFloor);
 					break;
 
 				case 92:
-					// Raise Floor 24
+					// Raise floor 24.
 					sa.DoFloor(line, FloorMoveType.RaiseFloor24);
 					break;
 
 				case 93:
-					// Raise Floor 24 And Change
+					// Raise floor 24 and change.
 					sa.DoFloor(line, FloorMoveType.RaiseFloor24AndChange);
 					break;
 
@@ -950,8 +944,7 @@ namespace ManagedDoom
 					break;
 
 				case 95:
-					// Raise floor to nearest height
-					// and change texture.
+					// Raise floor to nearest height and change texture.
 					sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0);
 					break;
 
@@ -961,37 +954,37 @@ namespace ManagedDoom
 					break;
 
 				case 97:
-					// TELEPORT!
+					// Do Teleport.
 					sa.Teleport(line, side, thing);
 					break;
 
 				case 98:
-					// Lower Floor (TURBO)
+					// Lower floor (turbo).
 					sa.DoFloor(line, FloorMoveType.TurboLower);
 					break;
 
 				case 105:
-					// Blazing Door Raise (faster than TURBO!)
+					// Blazing door raise (faster than turbo).
 					sa.DoDoor(line, VlDoorType.BlazeRaise);
 					break;
 
 				case 106:
-					// Blazing Door Open (faster than TURBO!)
+					// Blazing door open (faster than turbo).
 					sa.DoDoor(line, VlDoorType.BlazeOpen);
 					break;
 
 				case 107:
-					// Blazing Door Close (faster than TURBO!)
+					// Blazing door close (faster than turbo).
 					sa.DoDoor(line, VlDoorType.BlazeClose);
 					break;
 
 				case 120:
-					// Blazing PlatDownWaitUpStay.
+					// Blazing platform down, wait, up and stay.
 					sa.DoPlatform(line, PlatformType.BlazeDwus, 0);
 					break;
 
 				case 126:
-					// TELEPORT MonsterONLY.
+					// Teleport monster only.
 					if (thing.Player == null)
 					{
 						sa.Teleport(line, side, thing);
@@ -999,12 +992,12 @@ namespace ManagedDoom
 					break;
 
 				case 128:
-					// Raise To Nearest Floor
+					// Raise to nearest floor.
 					sa.DoFloor(line, FloorMoveType.RaiseFloorToNearest);
 					break;
 
 				case 129:
-					// Raise Floor Turbo
+					// Raise floor turbo.
 					sa.DoFloor(line, FloorMoveType.RaiseFloorTurbo);
 					break;
 			}
@@ -1012,11 +1005,13 @@ namespace ManagedDoom
 
 
 
+		////////////////////////////////////////////////////////////
+		// Line shoot
+		////////////////////////////////////////////////////////////
 
-		//
-		// P_ShootSpecialLine - IMPACT SPECIALS
-		// Called when a thing shoots a special line.
-		//
+		/// <summary>
+		/// Called when a thing shoots a special line.
+		/// </summary>
 		public void ShootSpecialLine(Mobj thing, LineDef line)
 		{
 			bool ok;
@@ -1028,7 +1023,7 @@ namespace ManagedDoom
 				switch ((int)line.Special)
 				{
 					case 46:
-						// OPEN DOOR IMPACT
+						// Open door impact.
 						ok = true;
 						break;
 				}
@@ -1044,19 +1039,19 @@ namespace ManagedDoom
 			switch ((int)line.Special)
 			{
 				case 24:
-					// RAISE FLOOR
+					// Raise floor.
 					sa.DoFloor(line, FloorMoveType.RaiseFloor);
 					specials.ChangeSwitchTexture(line, false);
 					break;
 
 				case 46:
-					// OPEN DOOR
+					// Open door.
 					sa.DoDoor(line, VlDoorType.Open);
 					specials.ChangeSwitchTexture(line, true);
 					break;
 
 				case 47:
-					// RAISE FLOOR NEAR AND CHANGE
+					// Raise floor near and change.
 					sa.DoPlatform(line, PlatformType.RaiseToNearestAndChange, 0);
 					specials.ChangeSwitchTexture(line, false);
 					break;
