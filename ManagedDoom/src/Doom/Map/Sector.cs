@@ -27,7 +27,7 @@ namespace ManagedDoom
         public int[] BlockBox;
 
         // origin for any sounds played by the sector
-        public DegenMobj SoundOrigin;
+        public Mobj SoundOrigin;
 
         // if == validcount, already checked
         public int ValidCount;

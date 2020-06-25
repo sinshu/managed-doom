@@ -30,7 +30,7 @@ namespace ManagedDoom
 
         public Thinker SpecialData;
 
-        public DegenMobj SoundOrigin;
+        public Mobj SoundOrigin;
 
         public LineDef(
             Vertex vertex1,
