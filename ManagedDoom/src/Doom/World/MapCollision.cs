@@ -16,6 +16,9 @@ namespace ManagedDoom
             this.world = world;
         }
 
+        /// <summary>
+        /// Sets opentop and openbottom to the window through a two sided line.
+        /// </summary>
         public void LineOpening(LineDef line)
         {
             if (line.Side1 == null)

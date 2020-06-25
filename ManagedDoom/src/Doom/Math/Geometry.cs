@@ -20,6 +20,9 @@ namespace ManagedDoom
             return ans <= slopeRange ? ans : slopeRange;
         }
 
+        /// <summary>
+        /// Calculate the distance between the two points.
+        /// </summary>
         public static Fixed PointToDist(Fixed fromX, Fixed fromY, Fixed toX, Fixed toY)
         {
             var dx = Fixed.Abs(toX - fromX);
@@ -50,6 +53,12 @@ namespace ManagedDoom
             return dist;
         }
 
+        /// <summary>
+        /// Calculate on which side of the node the point is.
+        /// </summary>
+        /// <returns>
+        /// 0 (front) or 1 (back).
+        /// </returns>
         public static int PointOnSide(Fixed x, Fixed y, Node node)
         {
             if (node.Dx == Fixed.Zero)
@@ -106,6 +115,9 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// Calculate the angle of the line passing through the two points.
+        /// </summary>
         public static Angle PointToAngle(Fixed fromX, Fixed fromY, Fixed toX, Fixed toY)
         {
             var x = toX - fromX;
@@ -188,6 +200,9 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// Get the subsector which contains the point.
+        /// </summary>
         public static Subsector PointInSubsector(Fixed x, Fixed y, Map map)
         {
             // Single subsector is a special case.
@@ -208,6 +223,12 @@ namespace ManagedDoom
             return map.Subsectors[Node.GetSubsector(nodeNumber)];
         }
 
+        /// <summary>
+        /// Calculate on which side of the line the point is.
+        /// </summary>
+        /// <returns>
+        /// 0 (front) or 1 (back).
+        /// </returns>
         public static int PointOnSegSide(Fixed x, Fixed y, Seg line)
         {
             var lx = line.Vertex1.X;
@@ -272,6 +293,12 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// Calculate on which side of the line the point is.
+        /// </summary>
+        /// <returns>
+        /// 0 (front) or 1 (back).
+        /// </returns>
         public static int PointOnLineSide(Fixed x, Fixed y, LineDef line)
         {
             if (line.Dx == Fixed.Zero)
@@ -316,6 +343,12 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// Calculate on which side of the line the box is.
+        /// </summary>
+        /// <returns>
+        /// 0 (front), 1 (back), or -1 if the box crosses the line.
+        /// </returns>
         public static int BoxOnLineSide(Fixed[] box, LineDef line)
         {
             int p1;
@@ -367,6 +400,12 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// Calculate on which side of the line the point is.
+        /// </summary>
+        /// <returns>
+        /// 0 (front) or 1 (back).
+        /// </returns>
         public static int PointOnDivLineSide(Fixed x, Fixed y, DivLine line)
         {
             if (line.Dx == Fixed.Zero)
@@ -425,6 +464,9 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// Gives an estimation of distance (not exact).
+        /// </summary>
         public static Fixed AproxDistance(Fixed dx, Fixed dy)
         {
             dx = Fixed.Abs(dx);
@@ -440,6 +482,12 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// Calculate on which side of the line the point is.
+        /// </summary>
+        /// <returns>
+        /// 0 (front) or 1 (back), or 2 if the box crosses the line.
+        /// </returns>
         public static int DivLineSide(Fixed x, Fixed y, DivLine line)
         {
             if (line.Dx == Fixed.Zero)
@@ -495,6 +543,12 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// Calculate on which side of the line the point is.
+        /// </summary>
+        /// <returns>
+        /// 0 (front) or 1 (back), or 2 if the box crosses the line.
+        /// </returns>
         public static int DivLineSide(Fixed x, Fixed y, Node node)
         {
             if (node.Dx == Fixed.Zero)
