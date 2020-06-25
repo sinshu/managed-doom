@@ -72,7 +72,7 @@ namespace ManagedDoom
                             player.Mobj.Y - actor.Y);
 
                         // If real close, react anyway.
-                        if (dist > World.MELEERANGE)
+                        if (dist > WeaponBehavior.MeleeRange)
                         {
                             // Behind back.
                             continue;
@@ -447,7 +447,7 @@ namespace ManagedDoom
 
             var dist = Geometry.AproxDistance(target.X - actor.X, target.Y - actor.Y);
 
-            if (dist >= World.MELEERANGE - Fixed.FromInt(20) + target.Info.Radius)
+            if (dist >= WeaponBehavior.MeleeRange - Fixed.FromInt(20) + target.Info.Radius)
             {
                 return false;
             }
@@ -701,7 +701,7 @@ namespace ManagedDoom
             FaceTarget(actor);
 
             var angle = actor.Angle;
-            var slope = world.Hitscan.AimLineAttack(actor, angle, World.MISSILERANGE);
+            var slope = world.Hitscan.AimLineAttack(actor, angle, WeaponBehavior.MissileRange);
 
             world.StartSound(actor, Sfx.PISTOL);
 
@@ -709,7 +709,7 @@ namespace ManagedDoom
             angle += new Angle((random.Next() - random.Next()) << 20);
             var damage = ((random.Next() % 5) + 1) * 3;
 
-            world.Hitscan.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
+            world.Hitscan.LineAttack(actor, angle, WeaponBehavior.MissileRange, slope, damage);
         }
 
 
@@ -725,7 +725,7 @@ namespace ManagedDoom
             FaceTarget(actor);
 
             var center = actor.Angle;
-            var slope = world.Hitscan.AimLineAttack(actor, center, World.MISSILERANGE);
+            var slope = world.Hitscan.AimLineAttack(actor, center, WeaponBehavior.MissileRange);
 
             var random = world.Random;
 
@@ -734,7 +734,7 @@ namespace ManagedDoom
                 var angle = center + new Angle((random.Next() - random.Next()) << 20);
                 var damage = ((random.Next() % 5) + 1) * 3;
 
-                world.Hitscan.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
+                world.Hitscan.LineAttack(actor, angle, WeaponBehavior.MissileRange, slope, damage);
             }
         }
 
@@ -751,13 +751,13 @@ namespace ManagedDoom
             FaceTarget(actor);
 
             var center = actor.Angle;
-            var slope = world.Hitscan.AimLineAttack(actor, center, World.MISSILERANGE);
+            var slope = world.Hitscan.AimLineAttack(actor, center, WeaponBehavior.MissileRange);
 
             var random = world.Random;
             var angle = center + new Angle((random.Next() - random.Next()) << 20);
             var damage = ((random.Next() % 5) + 1) * 3;
 
-            world.Hitscan.LineAttack(actor, angle, World.MISSILERANGE, slope, damage);
+            world.Hitscan.LineAttack(actor, angle, WeaponBehavior.MissileRange, slope, damage);
         }
 
 

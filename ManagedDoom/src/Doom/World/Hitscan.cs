@@ -345,7 +345,7 @@ namespace ManagedDoom
             }
 
             // Don't make punches spark on the wall.
-            if (currentRange == World.MELEERANGE)
+            if (currentRange == WeaponBehavior.MeleeRange)
             {
                 thing.SetState(MobjState.Puff3);
             }

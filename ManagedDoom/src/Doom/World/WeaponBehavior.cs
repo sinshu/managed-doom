@@ -4,11 +4,14 @@ namespace ManagedDoom
 {
     public sealed class WeaponBehavior
     {
-        public static readonly Fixed RaiseSpeed = Fixed.FromInt(6);
-        public static readonly Fixed LowerSpeed = Fixed.FromInt(6);
+        public static readonly Fixed MeleeRange = Fixed.FromInt(64);
+        public static readonly Fixed MissileRange = Fixed.FromInt(32 * 64);
 
         public static readonly Fixed WeaponTop = Fixed.FromInt(32);
         public static readonly Fixed WeaponBottom = Fixed.FromInt(128);
+
+        private static readonly Fixed RaiseSpeed = Fixed.FromInt(6);
+        private static readonly Fixed LowerSpeed = Fixed.FromInt(6);
 
         private static readonly int bfgCells = 40;
 
@@ -326,8 +329,8 @@ namespace ManagedDoom
             var angle = player.Mobj.Angle;
             angle += new Angle((random.Next() - random.Next()) << 18);
 
-            var slope = hs.AimLineAttack(player.Mobj, angle, World.MELEERANGE);
-            hs.LineAttack(player.Mobj, angle, World.MELEERANGE, slope, damage);
+            var slope = hs.AimLineAttack(player.Mobj, angle, MeleeRange);
+            hs.LineAttack(player.Mobj, angle, MeleeRange, slope, damage);
 
             // Turn to face target.
             if (hs.LineTarget != null)
@@ -352,9 +355,9 @@ namespace ManagedDoom
 
             var hs = world.Hitscan;
 
-            // Use meleerange + 1 se the puff doesn't skip the flash.
-            var slope = hs.AimLineAttack(player.Mobj, attackAngle, World.MELEERANGE + new Fixed(1));
-            hs.LineAttack(player.Mobj, attackAngle, World.MELEERANGE + new Fixed(1), slope, damage);
+            // Use MeleeRange + Fixed.Epsilon so that the puff doesn't skip the flash.
+            var slope = hs.AimLineAttack(player.Mobj, attackAngle, MeleeRange + Fixed.Epsilon);
+            hs.LineAttack(player.Mobj, attackAngle, MeleeRange + Fixed.Epsilon, slope, damage);
 
             if (hs.LineTarget == null)
             {
@@ -451,7 +454,7 @@ namespace ManagedDoom
                 angle += new Angle((random.Next() - random.Next()) << 18);
             }
 
-            world.Hitscan.LineAttack(mo, angle, World.MISSILERANGE, currentBulletSlope, damage);
+            world.Hitscan.LineAttack(mo, angle, MissileRange, currentBulletSlope, damage);
         }
 
 
@@ -559,7 +562,7 @@ namespace ManagedDoom
                 hs.LineAttack(
                     player.Mobj,
                     angle,
-                    World.MISSILERANGE,
+                    MissileRange,
                     currentBulletSlope + new Fixed((random.Next() - random.Next()) << 5),
                     damage);
             }
