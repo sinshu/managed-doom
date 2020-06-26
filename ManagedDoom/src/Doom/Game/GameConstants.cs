@@ -8,8 +8,6 @@ namespace ManagedDoom
 
         public static readonly Fixed MaxThingRadius = Fixed.FromInt(32);
 
-        public static readonly Fixed MAXPLMOVE = UserInput.forwardmove[1];
-
         public static readonly Fixed TURBOTHRESHOLD = new Fixed(0x32);
     }
 }

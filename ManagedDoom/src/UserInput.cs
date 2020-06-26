@@ -6,25 +6,6 @@ namespace ManagedDoom
 {
     public static class UserInput
     {
-        private const int slowTurnTics = 6;
-
-        public static readonly Fixed[] forwardmove =
-        {
-            new Fixed(0x19), new Fixed(0x32)
-        };
-
-        private static readonly Fixed[] sidemove =
-        {
-            new Fixed(0x18), new Fixed(0x28)
-        };
-
-        private static readonly Fixed[] angleturn =
-        {
-            new Fixed(640), new Fixed(1280), new Fixed(320) // + slow turn
-        };
-
-        private static readonly Fixed maxplmove = forwardmove[1];
-
         private static int turnheld;
         private static int next_weapon;
         private static bool[] weaponKeys;
@@ -60,8 +41,8 @@ namespace ManagedDoom
 
             var speed = keySpeed ? 1 : 0;
 
-            Fixed forward = Fixed.Zero;
-            Fixed side = Fixed.Zero;
+            var forward = 0;
+            var side = 0;
 
             if (keyLeft || keyRight)
             {
@@ -73,7 +54,7 @@ namespace ManagedDoom
             }
 
             int tspeed;
-            if (turnheld < slowTurnTics)
+            if (turnheld < PlayerBehavior.SlowTurnTics)
             {
                 tspeed = 2;
             }
@@ -86,32 +67,32 @@ namespace ManagedDoom
             {
                 if (keyRight)
                 {
-                    side += sidemove[speed];
+                    side += PlayerBehavior.SideMove[speed];
                 }
                 if (keyLeft)
                 {
-                    side -= sidemove[speed];
+                    side -= PlayerBehavior.SideMove[speed];
                 }
             }
             else
             {
                 if (keyRight)
                 {
-                    cmd.AngleTurn -= (short)angleturn[tspeed].Data;
+                    cmd.AngleTurn -= (short)PlayerBehavior.AngleTurn[tspeed];
                 }
                 if (keyLeft)
                 {
-                    cmd.AngleTurn += (short)angleturn[tspeed].Data;
+                    cmd.AngleTurn += (short)PlayerBehavior.AngleTurn[tspeed];
                 }
             }
 
             if (keyUp)
             {
-                forward += forwardmove[speed];
+                forward += PlayerBehavior.ForwardMove[speed];
             }
             if (keyDown)
             {
-                forward -= forwardmove[speed];
+                forward -= PlayerBehavior.ForwardMove[speed];
             }
 
             if (keyFire)
@@ -152,25 +133,25 @@ namespace ManagedDoom
 
             next_weapon = 0;
 
-            if (forward > maxplmove)
+            if (forward > PlayerBehavior.MaxMove)
             {
-                forward = maxplmove;
+                forward = PlayerBehavior.MaxMove;
             }
-            else if (forward < -maxplmove)
+            else if (forward < -PlayerBehavior.MaxMove)
             {
-                forward = -maxplmove;
+                forward = -PlayerBehavior.MaxMove;
             }
-            if (side > maxplmove)
+            if (side > PlayerBehavior.MaxMove)
             {
-                side = maxplmove;
+                side = PlayerBehavior.MaxMove;
             }
-            else if (side < -maxplmove)
+            else if (side < -PlayerBehavior.MaxMove)
             {
-                side = -maxplmove;
+                side = -PlayerBehavior.MaxMove;
             }
 
-            cmd.ForwardMove += (sbyte)forward.Data;
-            cmd.SideMove += (sbyte)side.Data;
+            cmd.ForwardMove += (sbyte)forward;
+            cmd.SideMove += (sbyte)side;
         }
     }
 }
