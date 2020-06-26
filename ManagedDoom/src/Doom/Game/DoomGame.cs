@@ -524,8 +524,8 @@ namespace ManagedDoom
 			{
 				if (options.Players[i].InGame)
 				{
-					// take away cards and stuff
-					G_PlayerFinishLevel(i);
+					// Take away cards and stuff.
+					options.Players[i].FinishLevel();
 				}
 			}
 
@@ -657,33 +657,6 @@ namespace ManagedDoom
 
 			gameState = GameState.Intermission;
 			intermission = new Intermission(options, wminfo);
-		}
-
-
-
-
-		//
-		// G_PlayerFinishLevel
-		// Can when a player completes a level.
-		//
-		private void G_PlayerFinishLevel(int player)
-		{
-			var p = options.Players[player];
-			Array.Clear(p.Powers, 0, p.Powers.Length);
-			Array.Clear(p.Cards, 0, p.Cards.Length);
-
-			// cancel invisibility
-			p.Mobj.Flags &= ~MobjFlags.Shadow;
-
-			// cancel gun flashes
-			p.ExtraLight = 0;
-
-			// cancel ir gogles
-			p.FixedColorMap = 0;
-
-			// no palette changes
-			p.DamageCount = 0;
-			p.BonusCount = 0;
 		}
 
 

@@ -246,6 +246,25 @@ namespace ManagedDoom
             DidSecret = false;
         }
 
+        public void FinishLevel()
+        {
+            Array.Clear(Powers, 0, Powers.Length);
+            Array.Clear(Cards, 0, Cards.Length);
+
+            // Cancel invisibility.
+            Mobj.Flags &= ~MobjFlags.Shadow;
+
+            // Cancel gun flashes.
+            ExtraLight = 0;
+
+            // Cancel ir gogles.
+            FixedColorMap = 0;
+
+            // No palette changes.
+            DamageCount = 0;
+            BonusCount = 0;
+        }
+
         public void SendMessage(string message)
         {
             Message = message;
