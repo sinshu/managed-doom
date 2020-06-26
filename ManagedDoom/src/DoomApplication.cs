@@ -192,7 +192,7 @@ namespace ManagedDoom
         public void PauseGame()
         {
             if (state == ApplicationState.Game &&
-                game.gameState == GameState.Level &&
+                game.State == GameState.Level &&
                 !game.Paused && !sendPause)
             {
                 sendPause = true;
@@ -202,7 +202,7 @@ namespace ManagedDoom
         public void ResumeGame()
         {
             if (state == ApplicationState.Game &&
-                game.gameState == GameState.Level &&
+                game.State == GameState.Level &&
                 game.Paused && !sendPause)
             {
                 sendPause = true;

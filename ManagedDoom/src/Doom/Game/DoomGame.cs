@@ -6,31 +6,28 @@ namespace ManagedDoom
 	public sealed class DoomGame
 	{
 		private CommonResource resource;
+		private GameOptions options;
+
+		private GameAction gameAction;
+		private GameState gameState;
 
 		private World world;
 		private Intermission intermission;
 		private Finale finale;
-		private GameAction gameAction;
-
-		private bool demoplayback;
-		private bool demorecording;
-
-		private int gametic;
-
-		private GameOptions options;
-		public GameState gameState;
 
 		private bool paused;
-
-		private int levelstarttic;
 
 		public DoomGame(CommonResource resource, GameOptions options)
 		{
 			this.resource = resource;
-
 			this.options = options;
 
 			gameAction = GameAction.NewGame;
+		}
+
+		public void DoAction(GameAction action)
+		{
+			gameAction = action;
 		}
 
 		public void Update(TicCmd[] cmds)
@@ -41,20 +38,20 @@ namespace ManagedDoom
 			{
 				if (players[i].InGame && players[i].PlayerState == PlayerState.Reborn)
 				{
-					G_DoReborn(i);
+					DoReborn(i);
 				}
 			}
 
-			// do things to change the game state
+			// Do things to change the game state.
 			while (gameAction != GameAction.Nothing)
 			{
 				switch (gameAction)
 				{
 					case GameAction.LoadLevel:
-						G_DoLoadLevel();
+						DoLoadLevel();
 						break;
 					case GameAction.NewGame:
-						G_DoNewGame();
+						DoNewGame();
 						break;
 					case GameAction.LoadGame:
 						//G_DoLoadGame();
@@ -62,77 +59,45 @@ namespace ManagedDoom
 					case GameAction.SaveGame:
 						//G_DoSaveGame();
 						break;
-					case GameAction.PlayDemo:
-						//G_DoPlayDemo();
-						break;
 					case GameAction.Completed:
-						G_DoCompleted();
+						DoCompleted();
 						break;
 					case GameAction.Victory:
-						StartFinale();
+						DoFinale();
 						break;
 					case GameAction.WorldDone:
-						G_DoWorldDone();
-						break;
-					case GameAction.ScreenShot:
-						//M_ScreenShot();
-						gameAction = GameAction.Nothing;
+						DoWorldDone();
 						break;
 					case GameAction.Nothing:
 						break;
 				}
 			}
 
-			// get commands, check consistancy,
-			// and build new consistancy check
-			//buf = (gametic / ticdup) % BACKUPTICS;
-
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
 				if (players[i].InGame)
 				{
 					var cmd = players[i].Cmd;
-
 					cmd.CopyFrom(cmds[i]);
 
-					if (demoplayback)
-					{
-						//G_ReadDemoTiccmd(cmd);
-					}
-
+					/*
 					if (demorecording)
 					{
-						//G_WriteDemoTiccmd(cmd);
-					}
-
-					// check for turbo cheats
-					if (cmd.ForwardMove > GameConstants.TURBOTHRESHOLD.Data
-						&& (gametic & 31) == 0
-						&& ((gametic >> 5) & 3) == i)
-					{
-						players[options.ConsolePlayer].SendMessage("%s is turbo!");
-					}
-
-					/*
-					if (options.NetGame && !netdemo && !(gametic%ticdup) ) 
-					{ 
-						if (gametic > BACKUPTICS 
-							&& consistancy[i][buf] != cmd->consistancy) 
-						{ 
-							I_Error("consistency failure (%i should be %i)",
-							cmd->consistancy, consistancy[i][buf]);
-							
-							if (players[i].mo) 
-								consistancy[i][buf] = players[i].mo->x; 
-							else 
-								consistancy[i][buf] = rndindex; 
-						} 
+						G_WriteDemoTiccmd(cmd);
 					}
 					*/
+
+					// Check for turbo cheats.
+					if (cmd.ForwardMove > GameConstants.TURBOTHRESHOLD.Data &&
+						(world.levelTime & 31) == 0 && ((world.levelTime >> 5) & 3) == i)
+					{
+						var player = players[options.ConsolePlayer];
+						player.SendMessage("%s is turbo!");
+					}
 				}
 			}
 
-			// check for special buttons
+			// Check for special buttons.
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
 				if (players[i].InGame)
@@ -152,22 +117,12 @@ namespace ManagedDoom
 									//S_ResumeSound();
 								}
 								break;
-
-							case TicCmdButtons.SaveGame:
-								//if (!savedescription[0])
-								{
-									//strcpy(savedescription, "NET GAME");
-									//savegameslot =
-									//    (players[i].cmd.buttons & BTS_SAVEMASK) >> BTS_SAVESHIFT;
-									gameAction = GameAction.SaveGame;
-								}
-								break;
 						}
 					}
 				}
 			}
 
-			// do main actions
+			// Do main actions.
 			switch (gameState)
 			{
 				case GameState.Level:
@@ -198,14 +153,14 @@ namespace ManagedDoom
 								case 11:
 								case 20:
 								case 30:
-									StartFinale();
+									DoFinale();
 									break;
 
 								case 15:
 								case 31:
 									if (world.SecretExit)
 									{
-										StartFinale();
+										DoFinale();
 									}
 									break;
 							}
@@ -219,10 +174,6 @@ namespace ManagedDoom
 						gameAction = GameAction.WorldDone;
 					}
 					break;
-
-				case GameState.DemoScreen:
-					//D_PageTicker();
-					break;
 			}
 
 			options.GameTic++;
@@ -230,108 +181,61 @@ namespace ManagedDoom
 
 
 
-		//
-		// G_DoReborn 
-		// 
-		private void G_DoReborn(int playernum)
+		private void DoReborn(int playerNumber)
 		{
 			if (!options.NetGame)
 			{
-				// reload the level from scratch
+				// Reload the level from scratch.
 				gameAction = GameAction.LoadLevel;
 			}
 			else
 			{
-				// respawn at the start
+				// Respawn at the start.
 
-				// first dissasociate the corpse
-				options.Players[playernum].Mobj.Player = null;
+				// First dissasociate the corpse.
+				options.Players[playerNumber].Mobj.Player = null;
 
-				// spawn at random spot if in death match
+				// Spawn at random spot if in death match.
 				if (options.Deathmatch != 0)
 				{
-					world.G_DeathMatchSpawnPlayer(playernum);
+					world.G_DeathMatchSpawnPlayer(playerNumber);
 					return;
 				}
 
-				if (world.G_CheckSpot(playernum, world.PlayerStarts[playernum]))
+				if (world.G_CheckSpot(playerNumber, world.PlayerStarts[playerNumber]))
 				{
-					world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playernum]);
+					world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playerNumber]);
 					return;
 				}
 
-				// try to spawn at one of the other players spots
+				// Try to spawn at one of the other players spots.
 				for (var i = 0; i < Player.MaxPlayerCount; i++)
 				{
-					if (world.G_CheckSpot(playernum, world.PlayerStarts[i]))
+					if (world.G_CheckSpot(playerNumber, world.PlayerStarts[i]))
 					{
-						// fake as other player
-						world.PlayerStarts[i].Type = playernum + 1;
+						// Fake as other player.
+						world.PlayerStarts[i].Type = playerNumber + 1;
 
 						world.ThingAllocation.SpawnPlayer(world.PlayerStarts[i]);
 
-						// restore
+						// Restore.
 						world.PlayerStarts[i].Type = i + 1;
 
 						return;
 					}
-					// he's going to be inside something. Too bad.
+					// He's going to be inside something.
+					// Too bad.
 				}
 
-				world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playernum]);
+				world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playerNumber]);
 			}
 		}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-		private void G_DoLoadLevel()
+		private void DoLoadLevel()
 		{
-			/*
-			// Set the sky map.
-			// First thing, we have a dummy sky texture name,
-			//  a flat. The data is in the WAD only because
-			//  we look for an actual index, instead of simply
-			//  setting one.
-			skyflatnum = R_FlatNumForName(SKYFLATNAME);
-
-			// DOOM determines the sky texture to be used
-			// depending on the current episode, and the game version.
-			if ((gamemode == commercial)
-			 || (gamemode == pack_tnt)
-			 || (gamemode == pack_plut))
-			{
-				skytexture = R_TextureNumForName("SKY3");
-				if (gamemap < 12)
-					skytexture = R_TextureNumForName("SKY1");
-				else
-					if (gamemap < 21)
-					skytexture = R_TextureNumForName("SKY2");
-			}
-			*/
-
-			// for time calculation
-			levelstarttic = gametic;
-
-			/*
-			if (wipegamestate == GS_LEVEL)
-			{
-				// force a wipe
-				wipegamestate = -1;
-			}
-			*/
+			gameAction = GameAction.Nothing;
 
 			gameState = GameState.Level;
 
@@ -347,176 +251,55 @@ namespace ManagedDoom
 
 			intermission = null;
 
-			// P_SetupLevel(gameepisode, gamemap, 0, gameskill);
 			world = new World(resource, options);
 			world.Audio = audio;
-
-			// view the guy you are playing
-			// displayplayer = consoleplayer;
-
-			// starttime = I_GetTime();
-			gameAction = GameAction.Nothing;
-			// Z_CheckHeap();
-
-			// clear cmd building stuff
-			/*
-			memset(gamekeydown, 0, sizeof(gamekeydown));
-			joyxmove = joyymove = 0;
-			mousex = mousey = 0;
-			sendpause = sendsave = paused = false;
-			memset(mousebuttons, 0, sizeof(mousebuttons));
-			memset(joybuttons, 0, sizeof(joybuttons));
-			*/
 		}
 
-
-
-		private void G_DoNewGame()
+		private void DoNewGame()
 		{
-			demoplayback = false;
-			//netdemo = false;
-			//netgame = false;
-			//deathmatch = false;
-			//players[1].InGame = players[2].InGame = players[3].InGame = false;
-			//respawnparm = false;
-			//fastparm = false;
-			//nomonsters = false;
-			//consoleplayer = 0;
-			//G_InitNew(d_skill, d_episode, d_map);
-			G_InitNew(options.Skill, options.Episode, options.Map);
 			gameAction = GameAction.Nothing;
+
+			InitNew(options.Skill, options.Episode, options.Map);
 		}
 
-
-		private void G_InitNew(GameSkill skill, int episode, int map)
+		private void InitNew(GameSkill skill, int episode, int map)
 		{
-			/*
-			if (paused)
-			{
-				paused = false;
-				//S_ResumeSound();
-			}
-			*/
-
-
-			if (skill > GameSkill.Nightmare)
-			{
-				skill = GameSkill.Nightmare;
-			}
-
-			// This was quite messy with SPECIAL and commented parts.
-			// Supposedly hacks to make the latest edition work.
-			// It might not work properly.
-			if (episode < 1)
-			{
-				episode = 1;
-			}
+			skill = (GameSkill)Math.Clamp((int)skill, (int)GameSkill.Baby, (int)GameSkill.Nightmare);
 
 			if (options.GameMode == GameMode.Retail)
 			{
-				if (episode > 4)
-				{
-					episode = 4;
-				}
+				episode = Math.Clamp(episode, 1, 4);
 			}
 			else if (options.GameMode == GameMode.Shareware)
 			{
-				if (episode > 1)
-				{
-					// only start episode 1 on shareware
-					episode = 1;
-				}
+				episode = 1;
 			}
 			else
 			{
-				if (episode > 3)
-				{
-					episode = 3;
-				}
+				episode = Math.Clamp(episode, 1, 3);
 			}
 
-
-
-			if (map < 1)
+			if (options.GameMode == GameMode.Commercial)
 			{
-				map = 1;
+				map = Math.Clamp(map, 1, 32);
 			}
-
-			if ((map > 9) && (options.GameMode != GameMode.Commercial))
+			else
 			{
-				map = 9;
+				map = Math.Clamp(map, 1, 9);
 			}
 
 			options.Random.Clear();
 
-			/*
-			if (skill == sk_nightmare || respawnparm)
-			{
-				respawnmonsters = true;
-			}
-			else
-			{
-				respawnmonsters = false;
-			}
-			*/
-
-			// force players to be initialized upon first level load         
+			// Force players to be initialized upon first level load.
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
 				options.Players[i].PlayerState = PlayerState.Reborn;
 			}
 
-			//usergame = true; // will be set false if a demo 
-			//paused = false;
-			demoplayback = false;
-			//automapactive = false;
-			//viewactive = true;
-			//gameepisode = episode;
-			//gamemap = map;
-			//gameskill = skill;
-
-			//viewactive = true;
-
-			/*
-			// set the sky map for the episode
-			if (gamemode == commercial)
-			{
-				skytexture = R_TextureNumForName("SKY3");
-				if (gamemap < 12)
-					skytexture = R_TextureNumForName("SKY1");
-				else
-					if (gamemap < 21)
-					skytexture = R_TextureNumForName("SKY2");
-			}
-			else
-			{
-				switch (episode)
-				{
-					case 1:
-						skytexture = R_TextureNumForName("SKY1");
-						break;
-					case 2:
-						skytexture = R_TextureNumForName("SKY2");
-						break;
-					case 3:
-						skytexture = R_TextureNumForName("SKY3");
-						break;
-					case 4: // Special Edition sky
-						skytexture = R_TextureNumForName("SKY4");
-						break;
-				}
-			}
-			*/
-
-			G_DoLoadLevel();
+			DoLoadLevel();
 		}
 
-
-
-
-
-
-		private void G_DoCompleted()
+		private void DoCompleted()
 		{
 			gameAction = GameAction.Nothing;
 
@@ -545,31 +328,29 @@ namespace ManagedDoom
 				}
 			}
 
-			//#if 0  Hmmm - why?
 			if ((options.Map == 8) && (options.GameMode != GameMode.Commercial))
 			{
-				// victory 
+				// Victory.
 				gameAction = GameAction.Victory;
 				return;
 			}
 
 			if ((options.Map == 9) && (options.GameMode != GameMode.Commercial))
 			{
-				// exit secret level 
+				// Exit secret level.
 				for (var i = 0; i < Player.MaxPlayerCount; i++)
 				{
 					options.Players[i].DidSecret = true;
 				}
 			}
-			//#endif
 
-			var wminfo = options.wminfo;
+			var imInfo = options.IntermissionInfo;
 
-			wminfo.DidSecret = options.Players[options.ConsolePlayer].DidSecret;
-			wminfo.Episode = options.Episode - 1;
-			wminfo.LastLevel = options.Map - 1;
+			imInfo.DidSecret = options.Players[options.ConsolePlayer].DidSecret;
+			imInfo.Episode = options.Episode - 1;
+			imInfo.LastLevel = options.Map - 1;
 
-			// wminfo.next is 0 biased, unlike gamemap
+			// IntermissionInfo.Next is 0 biased, unlike GameOptions.Map.
 			if (options.GameMode == GameMode.Commercial)
 			{
 				if (world.SecretExit)
@@ -577,10 +358,10 @@ namespace ManagedDoom
 					switch (options.Map)
 					{
 						case 15:
-							wminfo.NextLevel = 30;
+							imInfo.NextLevel = 30;
 							break;
 						case 31:
-							wminfo.NextLevel = 31;
+							imInfo.NextLevel = 31;
 							break;
 					}
 				}
@@ -590,10 +371,10 @@ namespace ManagedDoom
 					{
 						case 31:
 						case 32:
-							wminfo.NextLevel = 15;
+							imInfo.NextLevel = 15;
 							break;
 						default:
-							wminfo.NextLevel = options.Map;
+							imInfo.NextLevel = options.Map;
 							break;
 					}
 				}
@@ -602,92 +383,79 @@ namespace ManagedDoom
 			{
 				if (world.SecretExit)
 				{
-					// go to secret level 
-					wminfo.NextLevel = 8;
+					// Go to secret level.
+					imInfo.NextLevel = 8;
 				}
 				else if (options.Map == 9)
 				{
-					// returning from secret level 
+					// Returning from secret level.
 					switch (options.Episode)
 					{
 						case 1:
-							wminfo.NextLevel = 3;
+							imInfo.NextLevel = 3;
 							break;
 						case 2:
-							wminfo.NextLevel = 5;
+							imInfo.NextLevel = 5;
 							break;
 						case 3:
-							wminfo.NextLevel = 6;
+							imInfo.NextLevel = 6;
 							break;
 						case 4:
-							wminfo.NextLevel = 2;
+							imInfo.NextLevel = 2;
 							break;
 					}
 				}
 				else
 				{
-					// go to next level
-					wminfo.NextLevel = options.Map;
+					// Go to next level.
+					imInfo.NextLevel = options.Map;
 				}
 			}
 
-			wminfo.MaxKillCount = world.totalKills;
-			wminfo.MaxItemCount = world.totalItems;
-			wminfo.MaxSecretCount = world.totalSecrets;
-			wminfo.TotalFrags = 0;
+			imInfo.MaxKillCount = world.totalKills;
+			imInfo.MaxItemCount = world.totalItems;
+			imInfo.MaxSecretCount = world.totalSecrets;
+			imInfo.TotalFrags = 0;
 			if (options.GameMode == GameMode.Commercial)
 			{
-				wminfo.ParTime = 35 * DoomInfo.ParTimes.Doom2[options.Map - 1];
+				imInfo.ParTime = 35 * DoomInfo.ParTimes.Doom2[options.Map - 1];
 			}
 			else
 			{
-				wminfo.ParTime = 35 * DoomInfo.ParTimes.Doom1[options.Episode - 1][options.Map - 1];
+				imInfo.ParTime = 35 * DoomInfo.ParTimes.Doom1[options.Episode - 1][options.Map - 1];
 			}
 
 			var players = options.Players;
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
 			{
-				wminfo.Players[i].InGame = players[i].InGame;
-				wminfo.Players[i].KillCount = players[i].KillCount;
-				wminfo.Players[i].ItemCount = players[i].ItemCount;
-				wminfo.Players[i].SecretCount = players[i].SecretCount;
-				wminfo.Players[i].Time = world.levelTime;
-				Array.Copy(players[i].Frags, wminfo.Players[i].Frags, Player.MaxPlayerCount);
+				imInfo.Players[i].InGame = players[i].InGame;
+				imInfo.Players[i].KillCount = players[i].KillCount;
+				imInfo.Players[i].ItemCount = players[i].ItemCount;
+				imInfo.Players[i].SecretCount = players[i].SecretCount;
+				imInfo.Players[i].Time = world.levelTime;
+				Array.Copy(players[i].Frags, imInfo.Players[i].Frags, Player.MaxPlayerCount);
 			}
 
 			gameState = GameState.Intermission;
-			intermission = new Intermission(options, wminfo);
+			intermission = new Intermission(options, imInfo);
 		}
 
-
-
-
-
-		private void G_DoWorldDone()
+		private void DoWorldDone()
 		{
+			gameAction = GameAction.Nothing;
+
 			gameState = GameState.Level;
-			options.Map = options.wminfo.NextLevel + 1;
-			G_DoLoadLevel();
-			gameAction = GameAction.Nothing;
+			options.Map = options.IntermissionInfo.NextLevel + 1;
+			DoLoadLevel();
 		}
 
-		public void DoAction(GameAction action)
-		{
-			gameAction = action;
-		}
-
-
-
-
-
-		private void StartFinale()
+		private void DoFinale()
 		{
 			gameAction = GameAction.Nothing;
+
 			gameState = GameState.Finale;
 			finale = new Finale(options);
 		}
-
-
 
 
 
@@ -707,8 +475,9 @@ namespace ManagedDoom
 
 
 
-		public Player[] Players => options.Players;
 		public GameOptions Options => options;
+		public Player[] Players => options.Players;
+		public GameState State => gameState;
 		public World World => world;
 		public Intermission Intermission => intermission;
 		public Finale Finale => finale;

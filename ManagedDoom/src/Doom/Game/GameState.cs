@@ -6,7 +6,6 @@ namespace ManagedDoom
     {
         Level,
         Intermission,
-        Finale,
-        DemoScreen
+        Finale
     }
 }

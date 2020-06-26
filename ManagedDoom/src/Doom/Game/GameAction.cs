@@ -9,10 +9,8 @@ namespace ManagedDoom
         NewGame,
         LoadGame,
         SaveGame,
-        PlayDemo,
         Completed,
         Victory,
-        WorldDone,
-        ScreenShot
+        WorldDone
     }
 }

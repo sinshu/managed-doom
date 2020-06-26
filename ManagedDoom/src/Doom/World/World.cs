@@ -81,8 +81,8 @@ namespace ManagedDoom
             totalKills = 0;
             totalItems = 0;
             totalSecrets = 0;
-            options.wminfo.TotalFrags = 0;
-            options.wminfo.ParTime = 180;
+            options.IntermissionInfo.TotalFrags = 0;
+            options.IntermissionInfo.ParTime = 180;
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
                 options.Players[i].KillCount = 0;

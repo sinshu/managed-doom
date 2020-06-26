@@ -112,7 +112,7 @@ namespace ManagedDoom.SoftwareRendering
 
         public void RenderGame(DoomGame game)
         {
-            if (game.gameState == GameState.Level)
+            if (game.State == GameState.Level)
             {
                 var player = game.World.Options.Players[game.Options.ConsolePlayer];
                 if (game.World.AutoMap.Visible)
@@ -132,11 +132,11 @@ namespace ManagedDoom.SoftwareRendering
                     screen.DrawText(player.Message, 0, 7 * scale, scale);
                 }
             }
-            else if (game.gameState == GameState.Intermission)
+            else if (game.State == GameState.Intermission)
             {
                 intermission.Render(game.Intermission);
             }
-            else if (game.gameState == GameState.Finale)
+            else if (game.State == GameState.Finale)
             {
                 finale.Render(game.Finale);
             }
@@ -160,7 +160,7 @@ namespace ManagedDoom.SoftwareRendering
             else
             {
                 if (app.State == ApplicationState.Game &&
-                    app.Game.gameState == GameState.Level &&
+                    app.Game.State == GameState.Level &&
                     app.Game.Paused)
                 {
                     var scale = screen.Width / 320;

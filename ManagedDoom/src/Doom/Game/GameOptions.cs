@@ -22,7 +22,7 @@ namespace ManagedDoom
         public Player[] Players = new Player[Player.MaxPlayerCount];
         public DoomRandom Random = new DoomRandom();
         public int GameTic = 0;
-        public IntermissionInfo wminfo = new IntermissionInfo();
+        public IntermissionInfo IntermissionInfo = new IntermissionInfo();
 
         public GameOptions()
         {
