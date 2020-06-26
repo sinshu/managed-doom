@@ -13,13 +13,15 @@ namespace ManagedDoom
 
 
 
-        //
-        // P_GiveAmmo
-        // Num is the number of clip loads,
-        // not the individual count (0= 1/2 clip).
-        // Returns false if the ammo can't be picked up at all
-        //
-
+        /// <summary>
+        /// Give the player the ammo.
+        /// </summary>
+        /// <param name="amount">
+        /// The number of clip loads, not the individual count (0 = 1/2 clip).
+        /// </param>
+        /// <returns>
+        /// False if the ammo can't be picked up at all.
+        /// </returns>
         public bool GiveAmmo(Player player, AmmoType ammo, int amount)
         {
             if (ammo == AmmoType.NoAmmo)
@@ -49,7 +51,7 @@ namespace ManagedDoom
             if (world.Options.Skill == GameSkill.Baby ||
                 world.Options.Skill == GameSkill.Nightmare)
             {
-                // Give double ammo in trainer mode, you'll need in nightmare
+                // Give double ammo in trainer mode, you'll need in nightmare.
                 amount <<= 1;
             }
 
@@ -61,7 +63,7 @@ namespace ManagedDoom
                 player.Ammo[(int)ammo] = player.MaxAmmo[(int)ammo];
             }
 
-            // If non zero ammo,  don't change up weapons, player was lower on purpose.
+            // If non zero ammo, don't change up weapons, player was lower on purpose.
             if (oldammo != 0)
             {
                 return true;
@@ -125,14 +127,14 @@ namespace ManagedDoom
         }
 
 
-
-        //
-        // P_GiveWeapon
-        // The weapon name may have a MF_DROPPED flag ored in.
-        //
-
         private static readonly int bonusAdd = 6;
 
+        /// <summary>
+        /// Give the weapon to the player.
+        /// </summary>
+        /// <param name="dropped">
+        /// True if the weapons is dropped by a monster.
+        /// </param>
         public bool GiveWeapon(Player player, WeaponType weapon, bool dropped)
         {
             if (world.Options.NetGame && (world.Options.Deathmatch != 2) && !dropped)
@@ -199,11 +201,12 @@ namespace ManagedDoom
         }
 
 
-
-        //
-        // P_GiveBody
-        // Returns false if the body isn't needed at all
-        //
+        /// <summary>
+        /// Give the health point to the player.
+        /// </summary>
+        /// <returns>
+        /// False if the health point isn't needed at all.
+        /// </returns>
         private bool GiveHealth(Player player, int amount)
         {
             if (player.Health >= Player.MAXHEALTH)
@@ -223,12 +226,12 @@ namespace ManagedDoom
         }
 
 
-
-        //
-        // P_GiveArmor
-        // Returns false if the armor is worse
-        // than the current armor.
-        //
+        /// <summary>
+        /// Give the armor to the player.
+        /// </summary>
+        /// <returns>
+        /// Returns false if the armor is worse than the current armor.
+        /// </returns>
         private bool GiveArmor(Player player, int type)
         {
             var hits = type * 100;
@@ -246,10 +249,9 @@ namespace ManagedDoom
         }
 
 
-
-        //
-        // P_GiveCard
-        //
+        /// <summary>
+        /// Give the card to the player.
+        /// </summary>
         private void GiveCard(Player player, CardType card)
         {
             if (player.Cards[(int)card])
@@ -262,9 +264,12 @@ namespace ManagedDoom
         }
 
 
-        //
-        // P_GivePower
-        //
+        /// <summary>
+        /// Give the power up to the player.
+        /// </summary>
+        /// <returns>
+        /// False if the power up is not necessary.
+        /// </returns>
         private bool GivePower(Player player, PowerType type)
         {
             if (type == PowerType.Invulnerability)
@@ -311,12 +316,9 @@ namespace ManagedDoom
         }
 
 
-
-
-
-        //
-        // P_TouchSpecialThing
-        //
+        /// <summary>
+        /// Check for item pickup.
+        /// </summary>
         public void TouchSpecialThing(Mobj special, Mobj toucher)
         {
             var delta = special.Z - toucher.Z;
