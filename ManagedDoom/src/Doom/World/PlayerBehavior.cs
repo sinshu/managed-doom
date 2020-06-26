@@ -36,123 +36,14 @@ namespace ManagedDoom
         }
 
 
-        public void Thrust(Player player, Angle angle, Fixed move)
-        {
-            player.Mobj.MomX += move * Trig.Cos(angle);
-            player.Mobj.MomY += move * Trig.Sin(angle);
-        }
 
+        ////////////////////////////////////////////////////////////
+        // Player movement
+        ////////////////////////////////////////////////////////////
 
-
-        private static readonly Fixed maxBob = new Fixed(0x100000);
-
-        private bool onGround;
-
-
-        public void CalcHeight(Player player)
-        {
-            // Regular movement bobbing.
-            // It needs to be calculated for gun swing even if not on ground.
-            //
-            // OPTIMIZE:
-            //     Tablify angle.
-            //
-            // Note:
-            //     A LUT allows for effects like a ramp with low health.
-
-            player.Bob = player.Mobj.MomX * player.Mobj.MomX + player.Mobj.MomY * player.Mobj.MomY;
-            player.Bob >>= 2;
-            if (player.Bob > maxBob)
-            {
-                player.Bob = maxBob;
-            }
-
-            if ((player.Cheats & CheatFlags.NoMomentum) != 0 || !onGround)
-            {
-                player.ViewZ = player.Mobj.Z + Player.VIEWHEIGHT;
-
-                if (player.ViewZ > player.Mobj.CeilingZ - Fixed.FromInt(4))
-                {
-                    player.ViewZ = player.Mobj.CeilingZ - Fixed.FromInt(4);
-                }
-
-                player.ViewZ = player.Mobj.Z + player.ViewHeight;
-
-                return;
-            }
-
-            var angle = (Trig.FineAngleCount / 20 * world.levelTime) & Trig.FineMask;
-
-            var bob = (player.Bob / 2) * Trig.Sin(angle);
-
-            // Move viewheight.
-            if (player.PlayerState == PlayerState.Live)
-            {
-                player.ViewHeight += player.DeltaViewHeight;
-
-                if (player.ViewHeight > Player.VIEWHEIGHT)
-                {
-                    player.ViewHeight = Player.VIEWHEIGHT;
-                    player.DeltaViewHeight = Fixed.Zero;
-                }
-
-                if (player.ViewHeight < Player.VIEWHEIGHT / 2)
-                {
-                    player.ViewHeight = Player.VIEWHEIGHT / 2;
-
-                    if (player.DeltaViewHeight <= Fixed.Zero)
-                    {
-                        player.DeltaViewHeight = new Fixed(1);
-                    }
-                }
-
-                if (player.DeltaViewHeight != Fixed.Zero)
-                {
-                    player.DeltaViewHeight += Fixed.One / 4;
-
-                    if (player.DeltaViewHeight == Fixed.Zero)
-                    {
-                        player.DeltaViewHeight = new Fixed(1);
-                    }
-                }
-            }
-
-            player.ViewZ = player.Mobj.Z + player.ViewHeight + bob;
-
-            if (player.ViewZ > player.Mobj.CeilingZ - Fixed.FromInt(4))
-            {
-                player.ViewZ = player.Mobj.CeilingZ - Fixed.FromInt(4);
-            }
-        }
-
-
-        public void MovePlayer(Player player)
-        {
-            var cmd = player.Cmd;
-
-            player.Mobj.Angle += new Angle(cmd.AngleTurn << 16);
-
-            // Do not let the player control movement if not onground.
-            onGround = (player.Mobj.Z <= player.Mobj.FloorZ);
-
-            if (cmd.ForwardMove != 0 && onGround)
-            {
-                Thrust(player, player.Mobj.Angle, new Fixed(cmd.ForwardMove * 2048));
-            }
-
-            if (cmd.SideMove != 0 && onGround)
-            {
-                Thrust(player, player.Mobj.Angle - Angle.Ang90, new Fixed(cmd.SideMove * 2048));
-            }
-
-            if ((cmd.ForwardMove != 0 || cmd.SideMove != 0) &&
-                player.Mobj.State == DoomInfo.States[(int)MobjState.Play])
-            {
-                player.Mobj.SetState(MobjState.PlayRun1);
-            }
-        }
-
-
+        /// <summary>
+        /// Called every frame to update player state.
+        /// </summary>
         public void PlayerThink(Player player)
         {
             if (player.MessageTime > 0)
@@ -160,8 +51,6 @@ namespace ManagedDoom
                 player.MessageTime--;
             }
 
-            // FIXME:
-            //     Do this in the cheat code.
             if ((player.Cheats & CheatFlags.NoClip) != 0)
             {
                 player.Mobj.Flags |= MobjFlags.NoClip;
@@ -260,7 +149,7 @@ namespace ManagedDoom
                 player.UseDown = false;
             }
 
-            // cycle psprites
+            // Cycle player sprites.
             MovePlayerSprites(player);
 
             // Counters, time dependend power ups.
@@ -337,6 +226,126 @@ namespace ManagedDoom
         }
 
 
+        private static readonly Fixed maxBob = new Fixed(0x100000);
+
+        private bool onGround;
+
+        /// <summary>
+        /// Move the player according to TicCmd.
+        /// </summary>
+        public void MovePlayer(Player player)
+        {
+            var cmd = player.Cmd;
+
+            player.Mobj.Angle += new Angle(cmd.AngleTurn << 16);
+
+            // Do not let the player control movement if not onground.
+            onGround = (player.Mobj.Z <= player.Mobj.FloorZ);
+
+            if (cmd.ForwardMove != 0 && onGround)
+            {
+                Thrust(player, player.Mobj.Angle, new Fixed(cmd.ForwardMove * 2048));
+            }
+
+            if (cmd.SideMove != 0 && onGround)
+            {
+                Thrust(player, player.Mobj.Angle - Angle.Ang90, new Fixed(cmd.SideMove * 2048));
+            }
+
+            if ((cmd.ForwardMove != 0 || cmd.SideMove != 0) &&
+                player.Mobj.State == DoomInfo.States[(int)MobjState.Play])
+            {
+                player.Mobj.SetState(MobjState.PlayRun1);
+            }
+        }
+
+
+        /// <summary>
+        /// Calculate the walking / running height adjustment.
+        /// </summary>
+        public void CalcHeight(Player player)
+        {
+            // Regular movement bobbing.
+            // It needs to be calculated for gun swing even if not on ground.
+            player.Bob = player.Mobj.MomX * player.Mobj.MomX + player.Mobj.MomY * player.Mobj.MomY;
+            player.Bob >>= 2;
+            if (player.Bob > maxBob)
+            {
+                player.Bob = maxBob;
+            }
+
+            if ((player.Cheats & CheatFlags.NoMomentum) != 0 || !onGround)
+            {
+                player.ViewZ = player.Mobj.Z + Player.VIEWHEIGHT;
+
+                if (player.ViewZ > player.Mobj.CeilingZ - Fixed.FromInt(4))
+                {
+                    player.ViewZ = player.Mobj.CeilingZ - Fixed.FromInt(4);
+                }
+
+                player.ViewZ = player.Mobj.Z + player.ViewHeight;
+
+                return;
+            }
+
+            var angle = (Trig.FineAngleCount / 20 * world.levelTime) & Trig.FineMask;
+
+            var bob = (player.Bob / 2) * Trig.Sin(angle);
+
+            // Move viewheight.
+            if (player.PlayerState == PlayerState.Live)
+            {
+                player.ViewHeight += player.DeltaViewHeight;
+
+                if (player.ViewHeight > Player.VIEWHEIGHT)
+                {
+                    player.ViewHeight = Player.VIEWHEIGHT;
+                    player.DeltaViewHeight = Fixed.Zero;
+                }
+
+                if (player.ViewHeight < Player.VIEWHEIGHT / 2)
+                {
+                    player.ViewHeight = Player.VIEWHEIGHT / 2;
+
+                    if (player.DeltaViewHeight <= Fixed.Zero)
+                    {
+                        player.DeltaViewHeight = new Fixed(1);
+                    }
+                }
+
+                if (player.DeltaViewHeight != Fixed.Zero)
+                {
+                    player.DeltaViewHeight += Fixed.One / 4;
+
+                    if (player.DeltaViewHeight == Fixed.Zero)
+                    {
+                        player.DeltaViewHeight = new Fixed(1);
+                    }
+                }
+            }
+
+            player.ViewZ = player.Mobj.Z + player.ViewHeight + bob;
+
+            if (player.ViewZ > player.Mobj.CeilingZ - Fixed.FromInt(4))
+            {
+                player.ViewZ = player.Mobj.CeilingZ - Fixed.FromInt(4);
+            }
+        }
+
+
+        /// <summary>
+        /// Moves the given origin along a given angle.
+        /// </summary>
+        public void Thrust(Player player, Angle angle, Fixed move)
+        {
+            player.Mobj.MomX += move * Trig.Cos(angle);
+            player.Mobj.MomY += move * Trig.Sin(angle);
+        }
+
+
+        /// <summary>
+        /// Called every tic frame that the player origin is in a special sector.
+        /// </summary>
         private void PlayerInSpecialSector(Player player)
         {
             var sector = player.Mobj.Subsector.Sector;
@@ -353,7 +362,7 @@ namespace ManagedDoom
             switch ((int)sector.Special)
             {
                 case 5:
-                    // HELLSLIME DAMAGE
+                    // Hell slime damage.
                     if (player.Powers[(int)PowerType.IronFeet] == 0)
                     {
                         if ((world.levelTime & 0x1f) == 0)
@@ -364,7 +373,7 @@ namespace ManagedDoom
                     break;
 
                 case 7:
-                    // NUKAGE DAMAGE
+                    // Nukage damage.
                     if (player.Powers[(int)PowerType.IronFeet] == 0)
                     {
                         if ((world.levelTime & 0x1f) == 0)
@@ -375,9 +384,9 @@ namespace ManagedDoom
                     break;
 
                 case 16:
-                // SUPER HELLSLIME DAMAGE
+                    // Super hell slime damage.
                 case 4:
-                    // STROBE HURT
+                    // Strobe hurt.
                     if (player.Powers[(int)PowerType.IronFeet] == 0 || (world.Random.Next() < 5))
                     {
                         if ((world.levelTime & 0x1f) == 0)
@@ -388,25 +397,22 @@ namespace ManagedDoom
                     break;
 
                 case 9:
-                    // SECRET SECTOR
+                    // Secret sector.
                     player.SecretCount++;
                     sector.Special = 0;
                     break;
 
                 case 11:
-                    // EXIT SUPER DAMAGE! (for E1M8 finale)
+                    // Exit super damage for E1M8 finale.
                     player.Cheats &= ~CheatFlags.GodMode;
-
                     if ((world.levelTime & 0x1f) == 0)
                     {
                         ti.DamageMobj(player.Mobj, null, null, 20);
                     }
-
                     if (player.Health <= 10)
                     {
                         world.G_ExitLevel();
                     }
-
                     break;
 
                 default:
@@ -417,6 +423,10 @@ namespace ManagedDoom
 
         private static Angle ang5 = new Angle(Angle.Ang90.Data / 18);
 
+        /// <summary>
+        /// Fall on your face when dying.
+        /// Decrease POV height to floor height.
+        /// </summary>
         private void DeathThink(Player player)
         {
             MovePlayerSprites(player);
@@ -475,7 +485,15 @@ namespace ManagedDoom
         }
 
 
-        public void SetupPsprites(Player player)
+
+        ////////////////////////////////////////////////////////////
+        // Player's weapon sprites
+        ////////////////////////////////////////////////////////////
+
+        /// <summary>
+        /// Called at start of level for each player.
+        /// </summary>
+        public void SetupPlayerSprites(Player player)
         {
             // Remove all psprites.
             for (var i = 0; i < (int)PlayerSprite.Count; i++)
@@ -488,7 +506,9 @@ namespace ManagedDoom
             BringUpWeapon(player);
         }
 
-
+        /// <summary>
+        /// Starts bringing the pending weapon up from the bottom of the screen.
+        /// </summary>
         public void BringUpWeapon(Player player)
         {
             if (player.PendingWeapon == WeaponType.NoChange)
@@ -509,7 +529,9 @@ namespace ManagedDoom
             SetPlayerSprite(player, PlayerSprite.Weapon, newState);
         }
 
-
+        /// <summary>
+        /// Change the player's weapon sprite.
+        /// </summary>
         public void SetPlayerSprite(Player player, PlayerSprite position, MobjState state)
         {
             var psp = player.PlayerSprites[(int)position];
@@ -551,7 +573,9 @@ namespace ManagedDoom
             // An initial state of 0 could cycle through.
         }
 
-
+        /// <summary>
+        /// Called every tic by player thinking routine.
+        /// </summary>
         private void MovePlayerSprites(Player player)
         {
             for (var i = 0; i < (int)PlayerSprite.Count; i++)
@@ -581,7 +605,9 @@ namespace ManagedDoom
             player.PlayerSprites[(int)PlayerSprite.Flash].Sy = player.PlayerSprites[(int)PlayerSprite.Weapon].Sy;
         }
 
-
+        /// <summary>
+        /// Player died, so put the weapon away.
+        /// </summary>
         public void DropWeapon(Player player)
         {
             SetPlayerSprite(
@@ -591,6 +617,14 @@ namespace ManagedDoom
         }
 
 
+
+        ////////////////////////////////////////////////////////////
+        // Miscellaneous
+        ////////////////////////////////////////////////////////////
+
+        /// <summary>
+        /// Play the player's death sound.
+        /// </summary>
         public void PlayerScream(Mobj player)
         {
             // Default death sound.
