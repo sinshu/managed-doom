@@ -24,6 +24,8 @@ namespace ManagedDoom
         public int GameTic = 0;
         public IntermissionInfo IntermissionInfo = new IntermissionInfo();
 
+        public Action ResetControl;
+
         public GameOptions()
         {
             for (var i = 0; i < Player.MaxPlayerCount; i++)

@@ -253,6 +253,11 @@ namespace ManagedDoom
 
 			world = new World(resource, options);
 			world.Audio = audio;
+
+			if (options.ResetControl != null)
+			{
+				options.ResetControl();
+			}
 		}
 
 		private void DoNewGame()
