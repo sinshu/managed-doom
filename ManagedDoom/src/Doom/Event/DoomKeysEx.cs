@@ -307,8 +307,6 @@ namespace ManagedDoom
                     return '/';
                 case DoomKeys.Backslash:
                     return '\\';
-                case DoomKeys.Tilde:
-                    return '~';
                 case DoomKeys.Equal:
                     return '=';
                 case DoomKeys.Hyphen:
