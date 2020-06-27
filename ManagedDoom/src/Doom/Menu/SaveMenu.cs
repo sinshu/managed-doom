@@ -33,6 +33,12 @@ namespace ManagedDoom
 
         public override void Open()
         {
+            if (Menu.Application.State != ApplicationState.Game)
+            {
+                Menu.NotifySaveFailed();
+                return;
+            }
+
             for (var i = 0; i < items.Length; i++)
             {
                 items[i].SetText(Menu.SaveSlots[i]);
@@ -113,8 +119,14 @@ namespace ManagedDoom
         private void DoSave(int slotNumber)
         {
             Menu.SaveSlots[slotNumber] = new string(items[slotNumber].Text.ToArray());
-            Menu.Application.SaveGame(slotNumber, Menu.SaveSlots[slotNumber]);
-            Menu.Close();
+            if (Menu.Application.SaveGame(slotNumber, Menu.SaveSlots[slotNumber]))
+            {
+                Menu.Close();
+            }
+            else
+            {
+                Menu.NotifySaveFailed();
+            }
         }
 
         public IReadOnlyList<string> Name => name;

@@ -16,6 +16,7 @@ namespace ManagedDoom
         private SaveMenu save;
 
         private PressAnyKey thisIsShareware;
+        private PressAnyKey saveFailed;
         private YesNoConfirm nightmareConfirm;
         private QuitConfirm quitConfirm;
 
@@ -36,6 +37,11 @@ namespace ManagedDoom
             thisIsShareware = new PressAnyKey(
                 this,
                 DoomInfo.Strings.SWSTRING,
+                null);
+
+            saveFailed = new PressAnyKey(
+                this,
+                DoomInfo.Strings.SAVEDEAD,
                 null);
 
             nightmareConfirm = new YesNoConfirm(
@@ -226,6 +232,11 @@ namespace ManagedDoom
             {
                 app.ResumeGame();
             }
+        }
+
+        public void NotifySaveFailed()
+        {
+            SetCurrent(saveFailed);
         }
 
         public DoomApplication Application => app;

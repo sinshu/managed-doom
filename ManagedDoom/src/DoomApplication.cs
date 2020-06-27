@@ -211,11 +211,19 @@ namespace ManagedDoom
             }
         }
 
-        public void SaveGame(int slotNumber, string description)
+        public bool SaveGame(int slotNumber, string description)
         {
-            var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            var path = Path.Combine(directory, "doomsav" + slotNumber + ".dsg");
-            SaveAndLoad.Save(game, description, path);
+            if (state == ApplicationState.Game && game.State == GameState.Level)
+            {
+                var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                var path = Path.Combine(directory, "doomsav" + slotNumber + ".dsg");
+                SaveAndLoad.Save(game, description, path);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void LoadGame(int slotNumber)
