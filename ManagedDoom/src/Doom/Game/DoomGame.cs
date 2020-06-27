@@ -30,6 +30,14 @@ namespace ManagedDoom
 			gameAction = action;
 		}
 
+		public void DeferedInitNew(GameSkill skill, int episode, int map)
+		{
+			options.Skill = skill;
+			options.Episode = episode;
+			options.Map = map;
+			gameAction = GameAction.NewGame;
+		}
+
 		public void Update(TicCmd[] cmds)
 		{
 			// Do player reborns if needed.

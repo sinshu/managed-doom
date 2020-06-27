@@ -8,9 +8,9 @@ namespace ManagedDoom
         private DoomApplication app;
 
         private SelectableMenu main;
-        private SelectableMenu episode;
-        private SelectableMenu skill;
-        private SelectableMenu options;
+        private SelectableMenu episodeMenu;
+        private SelectableMenu skillMenu;
+        private SelectableMenu optionMenu;
         private SelectableMenu volume;
         private SelectableMenu load;
         private SelectableMenu save;
@@ -25,6 +25,8 @@ namespace ManagedDoom
 
         private int tics;
 
+        private int selectedEpisode;
+
         public DoomMenu(DoomApplication app)
         {
             this.app = app;
@@ -37,55 +39,55 @@ namespace ManagedDoom
             nightmareConfirm = new YesNoConfirm(
                 this,
                 DoomInfo.Strings.NIGHTMARE,
-                () => app.NewGame());
+                () => app.NewGame(GameSkill.Nightmare, selectedEpisode, 1));
 
             quitConfirm = new QuitConfirm(
                 this,
                 app);
 
-            skill = new SelectableMenu(
+            skillMenu = new SelectableMenu(
                 this,
                 "M_NEWG", 96, 14,
                 "M_SKILL", 54, 38,
                 2,
-                new SimpleMenuItem("M_JKILL", 16, 58, 48, 63, () => app.NewGame(), null),
-                new SimpleMenuItem("M_ROUGH", 16, 74, 48, 79, () => app.NewGame(), null),
-                new SimpleMenuItem("M_HURT", 16, 90, 48, 95, () => app.NewGame(), null),
-                new SimpleMenuItem("M_ULTRA", 16, 106, 48, 111, () => app.NewGame(), null),
+                new SimpleMenuItem("M_JKILL", 16, 58, 48, 63, () => app.NewGame(GameSkill.Baby, selectedEpisode, 1), null),
+                new SimpleMenuItem("M_ROUGH", 16, 74, 48, 79, () => app.NewGame(GameSkill.Easy, selectedEpisode, 1), null),
+                new SimpleMenuItem("M_HURT", 16, 90, 48, 95, () => app.NewGame(GameSkill.Medium, selectedEpisode, 1), null),
+                new SimpleMenuItem("M_ULTRA", 16, 106, 48, 111, () => app.NewGame(GameSkill.Hard, selectedEpisode, 1), null),
                 new SimpleMenuItem("M_NMARE", 16, 122, 48, 127, null, nightmareConfirm));
 
             if (app.GameMode == GameMode.Retail)
             {
-                episode = new SelectableMenu(
+                episodeMenu = new SelectableMenu(
                     this,
                     "M_EPISOD", 54, 38,
                     0,
-                    new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, null, skill),
-                    new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, skill),
-                    new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, skill),
-                    new SimpleMenuItem("M_EPI4", 16, 106, 48, 111, null, skill));
+                    new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, () => selectedEpisode = 1, skillMenu),
+                    new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, () => selectedEpisode = 2, skillMenu),
+                    new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, () => selectedEpisode = 3, skillMenu),
+                    new SimpleMenuItem("M_EPI4", 16, 106, 48, 111, () => selectedEpisode = 4, skillMenu));
             }
             else
             {
                 if (app.GameMode == GameMode.Shareware)
                 {
-                    episode = new SelectableMenu(
+                    episodeMenu = new SelectableMenu(
                         this,
                         "M_EPISOD", 54, 38,
                         0,
-                        new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, null, skill),
+                        new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, () => selectedEpisode = 1, skillMenu),
                         new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, thisIsShareware),
                         new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, thisIsShareware));
                 }
                 else
                 {
-                    episode = new SelectableMenu(
+                    episodeMenu = new SelectableMenu(
                         this,
                         "M_EPISOD", 54, 38,
                         0,
-                        new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, null, skill),
-                        new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, skill),
-                        new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, skill));
+                        new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, () => selectedEpisode = 1, skillMenu),
+                        new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, () => selectedEpisode = 2, skillMenu),
+                        new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, () => selectedEpisode = 3, skillMenu));
                 }
             }
 
@@ -96,7 +98,7 @@ namespace ManagedDoom
                 new SliderMenuItem("M_SFXVOL", 48, 59, 80, 64, 16, 8),
                 new SliderMenuItem("M_MUSVOL", 48, 91, 80, 96, 16, 8));
 
-            options = new SelectableMenu(
+            optionMenu = new SelectableMenu(
                 this,
                 "M_OPTTTL", 108, 15,
                 0,
@@ -131,18 +133,18 @@ namespace ManagedDoom
             MenuDef newGameMenu;
             if (app.GameMode == GameMode.Commercial)
             {
-                newGameMenu = skill;
+                newGameMenu = skillMenu;
             }
             else
             {
-                newGameMenu = episode;
+                newGameMenu = episodeMenu;
             }
             main = new SelectableMenu(
                 this,
                 "M_DOOM", 94, 2,
                 0,
                 new SimpleMenuItem("M_NGAME", 65, 67, 97, 72, null, newGameMenu),
-                new SimpleMenuItem("M_OPTION", 65, 83, 97, 88, null, options),
+                new SimpleMenuItem("M_OPTION", 65, 83, 97, 88, null, optionMenu),
                 new SimpleMenuItem("M_LOADG", 65, 99, 97, 104, null, load),
                 new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null, save),
                 new SimpleMenuItem("M_QUITG", 65, 131, 97, 136, null, quitConfirm));
@@ -151,6 +153,8 @@ namespace ManagedDoom
             active = false;
 
             tics = 0;
+
+            selectedEpisode = 1;
         }
 
         public bool DoEvent(DoomEvent e)

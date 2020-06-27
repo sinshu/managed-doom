@@ -103,9 +103,9 @@ namespace ManagedDoom
             }
         }
 
-        public void NewGame()
+        public void NewGame(GameSkill skill, int episode, int map)
         {
-            game.DoAction(GameAction.NewGame);
+            game.DeferedInitNew(skill, episode, map);
             state = ApplicationState.Game;
         }
 

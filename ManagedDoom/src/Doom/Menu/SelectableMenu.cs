@@ -149,10 +149,20 @@ namespace ManagedDoom
                 }
 
                 var simple = choice as SimpleMenuItem;
-                if (simple != null && simple.Action != null)
+                if (simple != null)
                 {
-                    simple.Action();
-                    Menu.Close();
+                    if (simple.Action != null)
+                    {
+                        simple.Action();
+                    }
+                    if (simple.Next != null)
+                    {
+                        Menu.SetCurrent(simple.Next);
+                    }
+                    else
+                    {
+                        Menu.Close();
+                    }
                     return true;
                 }
 
