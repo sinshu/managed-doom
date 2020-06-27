@@ -44,6 +44,8 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [x] Sprite rendering
     * [x] High resolution rendering
     * [x] Optimization
+    * [ ] Fuzz effect
+    * [ ] Palette effects
 
 - __Gaming code__
     * [x] Collision detection
@@ -55,7 +57,7 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [x] Demo compatibility (All the v1.9 IWAD demos can be played)
 
 - __Audio__
-    * [x] Sounds
+    * [x] Sound
     * [ ] Music
 
 - __Other things__
@@ -64,7 +66,9 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [x] Title screen
     * [x] Intermission screen
     * [x] Menu screen
-    * [ ] Save / load
+    * [x] Save / load
+    * [ ] Screen melt animation
+    * [ ] Config
     * [ ] DeHackEd support
 
 
