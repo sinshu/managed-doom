@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ManagedDoom
 {
-    public sealed class SelectableMenu : MenuDef
+    public sealed class LoadMenu : MenuDef
     {
         private string[] name;
         private int[] titleX;
         private int[] titleY;
-        private MenuItem[] items;
+        private TextBoxMenuItem[] items;
 
         private int index;
-        private MenuItem choice;
+        private TextBoxMenuItem choice;
 
         private TextInput textInput;
 
-        public SelectableMenu(
+        public LoadMenu(
             DoomMenu menu,
             string name, int titleX, int titleY,
             int firstChoice,
-            params MenuItem[] items) : base(menu)
+            params TextBoxMenuItem[] items) : base(menu)
         {
             this.name = new[] { name };
             this.titleX = new[] { titleX };
@@ -30,20 +31,12 @@ namespace ManagedDoom
             choice = items[index];
         }
 
-        public SelectableMenu(
-            DoomMenu menu,
-            string name1, int titleX1, int titleY1,
-            string name2, int titleX2, int titleY2,
-            int firstChoice,
-            params MenuItem[] items) : base(menu)
+        public override void Open()
         {
-            this.name = new[] { name1, name2 };
-            this.titleX = new[] { titleX1, titleX2 };
-            this.titleY = new[] { titleY1, titleY2 };
-            this.items = items;
-
-            index = firstChoice;
-            choice = items[index];
+            for (var i = 0; i < items.Length; i++)
+            {
+                items[i].SetText(Menu.SaveSlots[i]);
+            }
         }
 
         private void Up()
@@ -104,66 +97,9 @@ namespace ManagedDoom
                 Down();
             }
 
-            if (e.Key == DoomKeys.Left)
-            {
-                var toggle = choice as ToggleMenuItem;
-                if (toggle != null)
-                {
-                    toggle.Down();
-                }
-
-                var slider = choice as SliderMenuItem;
-                if (slider != null)
-                {
-                    slider.Down();
-                }
-            }
-
-            if (e.Key == DoomKeys.Right)
-            {
-                var toggle = choice as ToggleMenuItem;
-                if (toggle != null)
-                {
-                    toggle.Up();
-                }
-
-                var slider = choice as SliderMenuItem;
-                if (slider != null)
-                {
-                    slider.Up();
-                }
-            }
-
             if (e.Key == DoomKeys.Enter)
             {
-                var toggle = choice as ToggleMenuItem;
-                if (toggle != null)
-                {
-                    toggle.Up();
-                }
-
-                var simple = choice as SimpleMenuItem;
-                if (simple != null)
-                {
-                    if (simple.Action != null)
-                    {
-                        simple.Action();
-                    }
-                    if (simple.Next != null)
-                    {
-                        Menu.SetCurrent(simple.Next);
-                    }
-                    else
-                    {
-                        Menu.Close();
-                    }
-                    return true;
-                }
-
-                if (choice.Next != null)
-                {
-                    Menu.SetCurrent(choice.Next);
-                }
+                DoLoad(index);
             }
 
             if (e.Key == DoomKeys.Escape)
@@ -172,6 +108,14 @@ namespace ManagedDoom
             }
 
             return true;
+        }
+
+        private void DoLoad(int slotNumber)
+        {
+            if (Menu.SaveSlots[slotNumber] != null)
+            {
+                Console.WriteLine("LOAD " + slotNumber + ": " + Menu.SaveSlots[slotNumber]);
+            }
         }
 
         public IReadOnlyList<string> Name => name;

@@ -28,6 +28,18 @@ namespace ManagedDoom.SoftwareRendering
                 DrawSelectableMenu(selectable);
             }
 
+            var save = menu.Current as SaveMenu;
+            if (save != null)
+            {
+                DrawSaveMenu(save);
+            }
+
+            var load = menu.Current as LoadMenu;
+            if (load != null)
+            {
+                DrawLoadMenu(load);
+            }
+
             var yesNo = menu.Current as YesNoConfirm;
             if (yesNo != null)
             {
@@ -64,6 +76,46 @@ namespace ManagedDoom.SoftwareRendering
 
             var choice = selectable.Choice;
             var skull = selectable.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
+            DrawMenuPatch(skull, choice.SkullX, choice.SkullY);
+        }
+
+        private void DrawSaveMenu(SaveMenu save)
+        {
+            for (var i = 0; i < save.Name.Count; i++)
+            {
+                DrawMenuPatch(
+                    save.Name[i],
+                    save.TitleX[i],
+                    save.TitleY[i]);
+            }
+
+            foreach (var item in save.Items)
+            {
+                DrawMenuItem(save.Menu, item);
+            }
+
+            var choice = save.Choice;
+            var skull = save.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
+            DrawMenuPatch(skull, choice.SkullX, choice.SkullY);
+        }
+
+        private void DrawLoadMenu(LoadMenu load)
+        {
+            for (var i = 0; i < load.Name.Count; i++)
+            {
+                DrawMenuPatch(
+                    load.Name[i],
+                    load.TitleX[i],
+                    load.TitleY[i]);
+            }
+
+            foreach (var item in load.Items)
+            {
+                DrawMenuItem(load.Menu, item);
+            }
+
+            var choice = load.Choice;
+            var skull = load.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
             DrawMenuPatch(skull, choice.SkullX, choice.SkullY);
         }
 
@@ -135,6 +187,8 @@ namespace ManagedDoom.SoftwareRendering
             DrawMenuPatch("M_THERMO", pos, item.SliderY);
         }
 
+        private char[] emptyText = "EMPTY SLOT".ToCharArray();
+
         private void DrawTextBoxMenuItem(TextBoxMenuItem item, int tics)
         {
             var length = 24;
@@ -146,12 +200,19 @@ namespace ManagedDoom.SoftwareRendering
             }
             DrawMenuPatch("M_LSRGHT", item.ItemX + 8 * (1 + length), item.ItemY);
 
-            DrawMenuText(item.Text, item.ItemX + 8, item.ItemY);
-
-            if (item.Editing && tics / 3 % 2 == 0)
+            if (!item.Editing)
             {
-                var textWidth = screen.MeasureText(item.Text, 1);
-                DrawMenuText(cursor, item.ItemX + 8 + textWidth, item.ItemY);
+                var text = item.Text != null ? item.Text : emptyText;
+                DrawMenuText(text, item.ItemX + 8, item.ItemY);
+            }
+            else
+            {
+                DrawMenuText(item.Text, item.ItemX + 8, item.ItemY);
+                if (tics / 3 % 2 == 0)
+                {
+                    var textWidth = screen.MeasureText(item.Text, 1);
+                    DrawMenuText(cursor, item.ItemX + 8 + textWidth, item.ItemY);
+                }
             }
         }
 

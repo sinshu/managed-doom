@@ -12,8 +12,8 @@ namespace ManagedDoom
         private SelectableMenu skillMenu;
         private SelectableMenu optionMenu;
         private SelectableMenu volume;
-        private SelectableMenu load;
-        private SelectableMenu save;
+        private LoadMenu load;
+        private SaveMenu save;
 
         private PressAnyKey thisIsShareware;
         private YesNoConfirm nightmareConfirm;
@@ -26,6 +26,8 @@ namespace ManagedDoom
         private int tics;
 
         private int selectedEpisode;
+
+        private SaveSlots saveSlots;
 
         public DoomMenu(DoomApplication app)
         {
@@ -108,27 +110,27 @@ namespace ManagedDoom
                 new SliderMenuItem("M_MSENS", 28, 112 - 16, 60, 117 - 16, 10, 3),
                 new SimpleMenuItem("M_SVOL", 28, 144 - 16, 60, 149 - 16, null, volume));
 
-            load = new SelectableMenu(
+            load = new LoadMenu(
                 this,
                 "M_LOADG", 72, 28,
                 0,
-                new TextBoxMenuItem("TEST!!!", 48, 49, 72, 61),
-                new TextBoxMenuItem("TEST!!!", 48, 65, 72, 77),
-                new TextBoxMenuItem("TE ST!!!", 48, 81, 72, 93),
-                new TextBoxMenuItem("TE  ST!!!", 48, 97, 72, 109),
-                new TextBoxMenuItem("TEST!!!", 48, 113, 72, 125),
-                new TextBoxMenuItem("TEST!!!", 48, 129, 72, 141));
+                new TextBoxMenuItem(48, 49, 72, 61),
+                new TextBoxMenuItem(48, 65, 72, 77),
+                new TextBoxMenuItem(48, 81, 72, 93),
+                new TextBoxMenuItem(48, 97, 72, 109),
+                new TextBoxMenuItem(48, 113, 72, 125),
+                new TextBoxMenuItem(48, 129, 72, 141));
 
-            save = new SelectableMenu(
+            save = new SaveMenu(
                 this,
                 "M_SAVEG", 72, 28,
                 0,
-                new TextBoxMenuItem("TEST!!!", 48, 49, 72, 61),
-                new TextBoxMenuItem("TEST!!!", 48, 65, 72, 77),
-                new TextBoxMenuItem("TE ST!!!", 48, 81, 72, 93),
-                new TextBoxMenuItem("TE ST!!!", 48, 97, 72, 109),
-                new TextBoxMenuItem("test???", 48, 113, 72, 125),
-                new TextBoxMenuItem("testtest___", 48, 129, 72, 141));
+                new TextBoxMenuItem(48, 49, 72, 61),
+                new TextBoxMenuItem(48, 65, 72, 77),
+                new TextBoxMenuItem(48, 81, 72, 93),
+                new TextBoxMenuItem(48, 97, 72, 109),
+                new TextBoxMenuItem(48, 113, 72, 125),
+                new TextBoxMenuItem(48, 129, 72, 141));
 
             MenuDef newGameMenu;
             if (app.GameMode == GameMode.Commercial)
@@ -155,6 +157,8 @@ namespace ManagedDoom
             tics = 0;
 
             selectedEpisode = 1;
+
+            saveSlots = new SaveSlots();
         }
 
         public bool DoEvent(DoomEvent e)
@@ -227,5 +231,6 @@ namespace ManagedDoom
         public MenuDef Current => current;
         public bool Active => active;
         public int Tics => tics;
+        public SaveSlots SaveSlots => saveSlots;
     }
 }
