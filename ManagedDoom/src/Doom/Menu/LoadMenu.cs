@@ -96,7 +96,7 @@ namespace ManagedDoom
         {
             if (Menu.SaveSlots[slotNumber] != null)
             {
-                Console.WriteLine("LOAD " + slotNumber + ": " + Menu.SaveSlots[slotNumber]);
+                Menu.Application.LoadGame(slotNumber);
                 return true;
             }
             else

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.ExceptionServices;
 using SFML.Graphics;
 using SFML.Window;
@@ -207,6 +209,20 @@ namespace ManagedDoom
             {
                 sendPause = true;
             }
+        }
+
+        public void SaveGame(int slotNumber, string description)
+        {
+            var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+            var path = Path.Combine(directory, "doomsav" + slotNumber + ".dsg");
+            SaveAndLoad.Save(game, description, path);
+        }
+
+        public void LoadGame(int slotNumber)
+        {
+            var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+            var path = Path.Combine(directory, "doomsav" + slotNumber + ".dsg");
+            SaveAndLoad.Load(game, path);
         }
 
         public void Quit()

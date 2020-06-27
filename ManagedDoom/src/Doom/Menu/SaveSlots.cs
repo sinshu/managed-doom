@@ -19,10 +19,10 @@ namespace ManagedDoom
             var buffer = new byte[descriptionSize];
             for (var i = 0; i < slots.Length; i++)
             {
-                var file = Path.Combine(directory, "doomsav" + i + ".dsg");
-                if (File.Exists(file))
+                var path = Path.Combine(directory, "doomsav" + i + ".dsg");
+                if (File.Exists(path))
                 {
-                    using (var reader = new FileStream(file, FileMode.Open, FileAccess.Read))
+                    using (var reader = new FileStream(path, FileMode.Open, FileAccess.Read))
                     {
                         reader.Read(buffer, 0, buffer.Length);
                         slots[i] = DoomInterop.ToString(buffer, 0, buffer.Length);

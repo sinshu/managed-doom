@@ -228,6 +228,7 @@ namespace ManagedDoom
             }
         }
 
+        public DoomApplication Application => app;
         public MenuDef Current => current;
         public bool Active => active;
         public int Tics => tics;

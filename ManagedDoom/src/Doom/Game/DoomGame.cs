@@ -275,7 +275,7 @@ namespace ManagedDoom
 			InitNew(options.Skill, options.Episode, options.Map);
 		}
 
-		private void InitNew(GameSkill skill, int episode, int map)
+		public void InitNew(GameSkill skill, int episode, int map)
 		{
 			skill = (GameSkill)Math.Clamp((int)skill, (int)GameSkill.Baby, (int)GameSkill.Nightmare);
 

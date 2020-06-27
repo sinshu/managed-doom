@@ -113,7 +113,7 @@ namespace ManagedDoom
         private void DoSave(int slotNumber)
         {
             Menu.SaveSlots[slotNumber] = new string(items[slotNumber].Text.ToArray());
-            Console.WriteLine("SAVE " + slotNumber + ": " + Menu.SaveSlots[slotNumber]);
+            Menu.Application.SaveGame(slotNumber, Menu.SaveSlots[slotNumber]);
             Menu.Close();
         }
 
