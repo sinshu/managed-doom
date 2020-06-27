@@ -858,7 +858,7 @@ namespace ManagedDoom
                             break;
 
                         default:
-                            throw new Exception("Unknown thinker class in savegame!");
+                            throw new Exception("Unknown special in savegame!");
                     }
                 }
             }

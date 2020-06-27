@@ -218,6 +218,7 @@ namespace ManagedDoom
                 var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
                 var path = Path.Combine(directory, "doomsav" + slotNumber + ".dsg");
                 SaveAndLoad.Save(game, description, path);
+                game.World.ConsolePlayer.SendMessage(DoomInfo.Strings.GGSAVED);
                 return true;
             }
             else
@@ -231,6 +232,7 @@ namespace ManagedDoom
             var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             var path = Path.Combine(directory, "doomsav" + slotNumber + ".dsg");
             SaveAndLoad.Load(game, path);
+            state = ApplicationState.Game;
         }
 
         public void Quit()
