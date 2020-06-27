@@ -4,9 +4,7 @@
 
 The goal of this project is to make a fully functional Doom source port written in C# without unsafe code.  
 
-The rendering engine is almost complete and capable of showing 3D view like the screenshots below.  
-
-Now I'm working on the gaming code. Although several functionalities are still missing, most weapons, monsters and gimmicks work much like the original game.  
+The rendering engine and game system (player movement, weapons, monster AI and map gimmicks) are almost complete. Now I'm working on the other miscellaneous functionalities, including save / load, menu, config and so on.  
 
 
 
