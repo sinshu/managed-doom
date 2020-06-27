@@ -114,6 +114,7 @@ namespace ManagedDoom
         {
             Menu.SaveSlots[slotNumber] = new string(items[slotNumber].Text.ToArray());
             Console.WriteLine("SAVE " + slotNumber + ": " + Menu.SaveSlots[slotNumber]);
+            Menu.Close();
         }
 
         public IReadOnlyList<string> Name => name;

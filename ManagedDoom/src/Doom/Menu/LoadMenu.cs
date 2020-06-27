@@ -14,8 +14,6 @@ namespace ManagedDoom
         private int index;
         private TextBoxMenuItem choice;
 
-        private TextInput textInput;
-
         public LoadMenu(
             DoomMenu menu,
             string name, int titleX, int titleY,
@@ -68,25 +66,6 @@ namespace ManagedDoom
                 return true;
             }
 
-            if (textInput != null)
-            {
-                var result = textInput.DoEvent(e);
-
-                if (textInput.State == TextInputState.Canceled)
-                {
-                    textInput = null;
-                }
-                else if (textInput.State == TextInputState.Finished)
-                {
-                    textInput = null;
-                }
-
-                if (result)
-                {
-                    return true;
-                }
-            }
-
             if (e.Key == DoomKeys.Up)
             {
                 Up();
@@ -99,7 +78,10 @@ namespace ManagedDoom
 
             if (e.Key == DoomKeys.Enter)
             {
-                DoLoad(index);
+                if (DoLoad(index))
+                {
+                    Menu.Close();
+                }
             }
 
             if (e.Key == DoomKeys.Escape)
@@ -110,11 +92,16 @@ namespace ManagedDoom
             return true;
         }
 
-        private void DoLoad(int slotNumber)
+        private bool DoLoad(int slotNumber)
         {
             if (Menu.SaveSlots[slotNumber] != null)
             {
                 Console.WriteLine("LOAD " + slotNumber + ": " + Menu.SaveSlots[slotNumber]);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 

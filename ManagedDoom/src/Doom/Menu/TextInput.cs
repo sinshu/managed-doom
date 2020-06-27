@@ -31,15 +31,15 @@ namespace ManagedDoom
 
         public bool DoEvent(DoomEvent e)
         {
-            if (DoomKeys.A <= e.Key && e.Key <= DoomKeys.Z && e.Type == EventType.KeyDown)
+            var ch = e.Key.GetChar();
+            if (ch != 0)
             {
-                text.Add((char)(e.Key - DoomKeys.A + 'A'));
+                text.Add(ch);
                 typed(text);
                 return true;
             }
 
-            if (e.Key == DoomKeys.Backspace &&
-                e.Type == EventType.KeyDown)
+            if (e.Key == DoomKeys.Backspace && e.Type == EventType.KeyDown)
             {
                 if (text.Count > 0)
                 {
