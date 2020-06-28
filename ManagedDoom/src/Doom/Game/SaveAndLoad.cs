@@ -12,7 +12,7 @@ namespace ManagedDoom
         public static readonly int DescriptionSize = 24;
 
         private static readonly int versionSize = 16;
-        private static readonly int saveBufferSize = 256 * 1024;
+        private static readonly int saveBufferSize = 360 * 1024;
 
         private enum ThinkerClass
         {
@@ -46,6 +46,8 @@ namespace ManagedDoom
             var lg = new LoadGame(File.ReadAllBytes(path));
             lg.Load(game);
         }
+
+
 
         ////////////////////////////////////////////////////////////
         // Save game
