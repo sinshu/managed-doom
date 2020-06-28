@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.ExceptionServices;
 using SFML.Audio;
 using SFML.System;
 
@@ -9,7 +10,7 @@ namespace ManagedDoom
         private static readonly int channelCount = 16;
 
         private SoundBuffer[] buffers;
-        private short[] amplitudes;
+        private float[] amplitudes;
 
         private Sound[] channels;
         private Mobj[] sources;
@@ -18,60 +19,76 @@ namespace ManagedDoom
         public SfmlAudio(Wad wad)
         {
             buffers = new SoundBuffer[DoomInfo.SfxNames.Length];
-            amplitudes = new short[DoomInfo.SfxNames.Length];
-            for (var i = 0; i < DoomInfo.SfxNames.Length; i++)
+            amplitudes = new float[DoomInfo.SfxNames.Length];
+
+            try
             {
-                var lump = wad.GetLumpNumber("DS" + DoomInfo.SfxNames[i]);
-
-                if (lump == -1)
+                for (var i = 0; i < DoomInfo.SfxNames.Length; i++)
                 {
-                    continue;
-                }
-
-                var data = wad.ReadLump(lump);
-
-                var sampleRate = BitConverter.ToUInt16(data, 2);
-                var sampleCount = BitConverter.ToInt32(data, 4) - 32;
-                var samples = new short[sampleCount];
-                for (var t = 0; t < samples.Length; t++)
-                {
-                    samples[t] = (short)((data[24 + t] - 128) << 8);
-                }
-
-                buffers[i] = new SoundBuffer(samples, 1, sampleRate);
-
-                short max = 0;
-                if (sampleCount > 0)
-                {
-                    var count = Math.Min(sampleRate / 5, sampleCount);
-                    for (var t = 0; t < count; t++)
+                    var name = "DS" + DoomInfo.SfxNames[i];
+                    var lump = wad.GetLumpNumber(name);
+                    if (lump == -1)
                     {
-                        var a = samples[t];
-                        if (a == short.MinValue)
-                        {
-                            max = short.MaxValue;
-                            break;
-                        }
-                        if (a < 0)
-                        {
-                            a = (short)(-a);
-                        }
-                        if (a > max)
-                        {
-                            max = a;
-                        }
+                        continue;
+                    }
+
+                    int sampleRate;
+                    int sampleCount;
+                    var samples = GetSamples(wad, name, out sampleRate, out sampleCount);
+                    buffers[i] = new SoundBuffer(samples, 1, (uint)sampleRate);
+                    amplitudes[i] = GetAmplitude(samples, sampleRate, sampleCount);
+                }
+
+                channels = new Sound[channelCount];
+                sources = new Mobj[channelCount];
+                priorities = new float[channelCount];
+                for (var i = 0; i < channels.Length; i++)
+                {
+                    channels[i] = new Sound();
+                }
+            }
+            catch (Exception e)
+            {
+                Dispose();
+                ExceptionDispatchInfo.Capture(e).Throw();
+            }
+        }
+
+        private static short[] GetSamples(Wad wad, string name, out int sampleRate, out int sampleCount)
+        {
+            var data = wad.ReadLump(name);
+
+            sampleRate = BitConverter.ToUInt16(data, 2);
+            sampleCount = BitConverter.ToInt32(data, 4) - 32;
+
+            var samples = new short[sampleCount];
+            for (var t = 0; t < samples.Length; t++)
+            {
+                samples[t] = (short)((data[24 + t] - 128) << 8);
+            }
+            return samples;
+        }
+
+        private static float GetAmplitude(short[] samples, int sampleRate, int sampleCount)
+        {
+            var max = 0;
+            if (sampleCount > 0)
+            {
+                var count = Math.Min(sampleRate / 5, sampleCount);
+                for (var t = 0; t < count; t++)
+                {
+                    var a = (int)samples[t];
+                    if (a < 0)
+                    {
+                        a = (short)(-a);
+                    }
+                    if (a > max)
+                    {
+                        max = a;
                     }
                 }
-                amplitudes[i] = max;
             }
-
-            channels = new Sound[channelCount];
-            sources = new Mobj[channelCount];
-            priorities = new float[channelCount];
-            for (var i = 0; i < channels.Length; i++)
-            {
-                channels[i] = new Sound();
-            }
+            return (float)max / 65536;
         }
 
         public void StartSound(Mobj mobj, Sfx sfx)
