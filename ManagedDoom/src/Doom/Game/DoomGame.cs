@@ -36,6 +36,10 @@ namespace ManagedDoom
 		// Public methods to control the game state
 		////////////////////////////////////////////////////////////
 
+		/// <summary>
+		/// Start a new game.
+		/// Can be called by the startup code or the menu task.
+		/// </summary>
 		public void DeferedInitNew(GameSkill skill, int episode, int map)
 		{
 			options.Skill = skill;
@@ -44,12 +48,20 @@ namespace ManagedDoom
 			gameAction = GameAction.NewGame;
 		}
 
+		/// <summary>
+		/// Load the saved game at the given slot number.
+		/// Can be called by the startup code or the menu task.
+		/// </summary>
 		public void LoadGame(int slotNumber)
 		{
 			loadGameSlotNumber = slotNumber;
 			gameAction = GameAction.LoadGame;
 		}
 
+		/// <summary>
+		/// Save the game at the given slot number.
+		/// Can be called by the startup code or the menu task.
+		/// </summary>
 		public void SaveGame(int slotNumber, string description)
 		{
 			saveGameSlotNumber = slotNumber;
@@ -57,6 +69,9 @@ namespace ManagedDoom
 			gameAction = GameAction.SaveGame;
 		}
 
+		/// <summary>
+		/// Advance the game one frame.
+		/// </summary>
 		public void Update(TicCmd[] cmds)
 		{
 			// Do player reborns if needed.
@@ -211,6 +226,15 @@ namespace ManagedDoom
 		////////////////////////////////////////////////////////////
 		// Actual game actions
 		////////////////////////////////////////////////////////////
+
+		// These methods should not be called directly from outside
+		// for some reason.
+		// So if you want to start a new game or do load / save, use
+		// the following public methods.
+		//
+		//     - DeferedInitNew
+		//     - LoadGame
+		//     - SaveGame
 
 		private void DoLoadLevel()
 		{
