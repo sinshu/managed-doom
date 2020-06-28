@@ -227,8 +227,8 @@ namespace ManagedDoom
 		// Actual game actions
 		////////////////////////////////////////////////////////////
 
-		// These methods should not be called directly from outside
-		// for some reason.
+		// It seems that these methods should not be called directly
+		// from outside for some reason.
 		// So if you want to start a new game or do load / save, use
 		// the following public methods.
 		//
