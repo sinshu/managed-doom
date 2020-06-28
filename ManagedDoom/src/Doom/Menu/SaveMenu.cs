@@ -33,7 +33,8 @@ namespace ManagedDoom
 
         public override void Open()
         {
-            if (Menu.Application.State != ApplicationState.Game)
+            if (Menu.Application.State != ApplicationState.Game ||
+                Menu.Application.Game.State != GameState.Level)
             {
                 Menu.NotifySaveFailed();
                 return;

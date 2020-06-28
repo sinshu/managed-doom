@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Threading;
+using System.Diagnostics;
+using System.IO;
 
 namespace ManagedDoom
 {
@@ -17,6 +18,10 @@ namespace ManagedDoom
 
 		private bool paused;
 
+		private int loadGameSlotNumber;
+		private int saveGameSlotNumber;
+		private string saveGameDescription;
+
 		public DoomGame(CommonResource resource, GameOptions options)
 		{
 			this.resource = resource;
@@ -25,10 +30,11 @@ namespace ManagedDoom
 			gameAction = GameAction.NewGame;
 		}
 
-		public void DoAction(GameAction action)
-		{
-			gameAction = action;
-		}
+
+
+		////////////////////////////////////////////////////////////
+		// Public methods to control the game state
+		////////////////////////////////////////////////////////////
 
 		public void DeferedInitNew(GameSkill skill, int episode, int map)
 		{
@@ -36,6 +42,19 @@ namespace ManagedDoom
 			options.Episode = episode;
 			options.Map = map;
 			gameAction = GameAction.NewGame;
+		}
+
+		public void LoadGame(int slotNumber)
+		{
+			loadGameSlotNumber = slotNumber;
+			gameAction = GameAction.LoadGame;
+		}
+
+		public void SaveGame(int slotNumber, string description)
+		{
+			saveGameSlotNumber = slotNumber;
+			saveGameDescription = description;
+			gameAction = GameAction.SaveGame;
 		}
 
 		public void Update(TicCmd[] cmds)
@@ -62,10 +81,10 @@ namespace ManagedDoom
 						DoNewGame();
 						break;
 					case GameAction.LoadGame:
-						//G_DoLoadGame();
+						DoLoadGame();
 						break;
 					case GameAction.SaveGame:
-						//G_DoSaveGame();
+						DoSaveGame();
 						break;
 					case GameAction.Completed:
 						DoCompleted();
@@ -189,57 +208,9 @@ namespace ManagedDoom
 
 
 
-		private void DoReborn(int playerNumber)
-		{
-			if (!options.NetGame)
-			{
-				// Reload the level from scratch.
-				gameAction = GameAction.LoadLevel;
-			}
-			else
-			{
-				// Respawn at the start.
-
-				// First dissasociate the corpse.
-				options.Players[playerNumber].Mobj.Player = null;
-
-				// Spawn at random spot if in death match.
-				if (options.Deathmatch != 0)
-				{
-					world.G_DeathMatchSpawnPlayer(playerNumber);
-					return;
-				}
-
-				if (world.G_CheckSpot(playerNumber, world.PlayerStarts[playerNumber]))
-				{
-					world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playerNumber]);
-					return;
-				}
-
-				// Try to spawn at one of the other players spots.
-				for (var i = 0; i < Player.MaxPlayerCount; i++)
-				{
-					if (world.G_CheckSpot(playerNumber, world.PlayerStarts[i]))
-					{
-						// Fake as other player.
-						world.PlayerStarts[i].Type = playerNumber + 1;
-
-						world.ThingAllocation.SpawnPlayer(world.PlayerStarts[i]);
-
-						// Restore.
-						world.PlayerStarts[i].Type = i + 1;
-
-						return;
-					}
-					// He's going to be inside something.
-					// Too bad.
-				}
-
-				world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playerNumber]);
-			}
-		}
-
-
+		////////////////////////////////////////////////////////////
+		// Actual game actions
+		////////////////////////////////////////////////////////////
 
 		private void DoLoadLevel()
 		{
@@ -275,41 +246,23 @@ namespace ManagedDoom
 			InitNew(options.Skill, options.Episode, options.Map);
 		}
 
-		public void InitNew(GameSkill skill, int episode, int map)
+		private void DoLoadGame()
 		{
-			skill = (GameSkill)Math.Clamp((int)skill, (int)GameSkill.Baby, (int)GameSkill.Nightmare);
+			gameAction = GameAction.Nothing;
 
-			if (options.GameMode == GameMode.Retail)
-			{
-				episode = Math.Clamp(episode, 1, 4);
-			}
-			else if (options.GameMode == GameMode.Shareware)
-			{
-				episode = 1;
-			}
-			else
-			{
-				episode = Math.Clamp(episode, 1, 3);
-			}
+			var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+			var path = Path.Combine(directory, "doomsav" + loadGameSlotNumber + ".dsg");
+			SaveAndLoad.Load(this, path);
+		}
 
-			if (options.GameMode == GameMode.Commercial)
-			{
-				map = Math.Clamp(map, 1, 32);
-			}
-			else
-			{
-				map = Math.Clamp(map, 1, 9);
-			}
+		private void DoSaveGame()
+		{
+			gameAction = GameAction.Nothing;
 
-			options.Random.Clear();
-
-			// Force players to be initialized upon first level load.
-			for (var i = 0; i < Player.MaxPlayerCount; i++)
-			{
-				options.Players[i].PlayerState = PlayerState.Reborn;
-			}
-
-			DoLoadLevel();
+			var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+			var path = Path.Combine(directory, "doomsav" + saveGameSlotNumber + ".dsg");
+			SaveAndLoad.Save(this, saveGameDescription, path);
+			world.ConsolePlayer.SendMessage(DoomInfo.Strings.GGSAVED);
 		}
 
 		private void DoCompleted()
@@ -472,6 +425,47 @@ namespace ManagedDoom
 
 
 
+		////////////////////////////////////////////////////////////
+		// Miscellaneous things
+		////////////////////////////////////////////////////////////
+
+		public void InitNew(GameSkill skill, int episode, int map)
+		{
+			skill = (GameSkill)Math.Clamp((int)skill, (int)GameSkill.Baby, (int)GameSkill.Nightmare);
+
+			if (options.GameMode == GameMode.Retail)
+			{
+				episode = Math.Clamp(episode, 1, 4);
+			}
+			else if (options.GameMode == GameMode.Shareware)
+			{
+				episode = 1;
+			}
+			else
+			{
+				episode = Math.Clamp(episode, 1, 3);
+			}
+
+			if (options.GameMode == GameMode.Commercial)
+			{
+				map = Math.Clamp(map, 1, 32);
+			}
+			else
+			{
+				map = Math.Clamp(map, 1, 9);
+			}
+
+			options.Random.Clear();
+
+			// Force players to be initialized upon first level load.
+			for (var i = 0; i < Player.MaxPlayerCount; i++)
+			{
+				options.Players[i].PlayerState = PlayerState.Reborn;
+			}
+
+			DoLoadLevel();
+		}
+
 		public bool DoEvent(DoomEvent e)
 		{
 			if (gameState == GameState.Level)
@@ -484,6 +478,56 @@ namespace ManagedDoom
 			}
 
 			return false;
+		}
+
+		private void DoReborn(int playerNumber)
+		{
+			if (!options.NetGame)
+			{
+				// Reload the level from scratch.
+				gameAction = GameAction.LoadLevel;
+			}
+			else
+			{
+				// Respawn at the start.
+
+				// First dissasociate the corpse.
+				options.Players[playerNumber].Mobj.Player = null;
+
+				// Spawn at random spot if in death match.
+				if (options.Deathmatch != 0)
+				{
+					world.G_DeathMatchSpawnPlayer(playerNumber);
+					return;
+				}
+
+				if (world.G_CheckSpot(playerNumber, world.PlayerStarts[playerNumber]))
+				{
+					world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playerNumber]);
+					return;
+				}
+
+				// Try to spawn at one of the other players spots.
+				for (var i = 0; i < Player.MaxPlayerCount; i++)
+				{
+					if (world.G_CheckSpot(playerNumber, world.PlayerStarts[i]))
+					{
+						// Fake as other player.
+						world.PlayerStarts[i].Type = playerNumber + 1;
+
+						world.ThingAllocation.SpawnPlayer(world.PlayerStarts[i]);
+
+						// Restore.
+						world.PlayerStarts[i].Type = i + 1;
+
+						return;
+					}
+					// He's going to be inside something.
+					// Too bad.
+				}
+
+				world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playerNumber]);
+			}
 		}
 
 

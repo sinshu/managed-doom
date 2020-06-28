@@ -215,10 +215,7 @@ namespace ManagedDoom
         {
             if (state == ApplicationState.Game && game.State == GameState.Level)
             {
-                var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-                var path = Path.Combine(directory, "doomsav" + slotNumber + ".dsg");
-                SaveAndLoad.Save(game, description, path);
-                game.World.ConsolePlayer.SendMessage(DoomInfo.Strings.GGSAVED);
+                game.SaveGame(slotNumber, description);
                 return true;
             }
             else
@@ -229,9 +226,7 @@ namespace ManagedDoom
 
         public void LoadGame(int slotNumber)
         {
-            var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            var path = Path.Combine(directory, "doomsav" + slotNumber + ".dsg");
-            SaveAndLoad.Load(game, path);
+            game.LoadGame(slotNumber);
             state = ApplicationState.Game;
         }
 
