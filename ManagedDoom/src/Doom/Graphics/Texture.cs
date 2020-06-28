@@ -162,13 +162,6 @@ namespace ManagedDoom
             }
         }
 
-        /*
-        public Bitmap ToBitmap(byte[] palette)
-        {
-            return composite.ToBitmap(palette);
-        }
-        */
-
         public override string ToString()
         {
             return name;

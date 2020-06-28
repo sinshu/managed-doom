@@ -97,33 +97,6 @@ namespace ManagedDoom
             }
         }
 
-        /*
-        public Bitmap ToBitmap(byte[] palette)
-        {
-            var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-            for (var x = 0; x < width; x++)
-            {
-                foreach (var column in columns[x])
-                {
-                    for (var i = 0; i < column.Length; i++)
-                    {
-                        var value = column.Data[column.Offset + i];
-                        var r = palette[3 * value];
-                        var g = palette[3 * value + 1];
-                        var b = palette[3 * value + 2];
-                        var color = Color.FromArgb(r, g, b);
-                        var y = column.TopDelta + i;
-                        if (y < height)
-                        {
-                            bitmap.SetPixel(x, y, color);
-                        }
-                    }
-                }
-            }
-            return bitmap;
-        }
-        */
-
         public override string ToString()
         {
             return name;
