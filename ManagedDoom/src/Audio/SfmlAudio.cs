@@ -50,7 +50,7 @@ namespace ManagedDoom
             catch (Exception e)
             {
                 Dispose();
-                ExceptionDispatchInfo.Capture(e).Throw();
+                ExceptionDispatchInfo.Throw(e);
             }
         }
 

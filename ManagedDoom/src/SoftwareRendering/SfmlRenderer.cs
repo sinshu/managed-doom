@@ -72,7 +72,7 @@ namespace ManagedDoom.SoftwareRendering
             catch (Exception e)
             {
                 Dispose();
-                ExceptionDispatchInfo.Capture(e).Throw();
+                ExceptionDispatchInfo.Throw(e);
             }
 
             sfmlSprite.Position = new Vector2f(0, 0);

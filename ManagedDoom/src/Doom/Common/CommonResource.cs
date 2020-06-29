@@ -29,7 +29,7 @@ namespace ManagedDoom
             }
             catch (Exception e)
             {
-                ExceptionDispatchInfo.Capture(e).Throw();
+                ExceptionDispatchInfo.Throw(e);
             }
         }
 
