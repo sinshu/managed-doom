@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.ExceptionServices;
+using System.Text;
 using SFML.Audio;
 using SFML.System;
 
@@ -8,13 +9,13 @@ namespace ManagedDoom
     public sealed class SfmlAudio : IDisposable
     {
         private static readonly int channelCount = 16;
+        private static readonly float decay = (float)Math.Pow(0.5, 1.0 / (35 / 5));
 
         private SoundBuffer[] buffers;
         private float[] amplitudes;
 
         private Sound[] channels;
-        private Mobj[] sources;
-        private float[] priorities;
+        private ChannelInfo[] infos;
 
         public SfmlAudio(Wad wad)
         {
@@ -40,11 +41,11 @@ namespace ManagedDoom
                 }
 
                 channels = new Sound[channelCount];
-                sources = new Mobj[channelCount];
-                priorities = new float[channelCount];
+                infos = new ChannelInfo[channelCount];
                 for (var i = 0; i < channels.Length; i++)
                 {
                     channels[i] = new Sound();
+                    infos[i] = new ChannelInfo();
                 }
             }
             catch (Exception e)
@@ -91,47 +92,79 @@ namespace ManagedDoom
             return (float)max / 65536;
         }
 
-        public void StartSound(Mobj mobj, Sfx sfx)
+        public void Update()
         {
-            if (mobj == null)
+            for (var i = 0; i < infos.Length; i++)
             {
-                for (var i = 0; i < channels.Length; i++)
+                var info = infos[i];
+                var channel = channels[i];
+
+                info.Priority *= decay;
+
+                if (info.Playing != Sfx.NONE && channel.Status == SoundStatus.Stopped)
                 {
-                    if (channels[i].Status == SoundStatus.Stopped)
+                    info.Playing = Sfx.NONE;
+                    info.Source = null;
+                }
+
+                if (info.Reserved != Sfx.NONE)
+                {
+                    if (info.Playing != Sfx.NONE)
                     {
-                        sources[i] = null;
-                        channels[i].SoundBuffer = buffers[(int)sfx];
-                        channels[i].Position = new Vector3f(0, 1, 0);
-                        channels[i].Volume = 100;
-                        channels[i].Play();
-                        return;
+                        channel.Stop();
                     }
+
+                    channel.SoundBuffer = buffers[(int)info.Reserved];
+                    SetParam(channel, info.Source);
+                    channel.Play();
+                    info.Playing = info.Reserved;
+                    info.Reserved = Sfx.NONE;
                 }
             }
-            else
+        }
+
+        public void StartSound(Mobj mobj, Sfx sfx)
+        {
+            for (var i = 0; i < infos.Length; i++)
             {
-                for (var i = 0; i < channels.Length; i++)
+                var info = infos[i];
+                if (info.Source == mobj)
                 {
-                    if (sources[i] == mobj && channels[i].Status == SoundStatus.Playing)
-                    {
-                        channels[i].Stop();
-                        channels[i].SoundBuffer = buffers[(int)sfx];
-                        SetParam(channels[i], mobj);
-                        channels[i].Play();
-                        return;
-                    }
+                    info.Reserved = sfx;
+                    info.Priority = amplitudes[(int)sfx];
+                    return;
                 }
-                for (var i = 0; i < channels.Length; i++)
+            }
+
+            for (var i = 0; i < infos.Length; i++)
+            {
+                var info = infos[i];
+                if (info.Reserved == Sfx.NONE && info.Playing == Sfx.NONE)
                 {
-                    if (channels[i].Status == SoundStatus.Stopped)
-                    {
-                        sources[i] = mobj;
-                        channels[i].SoundBuffer = buffers[(int)sfx];
-                        SetParam(channels[i], mobj);
-                        channels[i].Play();
-                        return;
-                    }
+                    info.Reserved = sfx;
+                    info.Priority = amplitudes[(int)sfx];
+                    info.Source = mobj;
+                    return;
                 }
+            }
+
+            var minPriority = float.MaxValue;
+            var minChannel = -1;
+            for (var i = 0; i < infos.Length; i++)
+            {
+                var info = infos[i];
+                if (info.Priority < minPriority)
+                {
+                    minPriority = info.Priority;
+                    minChannel = i;
+                }
+            }
+            if (amplitudes[(int)sfx] >= minPriority)
+            {
+                var info = infos[minChannel];
+                info.Reserved = sfx;
+                info.Priority = amplitudes[(int)sfx];
+                info.Source = mobj;
             }
         }
 
@@ -149,22 +182,30 @@ namespace ManagedDoom
 
         private void SetParam(Sound sound, Mobj mobj)
         {
-            var world = mobj.World;
-            var player = world.Options.Players[world.Options.ConsolePlayer].Mobj;
-            var x = (mobj.X - player.X).ToDouble();
-            var y = (mobj.Y - player.Y).ToDouble();
-            var dist = Math.Sqrt(x * x + y * y);
-
-            if (Math.Abs(x) < 0.01 && Math.Abs(y) < 0.01)
+            if (mobj != null)
             {
-                sound.Position = new Vector3f(0, 1, 0);
+                var world = mobj.World;
+                var player = world.Options.Players[world.Options.ConsolePlayer].Mobj;
+                var x = (mobj.X - player.X).ToDouble();
+                var y = (mobj.Y - player.Y).ToDouble();
+                var dist = Math.Sqrt(x * x + y * y);
+
+                if (Math.Abs(x) < 0.01 && Math.Abs(y) < 0.01)
+                {
+                    sound.Position = new Vector3f(0, 1, 0);
+                }
+                else
+                {
+                    var angle = Math.Atan2(y, x) - player.Angle.ToRadian() + Math.PI / 2;
+                    sound.Position = new Vector3f((float)Math.Cos(angle), (float)Math.Sin(angle), 0);
+                }
+                sound.Volume = (float)(100 * Math.Pow(2, -dist / 512));
             }
             else
             {
-                var angle = Math.Atan2(y, x) - player.Angle.ToRadian() + Math.PI / 2;
-                sound.Position = new Vector3f((float)Math.Cos(angle), (float)Math.Sin(angle), 0);
+                sound.Position = new Vector3f(0, 1, 0);
+                sound.Volume = 100;
             }
-            sound.Volume = (float)(100 * Math.Pow(2, -dist / 512));
         }
 
         public void Dispose()
@@ -189,6 +230,20 @@ namespace ManagedDoom
             }
 
             Console.WriteLine("Audio resources are disposed.");
+        }
+
+
+
+        private class ChannelInfo
+        {
+            public Sfx Reserved;
+            public Sfx Playing;
+            public float Priority;
+
+            public Mobj Source;
+            public float X;
+            public float Y;
+            public float Volume;
         }
     }
 }

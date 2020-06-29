@@ -164,6 +164,7 @@ namespace ManagedDoom
                 game.Update(cmds);
             }
 
+            audio.Update();
             renderer.Render(this);
 
             return false;
