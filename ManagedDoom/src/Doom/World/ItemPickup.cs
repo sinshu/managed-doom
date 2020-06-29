@@ -161,7 +161,7 @@ namespace ManagedDoom
 
                 if (player == world.Options.Players[world.consoleplayer])
                 {
-                    world.StartSound(null, Sfx.WPNUP);
+                    world.StartSound(player.Mobj, Sfx.WPNUP, SfxType.Misc);
                 }
 
                 return false;
@@ -737,7 +737,7 @@ namespace ManagedDoom
 
             if (player == world.Options.Players[world.consoleplayer])
             {
-                world.StartSound(null, sound);
+                world.StartSound(player.Mobj, sound, SfxType.Misc);
             }
         }
     }

@@ -49,7 +49,7 @@ namespace ManagedDoom
             {
                 if (switchList[i] == topTexture)
                 {
-                    world.StartSound(line.SoundOrigin, sound);
+                    world.StartSound(line.SoundOrigin, sound, SfxType.Misc);
                     frontSide.TopTexture = switchList[i ^ 1];
 
                     if (useAgain)
@@ -63,7 +63,7 @@ namespace ManagedDoom
                 {
                     if (switchList[i] == middleTexture)
                     {
-                        world.StartSound(line.SoundOrigin, sound);
+                        world.StartSound(line.SoundOrigin, sound, SfxType.Misc);
                         frontSide.MiddleTexture = switchList[i ^ 1];
 
                         if (useAgain)
@@ -77,7 +77,7 @@ namespace ManagedDoom
                     {
                         if (switchList[i] == bottomTexture)
                         {
-                            world.StartSound(line.SoundOrigin, sound);
+                            world.StartSound(line.SoundOrigin, sound, SfxType.Misc);
                             frontSide.BottomTexture = switchList[i ^ 1];
 
                             if (useAgain)
@@ -201,7 +201,7 @@ namespace ManagedDoom
                                 break;
                         }
 
-                        world.StartSound(buttonList[i].SoundOrigin, Sfx.SWTCHN);
+                        world.StartSound(buttonList[i].SoundOrigin, Sfx.SWTCHN, SfxType.Misc);
                         buttonList[i].Clear();
                     }
                 }

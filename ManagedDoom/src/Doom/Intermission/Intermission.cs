@@ -759,7 +759,7 @@ namespace ManagedDoom
         {
             if (audio != null)
             {
-                audio.StartSound(null, sfx);
+                //audio.StartSound(null, sfx);
             }
         }
 

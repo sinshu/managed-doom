@@ -43,18 +43,18 @@ namespace ManagedDoom
 							case VlDoorType.BlazeRaise:
 								// time to go back down
 								Direction = -1;
-								world.StartSound(Sector.SoundOrigin, Sfx.BDCLS);
+								world.StartSound(Sector.SoundOrigin, Sfx.BDCLS, SfxType.Misc);
 								break;
 
 							case VlDoorType.Normal:
 								// time to go back down
 								Direction = -1;
-								world.StartSound(Sector.SoundOrigin, Sfx.DORCLS);
+								world.StartSound(Sector.SoundOrigin, Sfx.DORCLS, SfxType.Misc);
 								break;
 
 							case VlDoorType.Close30ThenOpen:
 								Direction = 1;
-								world.StartSound(Sector.SoundOrigin, Sfx.DOROPN);
+								world.StartSound(Sector.SoundOrigin, Sfx.DOROPN, SfxType.Misc);
 								break;
 
 							default:
@@ -72,7 +72,7 @@ namespace ManagedDoom
 							case VlDoorType.RaiseIn5Mins:
 								Direction = 1;
 								Type = VlDoorType.Normal;
-								world.StartSound(Sector.SoundOrigin, Sfx.DOROPN);
+								world.StartSound(Sector.SoundOrigin, Sfx.DOROPN, SfxType.Misc);
 								break;
 
 							default:
@@ -97,7 +97,7 @@ namespace ManagedDoom
 								Sector.SpecialData = null;
 								// unlink and free
 								world.Thinkers.Remove(this);
-								world.StartSound(Sector.SoundOrigin, Sfx.BDCLS);
+								world.StartSound(Sector.SoundOrigin, Sfx.BDCLS, SfxType.Misc);
 								break;
 
 							case VlDoorType.Normal:
@@ -126,7 +126,7 @@ namespace ManagedDoom
 
 							default:
 								Direction = 1;
-								world.StartSound(Sector.SoundOrigin, Sfx.DOROPN);
+								world.StartSound(Sector.SoundOrigin, Sfx.DOROPN, SfxType.Misc);
 								break;
 						}
 					}

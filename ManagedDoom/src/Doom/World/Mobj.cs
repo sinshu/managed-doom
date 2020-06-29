@@ -259,7 +259,7 @@ namespace ManagedDoom
                 X, Y, Subsector.Sector.FloorHeight, MobjType.Tfog);
 
             // initiate teleport sound
-            world.StartSound(mo, Sfx.TELEPT);
+            world.StartSound(mo, Sfx.TELEPT, SfxType.Misc);
 
             // spawn a teleport fog at the new spot
             var ss = Geometry.PointInSubsector(x, y, world.Map);
@@ -267,7 +267,7 @@ namespace ManagedDoom
             mo = world.ThingAllocation.SpawnMobj(
                 x, y, ss.Sector.FloorHeight, MobjType.Tfog);
 
-            world.StartSound(mo, Sfx.TELEPT);
+            world.StartSound(mo, Sfx.TELEPT, SfxType.Misc);
 
             // spawn the new monster
             var mthing = sp;

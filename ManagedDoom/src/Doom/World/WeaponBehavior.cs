@@ -46,7 +46,7 @@ namespace ManagedDoom
             if (player.ReadyWeapon == WeaponType.Chainsaw &&
                 psp.State == DoomInfo.States[(int)MobjState.Saw])
             {
-                world.StartSound(player.Mobj, Sfx.SAWIDL);
+                world.StartSound(player.Mobj, Sfx.SAWIDL, SfxType.Attack);
             }
 
             // Check for weapon change.
@@ -335,7 +335,7 @@ namespace ManagedDoom
             // Turn to face target.
             if (hs.LineTarget != null)
             {
-                world.StartSound(player.Mobj, Sfx.PUNCH);
+                world.StartSound(player.Mobj, Sfx.PUNCH, SfxType.Attack);
 
                 player.Mobj.Angle = Geometry.PointToAngle(
                     player.Mobj.X, player.Mobj.Y,
@@ -361,11 +361,11 @@ namespace ManagedDoom
 
             if (hs.LineTarget == null)
             {
-                world.StartSound(player.Mobj, Sfx.SAWFUL);
+                world.StartSound(player.Mobj, Sfx.SAWFUL, SfxType.Attack);
                 return;
             }
 
-            world.StartSound(player.Mobj, Sfx.SAWHIT);
+            world.StartSound(player.Mobj, Sfx.SAWHIT, SfxType.Attack);
 
             // Turn to face target.
             var targetAngle = Geometry.PointToAngle(
@@ -460,7 +460,7 @@ namespace ManagedDoom
 
         public void FirePistol(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.PISTOL);
+            world.StartSound(player.Mobj, Sfx.PISTOL, SfxType.Attack);
 
             player.Mobj.SetState(MobjState.PlayAtk2);
 
@@ -485,7 +485,7 @@ namespace ManagedDoom
 
         public void FireShotgun(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.SHOTGN);
+            world.StartSound(player.Mobj, Sfx.SHOTGN, SfxType.Attack);
 
             player.Mobj.SetState(MobjState.PlayAtk2);
 
@@ -513,7 +513,7 @@ namespace ManagedDoom
 
         public void FireCGun(Player player, PlayerSpriteDef psp)
         {
-            world.StartSound(player.Mobj, Sfx.PISTOL);
+            world.StartSound(player.Mobj, Sfx.PISTOL, SfxType.Attack);
 
             if (player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] == 0)
             {
@@ -538,7 +538,7 @@ namespace ManagedDoom
 
         public void FireShotgun2(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.DSHTGN);
+            world.StartSound(player.Mobj, Sfx.DSHTGN, SfxType.Attack);
 
             player.Mobj.SetState(MobjState.PlayAtk2);
 
@@ -577,19 +577,19 @@ namespace ManagedDoom
 
         public void OpenShotgun2(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.DBOPN);
+            world.StartSound(player.Mobj, Sfx.DBOPN, SfxType.Attack);
         }
 
 
         public void LoadShotgun2(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.DBLOAD);
+            world.StartSound(player.Mobj, Sfx.DBLOAD, SfxType.Attack);
         }
 
 
         public void CloseShotgun2(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.DBCLS);
+            world.StartSound(player.Mobj, Sfx.DBCLS, SfxType.Attack);
             ReFire(player);
         }
 
@@ -628,7 +628,7 @@ namespace ManagedDoom
 
         public void A_BFGsound(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.BFG);
+            world.StartSound(player.Mobj, Sfx.BFG, SfxType.Attack);
         }
 
 

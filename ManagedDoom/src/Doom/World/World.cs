@@ -289,7 +289,7 @@ namespace ManagedDoom
             if (!FirstTicIsNotYetDone)
             {
                 // Don't start sound on first frame.
-                StartSound(mo, Sfx.TELEPT);
+                StartSound(mo, Sfx.TELEPT, SfxType.Misc);
             }
 
             return true;
@@ -437,14 +437,14 @@ namespace ManagedDoom
 
 
 
-        public void StartSound(Mobj mobj, Sfx sfx)
+        public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
         {
             if (audio == null)
             {
                 return;
             }
 
-            audio.StartSound(mobj, sfx);
+            audio.StartSound(mobj, sfx, type);
         }
 
         public void StopSound(Mobj mobj)

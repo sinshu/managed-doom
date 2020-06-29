@@ -38,7 +38,7 @@ namespace ManagedDoom
 				mc.LineOpening(intercept.Line);
 				if (mc.OpenRange <= Fixed.Zero)
 				{
-					world.StartSound(useThing, Sfx.NOWAY);
+					world.StartSound(useThing, Sfx.NOWAY, SfxType.Voice);
 
 					// Can't use through a wall.
 					return false;

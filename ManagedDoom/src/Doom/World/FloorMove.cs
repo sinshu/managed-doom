@@ -34,7 +34,7 @@ namespace ManagedDoom
 
 			if ((world.levelTime & 7) == 0)
 			{
-				world.StartSound(Sector.SoundOrigin, Sfx.STNMOV);
+				world.StartSound(Sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
 			}
 
 			if (res == SectorActionResult.PastDestination)
@@ -64,7 +64,7 @@ namespace ManagedDoom
 
 				world.Thinkers.Remove(this);
 
-				world.StartSound(Sector.SoundOrigin, Sfx.PSTOP);
+				world.StartSound(Sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
 			}
 		}
 	}

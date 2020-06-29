@@ -518,7 +518,7 @@ namespace ManagedDoom
 
             if (player.PendingWeapon == WeaponType.Chainsaw)
             {
-                world.StartSound(player.Mobj, Sfx.SAWUP);
+                world.StartSound(player.Mobj, Sfx.SAWUP, SfxType.Attack);
             }
 
             var newState = DoomInfo.WeaponInfos[(int)player.PendingWeapon].UpState;
@@ -636,7 +636,7 @@ namespace ManagedDoom
                 sound = Sfx.PDIEHI;
             }
 
-            world.StartSound(player, sound);
+            world.StartSound(player, sound, SfxType.Voice);
         }
     }
 }

@@ -283,7 +283,7 @@ namespace ManagedDoom
 
 			if (thing.Info.DeathSound != 0)
 			{
-				world.StartSound(thing, thing.Info.DeathSound);
+				world.StartSound(thing, thing.Info.DeathSound, SfxType.Misc);
 			}
 		}
 

@@ -717,7 +717,7 @@ namespace ManagedDoom
                         // Decrease viewheight for a moment after hitting the ground (hard),
                         // and utter appropriate sound.
                         thing.Player.DeltaViewHeight = new Fixed(thing.MomZ.Data >> 3);
-                        world.StartSound(thing, Sfx.OOF);
+                        world.StartSound(thing, Sfx.OOF, SfxType.Voice);
                     }
                     thing.MomZ = Fixed.Zero;
                 }

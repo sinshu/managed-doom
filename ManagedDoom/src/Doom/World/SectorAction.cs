@@ -415,7 +415,7 @@ namespace ManagedDoom
 						!player.Cards[(int)CardType.BlueSkull])
 					{
 						player.SendMessage(DoomInfo.Strings.PD_BLUEK);
-						world.StartSound(null, Sfx.OOF);
+						world.StartSound(player.Mobj, Sfx.OOF, SfxType.Voice);
 						return;
 					}
 					break;
@@ -432,7 +432,7 @@ namespace ManagedDoom
 						!player.Cards[(int)CardType.YellowSkull])
 					{
 						player.SendMessage(DoomInfo.Strings.PD_YELLOWK);
-						world.StartSound(null, Sfx.OOF);
+						world.StartSound(player.Mobj, Sfx.OOF, SfxType.Voice);
 						return;
 					}
 					break;
@@ -449,7 +449,7 @@ namespace ManagedDoom
 						!player.Cards[(int)CardType.RedSkull])
 					{
 						player.SendMessage(DoomInfo.Strings.PD_REDK);
-						world.StartSound(null, Sfx.OOF);
+						world.StartSound(player.Mobj, Sfx.OOF, SfxType.Voice);
 						return;
 					}
 					break;
@@ -497,18 +497,18 @@ namespace ManagedDoom
 
 				// Blazing door open.
 				case 118:
-					world.StartSound(sector.SoundOrigin, Sfx.BDOPN);
+					world.StartSound(sector.SoundOrigin, Sfx.BDOPN, SfxType.Misc);
 					break;
 
 				// Normal door sound.
 				case 1:
 				case 31:
-					world.StartSound(sector.SoundOrigin, Sfx.DOROPN);
+					world.StartSound(sector.SoundOrigin, Sfx.DOROPN, SfxType.Misc);
 					break;
 
 				// Locked door sound.
 				default:
-					world.StartSound(sector.SoundOrigin, Sfx.DOROPN);
+					world.StartSound(sector.SoundOrigin, Sfx.DOROPN, SfxType.Misc);
 					break;
 			}
 
@@ -642,20 +642,20 @@ namespace ManagedDoom
 						door.TopHeight -= Fixed.FromInt(4);
 						door.Direction = -1;
 						door.Speed = doorSpeed * 4;
-						world.StartSound(door.Sector.SoundOrigin, Sfx.BDCLS);
+						world.StartSound(door.Sector.SoundOrigin, Sfx.BDCLS, SfxType.Misc);
 						break;
 
 					case VlDoorType.Close:
 						door.TopHeight = FindLowestCeilingSurrounding(sector);
 						door.TopHeight -= Fixed.FromInt(4);
 						door.Direction = -1;
-						world.StartSound(door.Sector.SoundOrigin, Sfx.DORCLS);
+						world.StartSound(door.Sector.SoundOrigin, Sfx.DORCLS, SfxType.Misc);
 						break;
 
 					case VlDoorType.Close30ThenOpen:
 						door.TopHeight = sector.CeilingHeight;
 						door.Direction = -1;
-						world.StartSound(door.Sector.SoundOrigin, Sfx.DORCLS);
+						world.StartSound(door.Sector.SoundOrigin, Sfx.DORCLS, SfxType.Misc);
 						break;
 
 					case VlDoorType.BlazeRaise:
@@ -666,7 +666,7 @@ namespace ManagedDoom
 						door.Speed = doorSpeed * 4;
 						if (door.TopHeight != sector.CeilingHeight)
 						{
-							world.StartSound(door.Sector.SoundOrigin, Sfx.BDOPN);
+							world.StartSound(door.Sector.SoundOrigin, Sfx.BDOPN, SfxType.Misc);
 						}
 						break;
 
@@ -677,7 +677,7 @@ namespace ManagedDoom
 						door.TopHeight -= Fixed.FromInt(4);
 						if (door.TopHeight != sector.CeilingHeight)
 						{
-							world.StartSound(door.Sector.SoundOrigin, Sfx.DOROPN);
+							world.StartSound(door.Sector.SoundOrigin, Sfx.DOROPN, SfxType.Misc);
 						}
 						break;
 
@@ -711,7 +711,7 @@ namespace ManagedDoom
 						!player.Cards[(int)CardType.BlueSkull])
 					{
 						player.SendMessage(DoomInfo.Strings.PD_BLUEO);
-						world.StartSound(null, Sfx.OOF);
+						world.StartSound(player.Mobj, Sfx.OOF, SfxType.Voice);
 						return false;
 					}
 					break;
@@ -727,7 +727,7 @@ namespace ManagedDoom
 						!player.Cards[(int)CardType.RedSkull])
 					{
 						player.SendMessage(DoomInfo.Strings.PD_REDO);
-						world.StartSound(null, Sfx.OOF);
+						world.StartSound(player.Mobj, Sfx.OOF, SfxType.Voice);
 						return false;
 					}
 					break;
@@ -743,7 +743,7 @@ namespace ManagedDoom
 						!player.Cards[(int)CardType.YellowSkull])
 					{
 						player.SendMessage(DoomInfo.Strings.PD_YELLOWO);
-						world.StartSound(null, Sfx.OOF);
+						world.StartSound(player.Mobj, Sfx.OOF, SfxType.Voice);
 						return false;
 					}
 					break;
@@ -802,7 +802,7 @@ namespace ManagedDoom
 						plat.Status = PlatformState.Up;
 						// NO MORE DAMAGE, IF APPLICABLE.
 						sector.Special = 0;
-						world.StartSound(sector.SoundOrigin, Sfx.STNMOV);
+						world.StartSound(sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
 						break;
 
 					case PlatformType.RaiseAndChange:
@@ -811,7 +811,7 @@ namespace ManagedDoom
 						plat.High = sector.FloorHeight + amount * Fixed.One;
 						plat.Wait = 0;
 						plat.Status = PlatformState.Up;
-						world.StartSound(sector.SoundOrigin, Sfx.STNMOV);
+						world.StartSound(sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
 						break;
 
 					case PlatformType.DownWaitUpStay:
@@ -824,7 +824,7 @@ namespace ManagedDoom
 						plat.High = sector.FloorHeight;
 						plat.Wait = 35 * platformWait;
 						plat.Status = PlatformState.Down;
-						world.StartSound(sector.SoundOrigin, Sfx.PSTART);
+						world.StartSound(sector.SoundOrigin, Sfx.PSTART, SfxType.Misc);
 						break;
 
 					case PlatformType.BlazeDwus:
@@ -837,7 +837,7 @@ namespace ManagedDoom
 						plat.High = sector.FloorHeight;
 						plat.Wait = 35 * platformWait;
 						plat.Status = PlatformState.Down;
-						world.StartSound(sector.SoundOrigin, Sfx.PSTART);
+						world.StartSound(sector.SoundOrigin, Sfx.PSTART, SfxType.Misc);
 						break;
 
 					case PlatformType.PerpetualRaise:
@@ -854,7 +854,7 @@ namespace ManagedDoom
 						}
 						plat.Wait = 35 * platformWait;
 						plat.Status = (PlatformState)(world.Random.Next() & 1);
-						world.StartSound(sector.SoundOrigin, Sfx.PSTART);
+						world.StartSound(sector.SoundOrigin, Sfx.PSTART, SfxType.Misc);
 						break;
 				}
 
@@ -999,7 +999,7 @@ namespace ManagedDoom
 							oldY,
 							oldZ,
 							MobjType.Tfog);
-						world.StartSound(fog1, Sfx.TELEPT);
+						world.StartSound(fog1, Sfx.TELEPT, SfxType.Misc);
 
 						// Destination position.
 						var angle = dest.Angle;
@@ -1008,7 +1008,7 @@ namespace ManagedDoom
 							dest.Y + 20 * Trig.Sin(angle),
 							thing.Z,
 							MobjType.Tfog);
-						world.StartSound(fog2, Sfx.TELEPT);
+						world.StartSound(fog2, Sfx.TELEPT, SfxType.Misc);
 
 						// Don't move for a bit.
 						if (thing.Player != null)

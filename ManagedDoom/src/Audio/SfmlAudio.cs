@@ -123,12 +123,12 @@ namespace ManagedDoom
             }
         }
 
-        public void StartSound(Mobj mobj, Sfx sfx)
+        public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
         {
             for (var i = 0; i < infos.Length; i++)
             {
                 var info = infos[i];
-                if (info.Source == mobj)
+                if (info.Source == mobj && info.Type == type)
                 {
                     info.Reserved = sfx;
                     info.Priority = amplitudes[(int)sfx];
@@ -144,6 +144,7 @@ namespace ManagedDoom
                     info.Reserved = sfx;
                     info.Priority = amplitudes[(int)sfx];
                     info.Source = mobj;
+                    info.Type = type;
                     return;
                 }
             }
@@ -165,6 +166,7 @@ namespace ManagedDoom
                 info.Reserved = sfx;
                 info.Priority = amplitudes[(int)sfx];
                 info.Source = mobj;
+                info.Type = type;
             }
         }
 
@@ -241,6 +243,7 @@ namespace ManagedDoom
             public float Priority;
 
             public Mobj Source;
+            public SfxType Type;
             public float X;
             public float Y;
             public float Volume;

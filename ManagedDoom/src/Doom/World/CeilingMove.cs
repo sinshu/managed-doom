@@ -51,7 +51,7 @@ namespace ManagedDoom
 							case CeilingMoveType.SilentCrushAndRaise:
 								break;
 							default:
-								world.StartSound(Sector.SoundOrigin, Sfx.STNMOV);
+								world.StartSound(Sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
 								// ?
 								break;
 						}
@@ -70,7 +70,7 @@ namespace ManagedDoom
 							case CeilingMoveType.CrushAndRaise:
 								if (Type == CeilingMoveType.SilentCrushAndRaise)
 								{
-									world.StartSound(Sector.SoundOrigin, Sfx.PSTOP);
+									world.StartSound(Sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
 								}
 								Direction = -1;
 								break;
@@ -97,7 +97,7 @@ namespace ManagedDoom
 							case CeilingMoveType.SilentCrushAndRaise:
 								break;
 							default:
-								world.StartSound(Sector.SoundOrigin, Sfx.STNMOV);
+								world.StartSound(Sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
 								break;
 						}
 					}
@@ -111,7 +111,7 @@ namespace ManagedDoom
 							case CeilingMoveType.FastCrushAndRaise:
 								if (Type == CeilingMoveType.SilentCrushAndRaise)
 								{
-									world.StartSound(Sector.SoundOrigin, Sfx.PSTOP);
+									world.StartSound(Sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
 								}
 								if (Type == CeilingMoveType.CrushAndRaise)
 								{

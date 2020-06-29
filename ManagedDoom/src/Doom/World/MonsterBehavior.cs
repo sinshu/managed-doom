@@ -143,11 +143,11 @@ namespace ManagedDoom
                 if (actor.Type == MobjType.Spider || actor.Type == MobjType.Cyborg)
                 {
                     // Full volume for boss monsters.
-                    world.StartSound(null, (Sfx)sound);
+                    world.StartSound(actor, (Sfx)sound, SfxType.Diffuse);
                 }
                 else
                 {
-                    world.StartSound(actor, (Sfx)sound);
+                    world.StartSound(actor, (Sfx)sound, SfxType.Voice);
                 }
             }
 
@@ -613,7 +613,7 @@ namespace ManagedDoom
             {
                 if (actor.Info.AttackSound != 0)
                 {
-                    world.StartSound(actor, actor.Info.AttackSound);
+                    world.StartSound(actor, actor.Info.AttackSound, SfxType.Attack);
                 }
 
                 actor.SetState(actor.Info.MeleeState);
@@ -664,7 +664,7 @@ namespace ManagedDoom
             // Make active sound.
             if (actor.Info.ActiveSound != 0 && world.Random.Next() < 3)
             {
-                world.StartSound(actor, actor.Info.ActiveSound);
+                world.StartSound(actor, actor.Info.ActiveSound, SfxType.Voice);
             }
         }
 
@@ -703,7 +703,7 @@ namespace ManagedDoom
             var angle = actor.Angle;
             var slope = world.Hitscan.AimLineAttack(actor, angle, WeaponBehavior.MissileRange);
 
-            world.StartSound(actor, Sfx.PISTOL);
+            world.StartSound(actor, Sfx.PISTOL, SfxType.Attack);
 
             var random = world.Random;
             angle += new Angle((random.Next() - random.Next()) << 20);
@@ -720,7 +720,7 @@ namespace ManagedDoom
                 return;
             }
 
-            world.StartSound(actor, Sfx.SHOTGN);
+            world.StartSound(actor, Sfx.SHOTGN, SfxType.Attack);
 
             FaceTarget(actor);
 
@@ -746,7 +746,7 @@ namespace ManagedDoom
                 return;
             }
 
-            world.StartSound(actor, Sfx.SHOTGN);
+            world.StartSound(actor, Sfx.SHOTGN, SfxType.Attack);
 
             FaceTarget(actor);
 
@@ -784,7 +784,7 @@ namespace ManagedDoom
         {
             if (actor.Info.PainSound != 0)
             {
-                world.StartSound(actor, actor.Info.PainSound);
+                world.StartSound(actor, actor.Info.PainSound, SfxType.Voice);
             }
         }
 
@@ -817,19 +817,19 @@ namespace ManagedDoom
             // Check for bosses.
             if (actor.Type == MobjType.Spider || actor.Type == MobjType.Cyborg)
             {
-                // full volume
-                world.StartSound(null, (Sfx)sound);
+                // Full volume.
+                world.StartSound(actor, (Sfx)sound, SfxType.Diffuse);
             }
             else
             {
-                world.StartSound(actor, (Sfx)sound);
+                world.StartSound(actor, (Sfx)sound, SfxType.Voice);
             }
         }
 
 
         public void XScream(Mobj actor)
         {
-            world.StartSound(actor, Sfx.SLOP);
+            world.StartSound(actor, Sfx.SLOP, SfxType.Voice);
         }
 
 
@@ -844,7 +844,7 @@ namespace ManagedDoom
 
             if (CheckMeleeRange(actor))
             {
-                world.StartSound(actor, Sfx.CLAW);
+                world.StartSound(actor, Sfx.CLAW, SfxType.Attack);
 
                 var damage = (world.Random.Next() % 8 + 1) * 3;
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
@@ -905,7 +905,7 @@ namespace ManagedDoom
 
             if (CheckMeleeRange(actor))
             {
-                world.StartSound(actor, Sfx.CLAW);
+                world.StartSound(actor, Sfx.CLAW, SfxType.Attack);
 
                 var damage = (world.Random.Next() % 8 + 1) * 10;
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
@@ -931,7 +931,7 @@ namespace ManagedDoom
 
             actor.Flags |= MobjFlags.SkullFly;
 
-            world.StartSound(actor, actor.Info.AttackSound);
+            world.StartSound(actor, actor.Info.AttackSound, SfxType.Voice);
 
             FaceTarget(actor);
 
@@ -962,7 +962,7 @@ namespace ManagedDoom
         {
             FaceTarget(actor);
 
-            world.StartSound(actor, Sfx.MANATK);
+            world.StartSound(actor, Sfx.MANATK, SfxType.Voice);
         }
 
 
@@ -1041,7 +1041,7 @@ namespace ManagedDoom
 
         public void BabyMetal(Mobj mo)
         {
-            world.StartSound(mo, Sfx.BSPWLK);
+            world.StartSound(mo, Sfx.BSPWLK, SfxType.Footstep);
 
             Chase(mo);
         }
@@ -1172,7 +1172,7 @@ namespace ManagedDoom
                             actor.Target = temp;
                             actor.SetState(MobjState.VileHeal1);
 
-                            world.StartSound(vileTargetCorpse, Sfx.SLOP);
+                            world.StartSound(vileTargetCorpse, Sfx.SLOP, SfxType.Misc);
 
                             var info = vileTargetCorpse.Info;
                             vileTargetCorpse.SetState(info.Raisestate);
@@ -1194,13 +1194,13 @@ namespace ManagedDoom
 
         public void VileStart(Mobj actor)
         {
-            world.StartSound(actor, Sfx.VILATK);
+            world.StartSound(actor, Sfx.VILATK, SfxType.Attack);
         }
 
 
         public void StartFire(Mobj actor)
         {
-            world.StartSound(actor, Sfx.FLAMST);
+            world.StartSound(actor, Sfx.FLAMST, SfxType.Attack);
 
             Fire(actor);
         }
@@ -1208,7 +1208,7 @@ namespace ManagedDoom
 
         public void FireCrackle(Mobj actor)
         {
-            world.StartSound(actor, Sfx.FLAME);
+            world.StartSound(actor, Sfx.FLAME, SfxType.Attack);
 
             Fire(actor);
         }
@@ -1276,7 +1276,7 @@ namespace ManagedDoom
                 return;
             }
 
-            world.StartSound(actor, Sfx.BAREXP);
+            world.StartSound(actor, Sfx.BAREXP, SfxType.Attack);
             world.ThingInteraction.DamageMobj(actor.Target, actor, actor, 20);
             actor.Target.MomZ = Fixed.FromInt(1000) / actor.Target.Info.Mass;
 
@@ -1414,7 +1414,7 @@ namespace ManagedDoom
 
             FaceTarget(actor);
 
-            world.StartSound(actor, Sfx.SKESWG);
+            world.StartSound(actor, Sfx.SKESWG, SfxType.Attack);
         }
 
 
@@ -1430,7 +1430,7 @@ namespace ManagedDoom
             if (CheckMeleeRange(actor))
             {
                 var damage = ((world.Random.Next() % 10) + 1) * 6;
-                world.StartSound(actor, Sfx.SKEPCH);
+                world.StartSound(actor, Sfx.SKEPCH, SfxType.Attack);
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
             }
         }
@@ -1507,7 +1507,7 @@ namespace ManagedDoom
 
         public void Hoof(Mobj mo)
         {
-            world.StartSound(mo, Sfx.HOOF);
+            world.StartSound(mo, Sfx.HOOF, SfxType.Footstep);
 
             Chase(mo);
         }
@@ -1515,7 +1515,7 @@ namespace ManagedDoom
 
         public void Metal(Mobj mo)
         {
-            world.StartSound(mo, Sfx.METAL);
+            world.StartSound(mo, Sfx.METAL, SfxType.Footstep);
 
             Chase(mo);
         }
@@ -1781,12 +1781,12 @@ namespace ManagedDoom
                 }
             }
 
-            world.StartSound(null, Sfx.BOSSIT);
+            world.StartSound(mo, Sfx.BOSSIT, SfxType.Diffuse);
         }
 
         public void BrainPain(Mobj mo)
         {
-            world.StartSound(null, Sfx.BOSPN);
+            world.StartSound(mo, Sfx.BOSPN, SfxType.Diffuse);
         }
 
         public void BrainScream(Mobj mo)
@@ -1808,7 +1808,7 @@ namespace ManagedDoom
                 }
             }
 
-            world.StartSound(null, Sfx.BOSDTH);
+            world.StartSound(mo, Sfx.BOSDTH, SfxType.Diffuse);
         }
 
         public void BrainExplode(Mobj mo)
@@ -1851,12 +1851,12 @@ namespace ManagedDoom
             newmobj.Target = targ;
             newmobj.ReactionTime = ((targ.Y - mo.Y).Data / newmobj.MomY.Data) / newmobj.State.Tics;
 
-            world.StartSound(null, Sfx.BOSPIT);
+            world.StartSound(mo, Sfx.BOSPIT, SfxType.Diffuse);
         }
 
         public void SpawnSound(Mobj mo)
         {
-            world.StartSound(mo, Sfx.BOSCUB);
+            world.StartSound(mo, Sfx.BOSCUB, SfxType.Diffuse);
             SpawnFly(mo);
         }
 
@@ -1874,7 +1874,7 @@ namespace ManagedDoom
 
             // First spawn teleport fog.
             var fog = ta.SpawnMobj(targ.X, targ.Y, targ.Z, MobjType.Spawnfire);
-            world.StartSound(fog, Sfx.TELEPT);
+            world.StartSound(fog, Sfx.TELEPT, SfxType.Misc);
 
             // Randomly select monster to spawn.
             var r = world.Random.Next();

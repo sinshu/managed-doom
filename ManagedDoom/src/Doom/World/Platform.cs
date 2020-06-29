@@ -43,7 +43,7 @@ namespace ManagedDoom
 					{
 						if ((world.levelTime & 7) == 0)
 						{
-							world.StartSound(Sector.SoundOrigin, Sfx.STNMOV);
+							world.StartSound(Sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
 						}
 					}
 
@@ -51,7 +51,7 @@ namespace ManagedDoom
 					{
 						Count = Wait;
 						Status = PlatformState.Down;
-						world.StartSound(Sector.SoundOrigin, Sfx.PSTART);
+						world.StartSound(Sector.SoundOrigin, Sfx.PSTART, SfxType.Misc);
 					}
 					else
 					{
@@ -59,7 +59,7 @@ namespace ManagedDoom
 						{
 							Count = Wait;
 							Status = PlatformState.Waiting;
-							world.StartSound(Sector.SoundOrigin, Sfx.PSTOP);
+							world.StartSound(Sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
 
 							switch (Type)
 							{
@@ -88,7 +88,7 @@ namespace ManagedDoom
 					{
 						Count = Wait;
 						Status = PlatformState.Waiting;
-						world.StartSound(Sector.SoundOrigin, Sfx.PSTOP);
+						world.StartSound(Sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
 					}
 
 					break;
@@ -104,7 +104,7 @@ namespace ManagedDoom
 						{
 							Status = PlatformState.Down;
 						}
-						world.StartSound(Sector.SoundOrigin, Sfx.PSTART);
+						world.StartSound(Sector.SoundOrigin, Sfx.PSTART, SfxType.Misc);
 					}
 
 					break;

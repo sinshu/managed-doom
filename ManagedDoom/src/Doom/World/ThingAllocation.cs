@@ -339,7 +339,7 @@ namespace ManagedDoom
 
             if (missile.Info.SeeSound != 0)
             {
-                world.StartSound(missile, missile.Info.SeeSound);
+                world.StartSound(missile, missile.Info.SeeSound, SfxType.Misc);
             }
 
             // Where it came from?
@@ -434,7 +434,7 @@ namespace ManagedDoom
 
             if (missile.Info.SeeSound != 0)
             {
-                world.StartSound(missile, missile.Info.SeeSound);
+                world.StartSound(missile, missile.Info.SeeSound, SfxType.Misc);
             }
 
             missile.Target = source;
@@ -489,7 +489,7 @@ namespace ManagedDoom
             // Spawn a teleport fog at the new spot.
             var ss = Geometry.PointInSubsector(x, y, world.Map);
             var mo = SpawnMobj(x, y, ss.Sector.FloorHeight, MobjType.Ifog);
-            world.StartSound(mo, Sfx.ITMBK);
+            world.StartSound(mo, Sfx.ITMBK, SfxType.Misc);
 
             int i;
             // Find which type to spawn.
