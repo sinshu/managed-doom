@@ -6,7 +6,7 @@ using SFML.System;
 
 namespace ManagedDoom
 {
-    public sealed class SfmlAudio : IDisposable
+    public sealed class SfmlAudio : IAudio, IDisposable
     {
         private static readonly int channelCount = 16;
         private static readonly float decay = (float)Math.Pow(0.5, 1.0 / (35 / 5));
