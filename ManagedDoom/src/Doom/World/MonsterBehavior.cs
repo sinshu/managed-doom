@@ -1856,7 +1856,7 @@ namespace ManagedDoom
 
         public void SpawnSound(Mobj mo)
         {
-            world.StartSound(mo, Sfx.BOSCUB, SfxType.Diffuse);
+            world.StartSound(mo, Sfx.BOSCUB, SfxType.Misc);
             SpawnFly(mo);
         }
 

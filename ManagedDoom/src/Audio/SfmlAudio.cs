@@ -8,8 +8,14 @@ namespace ManagedDoom
 {
     public sealed class SfmlAudio : IAudio, IDisposable
     {
-        private static readonly int channelCount = 16;
-        private static readonly float decay = (float)Math.Pow(0.5, 1.0 / (35 / 5));
+        private static readonly int channelCount = 8;
+
+        private static readonly float fastDecay = (float)Math.Pow(0.5, 1.0 / (35 / 5));
+        private static readonly float slowDecay = (float)Math.Pow(0.5, 1.0 / 35);
+
+        private static readonly float clipDist = 1200;
+        private static readonly float closeDist = 160;
+        private static readonly float attenuator = clipDist - closeDist;
 
         private SoundBuffer[] buffers;
         private float[] amplitudes;
@@ -89,7 +95,7 @@ namespace ManagedDoom
                     }
                 }
             }
-            return (float)max / 65536;
+            return (float)max / 32768;
         }
 
         public void Update()
@@ -99,12 +105,28 @@ namespace ManagedDoom
                 var info = infos[i];
                 var channel = channels[i];
 
-                info.Priority *= decay;
-
-                if (info.Playing != Sfx.NONE && channel.Status == SoundStatus.Stopped)
+                if (info.Playing != Sfx.NONE)
                 {
-                    info.Playing = Sfx.NONE;
-                    info.Source = null;
+                    if (channel.Status != SoundStatus.Stopped)
+                    {
+                        if (info.Type == SfxType.Diffuse)
+                        {
+                            info.Priority *= slowDecay;
+                        }
+                        else
+                        {
+                            info.Priority *= fastDecay;
+                        }
+                        SetParam(channel, info);
+                    }
+                    else
+                    {
+                        info.Playing = Sfx.NONE;
+                        if (info.Reserved == Sfx.NONE)
+                        {
+                            info.Source = null;
+                        }
+                    }
                 }
 
                 if (info.Reserved != Sfx.NONE)
@@ -115,7 +137,7 @@ namespace ManagedDoom
                     }
 
                     channel.SoundBuffer = buffers[(int)info.Reserved];
-                    SetParam(channel, info.Source);
+                    SetParam(channel, info);
                     channel.Play();
                     info.Playing = info.Reserved;
                     info.Reserved = Sfx.NONE;
@@ -125,13 +147,28 @@ namespace ManagedDoom
 
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
         {
+            var player = mobj.World.ConsolePlayer.Mobj;
+            var x = (mobj.X - player.X).ToFloat();
+            var y = (mobj.Y - player.Y).ToFloat();
+            var dist = MathF.Sqrt(x * x + y * y);
+
+            float priority;
+            if (type == SfxType.Diffuse)
+            {
+                priority = 1;
+            }
+            else
+            {
+                priority = amplitudes[(int)sfx] * GetDistanceDecay(dist);
+            }
+
             for (var i = 0; i < infos.Length; i++)
             {
                 var info = infos[i];
                 if (info.Source == mobj && info.Type == type)
                 {
                     info.Reserved = sfx;
-                    info.Priority = amplitudes[(int)sfx];
+                    info.Priority = priority;
                     return;
                 }
             }
@@ -142,7 +179,7 @@ namespace ManagedDoom
                 if (info.Reserved == Sfx.NONE && info.Playing == Sfx.NONE)
                 {
                     info.Reserved = sfx;
-                    info.Priority = amplitudes[(int)sfx];
+                    info.Priority = priority;
                     info.Source = mobj;
                     info.Type = type;
                     return;
@@ -164,7 +201,7 @@ namespace ManagedDoom
             {
                 var info = infos[minChannel];
                 info.Reserved = sfx;
-                info.Priority = amplitudes[(int)sfx];
+                info.Priority = priority;
                 info.Source = mobj;
                 info.Type = type;
             }
@@ -172,41 +209,63 @@ namespace ManagedDoom
 
         public void StopSound(Mobj mobj)
         {
+            for (var i = 0; i < infos.Length; i++)
+            {
+                var info = infos[i];
+                if (info.Source == mobj)
+                {
+                    channels[i].Stop();
+                    info.Clear();
+                }
+            }
         }
 
         public void StopAll()
         {
-            for (var i = 0; i < channels.Length; i++)
+            for (var i = 0; i < infos.Length; i++)
             {
                 channels[i].Stop();
+                infos[i].Clear();
             }
         }
 
-        private void SetParam(Sound sound, Mobj mobj)
+        private void SetParam(Sound sound, ChannelInfo info)
         {
-            if (mobj != null)
-            {
-                var world = mobj.World;
-                var player = world.Options.Players[world.Options.ConsolePlayer].Mobj;
-                var x = (mobj.X - player.X).ToDouble();
-                var y = (mobj.Y - player.Y).ToDouble();
-                var dist = Math.Sqrt(x * x + y * y);
-
-                if (Math.Abs(x) < 0.01 && Math.Abs(y) < 0.01)
-                {
-                    sound.Position = new Vector3f(0, 1, 0);
-                }
-                else
-                {
-                    var angle = Math.Atan2(y, x) - player.Angle.ToRadian() + Math.PI / 2;
-                    sound.Position = new Vector3f((float)Math.Cos(angle), (float)Math.Sin(angle), 0);
-                }
-                sound.Volume = (float)(100 * Math.Pow(2, -dist / 512));
-            }
-            else
+            if (info.Type == SfxType.Diffuse)
             {
                 sound.Position = new Vector3f(0, 1, 0);
                 sound.Volume = 100;
+            }
+            else
+            {
+                var player = info.Source.World.ConsolePlayer.Mobj;
+                var x = (info.Source.X - player.X).ToFloat();
+                var y = (info.Source.Y - player.Y).ToFloat();
+
+                if (Math.Abs(x) < 16 && Math.Abs(y) < 16)
+                {
+                    sound.Position = new Vector3f(0, 1, 0);
+                    sound.Volume = 100;
+                }
+                else
+                {
+                    var dist = MathF.Sqrt(x * x + y * y);
+                    var angle = MathF.Atan2(y, x) - (float)player.Angle.ToRadian() + MathF.PI / 2;
+                    sound.Position = new Vector3f(MathF.Cos(angle), MathF.Sin(angle), 0);
+                    sound.Volume = 100 * GetDistanceDecay(dist);
+                }
+            }
+        }
+
+        private float GetDistanceDecay(float dist)
+        {
+            if (dist < closeDist)
+            {
+                return 1F;
+            }
+            else
+            {
+                return Math.Max((clipDist - dist) / attenuator, 0F);
             }
         }
 
@@ -244,9 +303,15 @@ namespace ManagedDoom
 
             public Mobj Source;
             public SfxType Type;
-            public float X;
-            public float Y;
-            public float Volume;
+
+            public void Clear()
+            {
+                Reserved = Sfx.NONE;
+                Playing = Sfx.NONE;
+                Priority = 0;
+                Source = null;
+                Type = 0;
+            }
         }
     }
 }
