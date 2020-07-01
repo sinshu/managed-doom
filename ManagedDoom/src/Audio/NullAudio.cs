@@ -43,5 +43,13 @@ namespace ManagedDoom
         public void Reset()
         {
         }
+
+        public void Pause()
+        {
+        }
+
+        public void Resume()
+        {
+        }
     }
 }

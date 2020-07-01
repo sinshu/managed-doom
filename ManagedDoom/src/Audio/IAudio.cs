@@ -11,5 +11,7 @@ namespace ManagedDoom
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type, int volume);
         public void StopSound(Mobj mobj);
         public void Reset();
+        public void Pause();
+        public void Resume();
     }
 }

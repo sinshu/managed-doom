@@ -152,11 +152,11 @@ namespace ManagedDoom
 								paused = !paused;
 								if (paused)
 								{
-									//S_PauseSound();
+									options.Audio.Pause();
 								}
 								else
 								{
-									//S_ResumeSound();
+									options.Audio.Resume();
 								}
 								break;
 						}

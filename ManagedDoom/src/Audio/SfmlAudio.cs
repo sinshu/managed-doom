@@ -271,6 +271,33 @@ namespace ManagedDoom
             listener = null;
         }
 
+        public void Pause()
+        {
+            for (var i = 0; i < infos.Length; i++)
+            {
+                var channel = channels[i];
+
+                if (channel.Status == SoundStatus.Playing &&
+                    channel.SoundBuffer.Duration - channel.PlayingOffset > Time.FromMilliseconds(200))
+                {
+                    channels[i].Pause();
+                }
+            }
+        }
+
+        public void Resume()
+        {
+            for (var i = 0; i < infos.Length; i++)
+            {
+                var channel = channels[i];
+
+                if (channel.Status == SoundStatus.Paused)
+                {
+                    channel.Play();
+                }
+            }
+        }
+
         private void SetParam(Sound sound, ChannelInfo info)
         {
             if (info.Type == SfxType.Diffuse)
