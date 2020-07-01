@@ -254,8 +254,9 @@ namespace ManagedDoom
 
 			intermission = null;
 
+			options.Audio.Reset();
+
 			world = new World(resource, options);
-			world.Audio = audio;
 
 			if (options.ResetControl != null)
 			{
@@ -563,14 +564,5 @@ namespace ManagedDoom
 		public Intermission Intermission => intermission;
 		public Finale Finale => finale;
 		public bool Paused => paused;
-
-
-		private SfmlAudio audio;
-
-		public SfmlAudio Audio
-		{
-			get => audio;
-			set => audio = value;
-		}
 	}
 }

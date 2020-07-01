@@ -26,6 +26,8 @@ namespace ManagedDoom
 
         public Action ResetControl;
 
+        public IAudio Audio = NullAudio.GetInstance();
+
         public GameOptions()
         {
             for (var i = 0; i < Player.MaxPlayerCount; i++)

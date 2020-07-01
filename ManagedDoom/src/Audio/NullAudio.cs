@@ -16,7 +16,23 @@ namespace ManagedDoom
             return instance;
         }
 
+        public void SetListener(Mobj listerner)
+        {
+        }
+
+        public void Update()
+        {
+        }
+
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
+        {
+        }
+
+        public void StopSound(Mobj mobj)
+        {
+        }
+
+        public void Reset()
         {
         }
     }

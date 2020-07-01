@@ -439,22 +439,12 @@ namespace ManagedDoom
 
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
         {
-            if (audio == null)
-            {
-                return;
-            }
-
-            audio.StartSound(mobj, sfx, type);
+            Options.Audio.StartSound(mobj, sfx, type);
         }
 
         public void StopSound(Mobj mobj)
         {
-            if (audio == null)
-            {
-                return;
-            }
-
-            audio.StopSound(mobj);
+            Options.Audio.StopSound(mobj);
         }
 
         public int GetNewValidCount()
@@ -527,15 +517,5 @@ namespace ManagedDoom
         public Player ConsolePlayer => Options.Players[Options.ConsolePlayer];
         public bool FirstTicIsNotYetDone => ConsolePlayer.ViewZ == Fixed.Epsilon;
         public bool SecretExit => secretexit;
-
-
-
-        private SfmlAudio audio;
-
-        public SfmlAudio Audio
-        {
-            get => audio;
-            set => audio = value;
-        }
     }
 }

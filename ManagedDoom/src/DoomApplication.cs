@@ -66,12 +66,12 @@ namespace ManagedDoom
                 options.Episode = 1;
                 options.Map = 1;
                 options.Players[0].InGame = true;
+                options.Audio = audio;
 
                 //demo = new Demo("test.lmp");
                 //options = demo.Options;
 
                 game = new DoomGame(resource, options);
-                game.Audio = audio;
 
                 events = new List<DoomEvent>();
 
@@ -164,7 +164,7 @@ namespace ManagedDoom
                 game.Update(cmds);
             }
 
-            audio.Update();
+            options.Audio.Update();
             renderer.Render(this);
 
             return false;

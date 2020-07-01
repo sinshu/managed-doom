@@ -219,6 +219,7 @@ namespace ManagedDoom
             if (mt.Type - 1 == world.Options.ConsolePlayer)
             {
                 world.StatusBar.Reset();
+                world.Options.Audio.SetListener(mobj);
             }
         }
 

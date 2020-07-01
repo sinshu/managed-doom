@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using SFML.Audio;
@@ -22,6 +23,8 @@ namespace ManagedDoom
 
         private Sound[] channels;
         private ChannelInfo[] infos;
+
+        private Mobj listener;
 
         public SfmlAudio(Wad wad)
         {
@@ -98,6 +101,11 @@ namespace ManagedDoom
             return (float)max / 32768;
         }
 
+        public void SetListener(Mobj listener)
+        {
+            this.listener = listener;
+        }
+
         public void Update()
         {
             for (var i = 0; i < infos.Length; i++)
@@ -147,9 +155,8 @@ namespace ManagedDoom
 
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
         {
-            var player = mobj.World.ConsolePlayer.Mobj;
-            var x = (mobj.X - player.X).ToFloat();
-            var y = (mobj.Y - player.Y).ToFloat();
+            var x = (mobj.X - listener.X).ToFloat();
+            var y = (mobj.Y - listener.Y).ToFloat();
             var dist = MathF.Sqrt(x * x + y * y);
 
             float priority;
@@ -220,13 +227,15 @@ namespace ManagedDoom
             }
         }
 
-        public void StopAll()
+        public void Reset()
         {
             for (var i = 0; i < infos.Length; i++)
             {
                 channels[i].Stop();
                 infos[i].Clear();
             }
+
+            listener = null;
         }
 
         private void SetParam(Sound sound, ChannelInfo info)
@@ -238,9 +247,8 @@ namespace ManagedDoom
             }
             else
             {
-                var player = info.Source.World.ConsolePlayer.Mobj;
-                var x = (info.Source.X - player.X).ToFloat();
-                var y = (info.Source.Y - player.Y).ToFloat();
+                var x = (info.Source.X - listener.X).ToFloat();
+                var y = (info.Source.Y - listener.Y).ToFloat();
 
                 if (Math.Abs(x) < 16 && Math.Abs(y) < 16)
                 {
@@ -250,7 +258,7 @@ namespace ManagedDoom
                 else
                 {
                     var dist = MathF.Sqrt(x * x + y * y);
-                    var angle = MathF.Atan2(y, x) - (float)player.Angle.ToRadian() + MathF.PI / 2;
+                    var angle = MathF.Atan2(y, x) - (float)listener.Angle.ToRadian() + MathF.PI / 2;
                     sound.Position = new Vector3f(MathF.Cos(angle), MathF.Sin(angle), 0);
                     sound.Volume = 100 * GetDistanceDecay(dist);
                 }
