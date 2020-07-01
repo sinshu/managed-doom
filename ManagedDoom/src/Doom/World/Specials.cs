@@ -201,7 +201,7 @@ namespace ManagedDoom
                                 break;
                         }
 
-                        world.StartSound(buttonList[i].SoundOrigin, Sfx.SWTCHN, SfxType.Misc);
+                        world.StartSound(buttonList[i].SoundOrigin, Sfx.SWTCHN, SfxType.Misc, 50);
                         buttonList[i].Clear();
                     }
                 }

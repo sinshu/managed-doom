@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using SFML.Audio;
@@ -155,6 +156,11 @@ namespace ManagedDoom
 
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
         {
+            StartSound(mobj, sfx, type, 100);
+        }
+
+        public void StartSound(Mobj mobj, Sfx sfx, SfxType type, int volume)
+        {
             var x = (mobj.X - listener.X).ToFloat();
             var y = (mobj.Y - listener.Y).ToFloat();
             var dist = MathF.Sqrt(x * x + y * y);
@@ -162,11 +168,11 @@ namespace ManagedDoom
             float priority;
             if (type == SfxType.Diffuse)
             {
-                priority = 1;
+                priority = volume;
             }
             else
             {
-                priority = amplitudes[(int)sfx] * GetDistanceDecay(dist);
+                priority = amplitudes[(int)sfx] * GetDistanceDecay(dist) * volume;
             }
 
             for (var i = 0; i < infos.Length; i++)
@@ -176,6 +182,7 @@ namespace ManagedDoom
                 {
                     info.Reserved = sfx;
                     info.Priority = priority;
+                    info.Volume = volume;
                     return;
                 }
             }
@@ -189,6 +196,7 @@ namespace ManagedDoom
                     info.Priority = priority;
                     info.Source = mobj;
                     info.Type = type;
+                    info.Volume = volume;
                     return;
                 }
             }
@@ -204,13 +212,14 @@ namespace ManagedDoom
                     minChannel = i;
                 }
             }
-            if (amplitudes[(int)sfx] >= minPriority)
+            if (priority >= minPriority)
             {
                 var info = infos[minChannel];
                 info.Reserved = sfx;
                 info.Priority = priority;
                 info.Source = mobj;
                 info.Type = type;
+                info.Volume = volume;
             }
         }
 
@@ -221,8 +230,10 @@ namespace ManagedDoom
                 var info = infos[i];
                 if (info.Source == mobj)
                 {
-                    channels[i].Stop();
-                    info.Clear();
+                    info.LastX = info.Source.X;
+                    info.LastY = info.Source.Y;
+                    info.Source = null;
+                    info.Volume /= 5;
                 }
             }
         }
@@ -243,24 +254,37 @@ namespace ManagedDoom
             if (info.Type == SfxType.Diffuse)
             {
                 sound.Position = new Vector3f(0, 1, 0);
-                sound.Volume = 100;
+                sound.Volume = info.Volume;
             }
             else
             {
-                var x = (info.Source.X - listener.X).ToFloat();
-                var y = (info.Source.Y - listener.Y).ToFloat();
+                Fixed sourceX;
+                Fixed sourceY;
+                if (info.Source == null)
+                {
+                    sourceX = info.LastX;
+                    sourceY = info.LastY;
+                }
+                else
+                {
+                    sourceX = info.Source.X;
+                    sourceY = info.Source.Y;
+                }
+
+                var x = (sourceX - listener.X).ToFloat();
+                var y = (sourceY - listener.Y).ToFloat();
 
                 if (Math.Abs(x) < 16 && Math.Abs(y) < 16)
                 {
                     sound.Position = new Vector3f(0, 1, 0);
-                    sound.Volume = 100;
+                    sound.Volume = info.Volume;
                 }
                 else
                 {
                     var dist = MathF.Sqrt(x * x + y * y);
                     var angle = MathF.Atan2(y, x) - (float)listener.Angle.ToRadian() + MathF.PI / 2;
                     sound.Position = new Vector3f(MathF.Cos(angle), MathF.Sin(angle), 0);
-                    sound.Volume = 100 * GetDistanceDecay(dist);
+                    sound.Volume = GetDistanceDecay(dist) * info.Volume;
                 }
             }
         }
@@ -311,6 +335,9 @@ namespace ManagedDoom
 
             public Mobj Source;
             public SfxType Type;
+            public int Volume;
+            public Fixed LastX;
+            public Fixed LastY;
 
             public void Clear()
             {
@@ -319,6 +346,9 @@ namespace ManagedDoom
                 Priority = 0;
                 Source = null;
                 Type = 0;
+                Volume = 0;
+                LastX = Fixed.Zero;
+                LastY = Fixed.Zero;
             }
         }
     }

@@ -442,6 +442,11 @@ namespace ManagedDoom
             Options.Audio.StartSound(mobj, sfx, type);
         }
 
+        public void StartSound(Mobj mobj, Sfx sfx, SfxType type, int volume)
+        {
+            Options.Audio.StartSound(mobj, sfx, type, volume);
+        }
+
         public void StopSound(Mobj mobj)
         {
             Options.Audio.StopSound(mobj);

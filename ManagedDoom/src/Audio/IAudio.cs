@@ -7,6 +7,7 @@ namespace ManagedDoom
         public void SetListener(Mobj listener);
         public void Update();
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type);
+        public void StartSound(Mobj mobj, Sfx sfx, SfxType type, int volume);
         public void StopSound(Mobj mobj);
         public void Reset();
     }
