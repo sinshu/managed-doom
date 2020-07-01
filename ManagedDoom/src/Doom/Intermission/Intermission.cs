@@ -757,10 +757,7 @@ namespace ManagedDoom
 
         private void StartSound(Sfx sfx)
         {
-            if (audio != null)
-            {
-                //audio.StartSound(null, sfx);
-            }
+            options.Audio.StartSound(sfx);
         }
 
 
@@ -780,15 +777,5 @@ namespace ManagedDoom
         public DoomRandom Random => random;
         public Animation[] Animations => animations;
         public bool ShowYouAreHere => showYouAreHere;
-
-
-
-        private SfmlAudio audio;
-
-        public SfmlAudio Audio
-        {
-            get => audio;
-            set => audio = value;
-        }
     }
 }

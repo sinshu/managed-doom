@@ -24,6 +24,10 @@ namespace ManagedDoom
         {
         }
 
+        public void StartSound(Sfx sfx)
+        {
+        }
+
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
         {
         }

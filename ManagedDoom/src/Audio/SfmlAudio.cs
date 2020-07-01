@@ -25,6 +25,9 @@ namespace ManagedDoom
         private Sound[] channels;
         private ChannelInfo[] infos;
 
+        private Sound uiChannel;
+        private Sfx uiReserved;
+
         private Mobj listener;
 
         public SfmlAudio(Wad wad)
@@ -57,6 +60,9 @@ namespace ManagedDoom
                     channels[i] = new Sound();
                     infos[i] = new ChannelInfo();
                 }
+
+                uiChannel = new Sound();
+                uiReserved = Sfx.NONE;
             }
             catch (Exception e)
             {
@@ -152,6 +158,22 @@ namespace ManagedDoom
                     info.Reserved = Sfx.NONE;
                 }
             }
+
+            if (uiReserved != Sfx.NONE)
+            {
+                if (uiChannel.Status == SoundStatus.Playing)
+                {
+                    uiChannel.Stop();
+                }
+                uiChannel.SoundBuffer = buffers[(int)uiReserved];
+                uiChannel.Play();
+                uiReserved = Sfx.NONE;
+            }
+        }
+
+        public void StartSound(Sfx sfx)
+        {
+            uiReserved = sfx;
         }
 
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type)

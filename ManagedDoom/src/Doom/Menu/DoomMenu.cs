@@ -189,6 +189,7 @@ namespace ManagedDoom
                 {
                     current = main;
                     Open();
+                    app.Options.Audio.StartSound(Sfx.SWTCHN);
                     return true;
                 }
 
@@ -196,6 +197,7 @@ namespace ManagedDoom
                 {
                     current = main;
                     Open();
+                    app.Options.Audio.StartSound(Sfx.SWTCHN);
                     return true;
                 }
 
