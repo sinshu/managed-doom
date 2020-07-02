@@ -69,11 +69,13 @@ namespace ManagedDoom
             if (e.Key == DoomKeys.Up)
             {
                 Up();
+                Menu.StartSound(Sfx.PSTOP);
             }
 
             if (e.Key == DoomKeys.Down)
             {
                 Down();
+                Menu.StartSound(Sfx.PSTOP);
             }
 
             if (e.Key == DoomKeys.Enter)
@@ -82,11 +84,13 @@ namespace ManagedDoom
                 {
                     Menu.Close();
                 }
+                Menu.StartSound(Sfx.PISTOL);
             }
 
             if (e.Key == DoomKeys.Escape)
             {
                 Menu.Close();
+                Menu.StartSound(Sfx.SWTCHX);
             }
 
             return true;

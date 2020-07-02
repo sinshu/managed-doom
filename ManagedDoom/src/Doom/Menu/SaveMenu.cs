@@ -97,21 +97,25 @@ namespace ManagedDoom
             if (e.Key == DoomKeys.Up)
             {
                 Up();
+                Menu.StartSound(Sfx.PSTOP);
             }
 
             if (e.Key == DoomKeys.Down)
             {
                 Down();
+                Menu.StartSound(Sfx.PSTOP);
             }
 
             if (e.Key == DoomKeys.Enter)
             {
                 textInput = choice.Edit(() => DoSave(index));
+                Menu.StartSound(Sfx.PISTOL);
             }
 
             if (e.Key == DoomKeys.Escape)
             {
                 Menu.Close();
+                Menu.StartSound(Sfx.SWTCHX);
             }
 
             return true;
@@ -128,6 +132,7 @@ namespace ManagedDoom
             {
                 Menu.NotifySaveFailed();
             }
+            Menu.StartSound(Sfx.PISTOL);
         }
 
         public IReadOnlyList<string> Name => name;
