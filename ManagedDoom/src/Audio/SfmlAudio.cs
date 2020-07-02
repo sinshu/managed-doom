@@ -371,6 +371,12 @@ namespace ManagedDoom
                 }
             }
 
+            if (uiChannel != null)
+            {
+                uiChannel.Dispose();
+                uiChannel = null;
+            }
+
             Console.WriteLine("Audio resources are disposed.");
         }
 
