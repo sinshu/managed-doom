@@ -211,6 +211,11 @@ namespace ManagedDoom
         public void Update()
         {
             tics++;
+
+            if (current != null)
+            {
+                current.Update();
+            }
         }
 
         public void SetCurrent(MenuDef next)
@@ -250,6 +255,7 @@ namespace ManagedDoom
         }
 
         public DoomApplication Application => app;
+        public GameOptions Options => app.Options;
         public MenuDef Current => current;
         public bool Active => active;
         public int Tics => tics;

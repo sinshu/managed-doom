@@ -16,6 +16,10 @@ namespace ManagedDoom
         {
         }
 
+        public virtual void Update()
+        {
+        }
+
         public abstract bool DoEvent(DoomEvent e);
 
         public DoomMenu Menu => menu;
