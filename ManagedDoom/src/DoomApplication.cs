@@ -16,14 +16,14 @@ namespace ManagedDoom
         private SfmlRenderer renderer;
         private SfmlAudio audio;
 
-        private DoomMenu menu;
-
+        private GameOptions options;
         private ApplicationState state;
+
+        private DoomMenu menu;
 
         private OpeningSequence opening;
 
         private TicCmd[] cmds;
-        private GameOptions options;
         private DoomGame game;
 
         private List<DoomEvent> events;
@@ -47,18 +47,6 @@ namespace ManagedDoom
                 renderer = new SfmlRenderer(window, resource, true);
                 audio = new SfmlAudio(resource.Wad);
 
-                menu = new DoomMenu(this);
-
-                state = ApplicationState.Opening;
-
-                opening = new OpeningSequence();
-
-                cmds = new TicCmd[Player.MaxPlayerCount];
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
-                {
-                    cmds[i] = new TicCmd();
-                }
-
                 options = new GameOptions();
                 options.Skill = GameSkill.Hard;
                 options.GameMode = resource.Wad.GameMode;
@@ -68,18 +56,27 @@ namespace ManagedDoom
                 options.Players[0].InGame = true;
                 options.Audio = audio;
 
+                state = ApplicationState.Opening;
+
                 //demo = new Demo("test.lmp");
                 //options = demo.Options;
 
+                menu = new DoomMenu(this);
+
+                opening = new OpeningSequence();
+
+                cmds = new TicCmd[Player.MaxPlayerCount];
+                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                {
+                    cmds[i] = new TicCmd();
+                }
                 game = new DoomGame(resource, options);
 
                 events = new List<DoomEvent>();
 
                 window.Closed += (sender, e) => window.Close();
-
                 window.KeyPressed += KeyPressed;
                 window.KeyReleased += KeyReleased;
-
                 window.SetFramerateLimit(35);
 
                 sendPause = false;

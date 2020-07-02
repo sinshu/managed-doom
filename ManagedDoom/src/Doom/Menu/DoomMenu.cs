@@ -6,6 +6,7 @@ namespace ManagedDoom
     public sealed class DoomMenu
     {
         private DoomApplication app;
+        private GameOptions options;
 
         private SelectableMenu main;
         private SelectableMenu episodeMenu;
@@ -33,6 +34,7 @@ namespace ManagedDoom
         public DoomMenu(DoomApplication app)
         {
             this.app = app;
+            options = app.Options;
 
             thisIsShareware = new PressAnyKey(
                 this,
@@ -99,12 +101,13 @@ namespace ManagedDoom
                 }
             }
 
+            var audio = options.Audio;
             volume = new SelectableMenu(
                 this,
                 "M_SVOL", 60, 38,
                 0,
-                new SliderMenuItem("M_SFXVOL", 48, 59, 80, 64, 16, 8),
-                new SliderMenuItem("M_MUSVOL", 48, 91, 80, 96, 16, 8));
+                new SliderMenuItem("M_SFXVOL", 48, 59, 80, 64, audio.MaxSoundVolume + 1, audio.SoundVolume, vol => audio.SoundVolume = vol),
+                new SliderMenuItem("M_MUSVOL", 48, 91, 80, 96, 16, 8, null));
 
             optionMenu = new SelectableMenu(
                 this,
@@ -112,8 +115,8 @@ namespace ManagedDoom
                 0,
                 new SimpleMenuItem("M_ENDGAM", 28, 32, 60, 37, null, null),
                 new ToggleMenuItem("M_MESSG", 28, 48, 60, 53, "M_MSGON", "M_MSGOFF", 180, 0),
-                new SliderMenuItem("M_SCRNSZ", 28, 80 - 16, 60, 85 - 16, 9, 3),
-                new SliderMenuItem("M_MSENS", 28, 112 - 16, 60, 117 - 16, 10, 3),
+                new SliderMenuItem("M_SCRNSZ", 28, 80 - 16, 60, 85 - 16, 9, 3, null),
+                new SliderMenuItem("M_MSENS", 28, 112 - 16, 60, 117 - 16, 10, 3, null),
                 new SimpleMenuItem("M_SVOL", 28, 144 - 16, 60, 149 - 16, null, volume));
 
             load = new LoadMenu(
@@ -189,7 +192,7 @@ namespace ManagedDoom
                 {
                     current = main;
                     Open();
-                    app.Options.Audio.StartSound(Sfx.SWTCHN);
+                    StartSound(Sfx.SWTCHN);
                     return true;
                 }
 
@@ -197,7 +200,7 @@ namespace ManagedDoom
                 {
                     current = main;
                     Open();
-                    app.Options.Audio.StartSound(Sfx.SWTCHN);
+                    StartSound(Sfx.SWTCHN);
                     return true;
                 }
 
@@ -234,6 +237,11 @@ namespace ManagedDoom
             {
                 app.ResumeGame();
             }
+        }
+
+        public void StartSound(Sfx sfx)
+        {
+            options.Audio.StartSound(sfx);
         }
 
         public void NotifySaveFailed()

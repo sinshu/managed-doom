@@ -97,13 +97,13 @@ namespace ManagedDoom
             if (e.Key == DoomKeys.Up)
             {
                 Up();
-                Menu.Application.Options.Audio.StartSound(Sfx.PSTOP);
+                Menu.StartSound(Sfx.PSTOP);
             }
 
             if (e.Key == DoomKeys.Down)
             {
                 Down();
-                Menu.Application.Options.Audio.StartSound(Sfx.PSTOP);
+                Menu.StartSound(Sfx.PSTOP);
             }
 
             if (e.Key == DoomKeys.Left)
@@ -112,14 +112,14 @@ namespace ManagedDoom
                 if (toggle != null)
                 {
                     toggle.Down();
-                    Menu.Application.Options.Audio.StartSound(Sfx.PISTOL);
+                    Menu.StartSound(Sfx.PISTOL);
                 }
 
                 var slider = choice as SliderMenuItem;
                 if (slider != null)
                 {
                     slider.Down();
-                    Menu.Application.Options.Audio.StartSound(Sfx.STNMOV);
+                    Menu.StartSound(Sfx.STNMOV);
                 }
             }
 
@@ -129,14 +129,14 @@ namespace ManagedDoom
                 if (toggle != null)
                 {
                     toggle.Up();
-                    Menu.Application.Options.Audio.StartSound(Sfx.PISTOL);
+                    Menu.StartSound(Sfx.PISTOL);
                 }
 
                 var slider = choice as SliderMenuItem;
                 if (slider != null)
                 {
                     slider.Up();
-                    Menu.Application.Options.Audio.StartSound(Sfx.STNMOV);
+                    Menu.StartSound(Sfx.STNMOV);
                 }
             }
 
@@ -146,7 +146,7 @@ namespace ManagedDoom
                 if (toggle != null)
                 {
                     toggle.Up();
-                    Menu.Application.Options.Audio.StartSound(Sfx.PISTOL);
+                    Menu.StartSound(Sfx.PISTOL);
                 }
 
                 var simple = choice as SimpleMenuItem;
@@ -164,21 +164,21 @@ namespace ManagedDoom
                     {
                         Menu.Close();
                     }
-                    Menu.Application.Options.Audio.StartSound(Sfx.PISTOL);
+                    Menu.StartSound(Sfx.PISTOL);
                     return true;
                 }
 
                 if (choice.Next != null)
                 {
                     Menu.SetCurrent(choice.Next);
-                    Menu.Application.Options.Audio.StartSound(Sfx.PISTOL);
+                    Menu.StartSound(Sfx.PISTOL);
                 }
             }
 
             if (e.Key == DoomKeys.Escape)
             {
                 Menu.Close();
-                Menu.Application.Options.Audio.StartSound(Sfx.SWTCHX);
+                Menu.StartSound(Sfx.SWTCHX);
             }
 
             return true;

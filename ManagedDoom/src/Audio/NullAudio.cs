@@ -51,5 +51,25 @@ namespace ManagedDoom
         public void Resume()
         {
         }
+
+        public int MaxSoundVolume
+        {
+            get
+            {
+                return 15;
+            }
+        }
+
+        public int SoundVolume
+        {
+            get
+            {
+                return 8;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

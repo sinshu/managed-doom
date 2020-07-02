@@ -9,15 +9,17 @@ namespace ManagedDoom
         private int itemY;
 
         private int sliderLength;
-
         private int sliderPosition;
+
+        private Action<int> action;
 
         public SliderMenuItem(
             string name,
             int skullX, int skullY,
             int itemX, int itemY,
             int sliderLength,
-            int firstPosition)
+            int firstPosition,
+            Action<int> action)
             : base(skullX, skullY, null)
         {
             this.name = name;
@@ -25,8 +27,9 @@ namespace ManagedDoom
             this.itemY = itemY;
 
             this.sliderLength = sliderLength;
-
             sliderPosition = firstPosition;
+
+            this.action = action;
         }
 
         public void Up()
@@ -35,6 +38,11 @@ namespace ManagedDoom
             {
                 sliderPosition++;
             }
+
+            if (action != null)
+            {
+                action(sliderPosition);
+            }
         }
 
         public void Down()
@@ -42,6 +50,11 @@ namespace ManagedDoom
             if (sliderPosition > 0)
             {
                 sliderPosition--;
+            }
+
+            if (action != null)
+            {
+                action(sliderPosition);
             }
         }
 

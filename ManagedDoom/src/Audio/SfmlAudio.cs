@@ -30,6 +30,9 @@ namespace ManagedDoom
 
         private Mobj listener;
 
+        private int masterVolume;
+        private float masterVolumeDecay;
+
         public SfmlAudio(Wad wad)
         {
             buffers = new SoundBuffer[DoomInfo.SfxNames.Length];
@@ -69,6 +72,9 @@ namespace ManagedDoom
                 Dispose();
                 ExceptionDispatchInfo.Throw(e);
             }
+
+            masterVolume = 8;
+            masterVolumeDecay = (float)masterVolume / MaxSoundVolume;
         }
 
         private static short[] GetSamples(Wad wad, string name, out int sampleRate, out int sampleCount)
@@ -165,6 +171,7 @@ namespace ManagedDoom
                 {
                     uiChannel.Stop();
                 }
+                uiChannel.Volume = 100 * masterVolumeDecay;
                 uiChannel.SoundBuffer = buffers[(int)uiReserved];
                 uiChannel.Play();
                 uiReserved = Sfx.NONE;
@@ -195,6 +202,11 @@ namespace ManagedDoom
             else
             {
                 priority = amplitudes[(int)sfx] * GetDistanceDecay(dist) * volume;
+            }
+
+            if (priority < 0.001F)
+            {
+                return;
             }
 
             for (var i = 0; i < infos.Length; i++)
@@ -303,7 +315,7 @@ namespace ManagedDoom
             if (info.Type == SfxType.Diffuse)
             {
                 sound.Position = new Vector3f(0, 1, 0);
-                sound.Volume = info.Volume;
+                sound.Volume = masterVolumeDecay * info.Volume;
             }
             else
             {
@@ -326,14 +338,14 @@ namespace ManagedDoom
                 if (Math.Abs(x) < 16 && Math.Abs(y) < 16)
                 {
                     sound.Position = new Vector3f(0, 1, 0);
-                    sound.Volume = info.Volume;
+                    sound.Volume = masterVolumeDecay * info.Volume;
                 }
                 else
                 {
                     var dist = MathF.Sqrt(x * x + y * y);
                     var angle = MathF.Atan2(y, x) - (float)listener.Angle.ToRadian() + MathF.PI / 2;
                     sound.Position = new Vector3f(MathF.Cos(angle), MathF.Sin(angle), 0);
-                    sound.Volume = GetDistanceDecay(dist) * info.Volume;
+                    sound.Volume = masterVolumeDecay * GetDistanceDecay(dist) * info.Volume;
                 }
             }
         }
@@ -378,6 +390,28 @@ namespace ManagedDoom
             }
 
             Console.WriteLine("Audio resources are disposed.");
+        }
+
+        public int MaxSoundVolume
+        {
+            get
+            {
+                return 15;
+            }
+        }
+
+        public int SoundVolume
+        {
+            get
+            {
+                return masterVolume;
+            }
+
+            set
+            {
+                masterVolume = value;
+                masterVolumeDecay = (float)masterVolume / MaxSoundVolume;
+            }
         }
 
 
