@@ -65,7 +65,7 @@ https://www.youtube.com/watch?v=LZpyeLlm_1Y
     * [x] Intermission screen
     * [x] Menu screen
     * [x] Save / load
-    * [ ] Screen melt animation
+    * [x] Screen melt animation
     * [ ] Config
     * [ ] DeHackEd support
 
