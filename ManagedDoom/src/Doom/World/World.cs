@@ -158,7 +158,14 @@ namespace ManagedDoom
             }
             else
             {
-                return UpdateResult.None;
+                if (levelTime == 1)
+                {
+                    return UpdateResult.NeedWipe;
+                }
+                else
+                {
+                    return UpdateResult.None;
+                }
             }
         }
 

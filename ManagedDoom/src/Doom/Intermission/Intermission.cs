@@ -229,7 +229,14 @@ namespace ManagedDoom
             }
             else
             {
-                return UpdateResult.None;
+                if (bgCount == 1)
+                {
+                    return UpdateResult.NeedWipe;
+                }
+                else
+                {
+                    return UpdateResult.None;
+                }
             }
         }
 

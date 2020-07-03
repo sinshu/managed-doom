@@ -72,7 +72,7 @@ namespace ManagedDoom
 		/// <summary>
 		/// Advance the game one frame.
 		/// </summary>
-		public void Update(TicCmd[] cmds)
+		public UpdateResult Update(TicCmd[] cmds)
 		{
 			// Do player reborns if needed.
 			var players = options.Players;
@@ -223,6 +223,15 @@ namespace ManagedDoom
 			}
 
 			options.GameTic++;
+
+			if (result == UpdateResult.NeedWipe)
+			{
+				return UpdateResult.NeedWipe;
+			}
+			else
+			{
+				return UpdateResult.None;
+			}
 		}
 
 

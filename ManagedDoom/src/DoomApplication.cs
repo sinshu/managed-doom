@@ -26,6 +26,9 @@ namespace ManagedDoom
         private TicCmd[] cmds;
         private DoomGame game;
 
+        private Wipe wipe;
+        private bool wiping;
+
         private List<DoomEvent> events;
 
         //private Demo demo;
@@ -71,6 +74,9 @@ namespace ManagedDoom
                     cmds[i] = new TicCmd();
                 }
                 game = new DoomGame(resource, options);
+
+                wipe = new Wipe(renderer.WipeBandCount, renderer.WipeHeight);
+                wipe.Start();
 
                 events = new List<DoomEvent>();
 
@@ -157,12 +163,33 @@ namespace ManagedDoom
                     cmds[options.ConsolePlayer].Buttons |= TicCmdButtons.Special | TicCmdButtons.Pause;
                 }
 
-                //demo.ReadCmd(cmds);
-                game.Update(cmds);
+                if (!wiping)
+                {
+                    //demo.ReadCmd(cmds);
+                    var result = game.Update(cmds);
+                    if (result == UpdateResult.NeedWipe)
+                    {
+                        wipe.Start();
+                        renderer.InitializeWipe();
+                        wiping = true;
+                    }
+                }
             }
 
             options.Audio.Update();
-            renderer.Render(this);
+            if (wiping)
+            {
+                var result = wipe.Update();
+                renderer.RenderWipe(this, wipe);
+                if (result == UpdateResult.Completed)
+                {
+                    wiping = false;
+                }
+            }
+            else
+            {
+                renderer.Render(this);
+            }
 
             return false;
         }

@@ -39,6 +39,11 @@ namespace ManagedDoom.SoftwareRendering
 
         private Patch pause;
 
+        private int wipeBandWidth;
+        private int wipeBandCount;
+        private int wipeHeight;
+        private byte[] wipeBuffer;
+
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
         {
             sfmlWindow = window;
@@ -92,6 +97,12 @@ namespace ManagedDoom.SoftwareRendering
             finale = new FinaleRenderer(resource, screen);
 
             pause = Patch.FromWad("M_PAUSE", resource.Wad);
+
+            var scale = screen.Width / 320;
+            wipeBandWidth = 2 * scale;
+            wipeBandCount = screen.Width / wipeBandWidth + 1;
+            wipeHeight = screen.Height / scale;
+            wipeBuffer = new byte[screen.Data.Length];
         }
 
         private static uint[] InitColors(Palette palette)
@@ -110,7 +121,38 @@ namespace ManagedDoom.SoftwareRendering
             return colors;
         }
 
-        public void RenderGame(DoomGame game)
+        private void RenderApplication(DoomApplication app)
+        {
+            if (app.State == ApplicationState.Opening)
+            {
+                openingSequence.Render(app.Opening);
+            }
+            else if (app.State == ApplicationState.Game)
+            {
+                RenderGame(app.Game);
+            }
+
+            if (app.Menu.Active)
+            {
+                menu.Render(app.Menu);
+            }
+            else
+            {
+                if (app.State == ApplicationState.Game &&
+                    app.Game.State == GameState.Level &&
+                    app.Game.Paused)
+                {
+                    var scale = screen.Width / 320;
+                    screen.DrawPatch(
+                        pause,
+                        (screen.Width - scale * pause.Width) / 2,
+                        4 * scale,
+                        scale);
+                }
+            }
+        }
+
+        private void RenderGame(DoomGame game)
         {
             if (game.State == GameState.Level)
             {
@@ -144,34 +186,45 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Render(DoomApplication app)
         {
-            if (app.State == ApplicationState.Opening)
-            {
-                openingSequence.Render(app.Opening);
-            }
-            else if (app.State == ApplicationState.Game)
-            {
-                RenderGame(app.Game);
-            }
+            RenderApplication(app);
+            Display();
+        }
 
-            if (app.Menu.Active)
+        public void RenderWipe(DoomApplication app, Wipe wipe)
+        {
+            RenderApplication(app);
+
+            var scale = screen.Width / 320;
+            for (var i = 0; i < wipeBandCount - 1; i++)
             {
-                menu.Render(app.Menu);
-            }
-            else
-            {
-                if (app.State == ApplicationState.Game &&
-                    app.Game.State == GameState.Level &&
-                    app.Game.Paused)
+                var x1 = wipeBandWidth * i;
+                var x2 = x1 + wipeBandWidth;
+                var y1 = Math.Max(scale * wipe.Y[i], 0);
+                var y2 = Math.Max(scale * wipe.Y[i + 1], 0);
+                var dy = (float)(y2 - y1) / wipeBandWidth;
+                for (var x = x1; x < x2; x++)
                 {
-                    var scale = screen.Width / 320;
-                    screen.DrawPatch(
-                        pause,
-                        (screen.Width - scale * pause.Width) / 2,
-                        4 * scale,
-                        scale);
+                    var y = (int)MathF.Round(y1 + dy * ((x - x1) / 2 * 2));
+                    var copyLength = screen.Height - y;
+                    if (copyLength > 0)
+                    {
+                        var srcPos = screen.Height * x;
+                        var dstPos = screen.Height * x + y;
+                        Array.Copy(wipeBuffer, srcPos, screen.Data, dstPos, copyLength);
+                    }
                 }
             }
 
+            Display();
+        }
+
+        public void InitializeWipe()
+        {
+            Array.Copy(screen.Data, wipeBuffer, screen.Data.Length);
+        }
+
+        private void Display()
+        {
             var screenData = screen.Data;
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
             for (var i = 0; i < p.Length; i++)
@@ -197,5 +250,10 @@ namespace ManagedDoom.SoftwareRendering
                 sfmlTexture = null;
             }
         }
+
+
+
+        public int WipeBandCount => wipeBandCount;
+        public int WipeHeight => wipeHeight;
     }
 }
