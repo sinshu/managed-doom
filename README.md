@@ -24,9 +24,9 @@ The rendering engine and game system (player movement, weapons, monster AI and m
 
 ## Video sample (Doom 2, demo 3)
 
-https://www.youtube.com/watch?v=LZpyeLlm_1Y  
+https://www.youtube.com/watch?v=QntRMbe-ot0  
 
-[![YouTube video of Managed Doom](https://img.youtube.com/vi/LZpyeLlm_1Y/0.jpg)](https://www.youtube.com/watch?v=LZpyeLlm_1Y)
+[![YouTube video of Managed Doom](https://img.youtube.com/vi/QntRMbe-ot0/0.jpg)](https://www.youtube.com/watch?v=QntRMbe-ot0)
 
 
 
