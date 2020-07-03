@@ -22,7 +22,7 @@ The rendering engine and game system (player movement, weapons, monster AI and m
 
 
 
-## Video sample (Doom 2, demo 3)
+## Video sample
 
 https://www.youtube.com/watch?v=QntRMbe-ot0  
 
