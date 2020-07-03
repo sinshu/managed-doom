@@ -114,7 +114,7 @@ namespace ManagedDoom
             completed = false;
         }
 
-        public bool Update()
+        public UpdateResult Update()
         {
             var players = Options.Players;
             for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -152,7 +152,14 @@ namespace ManagedDoom
             //var sectorHash = DoomDebug.GetSectorHash(this);
             //Console.WriteLine(levelTime + ": " + mobjHash.ToString("x8") + ", " + sectorHash.ToString("x8"));
 
-            return completed;
+            if (completed)
+            {
+                return UpdateResult.Completed;
+            }
+            else
+            {
+                return UpdateResult.None;
+            }
         }
 
         private void LoadThings()

@@ -165,12 +165,14 @@ namespace ManagedDoom
 			}
 
 			// Do main actions.
+			var result = UpdateResult.None;
 			switch (gameState)
 			{
 				case GameState.Level:
 					if (!paused || world.FirstTicIsNotYetDone)
 					{
-						if (world.Update())
+						result = world.Update();
+						if (result == UpdateResult.Completed)
 						{
 							gameAction = GameAction.Completed;
 						}
@@ -178,7 +180,8 @@ namespace ManagedDoom
 					break;
 
 				case GameState.Intermission:
-					if (intermission.Update())
+					result = intermission.Update();
+					if (result == UpdateResult.Completed)
 					{
 						gameAction = GameAction.WorldDone;
 
@@ -211,7 +214,8 @@ namespace ManagedDoom
 					break;
 
 				case GameState.Finale:
-					if (finale.Update())
+					result = finale.Update();
+					if (result == UpdateResult.Completed)
 					{
 						gameAction = GameAction.WorldDone;
 					}

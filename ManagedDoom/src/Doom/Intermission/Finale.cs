@@ -149,7 +149,7 @@ namespace ManagedDoom
 			theEndIndex = 0;
 		}
 
-		public bool Update()
+		public UpdateResult Update()
 		{
 			// Check for skipping.
 			if (options.GameMode == GameMode.Commercial && count > 50)
@@ -173,7 +173,7 @@ namespace ManagedDoom
 					}
 					else
 					{
-						return true;
+						return UpdateResult.Completed;
 					}
 				}
 			}
@@ -184,12 +184,12 @@ namespace ManagedDoom
 			if (stage == 2)
 			{
 				UpdateCast();
-				return false;
+				return UpdateResult.None;
 			}
 
 			if (options.GameMode == GameMode.Commercial)
 			{
-				return false;
+				return UpdateResult.None;
 			}
 
 			if (stage == 0 && count > text.Length * TextSpeed + TextWait)
@@ -208,7 +208,7 @@ namespace ManagedDoom
 				BunnyScroll();
 			}
 
-			return false;
+			return UpdateResult.None;
 		}
 
 		private void BunnyScroll()

@@ -190,7 +190,7 @@ namespace ManagedDoom
 
 
 
-        public bool Update()
+        public UpdateResult Update()
         {
             // Counter for general background animation.
             bgCount++;
@@ -223,7 +223,14 @@ namespace ManagedDoom
                     break;
             }
 
-            return completed;
+            if (completed)
+            {
+                return UpdateResult.Completed;
+            }
+            else
+            {
+                return UpdateResult.None;
+            }
         }
 
         private void UpdateSinglePlayerStats()
