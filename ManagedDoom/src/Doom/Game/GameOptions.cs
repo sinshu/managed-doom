@@ -1,4 +1,5 @@
 ﻿using System;
+using ManagedDoom.SoftwareRendering;
 
 namespace ManagedDoom
 {
@@ -26,6 +27,7 @@ namespace ManagedDoom
 
         public Action ResetControl;
 
+        public IRenderer Renderer = null;
         public IAudio Audio = NullAudio.GetInstance();
 
         public GameOptions()

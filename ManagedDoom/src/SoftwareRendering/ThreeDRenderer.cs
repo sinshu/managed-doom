@@ -9,14 +9,19 @@ namespace ManagedDoom.SoftwareRendering
 {
     public sealed class ThreeDRenderer
     {
+        public static readonly int MaxScreenSize = 9;
+
         private ColorMap colorMap;
         private TextureLookup textures;
         private FlatLookup flats;
         private SpriteLookup sprites;
 
+        private DrawScreen screen;
         private int screenWidth;
         private int screenHeight;
         private byte[] screenData;
+
+        private int windowSize;
 
         public ThreeDRenderer(CommonResource resource, DrawScreen screen, int windowSize)
         {
@@ -25,9 +30,12 @@ namespace ManagedDoom.SoftwareRendering
             flats = resource.Flats;
             sprites = resource.Sprites;
 
+            this.screen = screen;
             screenWidth = screen.Width;
             screenHeight = screen.Height;
             screenData = screen.Data;
+
+            this.windowSize = windowSize;
 
             InitWallRendering();
             InitPlaneRendering();
@@ -36,6 +44,7 @@ namespace ManagedDoom.SoftwareRendering
             InitRenderingHistory();
             InitSpriteRendering();
             InitWeaponRendering();
+            InitWindowBorder(resource.Wad);
 
             SetWindowSize(windowSize);
             ResetWallRendering();
@@ -498,6 +507,84 @@ namespace ManagedDoom.SoftwareRendering
 
 
         ////////////////////////////////////////////////////////////
+        // Weapon rendering
+        ////////////////////////////////////////////////////////////
+
+        private Patch borderTopLeft;
+        private Patch borderTopRight;
+        private Patch borderBottomLeft;
+        private Patch borderBottomRight;
+        private Patch borderTop;
+        private Patch borderBottom;
+        private Patch borderLeft;
+        private Patch borderRight;
+        private Flat backFlat;
+
+        private void InitWindowBorder(Wad wad)
+        {
+            borderTopLeft = Patch.FromWad("BRDR_TL", wad);
+            borderTopRight = Patch.FromWad("BRDR_TR", wad);
+            borderBottomLeft = Patch.FromWad("BRDR_BL", wad);
+            borderBottomRight = Patch.FromWad("BRDR_BR", wad);
+            borderTop = Patch.FromWad("BRDR_T", wad);
+            borderBottom = Patch.FromWad("BRDR_B", wad);
+            borderLeft = Patch.FromWad("BRDR_L", wad);
+            borderRight = Patch.FromWad("BRDR_R", wad);
+
+            if (wad.GameMode == GameMode.Commercial)
+            {
+                backFlat = flats["GRNROCK"];
+            }
+            else
+            {
+                backFlat = flats["FLOOR7_2"];
+            }
+        }
+
+        private void FillBackScreen()
+        {
+            var scale = screenWidth / 320;
+            var fillHeight = screenHeight - scale * StatusBarRenderer.Height;
+            FillRect(0, 0, windowX, fillHeight);
+            FillRect(screenWidth - windowX, 0, windowX, fillHeight);
+            FillRect(windowX, 0, screenWidth - 2 * windowX, windowY);
+            FillRect(windowX, fillHeight - windowY, screenWidth - 2 * windowX, windowY);
+
+            for (var x = windowX; x < screenWidth - windowX; x += 8)
+            {
+                screen.DrawPatch(borderTop, x, windowY - 8, 1);
+                screen.DrawPatch(borderBottom, x, fillHeight - windowY, 1);
+            }
+
+            for (var y = windowY; y < fillHeight - windowY; y += 8)
+            {
+                screen.DrawPatch(borderLeft, windowX - 8, y, 1);
+                screen.DrawPatch(borderRight, screenWidth - windowX, y, 1);
+            }
+
+            screen.DrawPatch(borderTopLeft, windowX - 8, windowY - 8, 1);
+            screen.DrawPatch(borderTopRight, screenWidth - windowX, windowY - 8, 1);
+            screen.DrawPatch(borderBottomLeft, windowX - 8, fillHeight - windowY, 1);
+            screen.DrawPatch(borderBottomRight, screenWidth - windowX, fillHeight - windowY, 1);
+        }
+
+        private void FillRect(int x, int y, int width, int height)
+        {
+            var data = backFlat.Data;
+            for (var i = 0; i < width; i++)
+            {
+                var src = 64 * ((x + i) & 63);
+                var dst = screenHeight * (x + i) + y;
+                for (var j = 0; j < height; j++)
+                {
+                    screenData[dst + j] = data[src | ((y + j) & 63)];
+                }
+            }
+        }
+
+
+
+        ////////////////////////////////////////////////////////////
         // Camera view
         ////////////////////////////////////////////////////////////
 
@@ -539,6 +626,11 @@ namespace ManagedDoom.SoftwareRendering
             RenderSprites();
             RenderMaskedTextures();
             R_DrawPlayerSprites(player);
+
+            if (windowSize < 7)
+            {
+                FillBackScreen();
+            }
         }
 
 
@@ -990,7 +1082,7 @@ namespace ManagedDoom.SoftwareRendering
         private const int HeightBits = 12;
         private const int HeightUnit = 1 << HeightBits;
 
-        public void DrawSolidWallRange(Seg seg, Angle rwAngle1, int x1, int x2)
+        private void DrawSolidWallRange(Seg seg, Angle rwAngle1, int x1, int x2)
         {
             if (seg.BackSector != null)
             {
@@ -1201,7 +1293,7 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        public void DrawPassWallRange(Seg seg, Angle rwAngle1, int x1, int x2, bool drawAsSolidWall)
+        private void DrawPassWallRange(Seg seg, Angle rwAngle1, int x1, int x2, bool drawAsSolidWall)
         {
             // Make some aliases to shorten the following code.
             var line = seg.LineDef;
@@ -2548,6 +2640,26 @@ namespace ManagedDoom.SoftwareRendering
         }
 
 
+
+        public int WindowSize
+        {
+            get
+            {
+                return windowSize;
+            }
+
+            set
+            {
+                windowSize = value;
+                SetWindowSize(windowSize);
+                ResetWallRendering();
+                ResetPlaneRendering();
+                ResetSkyRendering();
+                ResetLighting();
+                ResetRenderingHistory();
+                ResetWeaponRendering();
+            }
+        }
 
 
 

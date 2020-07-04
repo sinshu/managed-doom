@@ -57,6 +57,7 @@ namespace ManagedDoom
                 options.Episode = 1;
                 options.Map = 1;
                 options.Players[0].InGame = true;
+                options.Renderer = renderer;
                 options.Audio = audio;
 
                 state = ApplicationState.Opening;

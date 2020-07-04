@@ -9,7 +9,7 @@ using SFML.Window;
 
 namespace ManagedDoom.SoftwareRendering
 {
-    public sealed class SfmlRenderer : IDisposable
+    public sealed class SfmlRenderer : IRenderer, IDisposable
     {
         private RenderWindow sfmlWindow;
         private Palette palette;
@@ -165,7 +165,10 @@ namespace ManagedDoom.SoftwareRendering
                 else
                 {
                     threeD.Render(player);
-                    statusBar.Render(player);
+                    if (threeD.WindowSize < 8)
+                    {
+                        statusBar.Render(player);
+                    }
                 }
 
                 var scale = screen.Width / 320;
@@ -255,5 +258,26 @@ namespace ManagedDoom.SoftwareRendering
 
         public int WipeBandCount => wipeBandCount;
         public int WipeHeight => wipeHeight;
+
+        public int MaxWindowSize
+        {
+            get
+            {
+                return ThreeDRenderer.MaxScreenSize;
+            }
+        }
+
+        public int WindowSize
+        {
+            get
+            {
+                return threeD.WindowSize;
+            }
+
+            set
+            {
+                threeD.WindowSize = value;
+            }
+        }
     }
 }
