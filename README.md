@@ -42,7 +42,7 @@ https://www.youtube.com/watch?v=QntRMbe-ot0
     * [x] Sprite rendering
     * [x] High resolution rendering
     * [x] Optimization
-    * [ ] Fuzz effect
+    * [x] Fuzz effect
     * [ ] Palette effects
 
 - __Gaming code__
