@@ -300,23 +300,27 @@ namespace ManagedDoom.SoftwareRendering
         private const int zLightShift = 20;
         private const int colorMapCount = 32;
 
-        private byte[][][] scaleLight;
-        private byte[][][] zLight;
+        private byte[][][] diminishingScaleLight;
+        private byte[][][] diminishingZLight;
         private byte[][][] fixedLight;
 
+        private byte[][][] scaleLight;
+        private byte[][][] zLight;
+
         private int extraLight;
+        private int fixedColorMap;
 
         private void InitLighting()
         {
-            scaleLight = new byte[lightLevelCount][][];
-            zLight = new byte[lightLevelCount][][];
+            diminishingScaleLight = new byte[lightLevelCount][][];
+            diminishingZLight = new byte[lightLevelCount][][];
             fixedLight = new byte[lightLevelCount][][];
 
             for (var i = 0; i < lightLevelCount; i++)
             {
-                scaleLight[i] = new byte[maxScaleLight][];
-                zLight[i] = new byte[maxZLight][];
-                fixedLight[i] = new byte[maxScaleLight][];
+                diminishingScaleLight[i] = new byte[maxScaleLight][];
+                diminishingZLight[i] = new byte[maxZLight][];
+                fixedLight[i] = new byte[Math.Max(maxScaleLight, maxZLight)][];
             }
 
             var distMap = 2;
@@ -340,17 +344,7 @@ namespace ManagedDoom.SoftwareRendering
                         level = colorMapCount - 1;
                     }
 
-                    zLight[i][j] = colorMap[level];
-                }
-            }
-
-
-
-            for (var i = 0; i < lightLevelCount; i++)
-            {
-                for (var j = 0; j < maxScaleLight; j++)
-                {
-                    fixedLight[i][j] = colorMap[0];
+                    diminishingZLight[i][j] = colorMap[level];
                 }
             }
         }
@@ -375,8 +369,30 @@ namespace ManagedDoom.SoftwareRendering
                         level = colorMapCount - 1;
                     }
 
-                    scaleLight[i][j] = colorMap[level];
+                    diminishingScaleLight[i][j] = colorMap[level];
                 }
+            }
+        }
+
+        private void ClearLighting()
+        {
+            if (fixedColorMap == 0)
+            {
+                scaleLight = diminishingScaleLight;
+                zLight = diminishingZLight;
+                fixedLight[0][0] = null;
+            }
+            else if (fixedLight[0][0] != colorMap[fixedColorMap])
+            {
+                for (var i = 0; i < lightLevelCount; i++)
+                {
+                    for (var j = 0; j < fixedLight[i].Length; j++)
+                    {
+                        fixedLight[i][j] = colorMap[fixedColorMap];
+                    }
+                }
+                scaleLight = fixedLight;
+                zLight = fixedLight;
             }
         }
 
@@ -600,6 +616,8 @@ namespace ManagedDoom.SoftwareRendering
 
         private int validCount;
 
+
+
         public void Render(Player player)
         {
             world = player.Mobj.World;
@@ -615,8 +633,10 @@ namespace ManagedDoom.SoftwareRendering
             validCount = world.GetNewValidCount();
 
             extraLight = player.ExtraLight;
+            fixedColorMap = player.FixedColorMap;
 
             ClearPlaneRendering();
+            ClearLighting();
             ClearRenderingHistory();
             ClearSpriteRendering();
 
@@ -2186,7 +2206,7 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        private void ProjectSprite(Mobj thing, byte[][] spritelights)
+        private void ProjectSprite(Mobj thing, byte[][] spriteLights)
         {
             // Transform the origin point.
             var trX = thing.X - viewX;
@@ -2286,44 +2306,20 @@ namespace ManagedDoom.SoftwareRendering
 
             vis.Patch = lump;
 
-            /*
-            // get light level
-            if (thing->flags & MF_SHADOW)
+            if (fixedColorMap == 0)
             {
-                // shadow draw
-                vis->colormap = NULL;
-            }
-            else if (fixedcolormap)
-            {
-                // fixed map
-                vis->colormap = fixedcolormap;
-            }
-            else if (thing->frame & FF_FULLBRIGHT)
-            {
-                // full bright
-                vis->colormap = colormaps;
-            }
-
-            else
-            {
-                // diminished light
-                index = xscale >> (LIGHTSCALESHIFT - detailshift);
-
-                if (index >= MAXLIGHTSCALE)
-                    index = MAXLIGHTSCALE - 1;
-
-                vis->colormap = spritelights[index];
-            }
-            */
-
-            // diminished light
-            if ((thing.Frame & 0x8000) == 0)
-            {
-                vis.ColorMap = spritelights[Math.Min(xScale.Data >> scaleLightShift, maxScaleLight - 1)];
+                if ((thing.Frame & 0x8000) == 0)
+                {
+                    vis.ColorMap = spriteLights[Math.Min(xScale.Data >> scaleLightShift, maxScaleLight - 1)];
+                }
+                else
+                {
+                    vis.ColorMap = colorMap.FullBright;
+                }
             }
             else
             {
-                vis.ColorMap = colorMap.FullBright;
+                vis.ColorMap = colorMap[fixedColorMap];
             }
         }
 
@@ -2402,8 +2398,8 @@ namespace ManagedDoom.SoftwareRendering
                 }
 
                 if (scale < sprite.Scale ||
-                    (lowScale < sprite.Scale
-                        && Geometry.PointOnSegSide(sprite.GlobalX, sprite.GlobalY, wall.Seg) == 0))
+                    (lowScale < sprite.Scale &&
+                        Geometry.PointOnSegSide(sprite.GlobalX, sprite.GlobalY, wall.Seg) == 0))
                 {
                     // Masked mid texture?
                     if (wall.MaskedTextureColumn != -1)
@@ -2557,31 +2553,21 @@ namespace ManagedDoom.SoftwareRendering
 
             vis.Patch = lump;
 
-            /*
-            if (viewplayer->powers[pw_invisibility] > 4 * 32
-            || viewplayer->powers[pw_invisibility] & 8)
+            if (fixedColorMap == 0)
             {
-                // shadow draw
-                vis->colormap = NULL;
-            }
-            else if (fixedcolormap)
-            {
-                // fixed color
-                vis->colormap = fixedcolormap;
-            }
-            else if (psp->state->frame & FF_FULLBRIGHT)
-            {
-                // full bright
-                vis->colormap = colormaps;
+                if ((psp.State.Frame & 0x8000) == 0)
+                {
+                    vis.ColorMap = spriteLights[maxScaleLight - 1];
+                }
+                else
+                {
+                    vis.ColorMap = colorMap.FullBright;
+                }
             }
             else
             {
-                // local light
-                vis->colormap = spritelights[MAXLIGHTSCALE - 1];
+                vis.ColorMap = colorMap[fixedColorMap];
             }
-            */
-
-            vis.ColorMap = spriteLights[maxScaleLight - 1];
 
             var frac = vis.StartFrac;
             for (var x = vis.X1; x <= vis.X2; x++)
@@ -2629,14 +2615,7 @@ namespace ManagedDoom.SoftwareRendering
                 var psp = player.PlayerSprites[i];
                 if (psp.State != null)
                 {
-                    if ((psp.State.Frame & 0x8000) == 0)
-                    {
-                        DrawPlayerSprite(psp, spriteLights);
-                    }
-                    else
-                    {
-                        DrawPlayerSprite(psp, fixedLight[0]);
-                    }
+                    DrawPlayerSprite(psp, spriteLights);
                 }
             }
         }

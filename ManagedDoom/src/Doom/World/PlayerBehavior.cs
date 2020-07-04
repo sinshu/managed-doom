@@ -199,7 +199,7 @@ namespace ManagedDoom
                 if (player.Powers[(int)PowerType.Invulnerability] > 4 * 32 ||
                     (player.Powers[(int)PowerType.Invulnerability] & 8) != 0)
                 {
-                    player.FixedColorMap = 0; // INVERSECOLORMAP;
+                    player.FixedColorMap = ColorMap.Inverse;
                 }
                 else
                 {

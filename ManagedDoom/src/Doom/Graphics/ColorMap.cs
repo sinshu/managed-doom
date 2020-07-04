@@ -4,6 +4,8 @@ namespace ManagedDoom
 {
     public sealed class ColorMap
     {
+        public static readonly int Inverse = 32;
+
         private byte[][] data;
 
         public ColorMap(Wad wad)
