@@ -1826,17 +1826,18 @@ namespace ManagedDoom.SoftwareRendering
 
                 if (col != short.MaxValue)
                 {
-                    var sprtopscreen = centerYFrac - midTextureAlt * scale;
+                    var topY = centerYFrac - midTextureAlt * scale;
                     var invScale = new Fixed((int)(0xffffffffu / (uint)scale.Data));
                     var ceilClip = clipData[drawSeg.UpperClip + x];
                     var floorClip = clipData[drawSeg.LowerClip + x];
                     DrawMaskedColumn(
                         wallTexture.Composite.Columns[col & mask],
                         wallLights[index],
-                        x, invScale,
-                        midTextureAlt,
+                        x,
+                        topY,
                         scale,
-                        sprtopscreen,
+                        invScale,
+                        midTextureAlt,
                         ceilClip,
                         floorClip);
 
@@ -2135,10 +2136,10 @@ namespace ManagedDoom.SoftwareRendering
             Column[] columns,
             byte[] map,
             int x,
+            Fixed topY,
+            Fixed scale,
             Fixed invScale,
             Fixed textureAlt,
-            Fixed scale,
-            Fixed topY,
             int upperClip,
             int lowerClip)
         {
@@ -2483,15 +2484,15 @@ namespace ManagedDoom.SoftwareRendering
             var frac = sprite.StartFrac;
             for (var x = sprite.X1; x <= sprite.X2; x++)
             {
-                var texturecolumn = frac.Data >> Fixed.FracBits;
+                var textureColumn = frac.ToIntFloor();
                 DrawMaskedColumn(
-                    sprite.Patch.Columns[texturecolumn],
+                    sprite.Patch.Columns[textureColumn],
                     sprite.ColorMap,
                     x,
+                    centerYFrac - (sprite.TextureAlt * sprite.Scale),
+                    sprite.Scale,
                     Fixed.Abs(sprite.InvScale),
                     sprite.TextureAlt,
-                    sprite.Scale,
-                    centerYFrac - (sprite.TextureAlt * sprite.Scale),
                     upperClip[x],
                     lowerClip[x]);
                 frac += sprite.InvScale;
@@ -2503,12 +2504,12 @@ namespace ManagedDoom.SoftwareRendering
         private void DrawPlayerSprite(PlayerSpriteDef psp, byte[][] spriteLights)
         {
             // Decide which patch to use.
-            var sprdef = sprites[psp.State.Sprite];
+            var sprDef = sprites[psp.State.Sprite];
 
-            var sprframe = sprdef.Frames[psp.State.Frame & 0x7fff];
+            var sprFrame = sprDef.Frames[psp.State.Frame & 0x7fff];
 
-            var lump = sprframe.Patches[0];
-            var flip = sprframe.Flip[0];
+            var lump = sprFrame.Patches[0];
+            var flip = sprFrame.Flip[0];
 
             // Calculate edges of the shape.
             var tx = psp.Sx - Fixed.FromInt(160);
@@ -2590,10 +2591,10 @@ namespace ManagedDoom.SoftwareRendering
                     vis.Patch.Columns[texturecolumn],
                     vis.ColorMap,
                     x,
+                    centerYFrac - (vis.TextureAlt * vis.Scale),
+                    vis.Scale,
                     Fixed.Abs(vis.InvScale),
                     vis.TextureAlt,
-                    vis.Scale,
-                    centerYFrac - (vis.TextureAlt * vis.Scale),
                     -1,
                     windowHeight);
                 frac += vis.InvScale;
