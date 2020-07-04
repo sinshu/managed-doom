@@ -2598,7 +2598,7 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        private void DrawPlayerSprite(PlayerSpriteDef psp, byte[][] spriteLights)
+        private void DrawPlayerSprite(PlayerSpriteDef psp, byte[][] spriteLights, bool fuzz)
         {
             // Decide which patch to use.
             var sprDef = sprites[psp.State.Sprite];
@@ -2670,21 +2670,40 @@ namespace ManagedDoom.SoftwareRendering
                 vis.ColorMap = colorMap[fixedColorMap];
             }
 
-            var frac = vis.StartFrac;
-            for (var x = vis.X1; x <= vis.X2; x++)
+            if (fuzz)
             {
-                var texturecolumn = frac.Data >> Fixed.FracBits;
-                DrawMaskedColumn(
-                    vis.Patch.Columns[texturecolumn],
-                    vis.ColorMap,
-                    x,
-                    centerYFrac - (vis.TextureAlt * vis.Scale),
-                    vis.Scale,
-                    Fixed.Abs(vis.InvScale),
-                    vis.TextureAlt,
-                    -1,
-                    windowHeight);
-                frac += vis.InvScale;
+                var frac = vis.StartFrac;
+                for (var x = vis.X1; x <= vis.X2; x++)
+                {
+                    var texturecolumn = frac.Data >> Fixed.FracBits;
+                    DrawMaskedFuzzColumn(
+                        vis.Patch.Columns[texturecolumn],
+                        x,
+                        centerYFrac - (vis.TextureAlt * vis.Scale),
+                        vis.Scale,
+                        -1,
+                        windowHeight);
+                    frac += vis.InvScale;
+                }
+            }
+            else
+            {
+                var frac = vis.StartFrac;
+                for (var x = vis.X1; x <= vis.X2; x++)
+                {
+                    var texturecolumn = frac.Data >> Fixed.FracBits;
+                    DrawMaskedColumn(
+                        vis.Patch.Columns[texturecolumn],
+                        vis.ColorMap,
+                        x,
+                        centerYFrac - (vis.TextureAlt * vis.Scale),
+                        vis.Scale,
+                        Fixed.Abs(vis.InvScale),
+                        vis.TextureAlt,
+                        -1,
+                        windowHeight);
+                    frac += vis.InvScale;
+                }
             }
         }
 
@@ -2710,13 +2729,25 @@ namespace ManagedDoom.SoftwareRendering
                 spriteLights = scaleLight[lightnum];
             }
 
+            bool fuzz;
+            if (player.Powers[(int)PowerType.Invisibility] > 4 * 32 ||
+                (player.Powers[(int)PowerType.Invisibility] & 8) != 0)
+            {
+                // Shadow draw.
+                fuzz = true;
+            }
+            else
+            {
+                fuzz = false;
+            }
+
             // Add all active psprites.
             for (var i = 0; i < (int)PlayerSprite.Count; i++)
             {
                 var psp = player.PlayerSprites[i];
                 if (psp.State != null)
                 {
-                    DrawPlayerSprite(psp, spriteLights);
+                    DrawPlayerSprite(psp, spriteLights, fuzz);
                 }
             }
         }
