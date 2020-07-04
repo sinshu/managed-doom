@@ -14,16 +14,20 @@ namespace ManagedDoom.SoftwareRendering
         private FlatLookup flats;
         private SpriteLookup sprites;
 
-        private DrawScreen screen;
+        private int screenWidth;
+        private int screenHeight;
+        private byte[] screenData;
 
-        public ThreeDRenderer(CommonResource resource, DrawScreen screen)
+        public ThreeDRenderer(CommonResource resource, DrawScreen screen, int windowSize)
         {
             colorMap = resource.ColorMap;
             textures = resource.Textures;
             flats = resource.Flats;
             sprites = resource.Sprites;
 
-            this.screen = screen;
+            screenWidth = screen.Width;
+            screenHeight = screen.Height;
+            screenData = screen.Data;
 
             InitWallRendering();
             InitPlaneRendering();
@@ -33,9 +37,7 @@ namespace ManagedDoom.SoftwareRendering
             InitSpriteRendering();
             InitWeaponRendering();
 
-            var windowWidth = screen.Width;
-            var windowHeight = screen.Height - 32 * (screen.Width / 320);
-            ResetWindow(0, 0, windowWidth, windowHeight);
+            SetWindowSize(windowSize);
             ResetWallRendering();
             ResetPlaneRendering();
             ResetSkyRendering();
@@ -44,13 +46,36 @@ namespace ManagedDoom.SoftwareRendering
             ResetWeaponRendering();
         }
 
+        private void SetWindowSize(int size)
+        {
+            var scale = screenWidth / 320;
+            if (size < 7)
+            {
+                var width = scale * (96 + 32 * size);
+                var height = scale * (48 + 16 * size);
+                var x = (screenWidth - width) / 2;
+                var y = (screenHeight - StatusBarRenderer.Height * scale - height) / 2;
+                ResetWindow(x, y, width, height);
+            }
+            else if (size == 7)
+            {
+                var width = screenWidth;
+                var height = screenHeight - StatusBarRenderer.Height * scale;
+                ResetWindow(0, 0, width, height);
+            }
+            else
+            {
+                var width = screenWidth;
+                var height = screenHeight;
+                ResetWindow(0, 0, width, height);
+            }
+        }
 
 
-        //
-        //
+
+        ////////////////////////////////////////////////////////////
         // Window settings
-        //
-        //
+        ////////////////////////////////////////////////////////////
 
         private int windowX;
         private int windowY;
@@ -62,7 +87,7 @@ namespace ManagedDoom.SoftwareRendering
         private Fixed centerYFrac;
         private Fixed projection;
 
-        public void ResetWindow(int x, int y, int width, int height)
+        private void ResetWindow(int x, int y, int width, int height)
         {
             windowX = x;
             windowY = y;
@@ -77,11 +102,9 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        //
-        //
+        ////////////////////////////////////////////////////////////
         // Wall rendering
-        //
-        //
+        ////////////////////////////////////////////////////////////
 
         private const int FineFov = 2048;
 
@@ -90,13 +113,13 @@ namespace ManagedDoom.SoftwareRendering
         private Angle clipAngle;
         private Angle clipAngle2;
 
-        public void InitWallRendering()
+        private void InitWallRendering()
         {
             angleToX = new int[Trig.FineAngleCount / 2];
-            xToAngle = new Angle[screen.Width];
+            xToAngle = new Angle[screenWidth];
         }
 
-        public void ResetWallRendering()
+        private void ResetWallRendering()
         {
             var focalLength = centerXFrac / Trig.Tan(Trig.FineAngleCount / 4 + FineFov / 2);
 
@@ -158,11 +181,9 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        //
-        //
+        ////////////////////////////////////////////////////////////
         // Plane rendering
-        //
-        //
+        ////////////////////////////////////////////////////////////
 
         private Fixed[] planeYSlope;
         private Fixed[] planeDistScale;
@@ -189,23 +210,23 @@ namespace ManagedDoom.SoftwareRendering
         private Fixed[] floorYStep;
         private byte[][] floorLights;
 
-        public void InitPlaneRendering()
+        private void InitPlaneRendering()
         {
-            planeYSlope = new Fixed[screen.Height];
-            planeDistScale = new Fixed[screen.Width];
-            ceilingXFrac = new Fixed[screen.Height];
-            ceilingYFrac = new Fixed[screen.Height];
-            ceilingXStep = new Fixed[screen.Height];
-            ceilingYStep = new Fixed[screen.Height];
-            ceilingLights = new byte[screen.Height][];
-            floorXFrac = new Fixed[screen.Height];
-            floorYFrac = new Fixed[screen.Height];
-            floorXStep = new Fixed[screen.Height];
-            floorYStep = new Fixed[screen.Height];
-            floorLights = new byte[screen.Height][];
+            planeYSlope = new Fixed[screenHeight];
+            planeDistScale = new Fixed[screenWidth];
+            ceilingXFrac = new Fixed[screenHeight];
+            ceilingYFrac = new Fixed[screenHeight];
+            ceilingXStep = new Fixed[screenHeight];
+            ceilingYStep = new Fixed[screenHeight];
+            ceilingLights = new byte[screenHeight][];
+            floorXFrac = new Fixed[screenHeight];
+            floorYFrac = new Fixed[screenHeight];
+            floorXStep = new Fixed[screenHeight];
+            floorYStep = new Fixed[screenHeight];
+            floorLights = new byte[screenHeight][];
         }
 
-        public void ResetPlaneRendering()
+        private void ResetPlaneRendering()
         {
             for (int i = 0; i < windowHeight; i++)
             {
@@ -216,12 +237,12 @@ namespace ManagedDoom.SoftwareRendering
 
             for (var i = 0; i < windowWidth; i++)
             {
-                var cosadj = Fixed.Abs(Trig.Cos(xToAngle[i]));
-                planeDistScale[i] = Fixed.One / cosadj;
+                var cosAdj = Fixed.Abs(Trig.Cos(xToAngle[i]));
+                planeDistScale[i] = Fixed.One / cosAdj;
             }
         }
 
-        public void ClearPlaneRendering()
+        private void ClearPlaneRendering()
         {
             var angle = viewAngle - Angle.Ang90;
             planeBaseXScale = Trig.Cos(angle) / centerXFrac;
@@ -236,11 +257,9 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        //
-        //
+        ////////////////////////////////////////////////////////////
         // Sky rendering
-        //
-        //
+        ////////////////////////////////////////////////////////////
 
         private const int AngleToSkyShift = 22;
         private Fixed skyTextureAlt;
@@ -253,16 +272,16 @@ namespace ManagedDoom.SoftwareRendering
 
         private void ResetSkyRendering()
         {
-            skyInvScale = new Fixed((int)(((long)Fixed.FracUnit * screen.Width * 200) / (windowWidth * screen.Height)));
+            var num = (long)Fixed.FracUnit * screenWidth * 200;
+            var den = windowWidth * screenHeight;
+            skyInvScale = new Fixed((int)(num / den));
         }
 
 
 
-        //
-        //
+        ////////////////////////////////////////////////////////////
         // Lighting
-        //
-        //
+        ////////////////////////////////////////////////////////////
 
         private const int LightLevelCount = 16;
         private const int LightSegShift = 4;
@@ -354,11 +373,9 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        //
-        //
+        ////////////////////////////////////////////////////////////
         // Rendering history
-        //
-        //
+        ////////////////////////////////////////////////////////////
 
         private short[] upperClip;
         private short[] lowerClip;
@@ -377,8 +394,8 @@ namespace ManagedDoom.SoftwareRendering
 
         private void InitRenderingHistory()
         {
-            upperClip = new short[screen.Width];
-            lowerClip = new short[screen.Width];
+            upperClip = new short[screenWidth];
+            lowerClip = new short[screenWidth];
 
             clipRanges = new ClipRange[1024];
             for (var i = 0; i < clipRanges.Length; i++)
@@ -386,7 +403,7 @@ namespace ManagedDoom.SoftwareRendering
                 clipRanges[i] = new ClipRange();
             }
 
-            clipData = new short[128 * screen.Width];
+            clipData = new short[128 * screenWidth];
 
             visWallRanges = new VisWallRange[1024];
             for (var i = 0; i < visWallRanges.Length; i++)
@@ -434,11 +451,9 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        //
-        //
+        ////////////////////////////////////////////////////////////
         // Sprite rendering
-        //
-        //
+        ////////////////////////////////////////////////////////////
 
         private static readonly Fixed MinZ = Fixed.FromInt(4);
 
@@ -461,11 +476,9 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        //
-        //
+        ////////////////////////////////////////////////////////////
         // Weapon rendering
-        //
-        //
+        ////////////////////////////////////////////////////////////
 
         private VisSprite weaponSprite;
         private Fixed pspritescale;
@@ -484,11 +497,9 @@ namespace ManagedDoom.SoftwareRendering
 
 
 
-        //
-        //
-        // ???
-        //
-        //
+        ////////////////////////////////////////////////////////////
+        // Camera view
+        ////////////////////////////////////////////////////////////
 
         private World world;
 
@@ -502,17 +513,7 @@ namespace ManagedDoom.SoftwareRendering
 
         private int validCount;
 
-        /*
-        public void BindWorld(World world)
-        {
-            this.world = world;
-        }
 
-        public void UnbindWorld()
-        {
-            world = null;
-        }
-        */
 
         public void Render(Player player)
         {
@@ -539,6 +540,8 @@ namespace ManagedDoom.SoftwareRendering
             RenderMaskedTextures();
             R_DrawPlayerSprites(player);
         }
+
+
 
         private void RenderBspNode(int node)
         {
@@ -570,6 +573,8 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
+
+
         private void DrawSubsector(int subsector)
         {
             var target = world.Map.Subsectors[subsector];
@@ -581,6 +586,8 @@ namespace ManagedDoom.SoftwareRendering
                 DrawSeg(world.Map.Segs[target.FirstSeg + i]);
             }
         }
+
+
 
         private static readonly int[][] viewPosToFrustumTangent =
         {
@@ -602,8 +609,8 @@ namespace ManagedDoom.SoftwareRendering
             int bx;
             int by;
 
-            // Find the corners of the box
-            // that define the edges from current viewpoint.
+            // Find the corners of the box that define the edges from
+            // current viewpoint.
             if (viewX <= bbox[Box.Left])
             {
                 bx = 0;
@@ -641,7 +648,7 @@ namespace ManagedDoom.SoftwareRendering
             var x2 = bbox[viewPosToFrustumTangent[viewPos][2]];
             var y2 = bbox[viewPosToFrustumTangent[viewPos][3]];
 
-            // check clip list for an open space
+            // Check clip list for an open space.
             var angle1 = Geometry.PointToAngle(viewX, viewY, x1, y1) - viewAngle;
             var angle2 = Geometry.PointToAngle(viewX, viewY, x2, y2) - viewAngle;
 
@@ -682,9 +689,8 @@ namespace ManagedDoom.SoftwareRendering
                 angle2 = -clipAngle;
             }
 
-            // Find the first clippost
-            //  that touches the source post
-            //  (adjacent pixels are touching).
+            // Find the first clippost that touches the source post
+            // (adjacent pixels are touching).
             var sx1 = angleToX[(angle1 + Angle.Ang90).Data >> Trig.AngleToFineShift];
             var sx2 = angleToX[(angle2 + Angle.Ang90).Data >> Trig.AngleToFineShift];
 
@@ -710,6 +716,8 @@ namespace ManagedDoom.SoftwareRendering
 
             return true;
         }
+
+
 
         private void DrawSeg(Seg seg)
         {
@@ -761,8 +769,7 @@ namespace ManagedDoom.SoftwareRendering
                 angle2 = -clipAngle;
             }
 
-            // The seg is in the view range,
-            // but not necessarily visible.
+            // The seg is in the view range, but not necessarily visible.
             var x1 = angleToX[(angle1 + Angle.Ang90).Data >> Trig.AngleToFineShift];
             var x2 = angleToX[(angle2 + Angle.Ang90).Data >> Trig.AngleToFineShift];
 
@@ -798,11 +805,9 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            // Reject empty lines used for triggers
-            // and special events.
-            // Identical floor and ceiling on both sides,
-            // identical light levels on both sides,
-            // and no middle texture.
+            // Reject empty lines used for triggers and special events.
+            // Identical floor and ceiling on both sides, identical
+            // light levels on both sides, and no middle texture.
             if (backSector.CeilingFlat == frontSector.CeilingFlat
                 && backSector.FloorFlat == frontSector.FloorFlat
                 && backSector.LightLevel == frontSector.LightLevel
@@ -813,6 +818,8 @@ namespace ManagedDoom.SoftwareRendering
 
             DrawPassWall(seg, rwAngle1, x1, x2 - 1);
         }
+
+
 
         private void DrawSolidWall(Seg seg, Angle rwAngle1, int x1, int x2)
         {
@@ -882,7 +889,7 @@ namespace ManagedDoom.SoftwareRendering
             // Adjust the clip size.
             clipRanges[start].Last = x2;
 
-        // Remove start+1 to next from the clip list,
+        // Remove start + 1 to next from the clip list,
         // because start now covers their area.
         crunch:
             if (next == start)
@@ -899,6 +906,8 @@ namespace ManagedDoom.SoftwareRendering
 
             clipRangeCount = start + 1;
         }
+
+
 
         private void DrawPassWall(Seg seg, Angle rwAngle1, int x1, int x2)
         {
@@ -947,7 +956,9 @@ namespace ManagedDoom.SoftwareRendering
             DrawPassWallRange(seg, rwAngle1, clipRanges[start].Last + 1, x2, false);
         }
 
-        public Fixed ScaleFromGlobalAngle(Angle visAngle, Angle viewAngle, Angle rwNormal, Fixed rwDistance)
+
+
+        private Fixed ScaleFromGlobalAngle(Angle visAngle, Angle viewAngle, Angle rwNormal, Fixed rwDistance)
         {
             var num = projection * Trig.Sin(Angle.Ang90 + (visAngle - rwNormal));
             var den = rwDistance * Trig.Sin(Angle.Ang90 + (visAngle - viewAngle));
@@ -981,9 +992,6 @@ namespace ManagedDoom.SoftwareRendering
 
         public void DrawSolidWallRange(Seg seg, Angle rwAngle1, int x1, int x2)
         {
-            // Unlike the original code, the rendering functions for one / two-sided wall are separated.
-            // Since DrawSolidWallRange() is for one-sided, DrawPassWallRange() must be used for two-sided.
-            // This fallback is necessary because DrawSeg() treats closed doors as solid wall.
             if (seg.BackSector != null)
             {
                 DrawPassWallRange(seg, rwAngle1, x1, x2, true);
@@ -1633,7 +1641,7 @@ namespace ManagedDoom.SoftwareRendering
             }
 
             //
-            // save sprite clipping info
+            // Save sprite clipping info.
             //
 
             if (((visWallRange.Silhouette & Silhouette.Upper) != 0
@@ -1682,6 +1690,8 @@ namespace ManagedDoom.SoftwareRendering
                 }
             }
         }
+
+
 
         private void DrawMaskedRange(VisWallRange drawSeg, int x1, int x2)
         {
@@ -1773,14 +1783,13 @@ namespace ManagedDoom.SoftwareRendering
             var height = Fixed.Abs(sector.CeilingHeight - viewZ);
 
             var flatData = flat.Data;
-            var screenData = screen.Data;
 
             if (sector == ceilingPrevSector && ceilingPrevX == x - 1)
             {
                 var p1 = Math.Max(y1, ceilingPrevY1);
                 var p2 = Math.Min(y2, ceilingPrevY2);
 
-                var pos = screen.Height * (windowX + x) + windowY + y1;
+                var pos = screenHeight * (windowX + x) + windowY + y1;
 
                 for (var y = y1; y < p1; y++)
                 {
@@ -1839,7 +1848,7 @@ namespace ManagedDoom.SoftwareRendering
             }
             else
             {
-                var pos = screen.Height * (windowX + x) + windowY + y1;
+                var pos = screenHeight * (windowX + x) + windowY + y1;
 
                 for (var y = y1; y <= y2; y++)
                 {
@@ -1891,14 +1900,13 @@ namespace ManagedDoom.SoftwareRendering
             var height = Fixed.Abs(sector.FloorHeight - viewZ);
 
             var flatData = flat.Data;
-            var screenData = screen.Data;
 
             if (sector == floorPrevSector && floorPrevX == x - 1)
             {
                 var p1 = Math.Max(y1, floorPrevY1);
                 var p2 = Math.Min(y2, floorPrevY2);
 
-                var pos = screen.Height * (windowX + x) + windowY + y1;
+                var pos = screenHeight * (windowX + x) + windowY + y1;
 
                 for (var y = y1; y < p1; y++)
                 {
@@ -1957,7 +1965,7 @@ namespace ManagedDoom.SoftwareRendering
             }
             else
             {
-                var pos = screen.Height * (windowX + x) + windowY + y1;
+                var pos = screenHeight * (windowX + x) + windowY + y1;
 
                 for (var y = y1; y <= y2; y++)
                 {
@@ -1987,6 +1995,8 @@ namespace ManagedDoom.SoftwareRendering
             floorPrevY2 = y2;
         }
 
+
+
         private void DrawColumn(
             Column column,
             byte[] map,
@@ -2001,34 +2011,27 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            //y1 = Math.Max(y1, 0);
-            //y2 = Math.Min(y2, screenHeight - 1);
-
             // Framebuffer destination address.
             // Use ylookup LUT to avoid multiply with ScreenWidth.
             // Use columnofs LUT for subwindows? 
-            var pos1 = screen.Height * (windowX + x) + windowY + y1;
+            var pos1 = screenHeight * (windowX + x) + windowY + y1;
             var pos2 = pos1 + (y2 - y1);
 
-            // Determine scaling,
-            //  which is the only mapping to be done.
+            // Determine scaling, which is the only mapping to be done.
             var fracStep = invScale;
             var frac = textureAlt + (y1 - centerY) * fracStep;
 
             // Inner loop that does the actual texture mapping,
-            //  e.g. a DDA-lile scaling.
+            // e.g. a DDA-lile scaling.
             // This is as fast as it gets.
             var source = column.Data;
             var offset = column.Offset;
-            var screenData = screen.Data;
             for (var pos = pos1; pos <= pos2; pos++)
             {
                 // Re-map color indices from wall texture column
-                //  using a lighting/special effects LUT.
+                // using a lighting/special effects LUT.
                 screenData[pos] = map[source[offset + ((frac.Data >> Fixed.FracBits) & 127)]];
-
                 frac += fracStep;
-
             }
         }
 
@@ -2074,8 +2077,7 @@ namespace ManagedDoom.SoftwareRendering
         private void AddSprites(Sector sector, int validCount)
         {
             // BSP is traversed by subsector.
-            // A sector might have been split into several
-            //  subsectors during BSP building.
+            // A sector might have been split into several subsectors during BSP building.
             // Thus we check whether its already added.
             if (sector.ValidCount == validCount)
             {
@@ -2133,7 +2135,7 @@ namespace ManagedDoom.SoftwareRendering
             bool flip;
             if (sprframe.Rotate)
             {
-                // choose a different rotation based on player view
+                // Choose a different rotation based on player view.
                 var ang = Geometry.PointToAngle(viewX, viewY, thing.X, thing.Y);
                 var rot = (ang.Data - thing.Angle.Data + (uint)(Angle.Ang45.Data / 2) * 9) >> 29;
                 lump = sprframe.Patches[rot];
@@ -2141,16 +2143,16 @@ namespace ManagedDoom.SoftwareRendering
             }
             else
             {
-                // use single rotation for all views
+                // Use single rotation for all views.
                 lump = sprframe.Patches[0];
                 flip = sprframe.Flip[0];
             }
 
-            // calculate edges of the shape
+            // Calculate edges of the shape.
             tx -= Fixed.FromInt(lump.LeftOffset);
             var x1 = (centerXFrac + (tx * xscale)).Data >> Fixed.FracBits;
 
-            // off the right side?
+            // Off the right side?
             if (x1 > windowWidth)
             {
                 return;
@@ -2159,13 +2161,13 @@ namespace ManagedDoom.SoftwareRendering
             tx += Fixed.FromInt(lump.Width);
             var x2 = ((centerXFrac + (tx * xscale)).Data >> Fixed.FracBits) - 1;
 
-            // off the left side
+            // Off the left side?
             if (x2 < 0)
             {
                 return;
             }
 
-            // store information in a vissprite
+            // Store information in a vissprite.
             var vis = R_NewVisSprite();
             vis.MobjFlags = thing.Flags;
             vis.Scale = xscale;
@@ -2274,17 +2276,16 @@ namespace ManagedDoom.SoftwareRendering
             }
 
             // Scan drawsegs from end to start for obscuring segs.
-            // The first drawseg that has a greater scale
-            //  is the clip seg.
+            // The first drawseg that has a greater scale is the clip seg.
             for (var i = visWallRangeCount - 1; i >= 0; i--)
             {
                 var wall = visWallRanges[i];
 
-                // determine if the drawseg obscures the sprite
+                // Determine if the drawseg obscures the sprite.
                 if (wall.X1 > sprite.X2 || wall.X2 < sprite.X1
                     || (wall.Silhouette == 0 && wall.MaskedTextureColumn == -1))
                 {
-                    // does not cover sprite
+                    // Does not cover sprite.
                     continue;
                 }
 
@@ -2308,17 +2309,17 @@ namespace ManagedDoom.SoftwareRendering
                     || (lowScale < sprite.Scale
                         && Geometry.PointOnSegSide(sprite.GlobalX, sprite.GlobalY, wall.Seg) == 0))
                 {
-                    // masked mid texture?
+                    // Masked mid texture?
                     if (wall.MaskedTextureColumn != -1)
                     {
                         DrawMaskedRange(wall, r1, r2);
                     }
-                    // seg is behind sprite
+                    // Seg is behind sprite.
                     continue;
                 }
 
 
-                // clip this piece of the sprite
+                // Clip this piece of the sprite.
                 var silhouette = wall.Silhouette;
 
                 if (sprite.GlobalBottomZ >= wall.LowerSilHeight)
@@ -2333,7 +2334,7 @@ namespace ManagedDoom.SoftwareRendering
 
                 if (silhouette == Silhouette.Lower)
                 {
-                    // bottom sil
+                    // Bottom sil.
                     for (var x = r1; x <= r2; x++)
                     {
                         if (lowerClip[x] == -2)
@@ -2344,7 +2345,7 @@ namespace ManagedDoom.SoftwareRendering
                 }
                 else if (silhouette == Silhouette.Upper)
                 {
-                    // top sil
+                    // Top sil.
                     for (var x = r1; x <= r2; x++)
                     {
                         if (upperClip[x] == -2)
@@ -2355,7 +2356,7 @@ namespace ManagedDoom.SoftwareRendering
                 }
                 else if (silhouette == Silhouette.Both)
                 {
-                    // both
+                    // Both.
                     for (var x = r1; x <= r2; x++)
                     {
                         if (lowerClip[x] == -2)
@@ -2371,9 +2372,9 @@ namespace ManagedDoom.SoftwareRendering
 
             }
 
-            // all clipping has been performed, so draw the sprite
+            // All clipping has been performed, so draw the sprite.
 
-            // check for unclipped columns
+            // Check for unclipped columns.
             for (var x = sprite.X1; x <= sprite.X2; x++)
             {
                 if (lowerClip[x] == -2)
@@ -2404,13 +2405,11 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        //
-        // R_DrawPSprite
-        //
+
+
         private void R_DrawPSprite(PlayerSpriteDef psp, byte[][] spritelights)
         {
-            // decide which patch to use
-
+            // Decide which patch to use.
             var sprdef = sprites[psp.State.Sprite];
 
             var sprframe = sprdef.Frames[psp.State.Frame & 0x7fff];
@@ -2418,12 +2417,12 @@ namespace ManagedDoom.SoftwareRendering
             var lump = sprframe.Patches[0];
             var flip = sprframe.Flip[0];
 
-            // calculate edges of the shape
+            // Calculate edges of the shape.
             var tx = psp.Sx - Fixed.FromInt(160);
             tx -= Fixed.FromInt(lump.LeftOffset);
             var x1 = (centerXFrac + tx * pspritescale).Data >> Fixed.FracBits;
 
-            // off the right side
+            // Off the right side?
             if (x1 > windowWidth)
             {
                 return;
@@ -2432,13 +2431,13 @@ namespace ManagedDoom.SoftwareRendering
             tx += Fixed.FromInt(lump.Width);
             var x2 = ((centerXFrac + tx * pspritescale).Data >> Fixed.FracBits) - 1;
 
-            // off the left side
+            // Off the left side?
             if (x2 < 0)
             {
                 return;
             }
 
-            // store information in a vissprite
+            // Store information in a vissprite.
             var vis = weaponSprite;
             vis.MobjFlags = 0;
             vis.TextureAlt = Fixed.FromInt(100) + Fixed.One / 4 - (psp.Sy - Fixed.FromInt(lump.TopOffset));
@@ -2509,12 +2508,10 @@ namespace ManagedDoom.SoftwareRendering
         }
 
 
-        //
-        // R_DrawPlayerSprites
-        //
+
         private void R_DrawPlayerSprites(Player player)
         {
-            // get light level
+            // Get light level.
             var lightnum =
             (player.Mobj.Subsector.Sector.LightLevel >> LightSegShift) + extraLight;
 
@@ -2532,7 +2529,7 @@ namespace ManagedDoom.SoftwareRendering
                 spritelights = scaleLight[lightnum];
             }
 
-            // add all active psprites
+            // Add all active psprites.
             for (var i = 0; i < (int)PlayerSprite.Count; i++)
             {
                 var psp = player.PlayerSprites[i];

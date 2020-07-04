@@ -89,7 +89,7 @@ namespace ManagedDoom.SoftwareRendering
             sfmlStates = new RenderStates(BlendMode.None);
 
             menu = new MenuRenderer(resource.Wad, screen);
-            threeD = new ThreeDRenderer(resource, screen);
+            threeD = new ThreeDRenderer(resource, screen, 7);
             statusBar = new StatusBarRenderer(resource.Wad, screen);
             intermission = new IntermissionRenderer(resource.Wad, screen);
             openingSequence = new OpeningSequenceRenderer(resource.Wad, screen, this);
