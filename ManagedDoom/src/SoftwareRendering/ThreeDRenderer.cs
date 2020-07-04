@@ -601,6 +601,27 @@ namespace ManagedDoom.SoftwareRendering
 
 
         ////////////////////////////////////////////////////////////
+        // Fuzz effect
+        ////////////////////////////////////////////////////////////
+
+        private static sbyte[] fuzzTable = new sbyte[]
+        {
+            1, -1,  1, -1,  1,  1, -1,
+            1,  1, -1,  1,  1,  1, -1,
+            1,  1,  1, -1, -1, -1, -1,
+            1, -1, -1,  1,  1,  1,  1, -1,
+            1, -1,  1,  1, -1, -1,  1,
+            1, -1, -1, -1, -1,  1,  1,
+            1,  1, -1,  1,  1, -1,  1
+        };
+
+        private const int fuzzLength = 50;
+
+        private int fuzzPos = 0;
+
+
+
+        ////////////////////////////////////////////////////////////
         // Camera view
         ////////////////////////////////////////////////////////////
 
@@ -999,9 +1020,9 @@ namespace ManagedDoom.SoftwareRendering
             // Adjust the clip size.
             clipRanges[start].Last = x2;
 
-        // Remove start + 1 to next from the clip list,
-        // because start now covers their area.
-        crunch:
+            // Remove start + 1 to next from the clip list,
+            // because start now covers their area.
+            crunch:
             if (next == start)
             {
                 // Post just extended past the bottom of one post.
@@ -2144,6 +2165,42 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
+        private void DrawFuzzColumn(
+            Column column,
+            int x,
+            int y1,
+            int y2)
+        {
+            if (y2 - y1 < 0)
+            {
+                return;
+            }
+
+            if (y1 == 0)
+            {
+                y1 = 1;
+            }
+
+            if (y2 == windowHeight - 1)
+            {
+                y2 = windowHeight - 2;
+            }
+
+            var pos1 = screenHeight * (windowX + x) + windowY + y1;
+            var pos2 = pos1 + (y2 - y1);
+
+            var map = colorMap[6];
+            for (var pos = pos1; pos <= pos2; pos++)
+            {
+                screenData[pos] = map[screenData[pos + fuzzTable[fuzzPos]]];
+
+                if (++fuzzPos == fuzzLength)
+                {
+                    fuzzPos = 0;
+                }
+            }
+        }
+
         private void DrawSkyColumn(int x, int y1, int y2)
         {
             var angle = (viewAngle + xToAngle[x]).Data >> angleToSkyShift;
@@ -2177,6 +2234,31 @@ namespace ManagedDoom.SoftwareRendering
                 {
                     var alt = new Fixed(textureAlt.Data - (column.TopDelta << Fixed.FracBits));
                     DrawColumn(column, map, x, y1, y2, invScale, alt);
+                }
+            }
+        }
+
+        private void DrawMaskedFuzzColumn(
+            Column[] columns,
+            int x,
+            Fixed topY,
+            Fixed scale,
+            int upperClip,
+            int lowerClip)
+        {
+            foreach (var column in columns)
+            {
+                var y1Frac = topY + scale * column.TopDelta;
+                var y2Frac = y1Frac + scale * column.Length;
+                var y1 = (y1Frac.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
+                var y2 = (y2Frac.Data - 1) >> Fixed.FracBits;
+
+                y1 = Math.Max(y1, upperClip + 1);
+                y2 = Math.Min(y2, lowerClip - 1);
+
+                if (y1 <= y2)
+                {
+                    DrawFuzzColumn(column, x, y1, y2);
                 }
             }
         }
@@ -2477,21 +2559,40 @@ namespace ManagedDoom.SoftwareRendering
                 }
             }
 
-            var frac = sprite.StartFrac;
-            for (var x = sprite.X1; x <= sprite.X2; x++)
+            if ((sprite.MobjFlags & MobjFlags.Shadow) != 0)
             {
-                var textureColumn = frac.ToIntFloor();
-                DrawMaskedColumn(
-                    sprite.Patch.Columns[textureColumn],
-                    sprite.ColorMap,
-                    x,
-                    centerYFrac - (sprite.TextureAlt * sprite.Scale),
-                    sprite.Scale,
-                    Fixed.Abs(sprite.InvScale),
-                    sprite.TextureAlt,
-                    upperClip[x],
-                    lowerClip[x]);
-                frac += sprite.InvScale;
+                var frac = sprite.StartFrac;
+                for (var x = sprite.X1; x <= sprite.X2; x++)
+                {
+                    var textureColumn = frac.ToIntFloor();
+                    DrawMaskedFuzzColumn(
+                        sprite.Patch.Columns[textureColumn],
+                        x,
+                        centerYFrac - (sprite.TextureAlt * sprite.Scale),
+                        sprite.Scale,
+                        upperClip[x],
+                        lowerClip[x]);
+                    frac += sprite.InvScale;
+                }
+            }
+            else
+            {
+                var frac = sprite.StartFrac;
+                for (var x = sprite.X1; x <= sprite.X2; x++)
+                {
+                    var textureColumn = frac.ToIntFloor();
+                    DrawMaskedColumn(
+                        sprite.Patch.Columns[textureColumn],
+                        sprite.ColorMap,
+                        x,
+                        centerYFrac - (sprite.TextureAlt * sprite.Scale),
+                        sprite.Scale,
+                        Fixed.Abs(sprite.InvScale),
+                        sprite.TextureAlt,
+                        upperClip[x],
+                        lowerClip[x]);
+                    frac += sprite.InvScale;
+                }
             }
         }
 
