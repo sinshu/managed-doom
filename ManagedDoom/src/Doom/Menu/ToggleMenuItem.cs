@@ -13,13 +13,17 @@ namespace ManagedDoom
 
         private int stateNumber;
 
+        private Func<int> reset;
+        private Action<int> action;
+
         public ToggleMenuItem(
             string name,
             int skullX, int skullY,
             int itemX, int itemY,
             string state1, string state2,
             int stateX,
-            int firstState)
+            Func<int> reset,
+            Action<int> action)
             : base(skullX, skullY, null)
         {
             this.name = name;
@@ -29,7 +33,18 @@ namespace ManagedDoom
             this.states = new[] { state1, state2 };
             this.stateX = stateX;
 
-            stateNumber = firstState;
+            stateNumber = 0;
+
+            this.action = action;
+            this.reset = reset;
+        }
+
+        public void Reset()
+        {
+            if (reset != null)
+            {
+                stateNumber = reset();
+            }
         }
 
         public void Up()
@@ -39,6 +54,11 @@ namespace ManagedDoom
             {
                 stateNumber = 0;
             }
+
+            if (action != null)
+            {
+                action(stateNumber);
+            }
         }
 
         public void Down()
@@ -47,6 +67,11 @@ namespace ManagedDoom
             if (stateNumber == -1)
             {
                 stateNumber = states.Length - 1;
+            }
+
+            if (action != null)
+            {
+                action(stateNumber);
             }
         }
 

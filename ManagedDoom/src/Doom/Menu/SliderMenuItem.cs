@@ -11,6 +11,7 @@ namespace ManagedDoom
         private int sliderLength;
         private int sliderPosition;
 
+        private Func<int> reset;
         private Action<int> action;
 
         public SliderMenuItem(
@@ -18,7 +19,7 @@ namespace ManagedDoom
             int skullX, int skullY,
             int itemX, int itemY,
             int sliderLength,
-            int firstPosition,
+            Func<int> reset,
             Action<int> action)
             : base(skullX, skullY, null)
         {
@@ -27,9 +28,18 @@ namespace ManagedDoom
             this.itemY = itemY;
 
             this.sliderLength = sliderLength;
-            sliderPosition = firstPosition;
+            sliderPosition = 0;
 
             this.action = action;
+            this.reset = reset;
+        }
+
+        public void Reset()
+        {
+            if (reset != null)
+            {
+                sliderPosition = reset();
+            }
         }
 
         public void Up()

@@ -46,6 +46,24 @@ namespace ManagedDoom
             choice = items[index];
         }
 
+        public override void Open()
+        {
+            foreach (var item in items)
+            {
+                var toggle = item as ToggleMenuItem;
+                if (toggle != null)
+                {
+                    toggle.Reset();
+                }
+
+                var slider = item as SliderMenuItem;
+                if (slider != null)
+                {
+                    slider.Reset();
+                }
+            }
+        }
+
         private void Up()
         {
             index--;

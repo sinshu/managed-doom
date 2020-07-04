@@ -60,11 +60,31 @@ namespace ManagedDoom
                 "M_NEWG", 96, 14,
                 "M_SKILL", 54, 38,
                 2,
-                new SimpleMenuItem("M_JKILL", 16, 58, 48, 63, () => app.NewGame(GameSkill.Baby, selectedEpisode, 1), null),
-                new SimpleMenuItem("M_ROUGH", 16, 74, 48, 79, () => app.NewGame(GameSkill.Easy, selectedEpisode, 1), null),
-                new SimpleMenuItem("M_HURT", 16, 90, 48, 95, () => app.NewGame(GameSkill.Medium, selectedEpisode, 1), null),
-                new SimpleMenuItem("M_ULTRA", 16, 106, 48, 111, () => app.NewGame(GameSkill.Hard, selectedEpisode, 1), null),
-                new SimpleMenuItem("M_NMARE", 16, 122, 48, 127, null, nightmareConfirm));
+
+                new SimpleMenuItem(
+                    "M_JKILL", 16, 58, 48, 63,
+                    () => app.NewGame(GameSkill.Baby, selectedEpisode, 1),
+                    null),
+
+                new SimpleMenuItem(
+                    "M_ROUGH", 16, 74, 48, 79,
+                    () => app.NewGame(GameSkill.Easy, selectedEpisode, 1),
+                    null),
+
+                new SimpleMenuItem(
+                    "M_HURT", 16, 90, 48, 95,
+                    () => app.NewGame(GameSkill.Medium, selectedEpisode, 1),
+                    null),
+
+                new SimpleMenuItem(
+                    "M_ULTRA", 16, 106, 48, 111,
+                    () => app.NewGame(GameSkill.Hard, selectedEpisode, 1),
+                    null),
+
+                new SimpleMenuItem(
+                    "M_NMARE", 16, 122, 48, 127,
+                    null,
+                    nightmareConfirm));
 
             if (app.GameMode == GameMode.Retail)
             {
@@ -72,10 +92,26 @@ namespace ManagedDoom
                     this,
                     "M_EPISOD", 54, 38,
                     0,
-                    new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, () => selectedEpisode = 1, skillMenu),
-                    new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, () => selectedEpisode = 2, skillMenu),
-                    new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, () => selectedEpisode = 3, skillMenu),
-                    new SimpleMenuItem("M_EPI4", 16, 106, 48, 111, () => selectedEpisode = 4, skillMenu));
+
+                    new SimpleMenuItem(
+                        "M_EPI1", 16, 58, 48, 63,
+                        () => selectedEpisode = 1,
+                        skillMenu),
+
+                    new SimpleMenuItem(
+                        "M_EPI2", 16, 74, 48, 79,
+                        () => selectedEpisode = 2,
+                        skillMenu),
+
+                    new SimpleMenuItem(
+                        "M_EPI3", 16, 90, 48, 95,
+                        () => selectedEpisode = 3,
+                        skillMenu),
+
+                    new SimpleMenuItem(
+                        "M_EPI4", 16, 106, 48, 111,
+                        () => selectedEpisode = 4,
+                        skillMenu));
             }
             else
             {
@@ -85,9 +121,21 @@ namespace ManagedDoom
                         this,
                         "M_EPISOD", 54, 38,
                         0,
-                        new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, () => selectedEpisode = 1, skillMenu),
-                        new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, null, thisIsShareware),
-                        new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, null, thisIsShareware));
+
+                        new SimpleMenuItem(
+                            "M_EPI1", 16, 58, 48, 63,
+                            () => selectedEpisode = 1,
+                            skillMenu),
+
+                        new SimpleMenuItem(
+                            "M_EPI2", 16, 74, 48, 79,
+                            null,
+                            thisIsShareware),
+
+                        new SimpleMenuItem(
+                            "M_EPI3", 16, 90, 48, 95,
+                            null,
+                            thisIsShareware));
                 }
                 else
                 {
@@ -95,9 +143,19 @@ namespace ManagedDoom
                         this,
                         "M_EPISOD", 54, 38,
                         0,
-                        new SimpleMenuItem("M_EPI1", 16, 58, 48, 63, () => selectedEpisode = 1, skillMenu),
-                        new SimpleMenuItem("M_EPI2", 16, 74, 48, 79, () => selectedEpisode = 2, skillMenu),
-                        new SimpleMenuItem("M_EPI3", 16, 90, 48, 95, () => selectedEpisode = 3, skillMenu));
+
+                        new SimpleMenuItem(
+                            "M_EPI1", 16, 58, 48, 63,
+                            () => selectedEpisode = 1,
+                            skillMenu),
+                        new SimpleMenuItem(
+                            "M_EPI2", 16, 74, 48, 79,
+                            () => selectedEpisode = 2,
+                            skillMenu),
+                        new SimpleMenuItem(
+                            "M_EPI3", 16, 90, 48, 95,
+                            () => selectedEpisode = 3,
+                            skillMenu));
                 }
             }
 
@@ -106,19 +164,50 @@ namespace ManagedDoom
                 this,
                 "M_SVOL", 60, 38,
                 0,
-                new SliderMenuItem("M_SFXVOL", 48, 59, 80, 64, audio.MaxSoundVolume + 1, audio.SoundVolume, vol => audio.SoundVolume = vol),
-                new SliderMenuItem("M_MUSVOL", 48, 91, 80, 96, 16, 8, null));
+
+                new SliderMenuItem(
+                    "M_SFXVOL", 48, 59, 80, 64,
+                    audio.MaxSoundVolume + 1,
+                    () => audio.SoundVolume,
+                    vol => audio.SoundVolume = vol),
+
+                new SliderMenuItem("M_MUSVOL", 48, 91, 80, 96,
+                    16,
+                    () => 8,
+                    null));
 
             var renderer = options.Renderer;
             optionMenu = new SelectableMenu(
                 this,
                 "M_OPTTTL", 108, 15,
                 0,
-                new SimpleMenuItem("M_ENDGAM", 28, 32, 60, 37, null, null),
-                new ToggleMenuItem("M_MESSG", 28, 48, 60, 53, "M_MSGON", "M_MSGOFF", 180, 0),
-                new SliderMenuItem("M_SCRNSZ", 28, 80 - 16, 60, 85 - 16, renderer.MaxWindowSize + 1, renderer.WindowSize, size => renderer.WindowSize = size),
-                new SliderMenuItem("M_MSENS", 28, 112 - 16, 60, 117 - 16, 10, 3, null),
-                new SimpleMenuItem("M_SVOL", 28, 144 - 16, 60, 149 - 16, null, volume));
+
+                new SimpleMenuItem(
+                    "M_ENDGAM", 28, 32, 60, 37,
+                    null,
+                    null),
+
+                new ToggleMenuItem(
+                    "M_MESSG", 28, 48, 60, 53, "M_MSGON", "M_MSGOFF", 180,
+                    () => 0,
+                    null),
+
+                new SliderMenuItem(
+                    "M_SCRNSZ", 28, 80 - 16, 60, 85 - 16,
+                    renderer.MaxWindowSize + 1,
+                    () => renderer.WindowSize,
+                    size => renderer.WindowSize = size),
+
+                new SliderMenuItem(
+                    "M_MSENS", 28, 112 - 16, 60, 117 - 16,
+                    10,
+                    () => 3,
+                    null),
+
+                new SimpleMenuItem(
+                    "M_SVOL", 28, 144 - 16, 60, 149 - 16,
+                    null,
+                    volume));
 
             load = new LoadMenu(
                 this,
