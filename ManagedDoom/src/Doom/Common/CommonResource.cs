@@ -11,6 +11,7 @@ namespace ManagedDoom
         private TextureLookup textures;
         private FlatLookup flats;
         private SpriteLookup sprites;
+        private TextureAnimation animation;
 
         private CommonResource()
         {
@@ -26,6 +27,7 @@ namespace ManagedDoom
                 textures = new TextureLookup(wad);
                 flats = new FlatLookup(wad);
                 sprites = new SpriteLookup(wad);
+                animation = new TextureAnimation(textures, flats);
             }
             catch (Exception e)
             {
@@ -42,6 +44,7 @@ namespace ManagedDoom
             resource.textures = new TextureLookup(resource.wad, true);
             resource.flats = new FlatLookup(resource.wad, true);
             resource.sprites = new SpriteLookup(resource.wad, true);
+            resource.animation = new TextureAnimation(resource.textures, resource.flats);
             return resource;
         }
 
@@ -62,5 +65,6 @@ namespace ManagedDoom
         public TextureLookup Textures => textures;
         public FlatLookup Flats => flats;
         public SpriteLookup Sprites => sprites;
+        public TextureAnimation Animation => animation;
     }
 }

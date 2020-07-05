@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 
 namespace ManagedDoom
 {
@@ -8,6 +9,7 @@ namespace ManagedDoom
     {
         private TextureLookup textures;
         private FlatLookup flats;
+        private TextureAnimation animation;
 
         private World world;
 
@@ -27,14 +29,15 @@ namespace ManagedDoom
         private string title;
 
         public Map(CommonResource resorces, World world)
-            : this(resorces.Wad, resorces.Textures, resorces.Flats, world)
+            : this(resorces.Wad, resorces.Textures, resorces.Flats, resorces.Animation, world)
         {
         }
 
-        public Map(Wad wad, TextureLookup textures, FlatLookup flats, World world)
+        public Map(Wad wad, TextureLookup textures, FlatLookup flats, TextureAnimation animation, World world)
         {
             this.textures = textures;
             this.flats = flats;
+            this.animation = animation;
             this.world = world;
 
             var options = world.Options;
@@ -172,6 +175,8 @@ namespace ManagedDoom
 
         public TextureLookup Textures => textures;
         public FlatLookup Flats => flats;
+        public TextureAnimation Animation => animation;
+
         public Vertex[] Vertices => vertices;
         public Sector[] Sectors => sectors;
         public SideDef[] Sides => sides;

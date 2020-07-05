@@ -1150,7 +1150,7 @@ namespace ManagedDoom.SoftwareRendering
             // Determine how the wall textures are vertically aligned.
             //
 
-            var wallTexture = textures[side.MiddleTexture];
+            var wallTexture = textures[world.Specials.TextureTranslation[side.MiddleTexture]];
             var wallWidthMask = wallTexture.Width - 1;
 
             Fixed middleTextureAlt;
@@ -1279,6 +1279,13 @@ namespace ManagedDoom.SoftwareRendering
             visWallRange.LowerClip = negOneArray;
 
             //
+            // Floor and ceiling.
+            //
+
+            var ceilingFlat = flats[world.Specials.FlatTranslation[frontSector.CeilingFlat]];
+            var floorFlat = flats[world.Specials.FlatTranslation[frontSector.FloorFlat]];
+
+            //
             // Now the rendering is carried out.
             //
 
@@ -1291,7 +1298,7 @@ namespace ManagedDoom.SoftwareRendering
                 {
                     var cy1 = upperClip[x] + 1;
                     var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
-                    DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], planeLights, x, cy1, cy2);
+                    DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2);
                 }
 
                 if (drawWall)
@@ -1319,7 +1326,7 @@ namespace ManagedDoom.SoftwareRendering
                 {
                     var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
                     var fy2 = lowerClip[x] - 1;
-                    DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], planeLights, x, fy1, fy2);
+                    DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2);
                 }
 
                 rwScale += rwScaleStep;
@@ -1425,7 +1432,7 @@ namespace ManagedDoom.SoftwareRendering
             var uperTextureAlt = default(Fixed);
             if (drawUpperWall)
             {
-                upperWallTexture = textures[side.TopTexture];
+                upperWallTexture = textures[world.Specials.TextureTranslation[side.TopTexture]];
                 upperWallWidthMask = upperWallTexture.Width - 1;
 
                 if ((line.Flags & LineFlags.DontPegTop) != 0)
@@ -1445,7 +1452,7 @@ namespace ManagedDoom.SoftwareRendering
             var lowerTextureAlt = default(Fixed);
             if (drawLowerWall)
             {
-                lowerWallTexture = textures[side.BottomTexture];
+                lowerWallTexture = textures[world.Specials.TextureTranslation[side.BottomTexture]];
                 lowerWallWidthMask = lowerWallTexture.Width - 1;
 
                 if ((line.Flags & LineFlags.DontPegBottom) != 0)
@@ -1663,6 +1670,13 @@ namespace ManagedDoom.SoftwareRendering
             }
 
             //
+            // Floor and ceiling.
+            //
+
+            var ceilingFlat = flats[world.Specials.FlatTranslation[frontSector.CeilingFlat]];
+            var floorFlat = flats[world.Specials.FlatTranslation[frontSector.FloorFlat]];
+
+            //
             // Now the rendering is carried out.
             //
 
@@ -1698,7 +1712,7 @@ namespace ManagedDoom.SoftwareRendering
                     {
                         var cy1 = upperClip[x] + 1;
                         var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
-                        DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], planeLights, x, cy1, cy2);
+                        DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2);
                     }
 
                     var wy1 = Math.Max(drawUpperWallY1, upperClip[x] + 1);
@@ -1717,7 +1731,7 @@ namespace ManagedDoom.SoftwareRendering
                 {
                     var cy1 = upperClip[x] + 1;
                     var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
-                    DrawCeilingColumn(frontSector, flats[frontSector.CeilingFlat], planeLights, x, cy1, cy2);
+                    DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2);
 
                     if (upperClip[x] < cy2)
                     {
@@ -1739,7 +1753,7 @@ namespace ManagedDoom.SoftwareRendering
                     {
                         var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
                         var fy2 = lowerClip[x] - 1;
-                        DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], planeLights, x, fy1, fy2);
+                        DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2);
                     }
 
                     if (lowerClip[x] > wy1)
@@ -1753,7 +1767,7 @@ namespace ManagedDoom.SoftwareRendering
                 {
                     var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
                     var fy2 = lowerClip[x] - 1;
-                    DrawFloorColumn(frontSector, flats[frontSector.FloorFlat], planeLights, x, fy1, fy2);
+                    DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2);
 
                     if (lowerClip[x] > drawWallY2 + 1)
                     {
@@ -1838,7 +1852,7 @@ namespace ManagedDoom.SoftwareRendering
 
             var wallLights = scaleLight[Math.Clamp(wallLightLevel, 0, lightLevelCount - 1)];
 
-            var wallTexture = textures[seg.SideDef.MiddleTexture];
+            var wallTexture = textures[world.Specials.TextureTranslation[seg.SideDef.MiddleTexture]];
             var mask = wallTexture.Width - 1;
 
             Fixed midTextureAlt;

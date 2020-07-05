@@ -95,7 +95,14 @@ namespace ManagedDoom
 
         public int GetNumber(string name)
         {
-            return nameToNumber[name];
+            if (nameToNumber.ContainsKey(name))
+            {
+                return nameToNumber[name];
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         public IEnumerator<Flat> GetEnumerator()

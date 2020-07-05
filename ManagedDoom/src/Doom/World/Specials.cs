@@ -12,6 +12,9 @@ namespace ManagedDoom
 
         private Button[] buttonList;
 
+        private int[] textureTranslation;
+        private int[] flatTranslation;
+
         public Specials(World world)
         {
             this.world = world;
@@ -20,6 +23,18 @@ namespace ManagedDoom
             for (var i = 0; i < buttonList.Length; i++)
             {
                 buttonList[i] = new Button();
+            }
+
+            textureTranslation = new int[world.Map.Textures.Count];
+            for (var i = 0; i < textureTranslation.Length; i++)
+            {
+                textureTranslation[i] = i;
+            }
+
+            flatTranslation = new int[world.Map.Flats.Count];
+            for (var i = 0; i < flatTranslation.Length; i++)
+            {
+                flatTranslation[i] = i;
             }
         }
 
@@ -147,20 +162,24 @@ namespace ManagedDoom
             }
             */
 
-            /*
             //	ANIMATE FLATS AND TEXTURES GLOBALLY
-            for (anim = anims; anim < lastanim; anim++)
+            var animations = world.Map.Animation.Animations;
+            for (var k = 0; k < animations.Length; k++)
             {
-                for (i = anim->basepic; i < anim->basepic + anim->numpics; i++)
+                var anim = animations[k];
+                for (var i = anim.BasePic; i < anim.BasePic + anim.NumPics; i++)
                 {
-                    pic = anim->basepic + ((leveltime / anim->speed + i) % anim->numpics);
-                    if (anim->istexture)
-                        texturetranslation[i] = pic;
+                    var pic = anim.BasePic + ((world.levelTime / anim.Speed + i) % anim.NumPics);
+                    if (anim.IsTexture)
+                    {
+                        textureTranslation[i] = pic;
+                    }
                     else
-                        flattranslation[i] = pic;
+                    {
+                        flatTranslation[i] = pic;
+                    }
                 }
             }
-            */
 
             /*
             //	ANIMATE LINE SPECIALS
@@ -207,5 +226,8 @@ namespace ManagedDoom
                 }
             }
         }
+
+        public int[] TextureTranslation => textureTranslation;
+        public int[] FlatTranslation => flatTranslation;
     }
 }
