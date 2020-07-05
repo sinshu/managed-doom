@@ -51,7 +51,7 @@ https://www.youtube.com/watch?v=QntRMbe-ot0
     * [x] Player attack
     * [x] Monster AI
     * [x] Doors and platforms
-    * [ ] Animated textures
+    * [x] Animated textures
     * [x] Demo compatibility (All the v1.9 IWAD demos can be played)
 
 - __Audio__
