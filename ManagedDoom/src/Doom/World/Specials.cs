@@ -181,20 +181,11 @@ namespace ManagedDoom
                 }
             }
 
-            /*
             //	ANIMATE LINE SPECIALS
-            for (i = 0; i < numlinespecials; i++)
+            foreach (var line in world.ScrollLines)
             {
-                line = linespeciallist[i];
-                switch (line->special)
-                {
-                    case 48:
-                        // EFFECT FIRSTCOL SCROLL +
-                        sides[line->sidenum[0]].textureoffset += FRACUNIT;
-                        break;
-                }
+                line.Side0.TextureOffset += Fixed.One;
             }
-            */
 
             // Do buttons.
             for (var i = 0; i < maxButtonCount; i++)

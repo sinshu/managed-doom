@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 
@@ -44,6 +46,8 @@ namespace ManagedDoom
 
         private MapThing[] playerStarts;
         private MapThing[] deathmatchStarts;
+
+        private LineDef[] scrollLines;
 
         private bool completed;
 
@@ -432,6 +436,19 @@ namespace ManagedDoom
                         break;
                 }
             }
+
+            var scrollList = new List<LineDef>();
+            foreach (var line in map.Lines)
+            {
+                switch ((int)line.Special)
+                {
+                    case 48:
+                        // EFFECT FIRSTCOL SCROLL+
+                        scrollList.Add(line);
+                        break;
+                }
+            }
+            scrollLines = scrollList.ToArray();
         }
 
 
@@ -532,6 +549,8 @@ namespace ManagedDoom
 
         public MapThing[] PlayerStarts => playerStarts;
         public MapThing[] DeathmatchStarts => deathmatchStarts;
+
+        public LineDef[] ScrollLines => scrollLines;
 
         public Player ConsolePlayer => Options.Players[Options.ConsolePlayer];
         public bool FirstTicIsNotYetDone => ConsolePlayer.ViewZ == Fixed.Epsilon;
