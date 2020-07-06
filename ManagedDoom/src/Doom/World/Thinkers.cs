@@ -65,8 +65,9 @@ namespace ManagedDoom
             var current = cap.Next;
             while (current != cap)
             {
+                var next = current.Next;
                 ThinkerPool.Return(current);
-                current = current.Next;
+                current = next;
             }
 
             cap.Prev = cap.Next = cap;
