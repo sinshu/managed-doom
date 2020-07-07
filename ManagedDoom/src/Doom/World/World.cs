@@ -47,8 +47,6 @@ namespace ManagedDoom
         private MapThing[] playerStarts;
         private MapThing[] deathmatchStarts;
 
-        private LineDef[] scrollLines;
-
         private bool completed;
 
         public World(CommonResource resorces, GameOptions options)
@@ -113,7 +111,7 @@ namespace ManagedDoom
                 }
             }
 
-            SpawnSpecials();
+            specials.SpawnSpecials();
 
             completed = false;
         }
@@ -343,115 +341,6 @@ namespace ManagedDoom
 
 
 
-        private void SpawnSpecials()
-        {
-            /*
-            episode = 1;
-            if (W_CheckNumForName("texture2") >= 0)
-                episode = 2;
-
-
-            // See if -TIMER needs to be used.
-            levelTimer = false;
-
-            i = M_CheckParm("-avg");
-            if (i && deathmatch)
-            {
-                levelTimer = true;
-                levelTimeCount = 20 * 60 * 35;
-            }
-
-            i = M_CheckParm("-timer");
-            if (i && deathmatch)
-            {
-                int time;
-                time = atoi(myargv[i + 1]) * 60 * 35;
-                levelTimer = true;
-                levelTimeCount = time;
-            }
-            */
-
-            //	Init special SECTORs.
-            foreach (var sector in map.Sectors)
-            {
-                if (sector.Special == 0)
-                {
-                    continue;
-                }
-
-                switch ((int)sector.Special)
-                {
-                    case 1:
-                        // FLICKERING LIGHTS
-                        lightingChange.SpawnLightFlash(sector);
-                        break;
-
-                    case 2:
-                        // STROBE FAST
-                        lightingChange.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 0);
-                        break;
-
-                    case 3:
-                        // STROBE SLOW
-                        lightingChange.SpawnStrobeFlash(sector, StrobeFlash.SLOWDARK, 0);
-                        break;
-
-                    case 4:
-                        // STROBE FAST/DEATH SLIME
-                        lightingChange.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 0);
-                        sector.Special = (SectorSpecial)4;
-                        break;
-
-                    case 8:
-                        // GLOWING LIGHT
-                        lightingChange.SpawnGlowingLight(sector);
-                        break;
-                    case 9:
-                        // SECRET SECTOR
-                        totalSecrets++;
-                        break;
-
-                    case 10:
-                        // DOOR CLOSE IN 30 SECONDS
-                        sectorAction.SpawnDoorCloseIn30(sector);
-                        break;
-
-                    case 12:
-                        // SYNC STROBE SLOW
-                        lightingChange.SpawnStrobeFlash(sector, StrobeFlash.SLOWDARK, 1);
-                        break;
-
-                    case 13:
-                        // SYNC STROBE FAST
-                        lightingChange.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 1);
-                        break;
-
-                    case 14:
-                        // DOOR RAISE IN 5 MINUTES
-                        sectorAction.SpawnDoorRaiseIn5Mins(sector);
-                        break;
-
-                    case 17:
-                        lightingChange.SpawnFireFlicker(sector);
-                        break;
-                }
-            }
-
-            var scrollList = new List<LineDef>();
-            foreach (var line in map.Lines)
-            {
-                switch ((int)line.Special)
-                {
-                    case 48:
-                        // EFFECT FIRSTCOL SCROLL+
-                        scrollList.Add(line);
-                        break;
-                }
-            }
-            scrollLines = scrollList.ToArray();
-        }
-
-
         private bool secretexit = false;
 
         public void G_ExitLevel()
@@ -549,8 +438,6 @@ namespace ManagedDoom
 
         public MapThing[] PlayerStarts => playerStarts;
         public MapThing[] DeathmatchStarts => deathmatchStarts;
-
-        public LineDef[] ScrollLines => scrollLines;
 
         public Player ConsolePlayer => Options.Players[Options.ConsolePlayer];
         public bool FirstTicIsNotYetDone => ConsolePlayer.ViewZ == Fixed.Epsilon;

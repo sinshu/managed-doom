@@ -15,6 +15,8 @@ namespace ManagedDoom
         private int[] textureTranslation;
         private int[] flatTranslation;
 
+        private LineDef[] scrollLines;
+
         public Specials(World world)
         {
             this.world = world;
@@ -36,6 +38,116 @@ namespace ManagedDoom
             {
                 flatTranslation[i] = i;
             }
+        }
+
+        public void SpawnSpecials()
+        {
+            /*
+            episode = 1;
+            if (W_CheckNumForName("texture2") >= 0)
+                episode = 2;
+
+
+            // See if -TIMER needs to be used.
+            levelTimer = false;
+
+            i = M_CheckParm("-avg");
+            if (i && deathmatch)
+            {
+                levelTimer = true;
+                levelTimeCount = 20 * 60 * 35;
+            }
+
+            i = M_CheckParm("-timer");
+            if (i && deathmatch)
+            {
+                int time;
+                time = atoi(myargv[i + 1]) * 60 * 35;
+                levelTimer = true;
+                levelTimeCount = time;
+            }
+            */
+
+            //	Init special sectors.
+            var lc = world.LightingChange;
+            var sa = world.SectorAction;
+            foreach (var sector in world.Map.Sectors)
+            {
+                if (sector.Special == 0)
+                {
+                    continue;
+                }
+
+                switch ((int)sector.Special)
+                {
+                    case 1:
+                        // FLICKERING LIGHTS
+                        lc.SpawnLightFlash(sector);
+                        break;
+
+                    case 2:
+                        // STROBE FAST
+                        lc.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 0);
+                        break;
+
+                    case 3:
+                        // STROBE SLOW
+                        lc.SpawnStrobeFlash(sector, StrobeFlash.SLOWDARK, 0);
+                        break;
+
+                    case 4:
+                        // STROBE FAST/DEATH SLIME
+                        lc.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 0);
+                        sector.Special = (SectorSpecial)4;
+                        break;
+
+                    case 8:
+                        // GLOWING LIGHT
+                        lc.SpawnGlowingLight(sector);
+                        break;
+                    case 9:
+                        // SECRET SECTOR
+                        world.totalSecrets++;
+                        break;
+
+                    case 10:
+                        // DOOR CLOSE IN 30 SECONDS
+                        sa.SpawnDoorCloseIn30(sector);
+                        break;
+
+                    case 12:
+                        // SYNC STROBE SLOW
+                        lc.SpawnStrobeFlash(sector, StrobeFlash.SLOWDARK, 1);
+                        break;
+
+                    case 13:
+                        // SYNC STROBE FAST
+                        lc.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 1);
+                        break;
+
+                    case 14:
+                        // DOOR RAISE IN 5 MINUTES
+                        sa.SpawnDoorRaiseIn5Mins(sector);
+                        break;
+
+                    case 17:
+                        lc.SpawnFireFlicker(sector);
+                        break;
+                }
+            }
+
+            var scrollList = new List<LineDef>();
+            foreach (var line in world.Map.Lines)
+            {
+                switch ((int)line.Special)
+                {
+                    case 48:
+                        // EFFECT FIRSTCOL SCROLL+
+                        scrollList.Add(line);
+                        break;
+                }
+            }
+            scrollLines = scrollList.ToArray();
         }
 
         public void ChangeSwitchTexture(LineDef line, bool useAgain)
@@ -182,7 +294,7 @@ namespace ManagedDoom
             }
 
             //	ANIMATE LINE SPECIALS
-            foreach (var line in world.ScrollLines)
+            foreach (var line in scrollLines)
             {
                 line.Side0.TextureOffset += Fixed.One;
             }
