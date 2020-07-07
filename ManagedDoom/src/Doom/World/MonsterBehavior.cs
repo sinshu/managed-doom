@@ -613,7 +613,7 @@ namespace ManagedDoom
             {
                 if (actor.Info.AttackSound != 0)
                 {
-                    world.StartSound(actor, actor.Info.AttackSound, SfxType.Attack);
+                    world.StartSound(actor, actor.Info.AttackSound, SfxType.Weapon);
                 }
 
                 actor.SetState(actor.Info.MeleeState);
@@ -703,7 +703,7 @@ namespace ManagedDoom
             var angle = actor.Angle;
             var slope = world.Hitscan.AimLineAttack(actor, angle, WeaponBehavior.MissileRange);
 
-            world.StartSound(actor, Sfx.PISTOL, SfxType.Attack);
+            world.StartSound(actor, Sfx.PISTOL, SfxType.Weapon);
 
             var random = world.Random;
             angle += new Angle((random.Next() - random.Next()) << 20);
@@ -720,7 +720,7 @@ namespace ManagedDoom
                 return;
             }
 
-            world.StartSound(actor, Sfx.SHOTGN, SfxType.Attack);
+            world.StartSound(actor, Sfx.SHOTGN, SfxType.Weapon);
 
             FaceTarget(actor);
 
@@ -746,7 +746,7 @@ namespace ManagedDoom
                 return;
             }
 
-            world.StartSound(actor, Sfx.SHOTGN, SfxType.Attack);
+            world.StartSound(actor, Sfx.SHOTGN, SfxType.Weapon);
 
             FaceTarget(actor);
 
@@ -844,7 +844,7 @@ namespace ManagedDoom
 
             if (CheckMeleeRange(actor))
             {
-                world.StartSound(actor, Sfx.CLAW, SfxType.Attack);
+                world.StartSound(actor, Sfx.CLAW, SfxType.Weapon);
 
                 var damage = (world.Random.Next() % 8 + 1) * 3;
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
@@ -905,7 +905,7 @@ namespace ManagedDoom
 
             if (CheckMeleeRange(actor))
             {
-                world.StartSound(actor, Sfx.CLAW, SfxType.Attack);
+                world.StartSound(actor, Sfx.CLAW, SfxType.Weapon);
 
                 var damage = (world.Random.Next() % 8 + 1) * 10;
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
@@ -1194,13 +1194,13 @@ namespace ManagedDoom
 
         public void VileStart(Mobj actor)
         {
-            world.StartSound(actor, Sfx.VILATK, SfxType.Attack);
+            world.StartSound(actor, Sfx.VILATK, SfxType.Weapon);
         }
 
 
         public void StartFire(Mobj actor)
         {
-            world.StartSound(actor, Sfx.FLAMST, SfxType.Attack);
+            world.StartSound(actor, Sfx.FLAMST, SfxType.Weapon);
 
             Fire(actor);
         }
@@ -1208,7 +1208,7 @@ namespace ManagedDoom
 
         public void FireCrackle(Mobj actor)
         {
-            world.StartSound(actor, Sfx.FLAME, SfxType.Attack);
+            world.StartSound(actor, Sfx.FLAME, SfxType.Weapon);
 
             Fire(actor);
         }
@@ -1276,7 +1276,7 @@ namespace ManagedDoom
                 return;
             }
 
-            world.StartSound(actor, Sfx.BAREXP, SfxType.Attack);
+            world.StartSound(actor, Sfx.BAREXP, SfxType.Weapon);
             world.ThingInteraction.DamageMobj(actor.Target, actor, actor, 20);
             actor.Target.MomZ = Fixed.FromInt(1000) / actor.Target.Info.Mass;
 
@@ -1414,7 +1414,7 @@ namespace ManagedDoom
 
             FaceTarget(actor);
 
-            world.StartSound(actor, Sfx.SKESWG, SfxType.Attack);
+            world.StartSound(actor, Sfx.SKESWG, SfxType.Weapon);
         }
 
 
@@ -1430,7 +1430,7 @@ namespace ManagedDoom
             if (CheckMeleeRange(actor))
             {
                 var damage = ((world.Random.Next() % 10) + 1) * 6;
-                world.StartSound(actor, Sfx.SKEPCH, SfxType.Attack);
+                world.StartSound(actor, Sfx.SKEPCH, SfxType.Weapon);
                 world.ThingInteraction.DamageMobj(actor.Target, actor, actor, damage);
             }
         }

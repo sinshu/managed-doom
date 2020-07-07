@@ -5,7 +5,7 @@ namespace ManagedDoom
     public enum SfxType
     {
         Diffuse,
-        Attack,
+        Weapon,
         Voice,
         Footstep,
         Misc
