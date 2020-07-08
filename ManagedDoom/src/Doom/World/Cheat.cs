@@ -6,25 +6,21 @@ namespace ManagedDoom
 {
     public sealed class Cheat
     {
-        private static Tuple<string, Action<Cheat>>[] list = new Tuple<string, Action<Cheat>>[]
+        private static Tuple<string, Action<Cheat, string>>[] list = new Tuple<string, Action<Cheat, string>>[]
         {
-            Tuple.Create("idfa", (Action<Cheat>)(cheat => cheat.FullAmmo())),
-            Tuple.Create("idkfa", (Action<Cheat>)(cheat => cheat.FullAmmoAndKeys())),
-            Tuple.Create("iddqd", (Action<Cheat>)(cheat => cheat.GodMode())),
-            Tuple.Create("idclip", (Action<Cheat>)(cheat => cheat.NoClip())),
-            Tuple.Create("idspispopd", (Action<Cheat>)(cheat => cheat.NoClip())),
-            Tuple.Create("iddt", (Action<Cheat>)(cheat => cheat.FullMap())),
-            Tuple.Create("idbehold", (Action<Cheat>)(cheat => cheat.ShowPowerUpList())),
-            Tuple.Create("idbeholdv", (Action<Cheat>)(cheat => cheat.ToggleInvulnerability())),
-            Tuple.Create("idbeholds", (Action<Cheat>)(cheat => cheat.ToggleStrength())),
-            Tuple.Create("idbeholdi", (Action<Cheat>)(cheat => cheat.ToggleInvisibility())),
-            Tuple.Create("idbeholdr", (Action<Cheat>)(cheat => cheat.ToggleIronFeet())),
-            Tuple.Create("idbeholda", (Action<Cheat>)(cheat => cheat.ToggleAllMap())),
-            Tuple.Create("idbeholdl", (Action<Cheat>)(cheat => cheat.ToggleInfrared())),
-            Tuple.Create("idchoppers", (Action<Cheat>)(cheat => cheat.GiveChainsaw())),
-            Tuple.Create("tntem", (Action<Cheat>)(cheat => cheat.KillMonsters())),
-            Tuple.Create("killem", (Action<Cheat>)(cheat => cheat.KillMonsters())),
-            Tuple.Create("fhhall", (Action<Cheat>)(cheat => cheat.KillMonsters()))
+            Tuple.Create("idfa", (Action<Cheat, string>)((cheat, typed) => cheat.FullAmmo())),
+            Tuple.Create("idkfa", (Action<Cheat, string>)((cheat, typed) => cheat.FullAmmoAndKeys())),
+            Tuple.Create("iddqd", (Action<Cheat, string>)((cheat, typed) => cheat.GodMode())),
+            Tuple.Create("idclip", (Action<Cheat, string>)((cheat, typed) => cheat.NoClip())),
+            Tuple.Create("idspispopd", (Action<Cheat, string>)((cheat, typed) => cheat.NoClip())),
+            Tuple.Create("iddt", (Action<Cheat, string>)((cheat, typed) => cheat.FullMap())),
+            Tuple.Create("idbehold", (Action<Cheat, string>)((cheat, typed) => cheat.ShowPowerUpList())),
+            Tuple.Create("idbehold?", (Action<Cheat, string>)((cheat, typed) => cheat.DoPowerUp(typed))),
+            Tuple.Create("idchoppers", (Action<Cheat, string>)((cheat, typed) => cheat.GiveChainsaw())),
+            Tuple.Create("tntem", (Action<Cheat, string>)((cheat, typed) => cheat.KillMonsters())),
+            Tuple.Create("killem", (Action<Cheat, string>)((cheat, typed) => cheat.KillMonsters())),
+            Tuple.Create("fhhall", (Action<Cheat, string>)((cheat, typed) => cheat.KillMonsters())),
+            Tuple.Create("idclev??", (Action<Cheat, string>)((cheat, typed) => cheat.ChangeLevel(typed)))
         };
 
         private static readonly int maxLength = list.Max(tuple => tuple.Item1.Length);
@@ -70,14 +66,29 @@ namespace ManagedDoom
                     {
                         q = buffer.Length - 1;
                     }
-                    if (buffer[q] != code[code.Length - j - 1])
+                    var ch = code[code.Length - j - 1];
+                    if (buffer[q] != ch && ch != '?')
                     {
                         break;
                     }
                 }
+
                 if (j == code.Length)
                 {
-                    list[i].Item2(this);
+                    var typed = new char[code.Length];
+                    var k = code.Length;
+                    q = p;
+                    for (j = 0; j < code.Length; j++)
+                    {
+                        k--;
+                        q--;
+                        if (q == -1)
+                        {
+                            q = buffer.Length - 1;
+                        }
+                        typed[k] = buffer[q];
+                    }
+                    list[i].Item2(this, new string(typed));
                 }
             }
         }
@@ -157,6 +168,31 @@ namespace ManagedDoom
         {
             var player = world.ConsolePlayer;
             player.SendMessage(DoomInfo.Strings.STSTR_BEHOLD);
+        }
+
+        private void DoPowerUp(string typed)
+        {
+            switch (typed.Last())
+            {
+                case 'v':
+                    ToggleInvulnerability();
+                    break;
+                case 's':
+                    ToggleStrength();
+                    break;
+                case 'i':
+                    ToggleInvisibility();
+                    break;
+                case 'r':
+                    ToggleIronFeet();
+                    break;
+                case 'a':
+                    ToggleAllMap();
+                    break;
+                case 'l':
+                    ToggleInfrared();
+                    break;
+            }
         }
 
         private void ToggleInvulnerability()
@@ -268,6 +304,35 @@ namespace ManagedDoom
                 }
             }
             player.SendMessage(count + " monsters killed");
+        }
+
+        private void ChangeLevel(string typed)
+        {
+            if (world.Options.GameMode == GameMode.Commercial)
+            {
+                int map;
+                if (!int.TryParse(typed.Substring(typed.Length - 2, 2), out map))
+                {
+                    return;
+                }
+                var skill = world.Options.Skill;
+                world.Game.DeferedInitNew(skill, 1, map);
+            }
+            else
+            {
+                int episode;
+                if (!int.TryParse(typed.Substring(typed.Length - 2, 1), out episode))
+                {
+                    return;
+                }
+                int map;
+                if (!int.TryParse(typed.Substring(typed.Length - 1, 1), out map))
+                {
+                    return;
+                }
+                var skill = world.Options.Skill;
+                world.Game.DeferedInitNew(skill, episode, map);
+            }
         }
     }
 }

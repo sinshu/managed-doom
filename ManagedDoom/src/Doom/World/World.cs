@@ -9,6 +9,7 @@ namespace ManagedDoom
     public sealed partial class World
     {
         public GameOptions Options;
+        public DoomGame Game;
 
         private Map map;
         private DoomRandom random;
@@ -46,9 +47,14 @@ namespace ManagedDoom
 
         private bool completed;
 
-        public World(CommonResource resorces, GameOptions options)
+        public World(CommonResource resorces, GameOptions options) : this(resorces, options, null)
+        {
+        }
+
+        public World(CommonResource resorces, GameOptions options, DoomGame game)
         {
             Options = options;
+            Game = game;
 
             map = new Map(resorces, this);
 

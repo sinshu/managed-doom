@@ -269,7 +269,7 @@ namespace ManagedDoom
 
 			options.Audio.Reset();
 
-			world = new World(resource, options);
+			world = new World(resource, options, this);
 
 			if (options.ResetControl != null)
 			{
