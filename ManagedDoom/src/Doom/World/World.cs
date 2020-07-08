@@ -44,9 +44,6 @@ namespace ManagedDoom
         private AutoMap autoMap;
         private Cheat cheat;
 
-        private MapThing[] playerStarts;
-        private MapThing[] deathmatchStarts;
-
         private bool completed;
 
         public World(CommonResource resorces, GameOptions options)
@@ -106,7 +103,7 @@ namespace ManagedDoom
                     if (options.Players[i].InGame)
                     {
                         options.Players[i].Mobj = null;
-                        G_DeathMatchSpawnPlayer(i);
+                        thingAllocation.DeathMatchSpawnPlayer(i);
                     }
                 }
             }
@@ -173,8 +170,6 @@ namespace ManagedDoom
 
         private void LoadThings()
         {
-            var ta = ThingAllocation;
-
             totalKills = 0;
             totalItems = 0;
 
@@ -209,135 +204,14 @@ namespace ManagedDoom
                     break;
                 }
 
-                ta.SpawnMapThing(mt);
+                thingAllocation.SpawnMapThing(mt);
             }
-
-            playerStarts = ta.PlayerStarts.ToArray();
-            deathmatchStarts = ta.DeathmatchStarts.ToArray();
         }
 
 
-        private static readonly int BODYQUESIZE = 32;
-        private Mobj[] bodyque = new Mobj[BODYQUESIZE];
-        private int bodyqueslot;
+        
 
-        //
-        // G_CheckSpot  
-        // Returns false if the player cannot be respawned
-        // at the given mapthing_t spot  
-        // because something is occupying it 
-        //
-        public bool G_CheckSpot(int playernum, MapThing mthing)
-        {
-            var players = Options.Players;
-
-            if (players[playernum].Mobj == null)
-            {
-                // First spawn of level, before corpses.
-                for (var i = 0; i < playernum; i++)
-                {
-                    if (players[i].Mobj.X == mthing.X && players[i].Mobj.Y == mthing.Y)
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            var x = mthing.X;
-            var y = mthing.Y;
-
-            if (!thingMovement.CheckPosition(players[playernum].Mobj, x, y))
-            {
-                return false;
-            }
-
-            // Flush an old corpse if needed.
-            if (bodyqueslot >= BODYQUESIZE)
-            {
-                thingAllocation.RemoveMobj(bodyque[bodyqueslot % BODYQUESIZE]);
-            }
-            bodyque[bodyqueslot % BODYQUESIZE] = players[playernum].Mobj;
-            bodyqueslot++;
-
-            // Spawn a teleport fog.
-            var ss = Geometry.PointInSubsector(x, y, map);
-
-            var an = (Angle.Ang45.Data >> Trig.AngleToFineShift) * ((int)Math.Round(mthing.Angle.ToDegree()) / 45);
-
-            Fixed xa;
-            Fixed ya;
-
-            switch (an)
-            {
-                case 4096:  // -4096:
-                    xa = Trig.Tan(2048);    // finecosine[-4096]
-                    ya = Trig.Tan(0);       // finesine[-4096]
-                    break;
-                case 5120:  // -3072:
-                    xa = Trig.Tan(3072);    // finecosine[-3072]
-                    ya = Trig.Tan(1024);    // finesine[-3072]
-                    break;
-                case 6144:  // -2048:
-                    xa = Trig.Sin(0);          // finecosine[-2048]
-                    ya = Trig.Tan(2048);    // finesine[-2048]
-                    break;
-                case 7168:  // -1024:
-                    xa = Trig.Sin(1024);       // finecosine[-1024]
-                    ya = Trig.Tan(3072);    // finesine[-1024]
-                    break;
-                case 0:
-                case 1024:
-                case 2048:
-                case 3072:
-                    xa = Trig.Cos((int)an);
-                    ya = Trig.Sin((int)an);
-                    break;
-                default:
-                    throw new Exception("G_CheckSpot: unexpected angle " + an);
-            }
-
-            var mo = thingAllocation.SpawnMobj(
-                x + 20 * xa, y + 20 * ya,
-                ss.Sector.FloorHeight,
-                MobjType.Tfog);
-
-            if (!FirstTicIsNotYetDone)
-            {
-                // Don't start sound on first frame.
-                StartSound(mo, Sfx.TELEPT, SfxType.Misc);
-            }
-
-            return true;
-        }
-
-        //
-        // G_DeathMatchSpawnPlayer 
-        // Spawns a player at one of the random death match spots 
-        // called at level load and each death 
-        //
-        public void G_DeathMatchSpawnPlayer(int playernum)
-        {
-            var selections = deathmatchStarts.Length;
-            if (selections < 4)
-            {
-                throw new Exception("Only " + selections + " deathmatch spots, 4 required");
-            }
-
-            for (var j = 0; j < 20; j++)
-            {
-                var i = random.Next() % selections;
-                if (G_CheckSpot(playernum, deathmatchStarts[i]))
-                {
-                    deathmatchStarts[i].Type = playernum + 1;
-                    thingAllocation.SpawnPlayer(deathmatchStarts[i]);
-                    return;
-                }
-            }
-
-            // no good spot, so the player will probably get stuck 
-            thingAllocation.SpawnPlayer(playerStarts[playernum]);
-        }
+        
 
 
 
@@ -435,9 +309,6 @@ namespace ManagedDoom
         public StatusBar StatusBar => statusBar;
         public AutoMap AutoMap => autoMap;
         public Cheat Cheat => cheat;
-
-        public MapThing[] PlayerStarts => playerStarts;
-        public MapThing[] DeathmatchStarts => deathmatchStarts;
 
         public Player ConsolePlayer => Options.Players[Options.ConsolePlayer];
         public bool FirstTicIsNotYetDone => ConsolePlayer.ViewZ == Fixed.Epsilon;

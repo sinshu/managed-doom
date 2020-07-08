@@ -448,6 +448,145 @@ namespace ManagedDoom
         }
 
 
+
+
+
+
+
+
+
+
+
+        private static readonly int BODYQUESIZE = 32;
+        private Mobj[] bodyque = new Mobj[BODYQUESIZE];
+        private int bodyqueslot;
+
+        //
+        // G_CheckSpot  
+        // Returns false if the player cannot be respawned
+        // at the given mapthing_t spot  
+        // because something is occupying it 
+        //
+        public bool CheckSpot(int playernum, MapThing mthing)
+        {
+            var players = world.Options.Players;
+
+            if (players[playernum].Mobj == null)
+            {
+                // First spawn of level, before corpses.
+                for (var i = 0; i < playernum; i++)
+                {
+                    if (players[i].Mobj.X == mthing.X && players[i].Mobj.Y == mthing.Y)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            var x = mthing.X;
+            var y = mthing.Y;
+
+            if (!world.ThingMovement.CheckPosition(players[playernum].Mobj, x, y))
+            {
+                return false;
+            }
+
+            // Flush an old corpse if needed.
+            if (bodyqueslot >= BODYQUESIZE)
+            {
+                RemoveMobj(bodyque[bodyqueslot % BODYQUESIZE]);
+            }
+            bodyque[bodyqueslot % BODYQUESIZE] = players[playernum].Mobj;
+            bodyqueslot++;
+
+            // Spawn a teleport fog.
+            var ss = Geometry.PointInSubsector(x, y, world.Map);
+
+            var an = (Angle.Ang45.Data >> Trig.AngleToFineShift) * ((int)Math.Round(mthing.Angle.ToDegree()) / 45);
+
+            Fixed xa;
+            Fixed ya;
+
+            switch (an)
+            {
+                case 4096:  // -4096:
+                    xa = Trig.Tan(2048);    // finecosine[-4096]
+                    ya = Trig.Tan(0);       // finesine[-4096]
+                    break;
+                case 5120:  // -3072:
+                    xa = Trig.Tan(3072);    // finecosine[-3072]
+                    ya = Trig.Tan(1024);    // finesine[-3072]
+                    break;
+                case 6144:  // -2048:
+                    xa = Trig.Sin(0);          // finecosine[-2048]
+                    ya = Trig.Tan(2048);    // finesine[-2048]
+                    break;
+                case 7168:  // -1024:
+                    xa = Trig.Sin(1024);       // finecosine[-1024]
+                    ya = Trig.Tan(3072);    // finesine[-1024]
+                    break;
+                case 0:
+                case 1024:
+                case 2048:
+                case 3072:
+                    xa = Trig.Cos((int)an);
+                    ya = Trig.Sin((int)an);
+                    break;
+                default:
+                    throw new Exception("G_CheckSpot: unexpected angle " + an);
+            }
+
+            var mo = SpawnMobj(
+                x + 20 * xa, y + 20 * ya,
+                ss.Sector.FloorHeight,
+                MobjType.Tfog);
+
+            if (!world.FirstTicIsNotYetDone)
+            {
+                // Don't start sound on first frame.
+                world.StartSound(mo, Sfx.TELEPT, SfxType.Misc);
+            }
+
+            return true;
+        }
+
+        //
+        // G_DeathMatchSpawnPlayer 
+        // Spawns a player at one of the random death match spots 
+        // called at level load and each death 
+        //
+        public void DeathMatchSpawnPlayer(int playernum)
+        {
+            var selections = deathmatchStarts.Count;
+            if (selections < 4)
+            {
+                throw new Exception("Only " + selections + " deathmatch spots, 4 required");
+            }
+
+            var random = world.Random;
+            for (var j = 0; j < 20; j++)
+            {
+                var i = random.Next() % selections;
+                if (CheckSpot(playernum, deathmatchStarts[i]))
+                {
+                    deathmatchStarts[i].Type = playernum + 1;
+                    SpawnPlayer(deathmatchStarts[i]);
+                    return;
+                }
+            }
+
+            // no good spot, so the player will probably get stuck 
+            SpawnPlayer(playerStarts[playernum]);
+        }
+
+
+
+
+
+
+
+
         private static readonly int ITEMQUESIZE = 128;
         private MapThing[] itemrespawnque;
         private int[] itemrespawntime;

@@ -532,39 +532,41 @@ namespace ManagedDoom
 				// First dissasociate the corpse.
 				options.Players[playerNumber].Mobj.Player = null;
 
+				var ta = world.ThingAllocation;
+
 				// Spawn at random spot if in death match.
 				if (options.Deathmatch != 0)
 				{
-					world.G_DeathMatchSpawnPlayer(playerNumber);
+					ta.DeathMatchSpawnPlayer(playerNumber);
 					return;
 				}
 
-				if (world.G_CheckSpot(playerNumber, world.PlayerStarts[playerNumber]))
+				if (ta.CheckSpot(playerNumber, ta.PlayerStarts[playerNumber]))
 				{
-					world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playerNumber]);
+					ta.SpawnPlayer(ta.PlayerStarts[playerNumber]);
 					return;
 				}
 
 				// Try to spawn at one of the other players spots.
 				for (var i = 0; i < Player.MaxPlayerCount; i++)
 				{
-					if (world.G_CheckSpot(playerNumber, world.PlayerStarts[i]))
+					if (ta.CheckSpot(playerNumber, ta.PlayerStarts[i]))
 					{
 						// Fake as other player.
-						world.PlayerStarts[i].Type = playerNumber + 1;
+						ta.PlayerStarts[i].Type = playerNumber + 1;
 
-						world.ThingAllocation.SpawnPlayer(world.PlayerStarts[i]);
+						world.ThingAllocation.SpawnPlayer(ta.PlayerStarts[i]);
 
 						// Restore.
-						world.PlayerStarts[i].Type = i + 1;
+						ta.PlayerStarts[i].Type = i + 1;
 
 						return;
 					}
-					// He's going to be inside something.
-					// Too bad.
 				}
 
-				world.ThingAllocation.SpawnPlayer(world.PlayerStarts[playerNumber]);
+				// He's going to be inside something.
+				// Too bad.
+				world.ThingAllocation.SpawnPlayer(ta.PlayerStarts[playerNumber]);
 			}
 		}
 
