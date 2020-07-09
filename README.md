@@ -43,7 +43,7 @@ https://www.youtube.com/watch?v=QntRMbe-ot0
     * [x] High resolution rendering
     * [x] Optimization
     * [x] Fuzz effect
-    * [ ] Palette effects
+    * [x] Palette effects
 
 - __Gaming code__
     * [x] Collision detection
