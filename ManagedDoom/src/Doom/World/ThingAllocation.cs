@@ -183,6 +183,12 @@ namespace ManagedDoom
             var z = Mobj.OnFloorZ;
             var mobj = SpawnMobj(x, y, z, MobjType.Player);
 
+            if (mt.Type - 1 == world.Options.ConsolePlayer)
+            {
+                world.StatusBar.Reset();
+                world.Options.Audio.SetListener(mobj);
+            }
+
             // Set color translations for player sprites.
             if (playerNumber >= 1)
             {
@@ -214,12 +220,6 @@ namespace ManagedDoom
                 {
                     player.Cards[i] = true;
                 }
-            }
-
-            if (mt.Type - 1 == world.Options.ConsolePlayer)
-            {
-                world.StatusBar.Reset();
-                world.Options.Audio.SetListener(mobj);
             }
         }
 
