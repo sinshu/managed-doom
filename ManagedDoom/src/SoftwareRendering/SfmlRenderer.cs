@@ -14,8 +14,6 @@ namespace ManagedDoom.SoftwareRendering
         private RenderWindow sfmlWindow;
         private Palette palette;
 
-        private uint[] colors;
-
         private int sfmlWindowWidth;
         private int sfmlWindowHeight;
 
@@ -48,8 +46,6 @@ namespace ManagedDoom.SoftwareRendering
         {
             sfmlWindow = window;
             palette = resource.Palette;
-
-            colors = InitColors(palette);
 
             sfmlWindowWidth = (int)window.Size.X;
             sfmlWindowHeight = (int)window.Size.Y;
@@ -103,22 +99,6 @@ namespace ManagedDoom.SoftwareRendering
             wipeBandCount = screen.Width / wipeBandWidth + 1;
             wipeHeight = screen.Height / scale;
             wipeBuffer = new byte[screen.Data.Length];
-        }
-
-        private static uint[] InitColors(Palette palette)
-        {
-            var colors = new uint[256];
-            for (var i = 0; i < 256; i++)
-            {
-                var offset = 3 * i;
-                var r = palette.Data[offset + 0];
-                var g = palette.Data[offset + 1];
-                var b = palette.Data[offset + 2];
-                var a = 255;
-                var color = new SFML.Graphics.Color(r, g, b);
-                colors[i] = (uint)((r << 0) | (g << 8) | (b << 16) | (a << 24));
-            }
-            return colors;
         }
 
         private void RenderApplication(DoomApplication app)
@@ -190,7 +170,15 @@ namespace ManagedDoom.SoftwareRendering
         public void Render(DoomApplication app)
         {
             RenderApplication(app);
-            Display();
+
+            var colors = palette[0];
+            if (app.State == ApplicationState.Game &&
+                app.Game.State == GameState.Level)
+            {
+                colors = palette[GetPaletteNumber(app.Game.World.ConsolePlayer)];
+            }
+
+            Display(colors);
         }
 
         public void RenderWipe(DoomApplication app, Wipe wipe)
@@ -218,7 +206,7 @@ namespace ManagedDoom.SoftwareRendering
                 }
             }
 
-            Display();
+            Display(palette[0]);
         }
 
         public void InitializeWipe()
@@ -226,7 +214,7 @@ namespace ManagedDoom.SoftwareRendering
             Array.Copy(screen.Data, wipeBuffer, screen.Data.Length);
         }
 
-        private void Display()
+        private void Display(uint[] colors)
         {
             var screenData = screen.Data;
             var p = MemoryMarshal.Cast<byte, uint>(sfmlTextureData);
@@ -237,6 +225,58 @@ namespace ManagedDoom.SoftwareRendering
             sfmlTexture.Update(sfmlTextureData, (uint)screen.Height, (uint)screen.Width, 0, 0);
             sfmlWindow.Draw(sfmlSprite, sfmlStates);
             sfmlWindow.Display();
+        }
+
+        private static int GetPaletteNumber(Player plyr)
+        {
+            var cnt = plyr.DamageCount;
+
+            if (plyr.Powers[(int)PowerType.Strength] != 0)
+            {
+                // Slowly fade the berzerk out.
+                var bzc = 12 - (plyr.Powers[(int)PowerType.Strength] >> 6);
+
+                if (bzc > cnt)
+                {
+                    cnt = bzc;
+                }
+            }
+
+            int palette;
+
+            if (cnt != 0)
+            {
+                palette = (cnt + 7) >> 3;
+
+                if (palette >= Palette.NUMREDPALS)
+                {
+                    palette = Palette.NUMREDPALS - 1;
+                }
+
+                palette += Palette.STARTREDPALS;
+            }
+            else if (plyr.BonusCount != 0)
+            {
+                palette = (plyr.BonusCount + 7) >> 3;
+
+                if (palette >= Palette.NUMBONUSPALS)
+                {
+                    palette = Palette.NUMBONUSPALS - 1;
+                }
+
+                palette += Palette.STARTBONUSPALS;
+            }
+            else if (plyr.Powers[(int)PowerType.IronFeet] > 4 * 32 ||
+                (plyr.Powers[(int)PowerType.IronFeet] & 8) != 0)
+            {
+                palette = Palette.RADIATIONPAL;
+            }
+            else
+            {
+                palette = 0;
+            }
+
+            return palette;
         }
 
         public void Dispose()
