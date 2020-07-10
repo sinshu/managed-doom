@@ -124,9 +124,17 @@ namespace ManagedDoom
                     continue;
                 }
 
+                if (e.Type == EventType.KeyDown)
+                {
+                    if (CheckFunctionKey(e.Key))
+                    {
+                        continue;
+                    }
+                }
+
                 if (state == ApplicationState.Game)
                 {
-                    if (e.Key == DoomKeys.F12 && e.Type == EventType.KeyDown)
+                    if (e.Key == DoomKeys.Pause && e.Type == EventType.KeyDown)
                     {
                         sendPause = true;
                         continue;
@@ -140,6 +148,38 @@ namespace ManagedDoom
             }
 
             events.Clear();
+        }
+
+        private bool CheckFunctionKey(DoomKeys key)
+        {
+            switch (key)
+            {
+                case DoomKeys.F11:
+                    var gcl = renderer.GammaCorrectionLevel;
+                    gcl++;
+                    if (gcl == renderer.MaxGammaCorrectionLevel)
+                    {
+                        gcl = 0;
+                    }
+                    renderer.GammaCorrectionLevel = gcl;
+                    if (state == ApplicationState.Game && game.State == GameState.Level)
+                    {
+                        string msg;
+                        if (gcl == 0)
+                        {
+                            msg = DoomInfo.Strings.GAMMALVL0;
+                        }
+                        else
+                        {
+                            msg = "Gamma correction level " + gcl;
+                        }
+                        game.World.ConsolePlayer.SendMessage(msg);
+                    }
+                    return true;
+
+                default:
+                    return false;
+            }
         }
 
         private bool Update()

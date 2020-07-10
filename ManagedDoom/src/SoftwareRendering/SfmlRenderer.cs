@@ -11,6 +11,21 @@ namespace ManagedDoom.SoftwareRendering
 {
     public sealed class SfmlRenderer : IRenderer, IDisposable
     {
+        private static double[] gammaCorrectionParameters = new double[]
+        {
+            1.00,
+            0.95,
+            0.90,
+            0.85,
+            0.80,
+            0.75,
+            0.70,
+            0.65,
+            0.60,
+            0.55,
+            0.50
+        };
+
         private RenderWindow sfmlWindow;
         private Palette palette;
 
@@ -41,6 +56,8 @@ namespace ManagedDoom.SoftwareRendering
         private int wipeBandCount;
         private int wipeHeight;
         private byte[] wipeBuffer;
+
+        private int gammaCorrectionLevel;
 
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
         {
@@ -99,6 +116,9 @@ namespace ManagedDoom.SoftwareRendering
             wipeBandCount = screen.Width / wipeBandWidth + 1;
             wipeHeight = screen.Height / scale;
             wipeBuffer = new byte[screen.Data.Length];
+
+            gammaCorrectionLevel = 0;
+            palette.ResetColors(gammaCorrectionParameters[gammaCorrectionLevel]);
         }
 
         private void RenderApplication(DoomApplication app)
@@ -317,6 +337,28 @@ namespace ManagedDoom.SoftwareRendering
             set
             {
                 threeD.WindowSize = value;
+            }
+        }
+
+        public int MaxGammaCorrectionLevel
+        {
+            get
+            {
+                return gammaCorrectionParameters.Length;
+            }
+        }
+
+        public int GammaCorrectionLevel
+        {
+            get
+            {
+                return gammaCorrectionLevel;
+            }
+
+            set
+            {
+                gammaCorrectionLevel = value;
+                palette.ResetColors(gammaCorrectionParameters[gammaCorrectionLevel]);
             }
         }
     }

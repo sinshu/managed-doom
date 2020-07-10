@@ -24,8 +24,6 @@ namespace ManagedDoom
             {
                 palettes[i] = new uint[256];
             }
-
-            ResetColors(0.95);
         }
 
         public void ResetColors(double p)
