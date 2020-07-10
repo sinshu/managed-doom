@@ -12,9 +12,15 @@ namespace ManagedDoom
             this.world = world;
 
             InitSpawnMapThing();
+            InitMultiPlayerRespawn();
             InitRespawnSpecials();
         }
 
+
+
+        ////////////////////////////////////////////////////////////
+        // Spawn functions for level start
+        ////////////////////////////////////////////////////////////
 
         private MapThing[] playerStarts;
         private List<MapThing> deathmatchStarts;
@@ -25,6 +31,9 @@ namespace ManagedDoom
             deathmatchStarts = new List<MapThing>();
         }
 
+        /// <summary>
+        /// Spawn a mobj at the mapthing.
+        /// </summary>
         public void SpawnMapThing(MapThing mt)
         {
             // Count deathmatch start positions.
@@ -115,7 +124,8 @@ namespace ManagedDoom
 
             // Don't spawn any monsters if -nomonsters.
             if (world.Options.NoMonsters &&
-                (i == (int)MobjType.Skull || (DoomInfo.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
+                    (i == (int)MobjType.Skull ||
+                    (DoomInfo.MobjInfos[i].Flags & MobjFlags.CountKill) != 0))
             {
                 return;
             }
@@ -160,6 +170,10 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// Called when a player is spawned on the level.
+        /// Most of the player structure stays unchanged between levels.
+        /// </summary>
         public void SpawnPlayer(MapThing mt)
         {
             var players = world.Options.Players;
@@ -227,6 +241,14 @@ namespace ManagedDoom
         public IReadOnlyList<MapThing> DeathmatchStarts => deathmatchStarts;
 
 
+
+        ////////////////////////////////////////////////////////////
+        // Thing spawn functions for the middle of a game
+        ////////////////////////////////////////////////////////////
+
+        /// <summary>
+        /// Spawn a mobj at the given position as the given type.
+        /// </summary>
         public Mobj SpawnMobj(Fixed x, Fixed y, Fixed z, MobjType type)
         {
             var mobj = ThinkerPool.RentMobj(world);
@@ -282,6 +304,9 @@ namespace ManagedDoom
             return mobj;
         }
 
+        /// <summary>
+        /// Remove the mobj from the level.
+        /// </summary>
         public void RemoveMobj(Mobj mobj)
         {
             var tm = world.ThingMovement;
@@ -291,14 +316,14 @@ namespace ManagedDoom
                 (mobj.Type != MobjType.Inv) &&
                 (mobj.Type != MobjType.Ins))
             {
-                itemrespawnque[iquehead] = mobj.SpawnPoint;
-                itemrespawntime[iquehead] = world.levelTime;
-                iquehead = (iquehead + 1) & (ITEMQUESIZE - 1);
+                itemRespawnQue[itemQueHead] = mobj.SpawnPoint;
+                itemRespawnTime[itemQueHead] = world.levelTime;
+                itemQueHead = (itemQueHead + 1) & (itemQueSize - 1);
 
                 // Lose one off the end?
-                if (iquehead == iquetail)
+                if (itemQueHead == itemQueTail)
                 {
-                    iquetail = (iquetail + 1) & (ITEMQUESIZE - 1);
+                    itemQueTail = (itemQueTail + 1) & (itemQueSize - 1);
                 }
             }
 
@@ -312,7 +337,34 @@ namespace ManagedDoom
             world.Thinkers.Remove(mobj);
         }
 
-        public void CheckMissileSpawn(Mobj missile)
+        /// <summary>
+        /// Get the speed of the given missile type.
+        /// Some missiles have different speeds according to the game setting.
+        /// </summary>
+        private int GetMissileSpeed(MobjType type)
+        {
+            if (world.Options.FastMonsters || world.Options.Skill == GameSkill.Nightmare)
+            {
+                switch (type)
+                {
+                    case MobjType.Bruisershot:
+                    case MobjType.Headshot:
+                    case MobjType.Troopshot:
+                        return 20 * Fixed.FracUnit;
+                    default:
+                        return DoomInfo.MobjInfos[(int)type].Speed;
+                }
+            }
+            else
+            {
+                return DoomInfo.MobjInfos[(int)type].Speed;
+            }
+        }
+
+        /// <summary>
+        /// Moves the missile forward a bit and possibly explodes it right there.
+        /// </summary>
+        private void CheckMissileSpawn(Mobj missile)
         {
             missile.Tics -= world.Random.Next() & 3;
             if (missile.Tics < 1)
@@ -331,6 +383,10 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// Shoot a missile from the source to the destination.
+        /// For monsters.
+        /// </summary>
         public Mobj SpawnMissile(Mobj source, Mobj dest, MobjType type)
         {
             var missile = SpawnMobj(
@@ -381,26 +437,10 @@ namespace ManagedDoom
             return missile;
         }
 
-        private int GetMissileSpeed(MobjType type)
-        {
-            if (world.Options.FastMonsters || world.Options.Skill == GameSkill.Nightmare)
-            {
-                switch (type)
-                {
-                    case MobjType.Bruisershot:
-                    case MobjType.Headshot:
-                    case MobjType.Troopshot:
-                        return 20 * Fixed.FracUnit;
-                    default:
-                        return DoomInfo.MobjInfos[(int)type].Speed;
-                }
-            }
-            else
-            {
-                return DoomInfo.MobjInfos[(int)type].Speed;
-            }
-        }
-
+        /// <summary>
+        /// Shoot a missile from the source.
+        /// For players.
+        /// </summary>
         public void SpawnPlayerMissile(Mobj source, MobjType type)
         {
             var hs = world.Hitscan;
@@ -449,24 +489,24 @@ namespace ManagedDoom
 
 
 
+        ////////////////////////////////////////////////////////////
+        // Multi-player related functions
+        ////////////////////////////////////////////////////////////
 
+        private static readonly int bodyQueSize = 32;
+        private int bodyQueSlot;
+        private Mobj[] bodyQue;
 
+        private void InitMultiPlayerRespawn()
+        {
+            bodyQueSlot = 0;
+            bodyQue = new Mobj[bodyQueSize];
+        }
 
-
-
-
-
-
-        private static readonly int BODYQUESIZE = 32;
-        private Mobj[] bodyque = new Mobj[BODYQUESIZE];
-        private int bodyqueslot;
-
-        //
-        // G_CheckSpot  
-        // Returns false if the player cannot be respawned
-        // at the given mapthing_t spot  
-        // because something is occupying it 
-        //
+        /// <summary>
+        /// Returns false if the player cannot be respawned at the given
+        /// mapthing spot because something is occupying it.
+        /// </summary>
         public bool CheckSpot(int playernum, MapThing mthing)
         {
             var players = world.Options.Players;
@@ -493,53 +533,55 @@ namespace ManagedDoom
             }
 
             // Flush an old corpse if needed.
-            if (bodyqueslot >= BODYQUESIZE)
+            if (bodyQueSlot >= bodyQueSize)
             {
-                RemoveMobj(bodyque[bodyqueslot % BODYQUESIZE]);
+                RemoveMobj(bodyQue[bodyQueSlot % bodyQueSize]);
             }
-            bodyque[bodyqueslot % BODYQUESIZE] = players[playernum].Mobj;
-            bodyqueslot++;
+            bodyQue[bodyQueSlot % bodyQueSize] = players[playernum].Mobj;
+            bodyQueSlot++;
 
             // Spawn a teleport fog.
-            var ss = Geometry.PointInSubsector(x, y, world.Map);
+            var subsector = Geometry.PointInSubsector(x, y, world.Map);
 
-            var an = (Angle.Ang45.Data >> Trig.AngleToFineShift) * ((int)Math.Round(mthing.Angle.ToDegree()) / 45);
+            var angle = (Angle.Ang45.Data >> Trig.AngleToFineShift) *
+                ((int)Math.Round(mthing.Angle.ToDegree()) / 45);
 
+            // The code below is taken from chocolate-doom.
+            // This is necessary to test compatibility of deathmatch game.
             Fixed xa;
             Fixed ya;
-
-            switch (an)
+            switch (angle)
             {
-                case 4096:  // -4096:
-                    xa = Trig.Tan(2048);    // finecosine[-4096]
-                    ya = Trig.Tan(0);       // finesine[-4096]
+                case 4096: // -4096:
+                    xa = Trig.Tan(2048); // finecosine[-4096]
+                    ya = Trig.Tan(0);    // finesine[-4096]
                     break;
-                case 5120:  // -3072:
-                    xa = Trig.Tan(3072);    // finecosine[-3072]
-                    ya = Trig.Tan(1024);    // finesine[-3072]
+                case 5120: // -3072:
+                    xa = Trig.Tan(3072); // finecosine[-3072]
+                    ya = Trig.Tan(1024); // finesine[-3072]
                     break;
-                case 6144:  // -2048:
-                    xa = Trig.Sin(0);          // finecosine[-2048]
-                    ya = Trig.Tan(2048);    // finesine[-2048]
+                case 6144: // -2048:
+                    xa = Trig.Sin(0);    // finecosine[-2048]
+                    ya = Trig.Tan(2048); // finesine[-2048]
                     break;
-                case 7168:  // -1024:
-                    xa = Trig.Sin(1024);       // finecosine[-1024]
-                    ya = Trig.Tan(3072);    // finesine[-1024]
+                case 7168: // -1024:
+                    xa = Trig.Sin(1024); // finecosine[-1024]
+                    ya = Trig.Tan(3072); // finesine[-1024]
                     break;
                 case 0:
                 case 1024:
                 case 2048:
                 case 3072:
-                    xa = Trig.Cos((int)an);
-                    ya = Trig.Sin((int)an);
+                    xa = Trig.Cos((int)angle);
+                    ya = Trig.Sin((int)angle);
                     break;
                 default:
-                    throw new Exception("G_CheckSpot: unexpected angle " + an);
+                    throw new Exception("Unexpected angle: " + angle);
             }
 
             var mo = SpawnMobj(
                 x + 20 * xa, y + 20 * ya,
-                ss.Sector.FloorHeight,
+                subsector.Sector.FloorHeight,
                 MobjType.Tfog);
 
             if (!world.FirstTicIsNotYetDone)
@@ -551,12 +593,11 @@ namespace ManagedDoom
             return true;
         }
 
-        //
-        // G_DeathMatchSpawnPlayer 
-        // Spawns a player at one of the random death match spots 
-        // called at level load and each death 
-        //
-        public void DeathMatchSpawnPlayer(int playernum)
+        /// <summary>
+        /// Spawns a player at one of the random death match spots.
+        /// Called at level load and each death.
+        /// </summary>
+        public void DeathMatchSpawnPlayer(int playerNumber)
         {
             var selections = deathmatchStarts.Count;
             if (selections < 4)
@@ -568,39 +609,41 @@ namespace ManagedDoom
             for (var j = 0; j < 20; j++)
             {
                 var i = random.Next() % selections;
-                if (CheckSpot(playernum, deathmatchStarts[i]))
+                if (CheckSpot(playerNumber, deathmatchStarts[i]))
                 {
-                    deathmatchStarts[i].Type = playernum + 1;
+                    deathmatchStarts[i].Type = playerNumber + 1;
                     SpawnPlayer(deathmatchStarts[i]);
                     return;
                 }
             }
 
-            // no good spot, so the player will probably get stuck 
-            SpawnPlayer(playerStarts[playernum]);
+            // No good spot, so the player will probably get stuck .
+            SpawnPlayer(playerStarts[playerNumber]);
         }
 
 
 
+        ////////////////////////////////////////////////////////////
+        // Item respawn
+        ////////////////////////////////////////////////////////////
 
-
-
-
-
-        private static readonly int ITEMQUESIZE = 128;
-        private MapThing[] itemrespawnque;
-        private int[] itemrespawntime;
-        private int iquehead;
-        private int iquetail;
+        private static readonly int itemQueSize = 128;
+        private MapThing[] itemRespawnQue;
+        private int[] itemRespawnTime;
+        private int itemQueHead;
+        private int itemQueTail;
 
         private void InitRespawnSpecials()
         {
-            itemrespawnque = new MapThing[ITEMQUESIZE];
-            itemrespawntime = new int[ITEMQUESIZE];
-            iquehead = 0;
-            iquetail = 0;
+            itemRespawnQue = new MapThing[itemQueSize];
+            itemRespawnTime = new int[itemQueSize];
+            itemQueHead = 0;
+            itemQueTail = 0;
         }
 
+        /// <summary>
+        /// Respawn items if the game mode is altdeath.
+        /// </summary>
         public void RespawnSpecials()
         {
             // Only respawn items in deathmatch.
@@ -610,18 +653,18 @@ namespace ManagedDoom
             }
 
             // Nothing left to respawn?
-            if (iquehead == iquetail)
+            if (itemQueHead == itemQueTail)
             {
                 return;
             }
 
             // Wait at least 30 seconds.
-            if (world.levelTime - itemrespawntime[iquetail] < 30 * 35)
+            if (world.levelTime - itemRespawnTime[itemQueTail] < 30 * 35)
             {
                 return;
             }
 
-            var mthing = itemrespawnque[iquetail];
+            var mthing = itemRespawnQue[itemQueTail];
 
             var x = mthing.X;
             var y = mthing.Y;
@@ -657,7 +700,7 @@ namespace ManagedDoom
             mo.Angle = mthing.Angle;
 
             // Pull it from the que.
-            iquetail = (iquetail + 1) & (ITEMQUESIZE - 1);
+            itemQueTail = (itemQueTail + 1) & (itemQueSize - 1);
         }
     }
 }
