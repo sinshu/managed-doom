@@ -57,6 +57,8 @@ namespace ManagedDoom.SoftwareRendering
         private int wipeHeight;
         private byte[] wipeBuffer;
 
+        private bool displayMessage;
+
         private int gammaCorrectionLevel;
 
         public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
@@ -117,6 +119,8 @@ namespace ManagedDoom.SoftwareRendering
             wipeHeight = screen.Height / scale;
             wipeBuffer = new byte[screen.Data.Length];
 
+            displayMessage = true;
+
             gammaCorrectionLevel = 0;
             palette.ResetColors(gammaCorrectionParameters[gammaCorrectionLevel]);
         }
@@ -171,10 +175,13 @@ namespace ManagedDoom.SoftwareRendering
                     }
                 }
 
-                var scale = screen.Width / 320;
-                if (player.MessageTime > 0)
+                if (displayMessage || player.Message == DoomInfo.Strings.MSGOFF)
                 {
-                    screen.DrawText(player.Message, 0, 7 * scale, scale);
+                    if (player.MessageTime > 0)
+                    {
+                        var scale = screen.Width / 320;
+                        screen.DrawText(player.Message, 0, 7 * scale, scale);
+                    }
                 }
             }
             else if (game.State == GameState.Intermission)
@@ -337,6 +344,19 @@ namespace ManagedDoom.SoftwareRendering
             set
             {
                 threeD.WindowSize = value;
+            }
+        }
+
+        public bool DisplayMessage
+        {
+            get
+            {
+                return displayMessage;
+            }
+
+            set
+            {
+                displayMessage = value;
             }
         }
 

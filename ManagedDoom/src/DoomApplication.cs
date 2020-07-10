@@ -154,6 +154,24 @@ namespace ManagedDoom
         {
             switch (key)
             {
+                case DoomKeys.F8:
+                    renderer.DisplayMessage = !renderer.DisplayMessage;
+                    if (state == ApplicationState.Game && game.State == GameState.Level)
+                    {
+                        string msg;
+                        if (renderer.DisplayMessage)
+                        {
+                            msg = DoomInfo.Strings.MSGON;
+                        }
+                        else
+                        {
+                            msg = DoomInfo.Strings.MSGOFF;
+                        }
+                        game.World.ConsolePlayer.SendMessage(msg);
+                    }
+                    menu.StartSound(Sfx.SWTCHN);
+                    return true;
+
                 case DoomKeys.F11:
                     var gcl = renderer.GammaCorrectionLevel;
                     gcl++;
