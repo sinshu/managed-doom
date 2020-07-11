@@ -370,7 +370,7 @@ namespace ManagedDoom
                     }
 
                     {
-                        var glow = thinker as GlowLight;
+                        var glow = thinker as GlowingLight;
                         if (glow != null)
                         {
                             data[ptr++] = (byte)SpecialClass.Glow;
@@ -850,7 +850,7 @@ namespace ManagedDoom
 
                         case SpecialClass.Glow:
                             PadPointer();
-                            var glow = ThinkerPool.RentGlowLight(world);
+                            var glow = ThinkerPool.RentGlowingLight(world);
                             glow.ThinkerState = ReadThinkerState(data, ptr + 8);
                             glow.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
                             glow.MinLight = BitConverter.ToInt32(data, ptr + 16);

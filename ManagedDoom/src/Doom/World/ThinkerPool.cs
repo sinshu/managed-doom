@@ -48,9 +48,9 @@ namespace ManagedDoom
             return new StrobeFlash(world);
         }
 
-        public static GlowLight RentGlowLight(World world)
+        public static GlowingLight RentGlowingLight(World world)
         {
-            return new GlowLight(world);
+            return new GlowingLight(world);
         }
 
         public static void Return(Thinker thinker)

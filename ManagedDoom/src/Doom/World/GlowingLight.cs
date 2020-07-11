@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public sealed class GlowLight : Thinker
+    public sealed class GlowingLight : Thinker
     {
         private static readonly int glowSpeed = 8;
 
@@ -13,7 +13,7 @@ namespace ManagedDoom
         private int maxLight;
         private int direction;
 
-        public GlowLight(World world)
+        public GlowingLight(World world)
         {
             this.world = world;
         }
