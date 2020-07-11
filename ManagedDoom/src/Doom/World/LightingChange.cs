@@ -39,13 +39,13 @@ namespace ManagedDoom
 
             world.Thinkers.Add(flash);
 
-            flash.sector = sector;
-            flash.maxlight = sector.LightLevel;
+            flash.Sector = sector;
+            flash.MaxLight = sector.LightLevel;
 
-            flash.minlight = FindMinSurroundingLight(sector, sector.LightLevel);
-            flash.maxtime = 64;
-            flash.mintime = 7;
-            flash.count = (world.Random.Next() & flash.maxtime) + 1;
+            flash.MinLight = FindMinSurroundingLight(sector, sector.LightLevel);
+            flash.MaxTime = 64;
+            flash.MinTime = 7;
+            flash.Count = (world.Random.Next() & flash.MaxTime) + 1;
         }
 
 

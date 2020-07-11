@@ -6,12 +6,12 @@ namespace ManagedDoom
     {
         private World world;
 
-        public Sector sector;
-        public int count;
-        public int maxlight;
-        public int minlight;
-        public int maxtime;
-        public int mintime;
+        private Sector sector;
+        private int count;
+        private int maxLight;
+        private int minLight;
+        private int maxTime;
+        private int minTime;
 
         public LightFlash(World world)
         {
@@ -25,16 +25,52 @@ namespace ManagedDoom
                 return;
             }
 
-            if (sector.LightLevel == maxlight)
+            if (sector.LightLevel == maxLight)
             {
-                sector.LightLevel = minlight;
-                count = (world.Random.Next() & mintime) + 1;
+                sector.LightLevel = minLight;
+                count = (world.Random.Next() & minTime) + 1;
             }
             else
             {
-                sector.LightLevel = maxlight;
-                count = (world.Random.Next() & maxtime) + 1;
+                sector.LightLevel = maxLight;
+                count = (world.Random.Next() & maxTime) + 1;
             }
+        }
+
+        public Sector Sector
+        {
+            get => sector;
+            set => sector = value;
+        }
+
+        public int Count
+        {
+            get => count;
+            set => count = value;
+        }
+
+        public int MaxLight
+        {
+            get => maxLight;
+            set => maxLight = value;
+        }
+
+        public int MinLight
+        {
+            get => minLight;
+            set => minLight = value;
+        }
+
+        public int MaxTime
+        {
+            get => maxTime;
+            set => maxTime = value;
+        }
+
+        public int MinTime
+        {
+            get => minTime;
+            set => minTime = value;
         }
     }
 }

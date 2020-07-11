@@ -340,12 +340,12 @@ namespace ManagedDoom
                             data[ptr++] = (byte)SpecialClass.Flash;
                             PadPointer();
                             WriteThinkerState(data, ptr + 8, flash.ThinkerState);
-                            Write(data, ptr + 12, flash.sector.Number);
-                            Write(data, ptr + 16, flash.count);
-                            Write(data, ptr + 20, flash.maxlight);
-                            Write(data, ptr + 24, flash.minlight);
-                            Write(data, ptr + 28, flash.maxtime);
-                            Write(data, ptr + 32, flash.mintime);
+                            Write(data, ptr + 12, flash.Sector.Number);
+                            Write(data, ptr + 16, flash.Count);
+                            Write(data, ptr + 20, flash.MaxLight);
+                            Write(data, ptr + 24, flash.MinLight);
+                            Write(data, ptr + 28, flash.MaxTime);
+                            Write(data, ptr + 32, flash.MinTime);
                             ptr += 36;
                             continue;
                         }
@@ -822,12 +822,12 @@ namespace ManagedDoom
                             PadPointer();
                             var flash = ThinkerPool.RentLightFlash(world);
                             flash.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            flash.sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
-                            flash.count = BitConverter.ToInt32(data, ptr + 16);
-                            flash.maxlight = BitConverter.ToInt32(data, ptr + 20);
-                            flash.minlight = BitConverter.ToInt32(data, ptr + 24);
-                            flash.maxtime = BitConverter.ToInt32(data, ptr + 28);
-                            flash.mintime = BitConverter.ToInt32(data, ptr + 32);
+                            flash.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
+                            flash.Count = BitConverter.ToInt32(data, ptr + 16);
+                            flash.MaxLight = BitConverter.ToInt32(data, ptr + 20);
+                            flash.MinLight = BitConverter.ToInt32(data, ptr + 24);
+                            flash.MaxTime = BitConverter.ToInt32(data, ptr + 28);
+                            flash.MinTime = BitConverter.ToInt32(data, ptr + 32);
                             ptr += 36;
 
                             thinkers.Add(flash);
