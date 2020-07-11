@@ -4,14 +4,14 @@ namespace ManagedDoom
 {
     public sealed class GlowLight : Thinker
     {
-        private static readonly int GLOWSPEED = 8;
+        private static readonly int glowSpeed = 8;
 
         private World world;
 
-        public Sector sector;
-        public int minlight;
-        public int maxlight;
-        public int direction;
+        private Sector sector;
+        private int minLight;
+        private int maxLight;
+        private int direction;
 
         public GlowLight(World world)
         {
@@ -23,25 +23,49 @@ namespace ManagedDoom
             switch (direction)
             {
                 case -1:
-                    // DOWN
-                    sector.LightLevel -= GLOWSPEED;
-                    if (sector.LightLevel <= minlight)
+                    // Down.
+                    sector.LightLevel -= glowSpeed;
+                    if (sector.LightLevel <= minLight)
                     {
-                        sector.LightLevel += GLOWSPEED;
+                        sector.LightLevel += glowSpeed;
                         direction = 1;
                     }
                     break;
 
                 case 1:
-                    // UP
-                    sector.LightLevel += GLOWSPEED;
-                    if (sector.LightLevel >= maxlight)
+                    // Up.
+                    sector.LightLevel += glowSpeed;
+                    if (sector.LightLevel >= maxLight)
                     {
-                        sector.LightLevel -= GLOWSPEED;
+                        sector.LightLevel -= glowSpeed;
                         direction = -1;
                     }
                     break;
             }
+        }
+
+        public Sector Sector
+        {
+            get => sector;
+            set => sector = value;
+        }
+
+        public int MinLight
+        {
+            get => minLight;
+            set => minLight = value;
+        }
+
+        public int MaxLight
+        {
+            get => maxLight;
+            set => maxLight = value;
+        }
+
+        public int Direction
+        {
+            get => direction;
+            set => direction = value;
         }
     }
 }

@@ -376,10 +376,10 @@ namespace ManagedDoom
                             data[ptr++] = (byte)SpecialClass.Glow;
                             PadPointer();
                             WriteThinkerState(data, ptr + 8, glow.ThinkerState);
-                            Write(data, ptr + 12, glow.sector.Number);
-                            Write(data, ptr + 16, glow.minlight);
-                            Write(data, ptr + 20, glow.maxlight);
-                            Write(data, ptr + 24, glow.direction);
+                            Write(data, ptr + 12, glow.Sector.Number);
+                            Write(data, ptr + 16, glow.MinLight);
+                            Write(data, ptr + 20, glow.MaxLight);
+                            Write(data, ptr + 24, glow.Direction);
                             ptr += 28;
                             continue;
                         }
@@ -852,10 +852,10 @@ namespace ManagedDoom
                             PadPointer();
                             var glow = ThinkerPool.RentGlowLight(world);
                             glow.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            glow.sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
-                            glow.minlight = BitConverter.ToInt32(data, ptr + 16);
-                            glow.maxlight = BitConverter.ToInt32(data, ptr + 20);
-                            glow.direction = BitConverter.ToInt32(data, ptr + 24);
+                            glow.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
+                            glow.MinLight = BitConverter.ToInt32(data, ptr + 16);
+                            glow.MaxLight = BitConverter.ToInt32(data, ptr + 20);
+                            glow.Direction = BitConverter.ToInt32(data, ptr + 24);
                             ptr += 28;
 
                             thinkers.Add(glow);

@@ -86,10 +86,10 @@ namespace ManagedDoom
 
             world.Thinkers.Add(g);
 
-            g.sector = sector;
-            g.minlight = FindMinSurroundingLight(sector, sector.LightLevel);
-            g.maxlight = sector.LightLevel;
-            g.direction = -1;
+            g.Sector = sector;
+            g.MinLight = FindMinSurroundingLight(sector, sector.LightLevel);
+            g.MaxLight = sector.LightLevel;
+            g.Direction = -1;
 
             sector.Special = 0;
         }
