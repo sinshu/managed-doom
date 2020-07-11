@@ -23,10 +23,10 @@ namespace ManagedDoom
 
             world.Thinkers.Add(flick);
 
-            flick.sector = sector;
-            flick.maxlight = sector.LightLevel;
-            flick.minlight = FindMinSurroundingLight(sector, sector.LightLevel) + 16;
-            flick.count = 4;
+            flick.Sector = sector;
+            flick.MaxLight = sector.LightLevel;
+            flick.MinLight = FindMinSurroundingLight(sector, sector.LightLevel) + 16;
+            flick.Count = 4;
         }
 
 

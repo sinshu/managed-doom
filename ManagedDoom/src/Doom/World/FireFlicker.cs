@@ -6,10 +6,10 @@ namespace ManagedDoom
     {
         private World world;
 
-        public Sector sector;
-        public int count;
-        public int maxlight;
-        public int minlight;
+        private Sector sector;
+        private int count;
+        private int maxLight;
+        private int minLight;
 
         public FireFlicker(World world)
         {
@@ -25,16 +25,40 @@ namespace ManagedDoom
 
             var amount = (world.Random.Next() & 3) * 16;
 
-            if (sector.LightLevel - amount < minlight)
+            if (sector.LightLevel - amount < minLight)
             {
-                sector.LightLevel = minlight;
+                sector.LightLevel = minLight;
             }
             else
             {
-                sector.LightLevel = maxlight - amount;
+                sector.LightLevel = maxLight - amount;
             }
 
             count = 4;
+        }
+
+        public Sector Sector
+        {
+            get => sector;
+            set => sector = value;
+        }
+
+        public int Count
+        {
+            get => count;
+            set => count = value;
+        }
+
+        public int MaxLight
+        {
+            get => maxLight;
+            set => maxLight = value;
+        }
+
+        public int MinLight
+        {
+            get => minLight;
+            set => minLight = value;
         }
     }
 }
