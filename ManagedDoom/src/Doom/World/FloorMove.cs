@@ -32,7 +32,7 @@ namespace ManagedDoom
 				FloorDestHeight,
 				Crush, 0, Direction);
 
-			if ((world.levelTime & 7) == 0)
+			if (((world.levelTime + Sector.Number) & 7) == 0)
 			{
 				world.StartSound(Sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
 			}
