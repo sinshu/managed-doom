@@ -17,7 +17,6 @@ namespace ManagedDoom
         private Func<Intercept, bool> aimTraverseFunc;
         private Func<Intercept, bool> shootTraverseFunc;
 
-
         // Who got hit (or null).
         private Mobj lineTarget;
 
@@ -32,7 +31,10 @@ namespace ManagedDoom
         private Fixed topSlope;
         private Fixed bottomSlope;
 
-
+        /// <summary>
+        /// Find a thing or wall which is on the aiming line.
+        /// Sets lineTaget and aimSlope when a target is aimed at.
+        /// </summary>
         private bool AimTraverse(Intercept intercept)
         {
             if (intercept.Line != null)
@@ -139,7 +141,9 @@ namespace ManagedDoom
             }
         }
 
-
+        /// <summary>
+        /// Fire a hitscan bullet along the aiming line.
+        /// </summary>
         private bool ShootTraverse(Intercept intercept)
         {
             var mi = world.MapInteraction;
@@ -279,7 +283,10 @@ namespace ManagedDoom
             }
         }
 
-
+        /// <summary>
+        /// Find a target on the aiming line.
+        /// Sets LineTaget when a target is aimed at.
+        /// </summary>
         public Fixed AimLineAttack(Mobj shooter, Angle angle, Fixed range)
         {
             currentShooter = shooter;
@@ -309,7 +316,10 @@ namespace ManagedDoom
             return Fixed.Zero;
         }
 
-
+        /// <summary>
+        /// Fire a hitscan bullet.
+        /// If damage == 0, it is just a test trace that will leave linetarget set.
+        /// </summary>
         public void LineAttack(Mobj shooter, Angle angle, Fixed range, Fixed slope, int damage)
         {
             currentShooter = shooter;
@@ -328,7 +338,9 @@ namespace ManagedDoom
                 shootTraverseFunc);
         }
 
-
+        /// <summary>
+        /// Spawn a bullet puff.
+        /// </summary>
         public void SpawnPuff(Fixed x, Fixed y, Fixed z)
         {
             var random = world.Random;
@@ -351,7 +363,9 @@ namespace ManagedDoom
             }
         }
 
-
+        /// <summary>
+        /// Spawn blood.
+        /// </summary>
         public void SpawnBlood(Fixed x, Fixed y, Fixed z, int damage)
         {
             var random = world.Random;
@@ -376,7 +390,6 @@ namespace ManagedDoom
                 thing.SetState(MobjState.Blood3);
             }
         }
-
 
         public Mobj LineTarget => lineTarget;
         public Fixed BottomSlope => bottomSlope;
