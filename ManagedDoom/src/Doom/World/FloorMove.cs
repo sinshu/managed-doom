@@ -6,14 +6,14 @@ namespace ManagedDoom
 	{
 		private World world;
 
-		public FloorMoveType Type;
-		public bool Crush;
-		public Sector Sector;
-		public int Direction;
-		public SectorSpecial NewSpecial;
-		public int Texture;
-		public Fixed FloorDestHeight;
-		public Fixed Speed;
+		private FloorMoveType type;
+		private bool crush;
+		private Sector sector;
+		private int direction;
+		private SectorSpecial newSpecial;
+		private int texture;
+		private Fixed floorDestHeight;
+		private Fixed speed;
 
 		public FloorMove(World world)
 		{
@@ -22,50 +22,100 @@ namespace ManagedDoom
 
 		public override void Run()
 		{
-			SectorActionResult res;
+			SectorActionResult result;
 
 			var sa = world.SectorAction;
 
-			res = sa.MovePlane(
-				Sector,
-				Speed,
-				FloorDestHeight,
-				Crush, 0, Direction);
+			result = sa.MovePlane(
+				sector,
+				speed,
+				floorDestHeight,
+				crush,
+				0,
+				direction);
 
-			if (((world.levelTime + Sector.Number) & 7) == 0)
+			if (((world.levelTime + sector.Number) & 7) == 0)
 			{
-				world.StartSound(Sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
+				world.StartSound(sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
 			}
 
-			if (res == SectorActionResult.PastDestination)
+			if (result == SectorActionResult.PastDestination)
 			{
-				Sector.SpecialData = null;
+				sector.SpecialData = null;
 
-				if (Direction == 1)
+				if (direction == 1)
 				{
-					switch (Type)
+					switch (type)
 					{
 						case FloorMoveType.DonutRaise:
-							Sector.Special = NewSpecial;
-							Sector.FloorFlat = Texture;
+							sector.Special = newSpecial;
+							sector.FloorFlat = texture;
 							break;
 					}
 				}
-				else if (Direction == -1)
+				else if (direction == -1)
 				{
-					switch (Type)
+					switch (type)
 					{
 						case FloorMoveType.LowerAndChange:
-							Sector.Special = NewSpecial;
-							Sector.FloorFlat = Texture;
+							sector.Special = newSpecial;
+							sector.FloorFlat = texture;
 							break;
 					}
 				}
 
 				world.Thinkers.Remove(this);
 
-				world.StartSound(Sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
+				world.StartSound(sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
 			}
+		}
+
+		public FloorMoveType Type
+		{
+			get => type;
+			set => type = value;
+		}
+
+		public bool Crush
+		{
+			get => crush;
+			set => crush = value;
+		}
+
+		public Sector Sector
+		{
+			get => sector;
+			set => sector = value;
+		}
+
+		public int Direction
+		{
+			get => direction;
+			set => direction = value;
+		}
+
+		public SectorSpecial NewSpecial
+		{
+			get => newSpecial;
+			set => newSpecial = value;
+		}
+
+		public int Texture
+		{
+			get => texture;
+			set => texture = value;
+		}
+
+		public Fixed FloorDestHeight
+		{
+			get => floorDestHeight;
+			set => floorDestHeight = value;
+		}
+
+		public Fixed Speed
+		{
+			get => speed;
+			set => speed = value;
 		}
 	}
 }
