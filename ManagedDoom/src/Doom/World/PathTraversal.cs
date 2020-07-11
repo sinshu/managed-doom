@@ -79,9 +79,7 @@ namespace ManagedDoom
                 return false;
             }
 
-            intercepts[interceptCount].Frac = frac;
-            intercepts[interceptCount].Line = line;
-            intercepts[interceptCount].Thing = null;
+            intercepts[interceptCount].Make(frac, line);
             interceptCount++;
 
             // Continue.
@@ -138,9 +136,7 @@ namespace ManagedDoom
                 return true;
             }
 
-            intercepts[interceptCount].Frac = frac;
-            intercepts[interceptCount].Line = null;
-            intercepts[interceptCount].Thing = thing;
+            intercepts[interceptCount].Make(frac, thing);
             interceptCount++;
 
             // Keep going.
