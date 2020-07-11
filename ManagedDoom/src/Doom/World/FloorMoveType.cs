@@ -4,33 +4,33 @@ namespace ManagedDoom
 {
     public enum FloorMoveType
     {
-        // lower floor to highest surrounding floor
+        // Lower floor to highest surrounding floor.
         LowerFloor,
 
-        // lower floor to lowest surrounding floor
+        // Lower floor to lowest surrounding floor.
         LowerFloorToLowest,
 
-        // lower floor to highest surrounding floor VERY FAST
+        // Lower floor to highest surrounding floor very fast.
         TurboLower,
 
-        // raise floor to lowest surrounding CEILING
+        // Raise floor to lowest surrounding ceiling.
         RaiseFloor,
 
-        // raise floor to next highest surrounding floor
+        // Raise floor to next highest surrounding floor.
         RaiseFloorToNearest,
 
-        // raise floor to shortest height texture around it
+        // Raise floor to shortest height texture around it.
         RaiseToTexture,
 
-        // lower floor to lowest surrounding floor
-        //  and change floorpic
+        // Lower floor to lowest surrounding floor and
+        // change floor texture.
         LowerAndChange,
 
         RaiseFloor24,
         RaiseFloor24AndChange,
         RaiseFloorCrush,
 
-        // raise to next highest floor, turbo-speed
+        // Raise to next highest floor, turbo-speed.
         RaiseFloorTurbo,
         DonutRaise,
         RaiseFloor512
