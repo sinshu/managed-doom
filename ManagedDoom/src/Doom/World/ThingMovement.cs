@@ -63,12 +63,12 @@ namespace ManagedDoom
             {
                 var sector = subsector.Sector;
 
-                thing.SPrev = null;
-                thing.SNext = sector.ThingList;
+                thing.SectorPrev = null;
+                thing.SectorNext = sector.ThingList;
 
                 if (sector.ThingList != null)
                 {
-                    sector.ThingList.SPrev = thing;
+                    sector.ThingList.SectorPrev = thing;
                 }
 
                 sector.ThingList = thing;
@@ -83,12 +83,12 @@ namespace ManagedDoom
                 {
                     var link = map.BlockMap.ThingLists[index];
 
-                    thing.BPrev = null;
-                    thing.BNext = link;
+                    thing.BlockPrev = null;
+                    thing.BlockNext = link;
 
                     if (link != null)
                     {
-                        link.BPrev = thing;
+                        link.BlockPrev = thing;
                     }
 
                     map.BlockMap.ThingLists[index] = thing;
@@ -96,8 +96,8 @@ namespace ManagedDoom
                 else
                 {
                     // Thing is off the map.
-                    thing.BNext = null;
-                    thing.BPrev = null;
+                    thing.BlockNext = null;
+                    thing.BlockPrev = null;
                 }
             }
         }
@@ -111,18 +111,18 @@ namespace ManagedDoom
             if ((thing.Flags & MobjFlags.NoSector) == 0)
             {
                 // Unlink from subsector.
-                if (thing.SNext != null)
+                if (thing.SectorNext != null)
                 {
-                    thing.SNext.SPrev = thing.SPrev;
+                    thing.SectorNext.SectorPrev = thing.SectorPrev;
                 }
 
-                if (thing.SPrev != null)
+                if (thing.SectorPrev != null)
                 {
-                    thing.SPrev.SNext = thing.SNext;
+                    thing.SectorPrev.SectorNext = thing.SectorNext;
                 }
                 else
                 {
-                    thing.Subsector.Sector.ThingList = thing.SNext;
+                    thing.Subsector.Sector.ThingList = thing.SectorNext;
                 }
             }
 
@@ -130,14 +130,14 @@ namespace ManagedDoom
             if ((thing.Flags & MobjFlags.NoBlockMap) == 0)
             {
                 // Unlink from block map.
-                if (thing.BNext != null)
+                if (thing.BlockNext != null)
                 {
-                    thing.BNext.BPrev = thing.BPrev;
+                    thing.BlockNext.BlockPrev = thing.BlockPrev;
                 }
 
-                if (thing.BPrev != null)
+                if (thing.BlockPrev != null)
                 {
-                    thing.BPrev.BNext = thing.BNext;
+                    thing.BlockPrev.BlockNext = thing.BlockNext;
                 }
                 else
                 {
@@ -145,7 +145,7 @@ namespace ManagedDoom
 
                     if (index != -1)
                     {
-                        map.BlockMap.ThingLists[index] = thing.BNext;
+                        map.BlockMap.ThingLists[index] = thing.BlockNext;
                     }
                 }
             }

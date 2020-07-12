@@ -127,7 +127,7 @@ namespace ManagedDoom
                 if (thing != null)
                 {
                     current = thing;
-                    thing = thing.SNext;
+                    thing = thing.SectorNext;
                     return true;
                 }
                 else

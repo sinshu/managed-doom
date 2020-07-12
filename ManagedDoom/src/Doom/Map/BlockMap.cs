@@ -133,7 +133,7 @@ namespace ManagedDoom
                 return true;
             }
 
-            for (var mobj = thingLists[index]; mobj != null; mobj = mobj.BNext)
+            for (var mobj = thingLists[index]; mobj != null; mobj = mobj.BlockNext)
             {
                 if (!func(mobj))
                 {

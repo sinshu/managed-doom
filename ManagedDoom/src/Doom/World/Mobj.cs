@@ -4,143 +4,200 @@ namespace ManagedDoom
 {
     public class Mobj : Thinker
     {
+        //
+        // NOTES: mobj_t
+        //
+        // mobj_ts are used to tell the refresh where to draw an image,
+        // tell the world simulation when objects are contacted,
+        // and tell the sound driver how to position a sound.
+        //
+        // The refresh uses the next and prev links to follow
+        // lists of things in sectors as they are being drawn.
+        // The sprite, frame, and angle elements determine which patch_t
+        // is used to draw the sprite if it is visible.
+        // The sprite and frame values are allmost allways set
+        // from state_t structures.
+        // The statescr.exe utility generates the states.h and states.c
+        // files that contain the sprite/frame numbers from the
+        // statescr.txt source file.
+        // The xyz origin point represents a point at the bottom middle
+        // of the sprite (between the feet of a biped).
+        // This is the default origin position for patch_ts grabbed
+        // with lumpy.exe.
+        // A walking creature will have its z equal to the floor
+        // it is standing on.
+        //
+        // The sound code uses the x,y, and subsector fields
+        // to do stereo positioning of any sound effited by the mobj_t.
+        //
+        // The play simulation uses the blocklinks, x,y,z, radius, height
+        // to determine when mobj_ts are touching each other,
+        // touching lines in the map, or hit by trace lines (gunshots,
+        // lines of sight, etc).
+        // The mobj_t->flags element has various bit flags
+        // used by the simulation.
+        //
+        // Every mobj_t is linked into a single sector
+        // based on its origin coordinates.
+        // The subsector_t is found with R_PointInSubsector(x,y),
+        // and the sector_t can be found with subsector->sector.
+        // The sector links are only used by the rendering code,
+        // the play simulation does not care about them at all.
+        //
+        // Any mobj_t that needs to be acted upon by something else
+        // in the play world (block movement, be shot, etc) will also
+        // need to be linked into the blockmap.
+        // If the thing has the MF_NOBLOCK flag set, it will not use
+        // the block links. It can still interact with other things,
+        // but only as the instigator (missiles will run into other
+        // things, but nothing can run into a missile).
+        // Each block in the grid is 128*128 units, and knows about
+        // every line_t that it contains a piece of, and every
+        // interactable mobj_t that has its origin contained.  
+        //
+        // A valid mobj_t is a mobj_t that has the proper subsector_t
+        // filled in for its xy coordinates and is linked into the
+        // sector from which the subsector was made, or has the
+        // MF_NOSECTOR flag set (the subsector_t needs to be valid
+        // even if MF_NOSECTOR is set), and is linked into a blockmap
+        // block or has the MF_NOBLOCKMAP flag set.
+        // Links should only be modified by the P_[Un]SetThingPosition()
+        // functions.
+        // Do not change the MF_NO? flags while a thing is valid.
+        //
+        // Any questions?
+        //
+
         public static readonly Fixed OnFloorZ = Fixed.MinValue;
         public static readonly Fixed OnCeilingZ = Fixed.MaxValue;
 
         private World world;
 
         // Info for drawing: position.
-        public Fixed X;
-        public Fixed Y;
-        public Fixed Z;
+        private Fixed x;
+        private Fixed y;
+        private Fixed z;
 
-        // More list: links in sector (if needed)
-        public Mobj SNext;
-        public Mobj SPrev;
+        // More list: links in sector (if needed).
+        private Mobj sectorNext;
+        private Mobj sectorPrev;
 
-        //More drawing info: to determine current sprite.
-        public Angle Angle; // orientation
-        public Sprite Sprite; // used to find patch_t and flip value
-        public int Frame; // might be ORed with FF_FULLBRIGHT
+        // More drawing info: to determine current sprite.
+        private Angle angle; // Orientation.
+        private Sprite sprite; // Used to find patch_t and flip value.
+        private int frame; // Might be ORed with FF_FULLBRIGHT.
 
         // Interaction info, by BLOCKMAP.
         // Links in blocks (if needed).
-        public Mobj BNext;
-        public Mobj BPrev;
+        private Mobj blockNext;
+        private Mobj blockPrev;
 
-        public Subsector Subsector;
+        private Subsector subsector;
 
         // The closest interval over all contacted Sectors.
-        public Fixed FloorZ;
-        public Fixed CeilingZ;
+        private Fixed floorZ;
+        private Fixed ceilingZ;
 
         // For movement checking.
-        public Fixed Radius;
-        public Fixed Height;
+        private Fixed radius;
+        private Fixed height;
 
         // Momentums, used to update position.
-        public Fixed MomX;
-        public Fixed MomY;
-        public Fixed MomZ;
+        private Fixed momX;
+        private Fixed momY;
+        private Fixed momZ;
 
-        // If == validcount, already checked.
-        public int ValidCount;
+        // If == validCount, already checked.
+        private int validCount;
 
-        public MobjType Type;
-        public MobjInfo Info; // &mobjinfo[mobj->type]
+        private MobjType type;
+        private MobjInfo info;
 
-        public int Tics; // state tic counter
-        public MobjStateDef State;
-        public MobjFlags Flags;
-        public int Health;
+        private int tics; // State tic counter.
+        private MobjStateDef state;
+        private MobjFlags flags;
+        private int health;
 
         // Movement direction, movement generation (zig-zagging).
-        public Direction MoveDir; // 0-7
-        public int MoveCount; // when 0, select a new dir
+        private Direction moveDir;
+        private int moveCount; // When 0, select a new dir.
 
-        // Thing being chased/attacked (or NULL),
+        // Thing being chased / attacked (or null),
         // also the originator for missiles.
-        public Mobj Target;
+        private Mobj target;
 
         // Reaction time: if non 0, don't attack yet.
         // Used by player to freeze a bit after teleporting.
-        public int ReactionTime;
+        private int reactionTime;
 
         // If >0, the target will be chased
-        // no matter what (even if shot)
-        public int Threshold;
+        // no matter what (even if shot).
+        private int threshold;
 
         // Additional info record for player avatars only.
         // Only valid if type == MT_PLAYER
-        public Player Player;
+        private Player player;
 
         // Player number last looked for.
-        public int LastLook;
+        private int lastLook;
 
         // For nightmare respawn.
-        public MapThing SpawnPoint;
+        private MapThing spawnPoint;
 
         // Thing being chased/attacked for tracers.
-        public Mobj Tracer;
-
-
+        private Mobj tracer;
 
         public Mobj(World world)
         {
             this.world = world;
         }
 
-
         public override void Run()
         {
-            // momentum movement
-            if (MomX != Fixed.Zero
-                || MomY != Fixed.Zero
-                || (Flags & MobjFlags.SkullFly) != 0)
+            // Momentum movement.
+            if (momX != Fixed.Zero || momY != Fixed.Zero ||
+                (flags & MobjFlags.SkullFly) != 0)
             {
                 world.ThingMovement.XYMovement(this);
 
-                // FIXME: decent NOP/NULL/Nil function pointer please.
                 if (ThinkerState == ThinkerState.Removed)
                 {
-                    // mobj was removed
+                    // Mobj was removed.
                     return;
                 }
             }
 
-            if ((Z != FloorZ) || MomZ != Fixed.Zero)
+            if ((z != floorZ) || momZ != Fixed.Zero)
             {
                 world.ThingMovement.ZMovement(this);
 
-                // FIXME: decent NOP/NULL/Nil function pointer please.
                 if (ThinkerState == ThinkerState.Removed)
                 {
-                    // mobj was removed
+                    // Mobj was removed.
                     return;
                 }
             }
 
-
-            // cycle through states,
-            // calling action functions at transitions
-            if (Tics != -1)
+            // Cycle through states,
+            // calling action functions at transitions.
+            if (tics != -1)
             {
-                Tics--;
+                tics--;
 
-                // you can cycle through multiple states in a tic
-                if (Tics == 0)
+                // You can cycle through multiple states in a tic.
+                if (tics == 0)
                 {
-                    if (!SetState(State.Next))
+                    if (!SetState(state.Next))
                     {
-                        // freed itself
+                        // Freed itself.
                         return;
                     }
                 }
             }
             else
             {
-                // check for nightmare respawn
-                if ((Flags & MobjFlags.CountKill) == 0)
+                // Check for nightmare respawn.
+                if ((flags & MobjFlags.CountKill) == 0)
                 {
                     return;
                 }
@@ -151,9 +208,9 @@ namespace ManagedDoom
                     return;
                 }
 
-                MoveCount++;
+                moveCount++;
 
-                if (MoveCount < 12 * 35)
+                if (moveCount < 12 * 35)
                 {
                     return;
                 }
@@ -174,27 +231,23 @@ namespace ManagedDoom
 
         public bool SetState(MobjState state)
         {
-            var ta = world.ThingAllocation;
-
-            MobjStateDef st;
-
             do
             {
                 if (state == MobjState.Null)
                 {
-                    State = DoomInfo.States[(int)MobjState.Null];
-                    ta.RemoveMobj(this);
+                    this.state = DoomInfo.States[(int)MobjState.Null];
+                    world.ThingAllocation.RemoveMobj(this);
                     return false;
                 }
 
-                st = DoomInfo.States[(int)state];
-                State = st;
-                Tics = GetTics(st);
-                Sprite = st.Sprite;
-                Frame = st.Frame;
+                var st = DoomInfo.States[(int)state];
+                this.state = st;
+                tics = GetTics(st);
+                sprite = st.Sprite;
+                frame = st.Frame;
 
                 // Modified handling.
-                // Call action functions when the state is set
+                // Call action functions when the state is set.
                 if (st.MobjAction != null)
                 {
                     st.MobjAction(world, this);
@@ -202,7 +255,7 @@ namespace ManagedDoom
 
                 state = st.Next;
             }
-            while (Tics == 0);
+            while (tics == 0);
 
             return true;
         }
@@ -212,8 +265,8 @@ namespace ManagedDoom
             var options = world.Options;
             if (options.FastMonsters || options.Skill == GameSkill.Nightmare)
             {
-                if ((int)MobjState.SargRun1 <= state.Number
-                    && state.Number <= (int)MobjState.SargPain2)
+                if ((int)MobjState.SargRun1 <= state.Number &&
+                    state.Number <= (int)MobjState.SargPain2)
                 {
                     return state.Tics >> 1;
                 }
@@ -228,53 +281,48 @@ namespace ManagedDoom
             }
         }
 
-        //
-        // P_NightmareRespawn
-        //
         private void NightmareRespawn()
         {
             MapThing sp;
-            if (SpawnPoint != null)
+            if (spawnPoint != null)
             {
-                sp = SpawnPoint;
+                sp = spawnPoint;
             }
             else
             {
                 sp = MapThing.Empty;
             }
 
-            var x = sp.X;
-            var y = sp.Y;
-
-            // somthing is occupying it's position?
-            if (!world.ThingMovement.CheckPosition(this, x, y))
+            // Somthing is occupying it's position?
+            if (!world.ThingMovement.CheckPosition(this, sp.X, sp.Y))
             {
-                // no respwan
+                // No respwan.
                 return;
             }
 
-            // spawn a teleport fog at old spot
-            // because of removal of the body?
-            var mo = world.ThingAllocation.SpawnMobj(
-                X, Y, Subsector.Sector.FloorHeight, MobjType.Tfog);
+            var ta = world.ThingAllocation;
 
-            // initiate teleport sound
-            world.StartSound(mo, Sfx.TELEPT, SfxType.Misc);
+            // Spawn a teleport fog at old spot.
+            var fog1 = ta.SpawnMobj(
+                x, y,
+                subsector.Sector.FloorHeight,
+                MobjType.Tfog);
 
-            // spawn a teleport fog at the new spot
-            var ss = Geometry.PointInSubsector(x, y, world.Map);
+            // Initiate teleport sound.
+            world.StartSound(fog1, Sfx.TELEPT, SfxType.Misc);
 
-            mo = world.ThingAllocation.SpawnMobj(
-                x, y, ss.Sector.FloorHeight, MobjType.Tfog);
+            // Spawn a teleport fog at the new spot.
+            var ss = Geometry.PointInSubsector(sp.X, sp.Y, world.Map);
 
-            world.StartSound(mo, Sfx.TELEPT, SfxType.Misc);
+            var fog2 = ta.SpawnMobj(
+                sp.X, sp.Y,
+                ss.Sector.FloorHeight, MobjType.Tfog);
 
-            // spawn the new monster
-            var mthing = sp;
+            world.StartSound(fog2, Sfx.TELEPT, SfxType.Misc);
 
-            // spawn it
+            // Spawn the new monster.
             Fixed z;
-            if ((Info.Flags & MobjFlags.SpawnCeiling) != 0)
+            if ((info.Flags & MobjFlags.SpawnCeiling) != 0)
             {
                 z = OnCeilingZ;
             }
@@ -283,22 +331,226 @@ namespace ManagedDoom
                 z = OnFloorZ;
             }
 
-            // inherit attributes from deceased one
-            mo = world.ThingAllocation.SpawnMobj(x, y, z, Type);
-            mo.SpawnPoint = SpawnPoint;
-            mo.Angle = mthing.Angle;
+            // Inherit attributes from deceased one.
+            var mobj = ta.SpawnMobj(sp.X, sp.Y, z, type);
+            mobj.SpawnPoint = spawnPoint;
+            mobj.Angle = sp.Angle;
 
-            if ((mthing.Flags & ThingFlags.Ambush) != 0)
+            if ((sp.Flags & ThingFlags.Ambush) != 0)
             {
-                mo.Flags |= MobjFlags.Ambush;
+                mobj.Flags |= MobjFlags.Ambush;
             }
 
-            mo.ReactionTime = 18;
+            mobj.ReactionTime = 18;
 
-            // remove the old monster,
+            // Remove the old monster.
             world.ThingAllocation.RemoveMobj(this);
         }
 
         public World World => world;
+
+        public Fixed X
+        {
+            get => x;
+            set => x = value;
+        }
+
+        public Fixed Y
+        {
+            get => y;
+            set => y = value;
+        }
+
+        public Fixed Z
+        {
+            get => z;
+            set => z = value;
+        }
+
+        public Mobj SectorNext
+        {
+            get => sectorNext;
+            set => sectorNext = value;
+        }
+
+        public Mobj SectorPrev
+        {
+            get => sectorPrev;
+            set => sectorPrev = value;
+        }
+
+        public Angle Angle
+        {
+            get => angle;
+            set => angle = value;
+        }
+
+        public Sprite Sprite
+        {
+            get => sprite;
+            set => sprite = value;
+        }
+
+        public int Frame
+        {
+            get => frame;
+            set => frame = value;
+        }
+
+        public Mobj BlockNext
+        {
+            get => blockNext;
+            set => blockNext = value;
+        }
+
+        public Mobj BlockPrev
+        {
+            get => blockPrev;
+            set => blockPrev = value;
+        }
+
+        public Subsector Subsector
+        {
+            get => subsector;
+            set => subsector = value;
+        }
+
+        public Fixed FloorZ
+        {
+            get => floorZ;
+            set => floorZ = value;
+        }
+
+        public Fixed CeilingZ
+        {
+            get => ceilingZ;
+            set => ceilingZ = value;
+        }
+
+        public Fixed Radius
+        {
+            get => radius;
+            set => radius = value;
+        }
+
+        public Fixed Height
+        {
+            get => height;
+            set => height = value;
+        }
+
+        public Fixed MomX
+        {
+            get => momX;
+            set => momX = value;
+        }
+
+        public Fixed MomY
+        {
+            get => momY;
+            set => momY = value;
+        }
+
+        public Fixed MomZ
+        {
+            get => momZ;
+            set => momZ = value;
+        }
+
+        public int ValidCount
+        {
+            get => validCount;
+            set => validCount = value;
+        }
+
+        public MobjType Type
+        {
+            get => type;
+            set => type = value;
+        }
+
+        public MobjInfo Info
+        {
+            get => info;
+            set => info = value;
+        }
+
+        public int Tics
+        {
+            get => tics;
+            set => tics = value;
+        }
+
+        public MobjStateDef State
+        {
+            get => state;
+            set => state = value;
+        }
+
+        public MobjFlags Flags
+        {
+            get => flags;
+            set => flags = value;
+        }
+
+        public int Health
+        {
+            get => health;
+            set => health = value;
+        }
+
+        public Direction MoveDir
+        {
+            get => moveDir;
+            set => moveDir = value;
+        }
+
+        public int MoveCount
+        {
+            get => moveCount;
+            set => moveCount = value;
+        }
+
+        public Mobj Target
+        {
+            get => target;
+            set => target = value;
+        }
+
+        public int ReactionTime
+        {
+            get => reactionTime;
+            set => reactionTime = value;
+        }
+
+        public int Threshold
+        {
+            get => threshold;
+            set => threshold = value;
+        }
+
+        public Player Player
+        {
+            get => player;
+            set => player = value;
+        }
+
+        public int LastLook
+        {
+            get => lastLook;
+            set => lastLook = value;
+        }
+
+        public MapThing SpawnPoint
+        {
+            get => spawnPoint;
+            set => spawnPoint = value;
+        }
+
+        public Mobj Tracer
+        {
+            get => tracer;
+            set => tracer = value;
+        }
     }
 }
