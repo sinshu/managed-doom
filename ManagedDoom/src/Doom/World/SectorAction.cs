@@ -456,7 +456,7 @@ namespace ManagedDoom
 					}
 					break;
 
-				// Yellow Lock
+				// Yellow Lock.
 				case 27:
 				case 34:
 					if (player == null)
@@ -473,7 +473,7 @@ namespace ManagedDoom
 					}
 					break;
 
-				// Red Lock
+				// Red Lock.
 				case 28:
 				case 33:
 					if (player == null)
@@ -683,7 +683,7 @@ namespace ManagedDoom
 
 			switch ((int)line.Special)
 			{
-				// Blue Lock
+				// Blue Lock.
 				case 99:
 				case 133:
 					if (player == null)
@@ -699,7 +699,7 @@ namespace ManagedDoom
 					}
 					break;
 
-				// Red Lock
+				// Red Lock.
 				case 134:
 				case 135:
 					if (player == null)
@@ -715,7 +715,7 @@ namespace ManagedDoom
 					}
 					break;
 
-				// Yellow Lock
+				// Yellow Lock.
 				case 136:
 				case 137:
 					if (player == null)
@@ -768,7 +768,7 @@ namespace ManagedDoom
 				if (h >= heightList.Length)
 				{
 					// Exit.
-					throw new Exception("Sector with more than 40 adjoining sectors");
+					throw new Exception("Too many adjoining sectors!");
 				}
 			}
 
@@ -823,7 +823,7 @@ namespace ManagedDoom
 
 				result = true;
 
-				// Find lowest & highest floors around sector.
+				// Find lowest and highest floors around sector.
 				var plat = ThinkerPool.RentPlatform(world);
 				world.Thinkers.Add(plat);
 				plat.Type = type;
@@ -840,7 +840,7 @@ namespace ManagedDoom
 						plat.High = FindNextHighestFloor(sector, sector.FloorHeight);
 						plat.Wait = 0;
 						plat.Status = PlatformState.Up;
-						// NO MORE DAMAGE, IF APPLICABLE.
+						// No more damage, if applicable.
 						sector.Special = 0;
 						world.StartSound(sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
 						break;
@@ -965,7 +965,7 @@ namespace ManagedDoom
 				}
 			}
 
-			throw new Exception("The platform was not found.");
+			throw new Exception("The platform was not found!");
 		}
 
 
@@ -986,7 +986,7 @@ namespace ManagedDoom
 			{
 				var sector = sectors[sectorNumber];
 
-				// ALREADY MOVING?  IF SO, KEEP GOING...
+				// Already moving? If so, keep going...
 				if (sector.SpecialData != null)
 				{
 					continue;
@@ -1468,17 +1468,17 @@ namespace ManagedDoom
 							continue;
 						}
 
-						// Not a teleportman.
 						if (dest.Type != MobjType.Teleportman)
 						{
+							// Not a teleportman.
 							continue;
 						}
 
 						var sector = dest.Subsector.Sector;
 
-						// Wrong sector.
 						if (sector.Number != i)
 						{
+							// Wrong sector.
 							continue;
 						}
 
@@ -1517,9 +1517,9 @@ namespace ManagedDoom
 							MobjType.Tfog);
 						world.StartSound(fog2, Sfx.TELEPT, SfxType.Misc);
 
-						// Don't move for a bit.
 						if (thing.Player != null)
 						{
+							// Don't move for a bit.
 							thing.ReactionTime = 18;
 						}
 
@@ -1639,7 +1639,7 @@ namespace ManagedDoom
 			{
 				var s1 = sectors[sectorNumber];
 
-				// ALREADY MOVING?  IF SO, KEEP GOING...
+				// Already moving? If so, keep going...
 				if (s1.SpecialData != null)
 				{
 					continue;
@@ -1648,6 +1648,10 @@ namespace ManagedDoom
 				result = true;
 
 				var s2 = GetNextSector(s1.Lines[0], s1);
+
+				//
+				// The code below is based on chocolate-doom's EV_DoDonut implementation.
+				//
 
 				if (s2 == null)
 				{

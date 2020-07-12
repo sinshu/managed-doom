@@ -546,8 +546,10 @@ namespace ManagedDoom
             var angle = (Angle.Ang45.Data >> Trig.AngleToFineShift) *
                 ((int)Math.Round(mthing.Angle.ToDegree()) / 45);
 
-            // The code below is taken from chocolate-doom.
-            // This is necessary to test compatibility of deathmatch game.
+            //
+            // The code below is based on chocolate-doom's G_CheckSpot implementation.
+            //
+
             Fixed xa;
             Fixed ya;
             switch (angle)
