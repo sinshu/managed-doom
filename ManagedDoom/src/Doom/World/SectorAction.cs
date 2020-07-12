@@ -877,7 +877,7 @@ namespace ManagedDoom
 					activePlatforms[i].Tag == tag &&
 					activePlatforms[i].Status == PlatformState.InStasis)
 				{
-					activePlatforms[i].Status = activePlatforms[i].Oldstatus;
+					activePlatforms[i].Status = activePlatforms[i].OldStatus;
 					activePlatforms[i].ThinkerState = ThinkerState.Active;
 				}
 			}
@@ -891,7 +891,7 @@ namespace ManagedDoom
 					activePlatforms[j].Status != PlatformState.InStasis &&
 					activePlatforms[j].Tag == line.Tag)
 				{
-					activePlatforms[j].Oldstatus = activePlatforms[j].Status;
+					activePlatforms[j].OldStatus = activePlatforms[j].Status;
 					activePlatforms[j].Status = PlatformState.InStasis;
 					activePlatforms[j].ThinkerState = ThinkerState.InStasis;
 				}

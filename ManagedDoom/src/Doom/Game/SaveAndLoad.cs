@@ -324,7 +324,7 @@ namespace ManagedDoom
                             Write(data, ptr + 28, plat.Wait);
                             Write(data, ptr + 32, plat.Count);
                             Write(data, ptr + 36, (int)plat.Status);
-                            Write(data, ptr + 40, (int)plat.Oldstatus);
+                            Write(data, ptr + 40, (int)plat.OldStatus);
                             Write(data, ptr + 44, plat.Crush ? 1 : 0);
                             Write(data, ptr + 48, plat.Tag);
                             Write(data, ptr + 52, (int)plat.Type);
@@ -808,7 +808,7 @@ namespace ManagedDoom
                             plat.Wait = BitConverter.ToInt32(data, ptr + 28);
                             plat.Count = BitConverter.ToInt32(data, ptr + 32);
                             plat.Status = (PlatformState)BitConverter.ToInt32(data, ptr + 36);
-                            plat.Oldstatus = (PlatformState)BitConverter.ToInt32(data, ptr + 40);
+                            plat.OldStatus = (PlatformState)BitConverter.ToInt32(data, ptr + 40);
                             plat.Crush = BitConverter.ToInt32(data, ptr + 44) != 0;
                             plat.Tag = BitConverter.ToInt32(data, ptr + 48);
                             plat.Type = (PlatformType)BitConverter.ToInt32(data, ptr + 52);
