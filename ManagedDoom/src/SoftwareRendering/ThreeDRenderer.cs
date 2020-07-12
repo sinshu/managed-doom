@@ -281,6 +281,7 @@ namespace ManagedDoom.SoftwareRendering
 
         private void ResetSkyRendering()
         {
+            // The code below is based on prboom-plus' R_InitSkyMap.
             var num = (long)Fixed.FracUnit * screenWidth * 200;
             var den = windowWidth * screenHeight;
             skyInvScale = new Fixed((int)(num / den));
@@ -2645,6 +2646,7 @@ namespace ManagedDoom.SoftwareRendering
             // Store information in a vissprite.
             var vis = weaponSprite;
             vis.MobjFlags = 0;
+            // The code below contains crispy-doom's weapon position fix in R_DrawPSprite.
             vis.TextureAlt = Fixed.FromInt(100) + Fixed.One / 4 - (psp.Sy - Fixed.FromInt(lump.TopOffset));
             vis.X1 = x1 < 0 ? 0 : x1;
             vis.X2 = x2 >= windowWidth ? windowWidth - 1 : x2;

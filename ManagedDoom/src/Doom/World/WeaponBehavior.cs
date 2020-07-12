@@ -374,7 +374,7 @@ namespace ManagedDoom
 
             if (targetAngle - player.Mobj.Angle > Angle.Ang180)
             {
-                // The cast to int below is necessary to prevent demo desync. Why?
+                // The code below is based on Mocha Doom's A_Saw implementation.
                 if ((int)(targetAngle - player.Mobj.Angle).Data < -Angle.Ang90.Data / 20)
                 {
                     player.Mobj.Angle = targetAngle + Angle.Ang90 / 21;
