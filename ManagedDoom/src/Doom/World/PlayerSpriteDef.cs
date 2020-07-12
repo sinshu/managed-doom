@@ -4,17 +4,41 @@ namespace ManagedDoom
 {
     public sealed class PlayerSpriteDef
     {
-        public MobjStateDef State;
-        public int Tics;
-        public Fixed Sx;
-        public Fixed Sy;
+        private MobjStateDef state;
+        private int tics;
+        private Fixed sx;
+        private Fixed sy;
 
         public void Clear()
         {
-            State = null;
-            Tics = 0;
-            Sx = Fixed.Zero;
-            Sy = Fixed.Zero;
+            state = null;
+            tics = 0;
+            sx = Fixed.Zero;
+            sy = Fixed.Zero;
+        }
+
+        public MobjStateDef State
+        {
+            get => state;
+            set => state = value;
+        }
+
+        public int Tics
+        {
+            get => tics;
+            set => tics = value;
+        }
+
+        public Fixed Sx
+        {
+            get => sx;
+            set => sx = value;
+        }
+
+        public Fixed Sy
+        {
+            get => sy;
+            set => sy = value;
         }
     }
 }

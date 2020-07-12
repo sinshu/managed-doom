@@ -4,6 +4,20 @@ namespace ManagedDoom
 {
 	public sealed class SectorAction
 	{
+		//
+		// SECTOR HEIGHT CHANGING
+		// After modifying a sectors floor or ceiling height,
+		// call this routine to adjust the positions
+		// of all things that touch the sector.
+		//
+		// If anything doesn't fit anymore, true will be returned.
+		// If crunch is true, they will take damage
+		// as they are being crushed.
+		// If Crunch is false, you should set the sector height back
+		// the way it was and call P_ChangeSector again
+		// to undo the changes.
+		//
+
 		private World world;
 
 		public SectorAction(World world)
@@ -12,6 +26,7 @@ namespace ManagedDoom
 
 			InitSectorChange();
 		}
+
 
 
 		private bool crushChange;
@@ -114,7 +129,7 @@ namespace ManagedDoom
 			return true;
 		}
 
-		public bool ChangeSector(Sector sector, bool crunch)
+		private bool ChangeSector(Sector sector, bool crunch)
 		{
 			noFit = false;
 			crushChange = crunch;
@@ -134,7 +149,9 @@ namespace ManagedDoom
 			return noFit;
 		}
 
-
+		/// <summary>
+		/// Move a plane (floor or ceiling) and check for crushing.
+		/// </summary>
 		public SectorActionResult MovePlane(
 			Sector sector,
 			Fixed speed,
@@ -146,11 +163,11 @@ namespace ManagedDoom
 			switch (floorOrCeiling)
 			{
 				case 0:
-					// FLOOR
+					// Floor.
 					switch (direction)
 					{
 						case -1:
-							// DOWN
+							// Down.
 							if (sector.FloorHeight - speed < dest)
 							{
 								var lastPos = sector.FloorHeight;
@@ -160,6 +177,7 @@ namespace ManagedDoom
 									sector.FloorHeight = lastPos;
 									ChangeSector(sector, crush);
 								}
+
 								return SectorActionResult.PastDestination;
 							}
 							else
@@ -170,13 +188,15 @@ namespace ManagedDoom
 								{
 									sector.FloorHeight = lastPos;
 									ChangeSector(sector, crush);
+
 									return SectorActionResult.Crushed;
 								}
 							}
+
 							break;
 
 						case 1:
-							// UP
+							// Up.
 							if (sector.FloorHeight + speed > dest)
 							{
 								var lastPos = sector.FloorHeight;
@@ -186,11 +206,12 @@ namespace ManagedDoom
 									sector.FloorHeight = lastPos;
 									ChangeSector(sector, crush);
 								}
+
 								return SectorActionResult.PastDestination;
 							}
 							else
 							{
-								// COULD GET CRUSHED
+								// Could get crushed.
 								var lastPos = sector.FloorHeight;
 								sector.FloorHeight += speed;
 								if (ChangeSector(sector, crush))
@@ -201,19 +222,21 @@ namespace ManagedDoom
 									}
 									sector.FloorHeight = lastPos;
 									ChangeSector(sector, crush);
+
 									return SectorActionResult.Crushed;
 								}
 							}
+
 							break;
 					}
 					break;
 
 				case 1:
-					// CEILING
+					// Ceiling.
 					switch (direction)
 					{
 						case -1:
-							// DOWN
+							// Down.
 							if (sector.CeilingHeight - speed < dest)
 							{
 								var lastPos = sector.CeilingHeight;
@@ -223,11 +246,12 @@ namespace ManagedDoom
 									sector.CeilingHeight = lastPos;
 									ChangeSector(sector, crush);
 								}
+
 								return SectorActionResult.PastDestination;
 							}
 							else
 							{
-								// COULD GET CRUSHED
+								// Could get crushed.
 								var lastPos = sector.CeilingHeight;
 								sector.CeilingHeight -= speed;
 								if (ChangeSector(sector, crush))
@@ -238,9 +262,11 @@ namespace ManagedDoom
 									}
 									sector.CeilingHeight = lastPos;
 									ChangeSector(sector, crush);
+
 									return SectorActionResult.Crushed;
 								}
 							}
+
 							break;
 
 						case 1:
@@ -254,6 +280,7 @@ namespace ManagedDoom
 									sector.CeilingHeight = lastPos;
 									ChangeSector(sector, crush);
 								}
+
 								return SectorActionResult.PastDestination;
 							}
 							else
@@ -261,14 +288,15 @@ namespace ManagedDoom
 								sector.CeilingHeight += speed;
 								ChangeSector(sector, crush);
 							}
+
 							break;
 					}
+
 					break;
 			}
 
 			return SectorActionResult.OK;
 		}
-
 
 		private Sector GetNextSector(LineDef line, Sector sector)
 		{
@@ -393,10 +421,18 @@ namespace ManagedDoom
 		}
 
 
+
+		////////////////////////////////////////////////////////////
+		// Door
+		////////////////////////////////////////////////////////////
+
 		private static readonly Fixed doorSpeed = Fixed.FromInt(2);
 		private static readonly int doorWait = 150;
 
-		public void VerticalDoor(LineDef line, Mobj thing)
+		/// <summary>
+		/// Open a door manually, no tag value.
+		/// </summary>
+		public void DoLocalDoor(LineDef line, Mobj thing)
 		{
 			//	Check for locks.
 			var player = thing.Player;
@@ -557,59 +593,6 @@ namespace ManagedDoom
 			newDoor.TopHeight -= Fixed.FromInt(4);
 		}
 
-
-		private static readonly int maxAdjoiningSectorCount = 40;
-		private Fixed[] heightList = new Fixed[maxAdjoiningSectorCount];
-
-		private Fixed FindNextHighestFloor(Sector sector, Fixed currentHeight)
-		{
-			var height = currentHeight;
-			var h = 0;
-
-			for (var i = 0; i < sector.Lines.Length; i++)
-			{
-				var check = sector.Lines[i];
-
-				var other = GetNextSector(check, sector);
-				if (other == null)
-				{
-					continue;
-				}
-
-				if (other.FloorHeight > height)
-				{
-					heightList[h++] = other.FloorHeight;
-				}
-
-				// Check for overflow.
-				if (h >= heightList.Length)
-				{
-					// Exit.
-					throw new Exception("Sector with more than 40 adjoining sectors");
-				}
-			}
-
-			// Find lowest height in list.
-			if (h == 0)
-			{
-				return currentHeight;
-			}
-
-			var min = heightList[0];
-
-			// Range checking? 
-			for (var i = 1; i < h; i++)
-			{
-				if (heightList[i] < min)
-				{
-					min = heightList[i];
-				}
-			}
-
-			return min;
-		}
-
-
 		public bool DoDoor(LineDef line, VlDoorType type)
 		{
 			var sectors = world.Map.Sectors;
@@ -753,6 +736,63 @@ namespace ManagedDoom
 		}
 
 
+
+		////////////////////////////////////////////////////////////
+		// Platform
+		////////////////////////////////////////////////////////////
+
+		private static readonly int maxAdjoiningSectorCount = 40;
+		private Fixed[] heightList = new Fixed[maxAdjoiningSectorCount];
+
+		private Fixed FindNextHighestFloor(Sector sector, Fixed currentHeight)
+		{
+			var height = currentHeight;
+			var h = 0;
+
+			for (var i = 0; i < sector.Lines.Length; i++)
+			{
+				var check = sector.Lines[i];
+
+				var other = GetNextSector(check, sector);
+				if (other == null)
+				{
+					continue;
+				}
+
+				if (other.FloorHeight > height)
+				{
+					heightList[h++] = other.FloorHeight;
+				}
+
+				// Check for overflow.
+				if (h >= heightList.Length)
+				{
+					// Exit.
+					throw new Exception("Sector with more than 40 adjoining sectors");
+				}
+			}
+
+			// Find lowest height in list.
+			if (h == 0)
+			{
+				return currentHeight;
+			}
+
+			var min = heightList[0];
+
+			// Range checking? 
+			for (var i = 1; i < h; i++)
+			{
+				if (heightList[i] < min)
+				{
+					min = heightList[i];
+				}
+			}
+
+			return min;
+		}
+
+
 		private static readonly int platformWait = 3;
 		private static readonly Fixed platformSpeed = Fixed.One;
 
@@ -865,7 +905,6 @@ namespace ManagedDoom
 		}
 
 
-
 		private static readonly int maxPlatformCount = 60;
 		private Platform[] activePlatforms = new Platform[maxPlatformCount];
 
@@ -930,186 +969,10 @@ namespace ManagedDoom
 		}
 
 
-		public bool Teleport(LineDef line, int side, Mobj thing)
-		{
-			// Don't teleport missiles.
-			if ((thing.Flags & MobjFlags.Missile) != 0)
-			{
-				return false;
-			}
 
-			// Don't teleport if hit back of line, so you can get out of teleporter.
-			if (side == 1)
-			{
-				return false;
-			}
-
-			var sectors = world.Map.Sectors;
-			var tag = line.Tag;
-
-			for (var i = 0; i < sectors.Length; i++)
-			{
-				if (sectors[i].Tag == tag)
-				{
-					foreach (var thinker in world.Thinkers)
-					{
-						var dest = thinker as Mobj;
-
-						if (dest == null)
-						{
-							// Not a mobj.
-							continue;
-						}
-
-						// Not a teleportman.
-						if (dest.Type != MobjType.Teleportman)
-						{
-							continue;
-						}
-
-						var sector = dest.Subsector.Sector;
-
-						// Wrong sector.
-						if (sector.Number != i)
-						{
-							continue;
-						}
-
-						var oldX = thing.X;
-						var oldY = thing.Y;
-						var oldZ = thing.Z;
-
-						if (!world.ThingMovement.TeleportMove(thing, dest.X, dest.Y))
-						{
-							return false;
-						}
-
-						thing.Z = thing.FloorZ;
-
-						if (thing.Player != null)
-						{
-							thing.Player.ViewZ = thing.Z + thing.Player.ViewHeight;
-						}
-
-						var ta = world.ThingAllocation;
-
-						// Spawn teleport fog at source position.
-						var fog1 = ta.SpawnMobj(
-							oldX,
-							oldY,
-							oldZ,
-							MobjType.Tfog);
-						world.StartSound(fog1, Sfx.TELEPT, SfxType.Misc);
-
-						// Destination position.
-						var angle = dest.Angle;
-						var fog2 = ta.SpawnMobj(
-							dest.X + 20 * Trig.Cos(angle),
-							dest.Y + 20 * Trig.Sin(angle),
-							thing.Z,
-							MobjType.Tfog);
-						world.StartSound(fog2, Sfx.TELEPT, SfxType.Misc);
-
-						// Don't move for a bit.
-						if (thing.Player != null)
-						{
-							thing.ReactionTime = 18;
-						}
-
-						thing.Angle = dest.Angle;
-						thing.MomX = thing.MomY = thing.MomZ = Fixed.Zero;
-
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
-
-
-		public void StartLightStrobing(LineDef line)
-		{
-			var sectors = world.Map.Sectors;
-			var sectorNumber = -1;
-
-			while ((sectorNumber = FindSectorFromLineTag(line, sectorNumber)) >= 0)
-			{
-				var sector = sectors[sectorNumber];
-
-				if (sector.SpecialData != null)
-				{
-					continue;
-				}
-
-				world.LightingChange.SpawnStrobeFlash(sector, StrobeFlash.SLOWDARK, 0);
-			}
-		}
-
-		public void TurnTagLightsOff(LineDef line)
-		{
-			var sectors = world.Map.Sectors;
-
-			for (var i = 0; i < sectors.Length; i++)
-			{
-				var sector = sectors[i];
-
-				if (sector.Tag == line.Tag)
-				{
-					var min = sector.LightLevel;
-
-					for (var j = 0; j < sector.Lines.Length; j++)
-					{
-						var target = GetNextSector(sector.Lines[j], sector);
-						if (target == null)
-						{
-							continue;
-						}
-
-						if (target.LightLevel < min)
-						{
-							min = target.LightLevel;
-						}
-					}
-
-					sector.LightLevel = min;
-				}
-			}
-		}
-
-		public void LightTurnOn(LineDef line, int bright)
-		{
-			var sectors = world.Map.Sectors;
-
-			for (var i = 0; i < sectors.Length; i++)
-			{
-				var sector = sectors[i];
-
-				if (sector.Tag == line.Tag)
-				{
-					// bright = 0 means to search for highest light level surrounding sector.
-					if (bright == 0)
-					{
-						for (var j = 0; j < sector.Lines.Length; j++)
-						{
-							var target = GetNextSector(sector.Lines[j], sector);
-							if (target == null)
-							{
-								continue;
-							}
-
-							if (target.LightLevel > bright)
-							{
-								bright = target.LightLevel;
-							}
-						}
-					}
-
-					sector.LightLevel = bright;
-				}
-			}
-		}
-
+		////////////////////////////////////////////////////////////
+		// Floor
+		////////////////////////////////////////////////////////////
 
 		private static readonly Fixed floorSpeed = Fixed.One;
 
@@ -1300,7 +1163,7 @@ namespace ManagedDoom
 			{
 				var sector = sectors[sectorNumber];
 
-				// ALREADY MOVING?  IF SO, KEEP GOING...
+				// Already moving? If so, keep going...
 				if (sector.SpecialData != null)
 				{
 					continue;
@@ -1397,9 +1260,89 @@ namespace ManagedDoom
 
 
 
+		////////////////////////////////////////////////////////////
+		// Ceiling
+		////////////////////////////////////////////////////////////
 
+		public bool DoCeiling(LineDef line, CeilingMoveType type)
+		{
+			// Reactivate in-stasis ceilings...for certain types.
+			switch (type)
+			{
+				case CeilingMoveType.FastCrushAndRaise:
+				case CeilingMoveType.SilentCrushAndRaise:
+				case CeilingMoveType.CrushAndRaise:
+					ActivateInStasisCeiling(line);
+					break;
 
+				default:
+					break;
+			}
 
+			var sectors = world.Map.Sectors;
+			var sectorNumber = -1;
+			var result = false;
+
+			while ((sectorNumber = FindSectorFromLineTag(line, sectorNumber)) >= 0)
+			{
+				var sector = sectors[sectorNumber];
+				if (sector.SpecialData != null)
+				{
+					continue;
+				}
+
+				result = true;
+
+				// New door thinker.
+				var ceiling = ThinkerPool.RentCeiligMove(world);
+				world.Thinkers.Add(ceiling);
+				sector.SpecialData = ceiling;
+				ceiling.Sector = sector;
+				ceiling.Crush = false;
+
+				switch (type)
+				{
+					case CeilingMoveType.FastCrushAndRaise:
+						ceiling.Crush = true;
+						ceiling.TopHeight = sector.CeilingHeight;
+						ceiling.BottomHeight = sector.FloorHeight + Fixed.FromInt(8);
+						ceiling.Direction = -1;
+						ceiling.Speed = CeilingSpeed * 2;
+						break;
+
+					case CeilingMoveType.SilentCrushAndRaise:
+					case CeilingMoveType.CrushAndRaise:
+					case CeilingMoveType.LowerAndCrush:
+					case CeilingMoveType.LowerToFloor:
+						if (type == CeilingMoveType.SilentCrushAndRaise
+							|| type == CeilingMoveType.CrushAndRaise)
+						{
+							ceiling.Crush = true;
+							ceiling.TopHeight = sector.CeilingHeight;
+						}
+						ceiling.BottomHeight = sector.FloorHeight;
+						if (type != CeilingMoveType.LowerToFloor)
+						{
+							ceiling.BottomHeight += Fixed.FromInt(8);
+						}
+						ceiling.Direction = -1;
+						ceiling.Speed = CeilingSpeed;
+						break;
+
+					case CeilingMoveType.RaiseToHighest:
+						ceiling.TopHeight = FindHighestCeilingSurrounding(sector);
+						ceiling.Direction = 1;
+						ceiling.Speed = CeilingSpeed;
+						break;
+				}
+
+				ceiling.Tag = sector.Tag;
+				ceiling.Type = type;
+				AddActiveCeiling(ceiling);
+			}
+
+			return result;
+		}
 
 
 		public static readonly Fixed CeilingSpeed = Fixed.One;
@@ -1488,85 +1431,203 @@ namespace ManagedDoom
 			return result;
 		}
 
-		public bool DoCeiling(LineDef line, CeilingMoveType type)
+
+
+		////////////////////////////////////////////////////////////
+		// Teleport
+		////////////////////////////////////////////////////////////
+
+		public bool Teleport(LineDef line, int side, Mobj thing)
 		{
-			//	Reactivate in-stasis ceilings...for certain types.
-			switch (type)
+			// Don't teleport missiles.
+			if ((thing.Flags & MobjFlags.Missile) != 0)
 			{
-				case CeilingMoveType.FastCrushAndRaise:
-				case CeilingMoveType.SilentCrushAndRaise:
-				case CeilingMoveType.CrushAndRaise:
-					ActivateInStasisCeiling(line);
-					break;
-				default:
-					break;
+				return false;
+			}
+
+			// Don't teleport if hit back of line, so you can get out of teleporter.
+			if (side == 1)
+			{
+				return false;
 			}
 
 			var sectors = world.Map.Sectors;
+			var tag = line.Tag;
+
+			for (var i = 0; i < sectors.Length; i++)
+			{
+				if (sectors[i].Tag == tag)
+				{
+					foreach (var thinker in world.Thinkers)
+					{
+						var dest = thinker as Mobj;
+
+						if (dest == null)
+						{
+							// Not a mobj.
+							continue;
+						}
+
+						// Not a teleportman.
+						if (dest.Type != MobjType.Teleportman)
+						{
+							continue;
+						}
+
+						var sector = dest.Subsector.Sector;
+
+						// Wrong sector.
+						if (sector.Number != i)
+						{
+							continue;
+						}
+
+						var oldX = thing.X;
+						var oldY = thing.Y;
+						var oldZ = thing.Z;
+
+						if (!world.ThingMovement.TeleportMove(thing, dest.X, dest.Y))
+						{
+							return false;
+						}
+
+						thing.Z = thing.FloorZ;
+
+						if (thing.Player != null)
+						{
+							thing.Player.ViewZ = thing.Z + thing.Player.ViewHeight;
+						}
+
+						var ta = world.ThingAllocation;
+
+						// Spawn teleport fog at source position.
+						var fog1 = ta.SpawnMobj(
+							oldX,
+							oldY,
+							oldZ,
+							MobjType.Tfog);
+						world.StartSound(fog1, Sfx.TELEPT, SfxType.Misc);
+
+						// Destination position.
+						var angle = dest.Angle;
+						var fog2 = ta.SpawnMobj(
+							dest.X + 20 * Trig.Cos(angle),
+							dest.Y + 20 * Trig.Sin(angle),
+							thing.Z,
+							MobjType.Tfog);
+						world.StartSound(fog2, Sfx.TELEPT, SfxType.Misc);
+
+						// Don't move for a bit.
+						if (thing.Player != null)
+						{
+							thing.ReactionTime = 18;
+						}
+
+						thing.Angle = dest.Angle;
+						thing.MomX = thing.MomY = thing.MomZ = Fixed.Zero;
+
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+
+
+		////////////////////////////////////////////////////////////
+		// Lighting
+		////////////////////////////////////////////////////////////
+
+		public void TurnTagLightsOff(LineDef line)
+		{
+			var sectors = world.Map.Sectors;
+
+			for (var i = 0; i < sectors.Length; i++)
+			{
+				var sector = sectors[i];
+
+				if (sector.Tag == line.Tag)
+				{
+					var min = sector.LightLevel;
+
+					for (var j = 0; j < sector.Lines.Length; j++)
+					{
+						var target = GetNextSector(sector.Lines[j], sector);
+						if (target == null)
+						{
+							continue;
+						}
+
+						if (target.LightLevel < min)
+						{
+							min = target.LightLevel;
+						}
+					}
+
+					sector.LightLevel = min;
+				}
+			}
+		}
+
+		public void LightTurnOn(LineDef line, int bright)
+		{
+			var sectors = world.Map.Sectors;
+
+			for (var i = 0; i < sectors.Length; i++)
+			{
+				var sector = sectors[i];
+
+				if (sector.Tag == line.Tag)
+				{
+					// bright = 0 means to search for highest light level surrounding sector.
+					if (bright == 0)
+					{
+						for (var j = 0; j < sector.Lines.Length; j++)
+						{
+							var target = GetNextSector(sector.Lines[j], sector);
+							if (target == null)
+							{
+								continue;
+							}
+
+							if (target.LightLevel > bright)
+							{
+								bright = target.LightLevel;
+							}
+						}
+					}
+
+					sector.LightLevel = bright;
+				}
+			}
+		}
+
+
+		public void StartLightStrobing(LineDef line)
+		{
+			var sectors = world.Map.Sectors;
 			var sectorNumber = -1;
-			var result = false;
 
 			while ((sectorNumber = FindSectorFromLineTag(line, sectorNumber)) >= 0)
 			{
 				var sector = sectors[sectorNumber];
+
 				if (sector.SpecialData != null)
 				{
 					continue;
 				}
 
-				result = true;
-
-				// New door thinker.
-				var ceiling = ThinkerPool.RentCeiligMove(world);
-				world.Thinkers.Add(ceiling);
-				sector.SpecialData = ceiling;
-				ceiling.Sector = sector;
-				ceiling.Crush = false;
-
-				switch (type)
-				{
-					case CeilingMoveType.FastCrushAndRaise:
-						ceiling.Crush = true;
-						ceiling.TopHeight = sector.CeilingHeight;
-						ceiling.BottomHeight = sector.FloorHeight + Fixed.FromInt(8);
-						ceiling.Direction = -1;
-						ceiling.Speed = CeilingSpeed * 2;
-						break;
-
-					case CeilingMoveType.SilentCrushAndRaise:
-					case CeilingMoveType.CrushAndRaise:
-					case CeilingMoveType.LowerAndCrush:
-					case CeilingMoveType.LowerToFloor:
-						if (type == CeilingMoveType.SilentCrushAndRaise
-							|| type == CeilingMoveType.CrushAndRaise)
-						{
-							ceiling.Crush = true;
-							ceiling.TopHeight = sector.CeilingHeight;
-						}
-						ceiling.BottomHeight = sector.FloorHeight;
-						if (type != CeilingMoveType.LowerToFloor)
-						{
-							ceiling.BottomHeight += Fixed.FromInt(8);
-						}
-						ceiling.Direction = -1;
-						ceiling.Speed = CeilingSpeed;
-						break;
-
-					case CeilingMoveType.RaiseToHighest:
-						ceiling.TopHeight = FindHighestCeilingSurrounding(sector);
-						ceiling.Direction = 1;
-						ceiling.Speed = CeilingSpeed;
-						break;
-				}
-
-				ceiling.Tag = sector.Tag;
-				ceiling.Type = type;
-				AddActiveCeiling(ceiling);
+				world.LightingChange.SpawnStrobeFlash(sector, StrobeFlash.SLOWDARK, 0);
 			}
-
-			return result;
 		}
 
+
+
+		////////////////////////////////////////////////////////////
+		// Miscellaneous
+		////////////////////////////////////////////////////////////
 
 		public bool DoDonut(LineDef line)
 		{

@@ -141,7 +141,7 @@ namespace ManagedDoom
 
 				case 117: // Blazing door raise.
 				case 118: // Blazing door open.
-					sa.VerticalDoor(line, thing);
+					sa.DoLocalDoor(line, thing);
 					break;
 
 				// SWITCHES
