@@ -17,7 +17,7 @@ namespace ManagedDoom
         // Don't use the sector links (invisible but touchable).
         NoSector = 8,
 
-        // Don't use the blocklinks (inert but displayable)
+        // Don't use the blocklinks (inert but displayable).
         NoBlockMap = 16,
 
         // Not to be activated by sound, deaf monster.
@@ -30,12 +30,12 @@ namespace ManagedDoom
         JustAttacked = 128,
 
         // On level spawning (initial position),
-        //  hang from ceiling instead of stand on floor.
+        // hang from ceiling instead of stand on floor.
         SpawnCeiling = 256,
 
         // Don't apply gravity (every tic),
-        //  that is, object will float, keeping current height
-        //  or changing it actively.
+        // that is, object will float, keeping current height
+        // or changing it actively.
         NoGravity = 512,
 
         // Movement flags.
@@ -56,7 +56,7 @@ namespace ManagedDoom
         Float = 0x4000,
 
         // Don't cross lines
-        //   ??? or look at heights on teleport.
+        // ??? or look at heights on teleport.
         Teleport = 0x8000,
 
         // Don't hit same species, explode on block.
@@ -68,28 +68,28 @@ namespace ManagedDoom
         Dropped = 0x20000,
 
         // Use fuzzy draw (shadow demons or spectres),
-        //  temporary player invisibility powerup.
+        // temporary player invisibility powerup.
         Shadow = 0x40000,
 
         // Flag: don't bleed when shot (use puff),
-        //  barrels and shootable furniture shall not bleed.
+        // barrels and shootable furniture shall not bleed.
         NoBlood = 0x80000,
 
         // Don't stop moving halfway off a step,
-        //  that is, have dead bodies slide down all the way.
+        // that is, have dead bodies slide down all the way.
         Corpse = 0x100000,
 
         // Floating to a height for a move, ???
-        //  don't auto float to target's height.
+        // don't auto float to target's height.
         InFloat = 0x200000,
 
         // On kill, count this enemy object
-        //  towards intermission kill total.
+        // towards intermission kill total.
         // Happy gathering.
         CountKill = 0x400000,
 
         // On picking up, count this item object
-        //  towards intermission item total.
+        // towards intermission item total.
         CountItem = 0x800000,
 
         // Special handling: skull in flight.
@@ -97,13 +97,13 @@ namespace ManagedDoom
         SkullFly = 0x1000000,
 
         // Don't spawn this object
-        //  in death match mode (e.g. key cards).
+        // in death match mode (e.g. key cards).
         NotDeathmatch = 0x2000000,
 
         // Player sprites in multiplayer modes are modified
-        //  using an internal color lookup table for re-indexing.
+        // using an internal color lookup table for re-indexing.
         // If 0x4 0x8 or 0xc,
-        //  use a translation table for player colormaps
+        // use a translation table for player colormaps
         Translation = 0xc000000,
 
         // Hmm ???.
