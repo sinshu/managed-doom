@@ -34,7 +34,12 @@ namespace ManagedDoom
             thingInterceptFunc = AddThingIntercepts;
         }
 
-
+        /// <summary>
+        /// Looks for lines in the given block that intercept the given trace
+        /// to add to the intercepts list.
+        /// A line is crossed if its endpoints are on opposite sidesof the trace.
+        /// Returns true if earlyOut and a solid line hit.
+        /// </summary>
         private bool AddLineIntercepts(LineDef line)
         {
             int s1;
@@ -86,7 +91,9 @@ namespace ManagedDoom
             return true;
         }
 
-
+        /// <summary>
+        /// Looks for things that intercept the given trace.
+        /// </summary>
         private bool AddThingIntercepts(Mobj thing)
         {
             var tracePositive = (trace.Dx.Data ^ trace.Dy.Data) > 0;
@@ -143,7 +150,10 @@ namespace ManagedDoom
             return true;
         }
 
-
+        /// <summary>
+        /// Returns the fractional intercept point along the first divline.
+        /// This is only called by the addthings and addlines traversers.
+        /// </summary>
         private Fixed InterceptVector(DivLine v2, DivLine v1)
         {
             var den = (v1.Dy >> 8) * v2.Dx - (v1.Dx >> 8) * v2.Dy;
@@ -160,7 +170,9 @@ namespace ManagedDoom
             return frac;
         }
 
-
+        /// <summary>
+        /// Returns true if the traverser function returns true for all lines.
+        /// </summary>
         private bool TraverseIntercepts(Func<Intercept, bool> func, Fixed maxFrac)
         {
             var count = interceptCount;
@@ -198,6 +210,10 @@ namespace ManagedDoom
             return true;
         }
 
+        /// <summary>
+        /// Traces a line from x1, y1 to x2, y2, calling the traverser function for each.
+        /// Returns true if the traverser function returns true for all lines.
+        /// </summary>
         public bool PathTraverse(Fixed x1, Fixed y1, Fixed x2, Fixed y2, PathTraverseFlags flags, Func<Intercept, bool> trav)
         {
             earlyOut = (flags & PathTraverseFlags.EarlyOut) != 0;
@@ -334,7 +350,6 @@ namespace ManagedDoom
             // Go through the sorted list.
             return TraverseIntercepts(trav, Fixed.One);
         }
-
 
         public DivLine Trace => trace;
     }
