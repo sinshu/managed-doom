@@ -51,15 +51,15 @@ namespace ManagedDoom
 
             world.Thinkers.Add(strobe);
 
-            strobe.sector = sector;
-            strobe.darktime = fastOrSlow;
-            strobe.brighttime = StrobeFlash.STROBEBRIGHT;
-            strobe.maxlight = sector.LightLevel;
-            strobe.minlight = FindMinSurroundingLight(sector, sector.LightLevel);
+            strobe.Sector = sector;
+            strobe.DarkTime = fastOrSlow;
+            strobe.BrightTime = StrobeFlash.StrobeBright;
+            strobe.MaxLight = sector.LightLevel;
+            strobe.MinLight = FindMinSurroundingLight(sector, sector.LightLevel);
 
-            if (strobe.minlight == strobe.maxlight)
+            if (strobe.MinLight == strobe.MaxLight)
             {
-                strobe.minlight = 0;
+                strobe.MinLight = 0;
             }
 
             // Nothing special about it during gameplay.
@@ -67,11 +67,11 @@ namespace ManagedDoom
 
             if (inSync == 0)
             {
-                strobe.count = (world.Random.Next() & 7) + 1;
+                strobe.Count = (world.Random.Next() & 7) + 1;
             }
             else
             {
-                strobe.count = 1;
+                strobe.Count = 1;
             }
         }
 

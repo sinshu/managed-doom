@@ -358,12 +358,12 @@ namespace ManagedDoom
                             data[ptr++] = (byte)SpecialClass.Strobe;
                             PadPointer();
                             WriteThinkerState(data, ptr + 8, strobe.ThinkerState);
-                            Write(data, ptr + 12, strobe.sector.Number);
-                            Write(data, ptr + 16, strobe.count);
-                            Write(data, ptr + 20, strobe.minlight);
-                            Write(data, ptr + 24, strobe.maxlight);
-                            Write(data, ptr + 28, strobe.darktime);
-                            Write(data, ptr + 32, strobe.brighttime);
+                            Write(data, ptr + 12, strobe.Sector.Number);
+                            Write(data, ptr + 16, strobe.Count);
+                            Write(data, ptr + 20, strobe.MinLight);
+                            Write(data, ptr + 24, strobe.MaxLight);
+                            Write(data, ptr + 28, strobe.DarkTime);
+                            Write(data, ptr + 32, strobe.BrightTime);
                             ptr += 36;
                             continue;
                         }
@@ -837,12 +837,12 @@ namespace ManagedDoom
                             PadPointer();
                             var strobe = ThinkerPool.RentStrobeFlash(world);
                             strobe.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            strobe.sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
-                            strobe.count = BitConverter.ToInt32(data, ptr + 16);
-                            strobe.minlight = BitConverter.ToInt32(data, ptr + 20);
-                            strobe.maxlight = BitConverter.ToInt32(data, ptr + 24);
-                            strobe.darktime = BitConverter.ToInt32(data, ptr + 28);
-                            strobe.brighttime = BitConverter.ToInt32(data, ptr + 32);
+                            strobe.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
+                            strobe.Count = BitConverter.ToInt32(data, ptr + 16);
+                            strobe.MinLight = BitConverter.ToInt32(data, ptr + 20);
+                            strobe.MaxLight = BitConverter.ToInt32(data, ptr + 24);
+                            strobe.DarkTime = BitConverter.ToInt32(data, ptr + 28);
+                            strobe.BrightTime = BitConverter.ToInt32(data, ptr + 32);
                             ptr += 36;
 
                             thinkers.Add(strobe);

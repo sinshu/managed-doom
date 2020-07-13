@@ -4,7 +4,10 @@ namespace ManagedDoom
 {
     public enum StairType
     {
-        Build8, // slowly build by 8
-        Turbo16	// quickly build by 16
+        // Slowly build by 8.
+        Build8,
+
+        // quickly build by 16.
+        Turbo16
     }
 }
