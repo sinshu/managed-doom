@@ -15,6 +15,7 @@ namespace ManagedDoom
         public static readonly Fixed MinValue = new Fixed(int.MinValue);
 
         public static readonly Fixed Epsilon = new Fixed(1);
+        public static readonly Fixed OnePlusEpsilon = new Fixed(FracUnit + 1);
         public static readonly Fixed OneMinusEpsilon = new Fixed(FracUnit - 1);
 
         private int data;

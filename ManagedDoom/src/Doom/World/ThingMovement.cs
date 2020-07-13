@@ -15,6 +15,12 @@ namespace ManagedDoom
             InitTeleportMovement();
         }
 
+
+
+        ////////////////////////////////////////////////////////////
+        // General thing movement
+        ////////////////////////////////////////////////////////////
+
         public static readonly Fixed FloatSpeed = Fixed.FromInt(4);
 
         private static readonly int maxSpecialCrossCount = 16;
@@ -40,7 +46,6 @@ namespace ManagedDoom
         private Func<LineDef, bool> checkLineFunc;
         private Func<Mobj, bool> checkThingFunc;
 
-
         private void InitThingMovement()
         {
             currentBox = new Fixed[4];
@@ -50,6 +55,10 @@ namespace ManagedDoom
         }
 
 
+        /// <summary>
+        /// Links a thing into both a block and a subsector based on
+        /// its x and y. Sets thing.Subsector properly.
+        /// </summary>
         public void SetThingPosition(Mobj thing)
         {
             var map = world.Map;
@@ -102,7 +111,12 @@ namespace ManagedDoom
             }
         }
 
-
+        /// <summary>
+        /// Unlinks a thing from block map and sectors.
+        /// On each position change, BLOCKMAP and other lookups
+        /// maintaining lists ot things inside these structures
+        /// need to be updated.
+        /// </summary>
         public void UnsetThingPosition(Mobj thing)
         {
             var map = world.Map;
@@ -152,6 +166,9 @@ namespace ManagedDoom
         }
 
 
+        /// <summary>
+        /// Adjusts currentFloorZ and currentCeilingZ as lines are contacted.
+        /// </summary>
         private bool CheckLine(LineDef line)
         {
             var mc = world.MapCollision;
@@ -230,7 +247,6 @@ namespace ManagedDoom
             return true;
         }
 
-
         private bool CheckThing(Mobj thing)
         {
             if ((thing.Flags & (MobjFlags.Solid | MobjFlags.Special | MobjFlags.Shootable)) == 0)
@@ -240,7 +256,8 @@ namespace ManagedDoom
 
             var blockDist = thing.Radius + currentThing.Radius;
 
-            if (Fixed.Abs(thing.X - currentX) >= blockDist || Fixed.Abs(thing.Y - currentY) >= blockDist)
+            if (Fixed.Abs(thing.X - currentX) >= blockDist ||
+                Fixed.Abs(thing.Y - currentY) >= blockDist)
             {
                 // Didn't hit it.
                 return true;
@@ -332,7 +349,29 @@ namespace ManagedDoom
             return (thing.Flags & MobjFlags.Solid) == 0;
         }
 
-
+        /// <summary>
+        /// This is purely informative, nothing is modified
+        /// (except things picked up).
+        ///
+        /// In:
+        ///     A Mobj (can be valid or invalid)
+        ///     A position to be checked
+        ///     (doesn't need to be related to the mobj.X and Y)
+        ///
+        /// During:
+        ///     Special things are touched if MobjFlags.PickUp
+        ///     Early out on solid lines?
+        ///
+        /// Out:
+        ///     New subsector
+        ///     CurrentFloorZ
+        ///     CurrentCeilingZ
+        ///     CurrentDropoffZ
+        ///     The lowest point contacted
+        ///     (monsters won't move to a dropoff)
+        ///     crossedSpecials[]
+        ///     crossedSpecialCount
+        /// </summary>
         public bool CheckPosition(Mobj thing, Fixed x, Fixed y)
         {
             var map = world.Map;
@@ -349,14 +388,14 @@ namespace ManagedDoom
             currentBox[Box.Right] = x + currentThing.Radius;
             currentBox[Box.Left] = x - currentThing.Radius;
 
-            var newsubsec = Geometry.PointInSubsector(x, y, map);
+            var newSubsector = Geometry.PointInSubsector(x, y, map);
 
             currentCeilingLine = null;
 
             // The base floor / ceiling is from the subsector that contains the point.
             // Any contacted lines the step closer together will adjust them.
-            currentFloorZ = currentDropoffZ = newsubsec.Sector.FloorHeight;
-            currentCeilingZ = newsubsec.Sector.CeilingHeight;
+            currentFloorZ = currentDropoffZ = newSubsector.Sector.FloorHeight;
+            currentCeilingZ = newSubsector.Sector.CeilingHeight;
 
             var validCount = world.GetNewValidCount();
 
@@ -412,8 +451,10 @@ namespace ManagedDoom
         }
 
 
-        // Attempt to move to a new position, crossing special lines unless
-        // MobjFlags.Teleport is set.
+        /// <summary>
+        /// Attempt to move to a new position, crossing special lines unless
+        /// MobjFlags.Teleport is set.
+        /// </summary>
         public bool TryMove(Mobj thing, Fixed x, Fixed y)
         {
             floatOk = false;
@@ -434,22 +475,22 @@ namespace ManagedDoom
 
                 floatOk = true;
 
-                if ((thing.Flags & MobjFlags.Teleport) == 0
-                    && currentCeilingZ - thing.Z < thing.Height)
+                if ((thing.Flags & MobjFlags.Teleport) == 0 &&
+                    currentCeilingZ - thing.Z < thing.Height)
                 {
                     // Mobj must lower itself to fit.
                     return false;
                 }
 
-                if ((thing.Flags & MobjFlags.Teleport) == 0
-                     && currentFloorZ - thing.Z > Fixed.FromInt(24))
+                if ((thing.Flags & MobjFlags.Teleport) == 0 &&
+                    currentFloorZ - thing.Z > Fixed.FromInt(24))
                 {
                     // Too big a step up.
                     return false;
                 }
 
-                if ((thing.Flags & (MobjFlags.DropOff | MobjFlags.Float)) == 0
-                     && currentFloorZ - currentDropoffZ > Fixed.FromInt(24))
+                if ((thing.Flags & (MobjFlags.DropOff | MobjFlags.Float)) == 0 &&
+                    currentFloorZ - currentDropoffZ > Fixed.FromInt(24))
                 {
                     // Don't stand over a dropoff.
                     return false;
@@ -543,8 +584,8 @@ namespace ManagedDoom
                 {
                     pMoveX = thing.X + moveX / 2;
                     pMoveY = thing.Y + moveY / 2;
-                    moveX = new Fixed(moveX.Data >> 1);
-                    moveY = new Fixed(moveY.Data >> 1);
+                    moveX >>= 1;
+                    moveY >>= 1;
                 }
                 else
                 {
@@ -639,7 +680,6 @@ namespace ManagedDoom
             }
         }
 
-
         public void ZMovement(Mobj thing)
         {
             // Check for smooth step up.
@@ -647,7 +687,8 @@ namespace ManagedDoom
             {
                 thing.Player.ViewHeight -= thing.FloorZ - thing.Z;
 
-                thing.Player.DeltaViewHeight = new Fixed((Player.NormalViewHeight - thing.Player.ViewHeight).Data >> 3);
+                thing.Player.DeltaViewHeight =
+                    (Player.NormalViewHeight - thing.Player.ViewHeight) >> 3;
             }
 
             // Adjust height.
@@ -656,11 +697,14 @@ namespace ManagedDoom
             if ((thing.Flags & MobjFlags.Float) != 0 && thing.Target != null)
             {
                 // Float down towards target if too close.
-                if ((thing.Flags & MobjFlags.SkullFly) == 0 && (thing.Flags & MobjFlags.InFloat) == 0)
+                if ((thing.Flags & MobjFlags.SkullFly) == 0 &&
+                    (thing.Flags & MobjFlags.InFloat) == 0)
                 {
-                    var dist = Geometry.AproxDistance(thing.X - thing.Target.X, thing.Y - thing.Target.Y);
+                    var dist = Geometry.AproxDistance(
+                        thing.X - thing.Target.X,
+                        thing.Y - thing.Target.Y);
 
-                    var delta = (thing.Target.Z + new Fixed(thing.Height.Data >> 1)) - thing.Z;
+                    var delta = (thing.Target.Z + (thing.Height >> 1)) - thing.Z;
 
                     if (delta < Fixed.Zero && dist < -(delta * 3))
                     {
@@ -678,28 +722,9 @@ namespace ManagedDoom
             {
                 // Hit the floor.
 
-                // Note (id):
-                //  somebody left this after the setting momz to 0,
-                //  kinda useless there.
                 //
-                // cph - This was the a bug in the linuxdoom-1.10 source which
-                //  caused it not to sync Doom 2 v1.9 demos. Someone
-                //  added the above comment and moved up the following code. So
-                //  demos would desync in close lost soul fights.
-                // Note that this only applies to original Doom 1 or Doom2 demos - not
-                //  Final Doom and Ultimate Doom.  So we test demo_compatibility *and*
-                //  gamemission. (Note we assume that Doom1 is always Ult Doom, which
-                //  seems to hold for most published demos.)
-                //  
-                //  fraggle - cph got the logic here slightly wrong.  There are three
-                //  versions of Doom 1.9:
+                // The lost soul bounce fix below is based on chocolate-doom's P_ZMovement.
                 //
-                //  * The version used in registered doom 1.9 + doom2 - no bounce
-                //  * The version used in ultimate doom - has bounce
-                //  * The version used in final doom - has bounce
-                //
-                // So we need to check that this is either retail or commercial
-                // (but not doom2)
 
                 var correctLostSoulBounce = world.Options.Version >= GameVersion.Ultimate;
 
@@ -716,23 +741,21 @@ namespace ManagedDoom
                         // Squat down.
                         // Decrease viewheight for a moment after hitting the ground (hard),
                         // and utter appropriate sound.
-                        thing.Player.DeltaViewHeight = new Fixed(thing.MomZ.Data >> 3);
+                        thing.Player.DeltaViewHeight = (thing.MomZ >> 3);
                         world.StartSound(thing, Sfx.OOF, SfxType.Voice);
                     }
                     thing.MomZ = Fixed.Zero;
                 }
                 thing.Z = thing.FloorZ;
 
-                // cph 2001/05/26 -
-                // See lost soul bouncing comment above. We need this here for bug
-                // compatibility with original Doom2 v1.9 - if a soul is charging and
-                // hit by a raising floor this incorrectly reverses its Y momentum.
-                if (!correctLostSoulBounce && (thing.Flags & MobjFlags.SkullFly) != 0)
+                if (!correctLostSoulBounce &&
+                    (thing.Flags & MobjFlags.SkullFly) != 0)
                 {
                     thing.MomZ = -thing.MomZ;
                 }
 
-                if ((thing.Flags & MobjFlags.Missile) != 0 && (thing.Flags & MobjFlags.NoClip) == 0)
+                if ((thing.Flags & MobjFlags.Missile) != 0 &&
+                    (thing.Flags & MobjFlags.NoClip) == 0)
                 {
                     world.ThingInteraction.ExplodeMissile(thing);
                     return;
@@ -768,13 +791,15 @@ namespace ManagedDoom
                     thing.MomZ = -thing.MomZ;
                 }
 
-                if ((thing.Flags & MobjFlags.Missile) != 0 && (thing.Flags & MobjFlags.NoClip) == 0)
+                if ((thing.Flags & MobjFlags.Missile) != 0 &&
+                    (thing.Flags & MobjFlags.NoClip) == 0)
                 {
                     world.ThingInteraction.ExplodeMissile(thing);
                     return;
                 }
             }
         }
+
 
         public Fixed CurrentFloorZ => currentFloorZ;
         public Fixed CurrentCeilingZ => currentCeilingZ;
@@ -783,6 +808,9 @@ namespace ManagedDoom
 
 
 
+        ////////////////////////////////////////////////////////////
+        // Player's slide movement
+        ////////////////////////////////////////////////////////////
 
         private Fixed bestSlideFrac;
         private Fixed secondSlideFrac;
@@ -796,13 +824,15 @@ namespace ManagedDoom
 
         private Func<Intercept, bool> slideTraverseFunc;
 
-
         private void InitSlideMovement()
         {
             slideTraverseFunc = SlideTraverse;
         }
 
-
+        /// <summary>
+        /// Adjusts the x and y movement so that the next move will
+        /// slide along the wall.
+        /// </summary>
         private void HitSlideLine(LineDef line)
         {
             if (line.SlopeType == SlopeType.Horizontal)
@@ -839,7 +869,6 @@ namespace ManagedDoom
             slideMoveX = newDist * Trig.Cos(lineAngle);
             slideMoveY = newDist * Trig.Sin(lineAngle);
         }
-
 
         private bool SlideTraverse(Intercept intercept)
         {
@@ -887,8 +916,8 @@ namespace ManagedDoom
             // This line doesn't block movement.
             return true;
 
-        // The line does block movement, see if it is closer than best so far.
-        isBlocking:
+            // The line does block movement, see if it is closer than best so far.
+            isBlocking:
             if (intercept.Frac < bestSlideFrac)
             {
                 secondSlideFrac = bestSlideFrac;
@@ -901,7 +930,11 @@ namespace ManagedDoom
             return false;
         }
 
-
+        /// <summary>
+        /// The MomX / MomY move is bad, so try to slide along a wall.
+        /// Find the first line hit, move flush to it, and slide along it.
+        /// This is a kludgy mess.
+        /// </summary>
         private void SlideMove(Mobj thing)
         {
             var pt = world.PathTraversal;
@@ -910,7 +943,7 @@ namespace ManagedDoom
 
             var hitCount = 0;
 
-        retry:
+            retry:
             // Don't loop forever.
             if (++hitCount == 3)
             {
@@ -947,7 +980,7 @@ namespace ManagedDoom
                 trailY = thing.Y + thing.Radius;
             }
 
-            bestSlideFrac = new Fixed(Fixed.FracUnit + 1);
+            bestSlideFrac = Fixed.OnePlusEpsilon;
 
             pt.PathTraverse(
                 leadX, leadY, leadX + thing.MomX, leadY + thing.MomY,
@@ -962,7 +995,7 @@ namespace ManagedDoom
                 PathTraverseFlags.AddLines, slideTraverseFunc);
 
             // Move up to the wall.
-            if (bestSlideFrac == new Fixed(Fixed.FracUnit + 1))
+            if (bestSlideFrac == Fixed.OnePlusEpsilon)
             {
                 // The move most have hit the middle, so stairstep.
                 StairStep(thing);
@@ -1023,6 +1056,9 @@ namespace ManagedDoom
 
 
 
+        ////////////////////////////////////////////////////////////
+        // Teleport movement
+        ////////////////////////////////////////////////////////////
 
         private Func<Mobj, bool> stompThingFunc;
 
@@ -1030,7 +1066,6 @@ namespace ManagedDoom
         {
             stompThingFunc = StompThing;
         }
-
 
         private bool StompThing(Mobj thing)
         {

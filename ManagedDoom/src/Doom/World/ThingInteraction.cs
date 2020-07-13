@@ -14,8 +14,9 @@ namespace ManagedDoom
 		}
 
 
-
-
+		/// <summary>
+		/// Called when the target is killed.
+		/// </summary>
 		public void KillMobj(Mobj source, Mobj target)
 		{
 			target.Flags &= ~(MobjFlags.Shootable | MobjFlags.Float | MobjFlags.SkullFly);
@@ -114,6 +115,16 @@ namespace ManagedDoom
 
 		private static readonly int baseThreshold = 100;
 
+		/// <summary>
+		/// Damages both enemies and players.
+		/// "inflictor" is the thing that caused the damage creature
+		/// or missile, can be null (slime, etc).
+		/// "source" is the thing to target after taking damage creature
+		/// or null.
+		/// Source and inflictor are the same for melee attacks.
+		/// Source can be null for slime, barrel explosions and other
+		/// environmental stuff.
+		/// </summary>
 		public void DamageMobj(Mobj target, Mobj inflictor, Mobj source, int damage)
 		{
 			if ((target.Flags & MobjFlags.Shootable) == 0)
@@ -266,6 +277,9 @@ namespace ManagedDoom
 		}
 
 
+		/// <summary>
+		/// Called when the missile hits something (wall or thing).
+		/// </summary>
 		public void ExplodeMissile(Mobj thing)
 		{
 			thing.MomX = thing.MomY = thing.MomZ = Fixed.Zero;
@@ -288,22 +302,21 @@ namespace ManagedDoom
 		}
 
 
-
-
 		private Mobj bombSource;
 		private Mobj bombSpot;
 		private int bombDamage;
 
 		private Func<Mobj, bool> radiusAttackFunc;
 
-
 		private void InitRadiusAttack()
 		{
-			radiusAttackFunc = RadiusAttack;
+			radiusAttackFunc = DoRadiusAttack;
 		}
 
-
-		private bool RadiusAttack(Mobj thing)
+		/// <summary>
+		/// "bombSource" is the creature that caused the explosion at "bombSpot".
+		/// </summary>
+		private bool DoRadiusAttack(Mobj thing)
 		{
 			if ((thing.Flags & MobjFlags.Shootable) == 0)
 			{
@@ -342,7 +355,9 @@ namespace ManagedDoom
 			return true;
 		}
 
-
+		/// <summary>
+		/// Source is the creature that caused the explosion at spot.
+		/// </summary>
 		public void RadiusAttack(Mobj spot, Mobj source, int damage)
 		{
 			var bm = world.Map.BlockMap;
