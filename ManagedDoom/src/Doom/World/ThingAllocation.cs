@@ -222,7 +222,7 @@ namespace ManagedDoom
             player.BonusCount = 0;
             player.ExtraLight = 0;
             player.FixedColorMap = 0;
-            player.ViewHeight = Player.VIEWHEIGHT;
+            player.ViewHeight = Player.NormalViewHeight;
 
             // Setup gun psprite.
             world.PlayerBehavior.SetupPlayerSprites(player);

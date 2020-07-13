@@ -209,15 +209,15 @@ namespace ManagedDoom
         /// </returns>
         private bool GiveHealth(Player player, int amount)
         {
-            if (player.Health >= Player.MAXHEALTH)
+            if (player.Health >= Player.MaxHealth)
             {
                 return false;
             }
 
             player.Health += amount;
-            if (player.Health > Player.MAXHEALTH)
+            if (player.Health > Player.MaxHealth)
             {
-                player.Health = Player.MAXHEALTH;
+                player.Health = Player.MaxHealth;
             }
 
             player.Mobj.Health = player.Health;

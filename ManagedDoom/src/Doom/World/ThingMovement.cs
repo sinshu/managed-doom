@@ -647,7 +647,7 @@ namespace ManagedDoom
             {
                 thing.Player.ViewHeight -= thing.FloorZ - thing.Z;
 
-                thing.Player.DeltaViewHeight = new Fixed((Player.VIEWHEIGHT - thing.Player.ViewHeight).Data >> 3);
+                thing.Player.DeltaViewHeight = new Fixed((Player.NormalViewHeight - thing.Player.ViewHeight).Data >> 3);
             }
 
             // Adjust height.

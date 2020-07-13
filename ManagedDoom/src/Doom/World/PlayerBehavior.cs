@@ -276,7 +276,7 @@ namespace ManagedDoom
 
             if ((player.Cheats & CheatFlags.NoMomentum) != 0 || !onGround)
             {
-                player.ViewZ = player.Mobj.Z + Player.VIEWHEIGHT;
+                player.ViewZ = player.Mobj.Z + Player.NormalViewHeight;
 
                 if (player.ViewZ > player.Mobj.CeilingZ - Fixed.FromInt(4))
                 {
@@ -297,15 +297,15 @@ namespace ManagedDoom
             {
                 player.ViewHeight += player.DeltaViewHeight;
 
-                if (player.ViewHeight > Player.VIEWHEIGHT)
+                if (player.ViewHeight > Player.NormalViewHeight)
                 {
-                    player.ViewHeight = Player.VIEWHEIGHT;
+                    player.ViewHeight = Player.NormalViewHeight;
                     player.DeltaViewHeight = Fixed.Zero;
                 }
 
-                if (player.ViewHeight < Player.VIEWHEIGHT / 2)
+                if (player.ViewHeight < Player.NormalViewHeight / 2)
                 {
-                    player.ViewHeight = Player.VIEWHEIGHT / 2;
+                    player.ViewHeight = Player.NormalViewHeight / 2;
 
                     if (player.DeltaViewHeight <= Fixed.Zero)
                     {

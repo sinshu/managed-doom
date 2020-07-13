@@ -5,10 +5,13 @@ namespace ManagedDoom
 {
     public class Specials
     {
-        private static readonly int maxButtonCount = 21;
+        private static readonly int maxButtonCount = 32;
         private static readonly int buttonTime = 35;
 
         private World world;
+
+        private bool levelTimer;
+        private int levelTimeCount;
 
         private Button[] buttonList;
 
@@ -20,6 +23,8 @@ namespace ManagedDoom
         public Specials(World world)
         {
             this.world = world;
+
+            levelTimer = false;
 
             buttonList = new Button[maxButtonCount];
             for (var i = 0; i < buttonList.Length; i++)
@@ -40,35 +45,22 @@ namespace ManagedDoom
             }
         }
 
+        /// <summary>
+        /// After the map has been loaded, scan for specials that spawn thinkers.
+        /// </summary>
+        public void SpawnSpecials(int levelTimeCount)
+        {
+            levelTimer = true;
+            this.levelTimeCount = levelTimeCount;
+            SpawnSpecials();
+        }
+
+        /// <summary>
+        /// After the map has been loaded, scan for specials that spawn thinkers.
+        /// </summary>
         public void SpawnSpecials()
         {
-            /*
-            episode = 1;
-            if (W_CheckNumForName("texture2") >= 0)
-                episode = 2;
-
-
-            // See if -TIMER needs to be used.
-            levelTimer = false;
-
-            i = M_CheckParm("-avg");
-            if (i && deathmatch)
-            {
-                levelTimer = true;
-                levelTimeCount = 20 * 60 * 35;
-            }
-
-            i = M_CheckParm("-timer");
-            if (i && deathmatch)
-            {
-                int time;
-                time = atoi(myargv[i + 1]) * 60 * 35;
-                levelTimer = true;
-                levelTimeCount = time;
-            }
-            */
-
-            //	Init special sectors.
+            // Init special sectors.
             var lc = world.LightingChange;
             var sa = world.SectorAction;
             foreach (var sector in world.Map.Sectors)
@@ -81,52 +73,52 @@ namespace ManagedDoom
                 switch ((int)sector.Special)
                 {
                     case 1:
-                        // FLICKERING LIGHTS
+                        // Flickering lights.
                         lc.SpawnLightFlash(sector);
                         break;
 
                     case 2:
-                        // STROBE FAST
+                        // Strobe fast.
                         lc.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 0);
                         break;
 
                     case 3:
-                        // STROBE SLOW
+                        // Strobe slow.
                         lc.SpawnStrobeFlash(sector, StrobeFlash.SLOWDARK, 0);
                         break;
 
                     case 4:
-                        // STROBE FAST/DEATH SLIME
+                        // Strobe fast / death slime.
                         lc.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 0);
                         sector.Special = (SectorSpecial)4;
                         break;
 
                     case 8:
-                        // GLOWING LIGHT
+                        // Glowing light.
                         lc.SpawnGlowingLight(sector);
                         break;
                     case 9:
-                        // SECRET SECTOR
+                        // Secret sector.
                         world.totalSecrets++;
                         break;
 
                     case 10:
-                        // DOOR CLOSE IN 30 SECONDS
+                        // Door close in 30 seconds.
                         sa.SpawnDoorCloseIn30(sector);
                         break;
 
                     case 12:
-                        // SYNC STROBE SLOW
+                        // Sync strobe slow.
                         lc.SpawnStrobeFlash(sector, StrobeFlash.SLOWDARK, 1);
                         break;
 
                     case 13:
-                        // SYNC STROBE FAST
+                        // Sync strobe fast.
                         lc.SpawnStrobeFlash(sector, StrobeFlash.FASTDARK, 1);
                         break;
 
                     case 14:
-                        // DOOR RAISE IN 5 MINUTES
+                        // Door raise in 5 minutes.
                         sa.SpawnDoorRaiseIn5Mins(sector);
                         break;
 
@@ -142,7 +134,7 @@ namespace ManagedDoom
                 switch ((int)line.Special)
                 {
                     case 48:
-                        // EFFECT FIRSTCOL SCROLL+
+                        // Texture scroll.
                         scrollList.Add(line);
                         break;
                 }
@@ -164,7 +156,7 @@ namespace ManagedDoom
 
             var sound = Sfx.SWTCHN;
 
-            // EXIT SWITCH?
+            // Exit switch?
             if ((int)line.Special == 11)
             {
                 sound = Sfx.SWTCHX;
@@ -246,35 +238,22 @@ namespace ManagedDoom
             throw new Exception("No button slots left!");
         }
 
-
-
-        //
-        // P_UpdateSpecials
-        // Animate planes, scroll walls, etc.
-        //
-        private bool levelTimer;
-        private int levelTimeCount;
-
+        /// <summary>
+        /// Animate planes, scroll walls, etc.
+        /// </summary>
         public void Update()
         {
-            /*
-            anim_t* anim;
-            int pic;
-            int i;
-            line_t* line;
-            */
-
-            /*
-            //	LEVEL TIMER
-            if (levelTimer == true)
+            // Level timer.
+            if (levelTimer)
             {
                 levelTimeCount--;
-                if (!levelTimeCount)
-                    G_ExitLevel();
+                if (levelTimeCount == 0)
+                {
+                    world.G_ExitLevel();
+                }
             }
-            */
 
-            //	ANIMATE FLATS AND TEXTURES GLOBALLY
+            // Animate flats and textures globally.
             var animations = world.Map.Animation.Animations;
             for (var k = 0; k < animations.Length; k++)
             {
@@ -293,7 +272,7 @@ namespace ManagedDoom
                 }
             }
 
-            //	ANIMATE LINE SPECIALS
+            // Animate line specials.
             foreach (var line in scrollLines)
             {
                 line.Side0.TextureOffset += Fixed.One;
