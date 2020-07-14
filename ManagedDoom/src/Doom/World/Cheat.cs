@@ -93,35 +93,49 @@ namespace ManagedDoom
             }
         }
 
-        private void FullAmmo()
+        private void GiveWeapons()
         {
             var player = world.ConsolePlayer;
-            for (var i = 0; i < (int)WeaponType.Count; i++)
+            if (world.Options.GameMode == GameMode.Commercial)
             {
-                player.WeaponOwned[i] = true;
+                for (var i = 0; i < (int)WeaponType.Count; i++)
+                {
+                    player.WeaponOwned[i] = true;
+                }
             }
+            else
+            {
+                for (var i = 0; i <= (int)WeaponType.Missile; i++)
+                {
+                    player.WeaponOwned[i] = true;
+                }
+                player.WeaponOwned[(int)WeaponType.Chainsaw] = true;
+                if (world.Options.GameMode != GameMode.Shareware)
+                {
+                    player.WeaponOwned[(int)WeaponType.Plasma] = true;
+                    player.WeaponOwned[(int)WeaponType.Bfg] = true;
+                }
+            }
+
             player.Backpack = true;
             for (var i = 0; i < (int)AmmoType.Count; i++)
             {
                 player.MaxAmmo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
                 player.Ammo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
             }
+        }
+
+        private void FullAmmo()
+        {
+            GiveWeapons();
+            var player = world.ConsolePlayer;
             player.SendMessage(DoomInfo.Strings.STSTR_FAADDED);
         }
 
         private void FullAmmoAndKeys()
         {
+            GiveWeapons();
             var player = world.ConsolePlayer;
-            for (var i = 0; i < (int)WeaponType.Count; i++)
-            {
-                player.WeaponOwned[i] = true;
-            }
-            player.Backpack = true;
-            for (var i = 0; i < (int)AmmoType.Count; i++)
-            {
-                player.MaxAmmo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
-                player.Ammo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
-            }
             for (var i = 0; i < (int)CardType.Count; i++)
             {
                 player.Cards[i] = true;
