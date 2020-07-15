@@ -14,7 +14,11 @@ namespace ManagedDoom
         {
             this.original = original;
             replaced = original;
-            table.Add(original, this);
+
+            if (!table.ContainsKey(original))
+            {
+                table.Add(original, this);
+            }
         }
 
         public override string ToString()
