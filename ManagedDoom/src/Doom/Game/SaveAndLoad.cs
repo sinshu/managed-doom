@@ -272,7 +272,7 @@ namespace ManagedDoom
                     }
 
                     {
-                        var door = thinker as VlDoor;
+                        var door = thinker as VerticalDoor;
                         if (door != null)
                         {
                             data[ptr++] = (byte)SpecialClass.Door;
@@ -765,7 +765,7 @@ namespace ManagedDoom
                             PadPointer();
                             var door = ThinkerPool.RentVlDoor(world);
                             door.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            door.Type = (VlDoorType)BitConverter.ToInt32(data, ptr + 12);
+                            door.Type = (VerticalDoorType)BitConverter.ToInt32(data, ptr + 12);
                             door.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 16)];
                             door.Sector.SpecialData = door;
                             door.TopHeight = new Fixed(BitConverter.ToInt32(data, ptr + 20));

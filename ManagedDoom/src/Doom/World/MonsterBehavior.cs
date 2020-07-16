@@ -1741,7 +1741,7 @@ namespace ManagedDoom
                         {
                             case 6:
                                 junk.Tag = 666;
-                                world.SectorAction.DoDoor(junk, VlDoorType.BlazeOpen);
+                                world.SectorAction.DoDoor(junk, VerticalDoorType.BlazeOpen);
                                 return;
 
                             case 8:
@@ -1779,7 +1779,7 @@ namespace ManagedDoom
             }
 
             junk.Tag = 666;
-            world.SectorAction.DoDoor(junk, VlDoorType.Open);
+            world.SectorAction.DoDoor(junk, VerticalDoorType.Open);
         }
 
 

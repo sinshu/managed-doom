@@ -2,7 +2,7 @@
 
 namespace ManagedDoom
 {
-    public enum VlDoorType
+    public enum VerticalDoorType
     {
         Normal,
         Close30ThenOpen,

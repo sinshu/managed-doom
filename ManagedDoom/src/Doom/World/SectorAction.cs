@@ -496,7 +496,7 @@ namespace ManagedDoom
 			// If the sector has an active thinker, use it.
 			if (sector.SpecialData != null)
 			{
-				var door = (VlDoor)sector.SpecialData;
+				var door = (VerticalDoor)sector.SpecialData;
 				switch ((int)line.Special)
 				{
 					// Only for "raise" doors, not "open"s.
@@ -563,26 +563,26 @@ namespace ManagedDoom
 				case 26:
 				case 27:
 				case 28:
-					newDoor.Type = VlDoorType.Normal;
+					newDoor.Type = VerticalDoorType.Normal;
 					break;
 
 				case 31:
 				case 32:
 				case 33:
 				case 34:
-					newDoor.Type = VlDoorType.Open;
+					newDoor.Type = VerticalDoorType.Open;
 					line.Special = 0;
 					break;
 
 				// Blazing door raise.
 				case 117:
-					newDoor.Type = VlDoorType.BlazeRaise;
+					newDoor.Type = VerticalDoorType.BlazeRaise;
 					newDoor.Speed = doorSpeed * 4;
 					break;
 
 				// Blazing door open.
 				case 118:
-					newDoor.Type = VlDoorType.BlazeOpen;
+					newDoor.Type = VerticalDoorType.BlazeOpen;
 					line.Special = 0;
 					newDoor.Speed = doorSpeed * 4;
 					break;
@@ -593,7 +593,7 @@ namespace ManagedDoom
 			newDoor.TopHeight -= Fixed.FromInt(4);
 		}
 
-		public bool DoDoor(LineDef line, VlDoorType type)
+		public bool DoDoor(LineDef line, VerticalDoorType type)
 		{
 			var sectors = world.Map.Sectors;
 			var setcorNumber = -1;
@@ -620,7 +620,7 @@ namespace ManagedDoom
 
 				switch (type)
 				{
-					case VlDoorType.BlazeClose:
+					case VerticalDoorType.BlazeClose:
 						door.TopHeight = FindLowestCeilingSurrounding(sector);
 						door.TopHeight -= Fixed.FromInt(4);
 						door.Direction = -1;
@@ -628,21 +628,21 @@ namespace ManagedDoom
 						world.StartSound(door.Sector.SoundOrigin, Sfx.BDCLS, SfxType.Misc);
 						break;
 
-					case VlDoorType.Close:
+					case VerticalDoorType.Close:
 						door.TopHeight = FindLowestCeilingSurrounding(sector);
 						door.TopHeight -= Fixed.FromInt(4);
 						door.Direction = -1;
 						world.StartSound(door.Sector.SoundOrigin, Sfx.DORCLS, SfxType.Misc);
 						break;
 
-					case VlDoorType.Close30ThenOpen:
+					case VerticalDoorType.Close30ThenOpen:
 						door.TopHeight = sector.CeilingHeight;
 						door.Direction = -1;
 						world.StartSound(door.Sector.SoundOrigin, Sfx.DORCLS, SfxType.Misc);
 						break;
 
-					case VlDoorType.BlazeRaise:
-					case VlDoorType.BlazeOpen:
+					case VerticalDoorType.BlazeRaise:
+					case VerticalDoorType.BlazeOpen:
 						door.Direction = 1;
 						door.TopHeight = FindLowestCeilingSurrounding(sector);
 						door.TopHeight -= Fixed.FromInt(4);
@@ -653,8 +653,8 @@ namespace ManagedDoom
 						}
 						break;
 
-					case VlDoorType.Normal:
-					case VlDoorType.Open:
+					case VerticalDoorType.Normal:
+					case VerticalDoorType.Open:
 						door.Direction = 1;
 						door.TopHeight = FindLowestCeilingSurrounding(sector);
 						door.TopHeight -= Fixed.FromInt(4);
@@ -673,7 +673,7 @@ namespace ManagedDoom
 			return result;
 		}
 
-		public bool DoLockedDoor(LineDef line, VlDoorType type, Mobj thing)
+		public bool DoLockedDoor(LineDef line, VerticalDoorType type, Mobj thing)
 		{
 			var player = thing.Player;
 			if (player == null)
@@ -1718,7 +1718,7 @@ namespace ManagedDoom
 
 			door.Sector = sector;
 			door.Direction = 0;
-			door.Type = VlDoorType.Normal;
+			door.Type = VerticalDoorType.Normal;
 			door.Speed = doorSpeed;
 			door.TopCountDown = 30 * 35;
 		}
@@ -1734,7 +1734,7 @@ namespace ManagedDoom
 
 			door.Sector = sector;
 			door.Direction = 2;
-			door.Type = VlDoorType.RaiseIn5Mins;
+			door.Type = VerticalDoorType.RaiseIn5Mins;
 			door.Speed = doorSpeed;
 			door.TopHeight = FindLowestCeilingSurrounding(sector);
 			door.TopHeight -= Fixed.FromInt(4);

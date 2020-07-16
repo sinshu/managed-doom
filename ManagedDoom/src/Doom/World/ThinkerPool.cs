@@ -13,9 +13,9 @@ namespace ManagedDoom
             return new Mobj(world);
         }
 
-        public static VlDoor RentVlDoor(World world)
+        public static VerticalDoor RentVlDoor(World world)
         {
-            return new VlDoor(world);
+            return new VerticalDoor(world);
         }
 
         public static Platform RentPlatform(World world)
