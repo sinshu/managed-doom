@@ -27,7 +27,10 @@ namespace ManagedDoom
 			occluder = new DivLine();
 		}
 
-
+		/// <summary>
+		/// Returns the fractional intercept point along the first divline.
+		/// This is only called by the addthings and addlines traversers.
+		/// </summary>
 		private Fixed InterceptVector(DivLine v2, DivLine v1)
 		{
 			var den = (v1.Dy >> 8) * v2.Dx - (v1.Dx >> 8) * v2.Dy;
@@ -44,17 +47,19 @@ namespace ManagedDoom
 			return frac;
 		}
 
-
-		private bool CrossSubsector(int num, int validCount)
+		/// <summary>
+		/// Returns true if strace crosses the given subsector successfully.
+		/// </summary>
+		private bool CrossSubsector(int subsectorNumber, int validCount)
 		{
 			var map = world.Map;
-			var subsectors = map.Subsectors[num];
-			var count = subsectors.SegCount;
+			var subsector = map.Subsectors[subsectorNumber];
+			var count = subsector.SegCount;
 
 			// Check lines.
 			for (var i = 0; i < count; i++)
 			{
-				var seg = map.Segs[subsectors.FirstSeg + i];
+				var seg = map.Segs[subsector.FirstSeg + i];
 				var line = seg.LineDef;
 
 				// Allready checked other side?
@@ -164,25 +169,27 @@ namespace ManagedDoom
 			return true;
 		}
 
-
-		private bool CrossBSPNode(int bspnum, int validCount)
+		/// <summary>
+		/// Returns true if strace crosses the given node successfully.
+		/// </summary>
+		private bool CrossBspNode(int nodeNumber, int validCount)
 		{
-			if (Node.IsSubsector(bspnum))
+			if (Node.IsSubsector(nodeNumber))
 			{
-				if (bspnum == -1)
+				if (nodeNumber == -1)
 				{
 					return CrossSubsector(0, validCount);
 				}
 				else
 				{
-					return CrossSubsector(Node.GetSubsector(bspnum), validCount);
+					return CrossSubsector(Node.GetSubsector(nodeNumber), validCount);
 				}
 			}
 
-			var bsp = world.Map.Nodes[bspnum];
+			var node = world.Map.Nodes[nodeNumber];
 
 			// Decide which side the start point is on.
-			var side = Geometry.DivLineSide(trace.X, trace.Y, bsp);
+			var side = Geometry.DivLineSide(trace.X, trace.Y, node);
 			if (side == 2)
 			{
 				// An "on" should cross both sides.
@@ -190,23 +197,25 @@ namespace ManagedDoom
 			}
 
 			// cross the starting side
-			if (!CrossBSPNode(bsp.Children[side], validCount))
+			if (!CrossBspNode(node.Children[side], validCount))
 			{
 				return false;
 			}
 
 			// The partition plane is crossed here.
-			if (side == Geometry.DivLineSide(targetX, targetY, bsp))
+			if (side == Geometry.DivLineSide(targetX, targetY, node))
 			{
 				// The line doesn't touch the other side.
 				return true;
 			}
 
 			// Cross the ending side.
-			return CrossBSPNode(bsp.Children[side ^ 1], validCount);
+			return CrossBspNode(node.Children[side ^ 1], validCount);
 		}
 
-
+		/// <summary>
+		/// Returns true if a straight line between the looker and target is unobstructed.
+		/// </summary>
 		public bool CheckSight(Mobj looker, Mobj target)
 		{
 			var map = world.Map;
@@ -235,7 +244,7 @@ namespace ManagedDoom
 			targetY = target.Y;
 
 			// The head node is the last node output.
-			return CrossBSPNode(map.Nodes.Length - 1, world.GetNewValidCount());
+			return CrossBspNode(map.Nodes.Length - 1, world.GetNewValidCount());
 		}
 	}
 }
