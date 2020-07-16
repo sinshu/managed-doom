@@ -265,6 +265,12 @@ namespace ManagedDoom
 
         public void SendMessage(string message)
         {
+            if (ReferenceEquals(this.message, (string)DoomInfo.Strings.MSGOFF) &&
+                !ReferenceEquals(message, (string)DoomInfo.Strings.MSGON))
+            {
+                return;
+            }
+
             this.message = message;
             messageTime = 4 * GameConstants.TicRate;
         }

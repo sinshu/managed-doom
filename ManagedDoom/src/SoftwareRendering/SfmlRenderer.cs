@@ -175,7 +175,7 @@ namespace ManagedDoom.SoftwareRendering
                     }
                 }
 
-                if (displayMessage || player.Message == DoomInfo.Strings.MSGOFF)
+                if (displayMessage || ReferenceEquals(player.Message, (string)DoomInfo.Strings.MSGOFF))
                 {
                     if (player.MessageTime > 0)
                     {
