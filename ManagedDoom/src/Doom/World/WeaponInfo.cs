@@ -4,12 +4,12 @@ namespace ManagedDoom
 {
     public sealed class WeaponInfo
     {
-        public AmmoType Ammo;
-        public MobjState UpState;
-        public MobjState DownState;
-        public MobjState ReadyState;
-        public MobjState AttackState;
-        public MobjState FlashState;
+        private AmmoType ammo;
+        private MobjState upState;
+        private MobjState downState;
+        private MobjState readyState;
+        private MobjState attackState;
+        private MobjState flashState;
 
         public WeaponInfo(
             AmmoType ammo,
@@ -19,12 +19,19 @@ namespace ManagedDoom
             MobjState attackState,
             MobjState flashState)
         {
-            Ammo = ammo;
-            UpState = upState;
-            DownState = downState;
-            ReadyState = readyState;
-            AttackState = attackState;
-            FlashState = flashState;
+            this.ammo = ammo;
+            this.upState = upState;
+            this.downState = downState;
+            this.readyState = readyState;
+            this.attackState = attackState;
+            this.flashState = flashState;
         }
+
+        public AmmoType Ammo => ammo;
+        public MobjState UpState => upState;
+        public MobjState DownState => downState;
+        public MobjState ReadyState => readyState;
+        public MobjState AttackState => attackState;
+        public MobjState FlashState => flashState;
     }
 }
