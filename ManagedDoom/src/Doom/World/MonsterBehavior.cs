@@ -1098,33 +1098,33 @@ namespace ManagedDoom
         // Miscellaneous
         ////////////////////////////////////////////////////////////
 
-        public void Explode(Mobj thingy)
+        public void Explode(Mobj actor)
         {
-            world.ThingInteraction.RadiusAttack(thingy, thingy.Target, 128);
+            world.ThingInteraction.RadiusAttack(actor, actor.Target, 128);
         }
 
 
-        public void Metal(Mobj mo)
+        public void Metal(Mobj actor)
         {
-            world.StartSound(mo, Sfx.METAL, SfxType.Footstep);
+            world.StartSound(actor, Sfx.METAL, SfxType.Footstep);
 
-            Chase(mo);
+            Chase(actor);
         }
 
 
-        public void BabyMetal(Mobj mo)
+        public void BabyMetal(Mobj actor)
         {
-            world.StartSound(mo, Sfx.BSPWLK, SfxType.Footstep);
+            world.StartSound(actor, Sfx.BSPWLK, SfxType.Footstep);
 
-            Chase(mo);
+            Chase(actor);
         }
 
 
-        public void Hoof(Mobj mo)
+        public void Hoof(Mobj actor)
         {
-            world.StartSound(mo, Sfx.HOOF, SfxType.Footstep);
+            world.StartSound(actor, Sfx.HOOF, SfxType.Footstep);
 
-            Chase(mo);
+            Chase(actor);
         }
 
 
@@ -1582,7 +1582,7 @@ namespace ManagedDoom
         }
 
 
-        public void BossDeath(Mobj mo)
+        public void BossDeath(Mobj actor)
         {
             var options = world.Options;
             if (options.GameMode == GameMode.Commercial)
@@ -1592,7 +1592,7 @@ namespace ManagedDoom
                     return;
                 }
 
-                if ((mo.Type != MobjType.Fatso) && (mo.Type != MobjType.Baby))
+                if ((actor.Type != MobjType.Fatso) && (actor.Type != MobjType.Baby))
                 {
                     return;
                 }
@@ -1607,7 +1607,7 @@ namespace ManagedDoom
                             return;
                         }
 
-                        if (mo.Type != MobjType.Bruiser)
+                        if (actor.Type != MobjType.Bruiser)
                         {
                             return;
                         }
@@ -1620,7 +1620,7 @@ namespace ManagedDoom
                             return;
                         }
 
-                        if (mo.Type != MobjType.Cyborg)
+                        if (actor.Type != MobjType.Cyborg)
                         {
                             return;
                         }
@@ -1633,7 +1633,7 @@ namespace ManagedDoom
                             return;
                         }
 
-                        if (mo.Type != MobjType.Spider)
+                        if (actor.Type != MobjType.Spider)
                         {
                             return;
                         }
@@ -1644,7 +1644,7 @@ namespace ManagedDoom
                         switch (options.Map)
                         {
                             case 6:
-                                if (mo.Type != MobjType.Cyborg)
+                                if (actor.Type != MobjType.Cyborg)
                                 {
                                     return;
                                 }
@@ -1652,7 +1652,7 @@ namespace ManagedDoom
                                 break;
 
                             case 8:
-                                if (mo.Type != MobjType.Spider)
+                                if (actor.Type != MobjType.Spider)
                                 {
                                     return;
                                 }
@@ -1700,7 +1700,7 @@ namespace ManagedDoom
                     continue;
                 }
 
-                if (mo2 != mo && mo2.Type == mo.Type && mo2.Health > 0)
+                if (mo2 != actor && mo2.Type == actor.Type && mo2.Health > 0)
                 {
                     // Other boss not dead.
                     return;
@@ -1712,14 +1712,14 @@ namespace ManagedDoom
             {
                 if (options.Map == 7)
                 {
-                    if (mo.Type == MobjType.Fatso)
+                    if (actor.Type == MobjType.Fatso)
                     {
                         junk.Tag = 666;
                         world.SectorAction.DoFloor(junk, FloorMoveType.LowerFloorToLowest);
                         return;
                     }
 
-                    if (mo.Type == MobjType.Baby)
+                    if (actor.Type == MobjType.Baby)
                     {
                         junk.Tag = 667;
                         world.SectorAction.DoFloor(junk, FloorMoveType.RaiseToTexture);
@@ -1757,9 +1757,9 @@ namespace ManagedDoom
         }
 
 
-        public void KeenDie(Mobj mo)
+        public void KeenDie(Mobj actor)
         {
-            Fall(mo);
+            Fall(actor);
 
             // scan the remaining thinkers
             // to see if all Keens are dead
@@ -1771,7 +1771,7 @@ namespace ManagedDoom
                     continue;
                 }
 
-                if (mo2 != mo && mo2.Type == mo.Type && mo2.Health > 0)
+                if (mo2 != actor && mo2.Type == actor.Type && mo2.Health > 0)
                 {
                     // other Keen not dead
                     return;
@@ -1788,99 +1788,101 @@ namespace ManagedDoom
         // Icon of sin
         ////////////////////////////////////////////////////////////
 
-        private Mobj[] braintargets;
-        private int numbraintargets;
-        private int braintargeton;
+        private Mobj[] brainTargets;
+        private int brainTargetCount;
+        private int currentBrainTarget;
         private bool easy;
 
         private void InitBrain()
         {
-            braintargets = new Mobj[32];
+            brainTargets = new Mobj[32];
+            brainTargetCount = 0;
+            currentBrainTarget = 0;
             easy = false;
         }
 
 
-        public void BrainAwake(Mobj mo)
+        public void BrainAwake(Mobj actor)
         {
-            // find all the target spots
-            numbraintargets = 0;
-            braintargeton = 0;
+            // Find all the target spots.
+            brainTargetCount = 0;
+            currentBrainTarget = 0;
 
             foreach (var thinker in world.Thinkers)
             {
-                var m = thinker as Mobj;
-                if (m == null)
+                var mobj = thinker as Mobj;
+                if (mobj == null)
                 {
-                    // not a mobj
+                    // Not a mobj.
                     continue;
                 }
 
-                if (m.Type == MobjType.Bosstarget)
+                if (mobj.Type == MobjType.Bosstarget)
                 {
-                    braintargets[numbraintargets] = m;
-                    numbraintargets++;
+                    brainTargets[brainTargetCount] = mobj;
+                    brainTargetCount++;
                 }
             }
 
-            world.StartSound(mo, Sfx.BOSSIT, SfxType.Diffuse);
+            world.StartSound(actor, Sfx.BOSSIT, SfxType.Diffuse);
         }
 
 
-        public void BrainPain(Mobj mo)
+        public void BrainPain(Mobj actor)
         {
-            world.StartSound(mo, Sfx.BOSPN, SfxType.Diffuse);
+            world.StartSound(actor, Sfx.BOSPN, SfxType.Diffuse);
         }
 
 
-        public void BrainScream(Mobj mo)
+        public void BrainScream(Mobj actor)
         {
             var random = world.Random;
 
-            for (var x = mo.X - Fixed.FromInt(196); x < mo.X + Fixed.FromInt(320); x += Fixed.FromInt(8))
+            for (var x = actor.X - Fixed.FromInt(196); x < actor.X + Fixed.FromInt(320); x += Fixed.FromInt(8))
             {
-                var y = mo.Y - Fixed.FromInt(320);
+                var y = actor.Y - Fixed.FromInt(320);
                 var z = new Fixed(128) + random.Next() * Fixed.FromInt(2);
 
-                var th = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Rocket);
-                th.MomZ = new Fixed(random.Next() * 512);
-                th.SetState(MobjState.Brainexplode1);
-                th.Tics -= random.Next() & 7;
-                if (th.Tics < 1)
+                var explosion = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Rocket);
+                explosion.MomZ = new Fixed(random.Next() * 512);
+                explosion.SetState(MobjState.Brainexplode1);
+                explosion.Tics -= random.Next() & 7;
+                if (explosion.Tics < 1)
                 {
-                    th.Tics = 1;
+                    explosion.Tics = 1;
                 }
             }
 
-            world.StartSound(mo, Sfx.BOSDTH, SfxType.Diffuse);
+            world.StartSound(actor, Sfx.BOSDTH, SfxType.Diffuse);
         }
 
 
-        public void BrainExplode(Mobj mo)
+        public void BrainExplode(Mobj actor)
         {
             var random = world.Random;
 
-            var x = mo.X + new Fixed((random.Next() - random.Next()) * 2048);
-            var y = mo.Y;
+            var x = actor.X + new Fixed((random.Next() - random.Next()) * 2048);
+            var y = actor.Y;
             var z = new Fixed(128) + random.Next() * Fixed.FromInt(2);
 
-            var th = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Rocket);
-            th.MomZ = new Fixed(random.Next() * 512);
-            th.SetState(MobjState.Brainexplode1);
-            th.Tics -= random.Next() & 7;
-            if (th.Tics < 1)
+            var explosion = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Rocket);
+            explosion.MomZ = new Fixed(random.Next() * 512);
+            explosion.SetState(MobjState.Brainexplode1);
+            explosion.Tics -= random.Next() & 7;
+            if (explosion.Tics < 1)
             {
-                th.Tics = 1;
+                explosion.Tics = 1;
             }
         }
 
 
-        public void BrainDie(Mobj mo)
+        public void BrainDie(Mobj actor)
         {
             world.G_ExitLevel();
         }
 
 
-        public void BrainSpit(Mobj mo)
+        public void BrainSpit(Mobj actor)
         {
             easy = !easy;
             if (world.Options.Skill <= GameSkill.Easy && (!easy))
@@ -1888,47 +1890,61 @@ namespace ManagedDoom
                 return;
             }
 
-            // shoot a cube at current target
-            var targ = braintargets[braintargeton];
-            braintargeton = (braintargeton + 1) % numbraintargets;
-
-            // spawn brain missile
-            var newmobj = world.ThingAllocation.SpawnMissile(mo, targ, MobjType.Spawnshot);
-            newmobj.Target = targ;
-            newmobj.ReactionTime = ((targ.Y - mo.Y).Data / newmobj.MomY.Data) / newmobj.State.Tics;
-
-            world.StartSound(mo, Sfx.BOSPIT, SfxType.Diffuse);
-        }
-
-
-        public void SpawnSound(Mobj mo)
-        {
-            world.StartSound(mo, Sfx.BOSCUB, SfxType.Misc);
-            SpawnFly(mo);
-        }
-
-
-        public void SpawnFly(Mobj mo)
-        {
-            if (--mo.ReactionTime > 0)
+            // If the game is reconstructed from a savedata, brain targets might be cleared.
+            // If so, re-initialize them to avoid crash.
+            if (brainTargetCount == 0)
             {
-                // still flying
+                BrainAwake(actor);
+            }
+
+            // Shoot a cube at current target.
+            var target = brainTargets[currentBrainTarget];
+            currentBrainTarget = (currentBrainTarget + 1) % brainTargetCount;
+
+            // Spawn brain missile.
+            var missile = world.ThingAllocation.SpawnMissile(actor, target, MobjType.Spawnshot);
+            missile.Target = target;
+            missile.ReactionTime = ((target.Y - actor.Y).Data / missile.MomY.Data) / missile.State.Tics;
+
+            world.StartSound(actor, Sfx.BOSPIT, SfxType.Diffuse);
+        }
+
+
+        public void SpawnSound(Mobj actor)
+        {
+            world.StartSound(actor, Sfx.BOSCUB, SfxType.Misc);
+            SpawnFly(actor);
+        }
+
+
+        public void SpawnFly(Mobj actor)
+        {
+            if (--actor.ReactionTime > 0)
+            {
+                // Still flying.
                 return;
             }
 
-            var targ = mo.Target;
+            var target = actor.Target;
+
+            // If the game is reconstructed from a savedata, the target might be null.
+            // If so, use own position to spawn the monster.
+            if (target == null)
+            {
+                target = actor;
+                actor.Z = actor.Subsector.Sector.FloorHeight;
+            }
 
             var ta = world.ThingAllocation;
 
             // First spawn teleport fog.
-            var fog = ta.SpawnMobj(targ.X, targ.Y, targ.Z, MobjType.Spawnfire);
+            var fog = ta.SpawnMobj(target.X, target.Y, target.Z, MobjType.Spawnfire);
             world.StartSound(fog, Sfx.TELEPT, SfxType.Misc);
 
             // Randomly select monster to spawn.
             var r = world.Random.Next();
 
-            // Probability distribution (kind of :),
-            // decreasing likelihood.
+            // Probability distribution (kind of :), decreasing likelihood.
             MobjType type;
             if (r < 50)
             {
@@ -1975,17 +1991,17 @@ namespace ManagedDoom
                 type = MobjType.Bruiser;
             }
 
-            var newmobj = ta.SpawnMobj(targ.X, targ.Y, targ.Z, type);
-            if (LookForPlayers(newmobj, true))
+            var monster = ta.SpawnMobj(target.X, target.Y, target.Z, type);
+            if (LookForPlayers(monster, true))
             {
-                newmobj.SetState(newmobj.Info.SeeState);
+                monster.SetState(monster.Info.SeeState);
             }
 
-            // telefrag anything in this spot
-            world.ThingMovement.TeleportMove(newmobj, newmobj.X, newmobj.Y);
+            // Telefrag anything in this spot.
+            world.ThingMovement.TeleportMove(monster, monster.X, monster.Y);
 
-            // remove self (i.e., cube).
-            world.ThingAllocation.RemoveMobj(mo);
+            // Remove self (i.e., cube).
+            world.ThingAllocation.RemoveMobj(actor);
         }
     }
 }
