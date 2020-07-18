@@ -315,7 +315,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\lostsoul_test.wad"))
             {
                 var demo = new Demo(@"data\lostsoul_test_final2.lmp");
-                demo.Options.Version = GameVersion.Final2;
+                demo.Options.GameVersion = GameVersion.Final2;
                 demo.Options.Players[0].PlayerState = PlayerState.Reborn;
                 var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
                 var world = new World(resource, demo.Options);
@@ -557,7 +557,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\painelemental_test.wad"))
             {
                 var demo = new Demo(@"data\painelemental_test_final2.lmp");
-                demo.Options.Version = GameVersion.Final2;
+                demo.Options.GameVersion = GameVersion.Final2;
                 demo.Options.Players[0].PlayerState = PlayerState.Reborn;
                 var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
                 var world = new World(resource, demo.Options);

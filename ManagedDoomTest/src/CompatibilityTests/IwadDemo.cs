@@ -339,7 +339,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
-                demo.Options.Version = GameVersion.Final2;
+                demo.Options.GameVersion = GameVersion.Final2;
                 demo.Options.Players[0].PlayerState = PlayerState.Reborn;
                 var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
                 var world = new World(resource, demo.Options);
@@ -557,7 +557,7 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Plutonia))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
-                demo.Options.Version = GameVersion.Final2;
+                demo.Options.GameVersion = GameVersion.Final2;
                 demo.Options.Players[0].PlayerState = PlayerState.Reborn;
                 var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
                 var world = new World(resource, demo.Options);

@@ -726,7 +726,7 @@ namespace ManagedDoom
                 // The lost soul bounce fix below is based on chocolate-doom's P_ZMovement.
                 //
 
-                var correctLostSoulBounce = world.Options.Version >= GameVersion.Ultimate;
+                var correctLostSoulBounce = world.Options.GameVersion >= GameVersion.Ultimate;
 
                 if (correctLostSoulBounce && (thing.Flags & MobjFlags.SkullFly) != 0)
                 {
