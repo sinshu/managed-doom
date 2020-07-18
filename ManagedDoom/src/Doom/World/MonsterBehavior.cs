@@ -1380,7 +1380,7 @@ namespace ManagedDoom
 
         public void Tracer(Mobj actor)
         {
-            if ((world.Game.GameTic & 3) != 0)
+            if ((world.GameTic & 3) != 0)
             {
                 return;
             }

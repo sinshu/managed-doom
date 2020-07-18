@@ -313,6 +313,21 @@ namespace ManagedDoom
             set => levelTime = value;
         }
 
+        public int GameTic
+        {
+            get
+            {
+                if (game != null)
+                {
+                    return game.GameTic;
+                }
+                else
+                {
+                    return levelTime;
+                }
+            }
+        }
+
         public bool SecretExit => secretExit;
 
         public Player ConsolePlayer => Options.Players[Options.ConsolePlayer];
