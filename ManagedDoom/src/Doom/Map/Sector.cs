@@ -6,39 +6,39 @@ namespace ManagedDoom
 {
     public sealed class Sector
     {
-        public const int DataSize = 26;
+        private static readonly int dataSize = 26;
 
-        public int Number;
-        public Fixed FloorHeight;
-        public Fixed CeilingHeight;
-        public int FloorFlat;
-        public int CeilingFlat;
-        public int LightLevel;
-        public SectorSpecial Special;
-        public int Tag;
+        private int number;
+        private Fixed floorHeight;
+        private Fixed ceilingHeight;
+        private int floorFlat;
+        private int ceilingFlat;
+        private int lightLevel;
+        private SectorSpecial special;
+        private int tag;
 
-        // 0 = untraversed, 1,2 = sndlines -1
-        public int SoundTraversed;
+        // 0 = untraversed, 1, 2 = sndlines - 1.
+        private int soundTraversed;
 
-        // thing that made a sound (or null)
-        public Mobj SoundTarget;
+        // Thing that made a sound (or null).
+        private Mobj soundTarget;
 
-        // mapblock bounding box for height changes
-        public int[] BlockBox;
+        // Mapblock bounding box for height changes.
+        private int[] blockBox;
 
-        // origin for any sounds played by the sector
-        public Mobj SoundOrigin;
+        // Origin for any sounds played by the sector.
+        private Mobj soundOrigin;
 
-        // if == validcount, already checked
-        public int ValidCount;
+        // If == validcount, already checked.
+        private int validCount;
 
-        // list of mobjs in sector
-        public Mobj ThingList;
+        // List of mobjs in sector.
+        private Mobj thingList;
 
-        // thinker_t for reversable actions
-        public Thinker SpecialData;
+        // Thinker for reversable actions.
+        private Thinker specialData;
 
-        public LineDef[] Lines;
+        private LineDef[] lines;
 
         public Sector(
             int number,
@@ -50,14 +50,14 @@ namespace ManagedDoom
             SectorSpecial special,
             int tag)
         {
-            Number = number;
-            FloorHeight = floorHeight;
-            CeilingHeight = ceilingHeight;
-            FloorFlat = floorFlat;
-            CeilingFlat = ceilingFlat;
-            LightLevel = lightLevel;
-            Special = special;
-            Tag = tag;
+            this.number = number;
+            this.floorHeight = floorHeight;
+            this.ceilingHeight = ceilingHeight;
+            this.floorFlat = floorFlat;
+            this.ceilingFlat = ceilingFlat;
+            this.lightLevel = lightLevel;
+            this.special = special;
+            this.tag = tag;
         }
 
         public static Sector FromData(byte[] data, int offset, int number, FlatLookup flats)
@@ -84,18 +84,18 @@ namespace ManagedDoom
         public static Sector[] FromWad(Wad wad, int lump, FlatLookup flats)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % DataSize != 0)
+            if (length % dataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / DataSize;
+            var count = length / dataSize;
             var sectors = new Sector[count]; ;
 
             for (var i = 0; i < count; i++)
             {
-                var offset = DataSize * i;
+                var offset = dataSize * i;
                 sectors[i] = FromData(data, offset, i, flats);
             }
 
@@ -118,7 +118,7 @@ namespace ManagedDoom
             public ThingEnumerator(Sector sector)
             {
                 this.sector = sector;
-                thing = sector.ThingList;
+                thing = sector.thingList;
                 current = null;
             }
 
@@ -139,7 +139,7 @@ namespace ManagedDoom
 
             public void Reset()
             {
-                thing = sector.ThingList;
+                thing = sector.thingList;
                 current = null;
             }
 
@@ -150,6 +150,98 @@ namespace ManagedDoom
             public Mobj Current => current;
 
             object IEnumerator.Current => throw new NotImplementedException();
+        }
+
+        public int Number => number;
+
+        public Fixed FloorHeight
+        {
+            get => floorHeight;
+            set => floorHeight = value;
+        }
+
+        public Fixed CeilingHeight
+        {
+            get => ceilingHeight;
+            set => ceilingHeight = value;
+        }
+
+        public int FloorFlat
+        {
+            get => floorFlat;
+            set => floorFlat = value;
+        }
+
+        public int CeilingFlat
+        {
+            get => ceilingFlat;
+            set => ceilingFlat = value;
+        }
+
+        public int LightLevel
+        {
+            get => lightLevel;
+            set => lightLevel = value;
+        }
+
+        public SectorSpecial Special
+        {
+            get => special;
+            set => special = value;
+        }
+
+        public int Tag
+        {
+            get => tag;
+            set => tag = value;
+        }
+
+        public int SoundTraversed
+        {
+            get => soundTraversed;
+            set => soundTraversed = value;
+        }
+
+        public Mobj SoundTarget
+        {
+            get => soundTarget;
+            set => soundTarget = value;
+        }
+
+        public int[] BlockBox
+        {
+            get => blockBox;
+            set => blockBox = value;
+        }
+
+        public Mobj SoundOrigin
+        {
+            get => soundOrigin;
+            set => soundOrigin = value;
+        }
+
+        public int ValidCount
+        {
+            get => validCount;
+            set => validCount = value;
+        }
+
+        public Mobj ThingList
+        {
+            get => thingList;
+            set => thingList = value;
+        }
+
+        public Thinker SpecialData
+        {
+            get => specialData;
+            set => specialData = value;
+        }
+
+        public LineDef[] Lines
+        {
+            get => lines;
+            set => lines = value;
         }
     }
 }

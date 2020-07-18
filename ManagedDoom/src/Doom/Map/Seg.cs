@@ -4,7 +4,7 @@ namespace ManagedDoom
 {
     public sealed class Seg
     {
-        public const int DataSize = 12;
+        public static readonly int dataSize = 12;
 
         private Vertex vertex1;
         private Vertex vertex2;
@@ -62,18 +62,18 @@ namespace ManagedDoom
         public static Seg[] FromWad(Wad wad, int lump, Vertex[] vertices, LineDef[] lines)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % Seg.DataSize != 0)
+            if (length % Seg.dataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / Seg.DataSize;
+            var count = length / Seg.dataSize;
             var segs = new Seg[count]; ;
 
             for (var i = 0; i < count; i++)
             {
-                var offset = Seg.DataSize * i;
+                var offset = Seg.dataSize * i;
                 segs[i] = Seg.FromData(data, offset, vertices, lines);
             }
 
