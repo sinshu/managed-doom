@@ -4,31 +4,49 @@ namespace ManagedDoom
 {
     public sealed class TicCmd
     {
-        public sbyte ForwardMove;   // *2048 for move
-        public sbyte SideMove;  // *2048 for move
-        public short AngleTurn;    // <<16 for angle delta
-        public short Consistancy;  // checks for net game
-        public byte ChatChar;
-        public byte Buttons;
+        private sbyte forwardMove;
+        private sbyte sideMove;
+        private short angleTurn;
+        private byte buttons;
 
         public void Clear()
         {
-            ForwardMove = 0;
-            SideMove = 0;
-            AngleTurn = 0;
-            Consistancy = 0;
-            ChatChar = 0;
-            Buttons = 0;
+            forwardMove = 0;
+            sideMove = 0;
+            angleTurn = 0;
+            buttons = 0;
         }
 
         public void CopyFrom(TicCmd cmd)
         {
-            ForwardMove = cmd.ForwardMove;
-            SideMove = cmd.SideMove;
-            AngleTurn = cmd.AngleTurn;
-            Consistancy = cmd.Consistancy;
-            ChatChar = cmd.ChatChar;
-            Buttons = cmd.Buttons;
+            forwardMove = cmd.forwardMove;
+            sideMove = cmd.sideMove;
+            angleTurn = cmd.angleTurn;
+            buttons = cmd.buttons;
+        }
+
+        public sbyte ForwardMove
+        {
+            get => forwardMove;
+            set => forwardMove = value;
+        }
+
+        public sbyte SideMove
+        {
+            get => sideMove;
+            set => sideMove = value;
+        }
+
+        public short AngleTurn
+        {
+            get => angleTurn;
+            set => angleTurn = value;
+        }
+
+        public byte Buttons
+        {
+            get => buttons;
+            set => buttons = value;
         }
     }
 }

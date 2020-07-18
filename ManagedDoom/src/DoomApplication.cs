@@ -219,7 +219,7 @@ namespace ManagedDoom
                 if (sendPause)
                 {
                     sendPause = false;
-                    cmds[options.ConsolePlayer].Buttons |= TicCmdButtons.Special | TicCmdButtons.Pause;
+                    cmds[options.ConsolePlayer].Buttons |= (byte)(TicCmdButtons.Special | TicCmdButtons.Pause);
                 }
 
                 if (!wiping)

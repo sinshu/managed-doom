@@ -146,19 +146,17 @@ namespace ManagedDoom
 				{
 					if ((players[i].Cmd.Buttons & TicCmdButtons.Special) != 0)
 					{
-						switch (players[i].Cmd.Buttons & TicCmdButtons.SpecialMask)
+						if ((players[i].Cmd.Buttons & TicCmdButtons.SpecialMask) == TicCmdButtons.Pause)
 						{
-							case TicCmdButtons.Pause:
-								paused = !paused;
-								if (paused)
-								{
-									options.Audio.Pause();
-								}
-								else
-								{
-									options.Audio.Resume();
-								}
-								break;
+							paused = !paused;
+							if (paused)
+							{
+								options.Audio.Pause();
+							}
+							else
+							{
+								options.Audio.Resume();
+							}
 						}
 					}
 				}
