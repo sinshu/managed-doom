@@ -18,11 +18,10 @@ namespace ManagedDoomTest.CompatibilityTests
                 options.Skill = GameSkill.Hard;
                 options.Episode = 1;
                 options.Map = 1;
-
                 options.Players[0].InGame = true;
-                options.Players[0].PlayerState = PlayerState.Reborn;
 
-                var world = new World(resource, options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, options);
 
                 var tics = 350;
 
@@ -30,14 +29,14 @@ namespace ManagedDoomTest.CompatibilityTests
                 var aggSectorHash = 0;
                 for (var i = 0; i < tics; i++)
                 {
-                    world.Update();
-                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(world));
-                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, DoomDebug.GetSectorHash(world));
+                    game.Update(cmds);
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(game.World));
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, DoomDebug.GetSectorHash(game.World));
                 }
 
-                Assert.AreEqual(0x66be313bu, (uint)DoomDebug.GetMobjHash(world));
+                Assert.AreEqual(0x66be313bu, (uint)DoomDebug.GetMobjHash(game.World));
                 Assert.AreEqual(0xbd67b2b2u, (uint)aggMobjHash);
-                Assert.AreEqual(0x2cef7a1du, (uint)DoomDebug.GetSectorHash(world));
+                Assert.AreEqual(0x2cef7a1du, (uint)DoomDebug.GetSectorHash(game.World));
                 Assert.AreEqual(0x5b99ca23u, (uint)aggSectorHash);
             }
         }
@@ -50,22 +49,21 @@ namespace ManagedDoomTest.CompatibilityTests
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
                 options.Map = 1;
-
                 options.Players[0].InGame = true;
-                options.Players[0].PlayerState = PlayerState.Reborn;
 
-                var world = new World(resource, options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, options);
 
                 var tics = 350;
 
                 var aggMobjHash = 0;
                 for (var i = 0; i < tics; i++)
                 {
-                    world.Update();
-                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(world));
+                    game.Update(cmds);
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(game.World));
                 }
 
-                Assert.AreEqual(0xc108ff16u, (uint)DoomDebug.GetMobjHash(world));
+                Assert.AreEqual(0xc108ff16u, (uint)DoomDebug.GetMobjHash(game.World));
                 Assert.AreEqual(0x3bd5113cu, (uint)aggMobjHash);
             }
         }
@@ -79,11 +77,10 @@ namespace ManagedDoomTest.CompatibilityTests
                 options.Skill = GameSkill.Medium;
                 options.Map = 11;
                 options.NoMonsters = true;
-
                 options.Players[0].InGame = true;
-                options.Players[0].PlayerState = PlayerState.Reborn;
 
-                var world = new World(resource, options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, options);
 
                 var tics = 350;
 
@@ -91,14 +88,14 @@ namespace ManagedDoomTest.CompatibilityTests
                 var aggSectorHash = 0;
                 for (var i = 0; i < tics; i++)
                 {
-                    world.Update();
-                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(world));
-                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, DoomDebug.GetSectorHash(world));
+                    game.Update(cmds);
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(game.World));
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, DoomDebug.GetSectorHash(game.World));
                 }
 
-                Assert.AreEqual(0x21187a94u, (uint)DoomDebug.GetMobjHash(world));
+                Assert.AreEqual(0x21187a94u, (uint)DoomDebug.GetMobjHash(game.World));
                 Assert.AreEqual(0x55752988u, (uint)aggMobjHash);
-                Assert.AreEqual(0xead9e45bu, (uint)DoomDebug.GetSectorHash(world));
+                Assert.AreEqual(0xead9e45bu, (uint)DoomDebug.GetSectorHash(game.World));
                 Assert.AreEqual(0x1397c7cbu, (uint)aggSectorHash);
             }
         }

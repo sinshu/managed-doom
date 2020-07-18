@@ -16,9 +16,8 @@ namespace ManagedDoomTest.CompatibilityTests
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 demo.Options.GameVersion = GameVersion.Final2;
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -28,13 +27,13 @@ namespace ManagedDoomTest.CompatibilityTests
                 while (true)
                 {
                     demo.ReadCmd(cmds);
-                    world.Update();
-                    lastMobjHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastMobjHash = DoomDebug.GetMobjHash(game.World);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = DoomDebug.GetSectorHash(world);
+                    lastSectorHash = DoomDebug.GetSectorHash(game.World);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
 
-                    if (world.LevelTime == 18003)
+                    if (game.World.LevelTime == 18003)
                     {
                         break;
                     }
@@ -54,8 +53,8 @@ namespace ManagedDoomTest.CompatibilityTests
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -65,14 +64,13 @@ namespace ManagedDoomTest.CompatibilityTests
                 while (true)
                 {
                     demo.ReadCmd(cmds);
-                    world.Update();
-                    world.Options.GameTic++; // To avoid desync due to revenant missile.
-                    lastMobjHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastMobjHash = DoomDebug.GetMobjHash(game.World);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = DoomDebug.GetSectorHash(world);
+                    lastSectorHash = DoomDebug.GetSectorHash(game.World);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
 
-                    if (world.LevelTime == 24659)
+                    if (game.World.LevelTime == 24659)
                     {
                         break;
                     }
@@ -91,9 +89,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.Requiem))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -103,14 +100,13 @@ namespace ManagedDoomTest.CompatibilityTests
                 while (true)
                 {
                     demo.ReadCmd(cmds);
-                    world.Update();
-                    world.Options.GameTic++; // To avoid desync due to revenant missile.
-                    lastMobjHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastMobjHash = DoomDebug.GetMobjHash(game.World);
                     aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
-                    lastSectorHash = DoomDebug.GetSectorHash(world);
+                    lastSectorHash = DoomDebug.GetSectorHash(game.World);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
 
-                    if (world.LevelTime == 52487)
+                    if (game.World.LevelTime == 52487)
                     {
                         break;
                     }

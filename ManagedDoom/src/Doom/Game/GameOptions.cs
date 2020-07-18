@@ -24,9 +24,6 @@ namespace ManagedDoom
         private bool respawnMonsters;
         private bool noMonsters;
 
-        private DoomRandom random;
-        private int gameTic;
-
         private IntermissionInfo intermissionInfo;
 
         private IRenderer renderer;
@@ -58,9 +55,6 @@ namespace ManagedDoom
             fastMonsters = false;
             respawnMonsters = false;
             noMonsters = false;
-
-            random = new DoomRandom();
-            gameTic = 0;
 
             intermissionInfo = new IntermissionInfo();
 
@@ -151,17 +145,6 @@ namespace ManagedDoom
         {
             get => noMonsters;
             set => noMonsters = value;
-        }
-
-        public DoomRandom Random
-        {
-            get => random;
-        }
-
-        public int GameTic
-        {
-            get => gameTic;
-            set => gameTic = value;
         }
 
         public IntermissionInfo IntermissionInfo

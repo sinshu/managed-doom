@@ -15,9 +15,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(@"data\nightmare_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -29,8 +28,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -45,9 +44,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\barrel_test.wad"))
             {
                 var demo = new Demo(@"data\barrel_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -59,8 +57,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -75,9 +73,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\zombieman_test.wad"))
             {
                 var demo = new Demo(@"data\zombieman_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -89,8 +86,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -105,9 +102,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\zombieman_test2.wad"))
             {
                 var demo = new Demo(@"data\zombieman_test2.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -119,8 +115,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -135,9 +131,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\shotgunguy_test.wad"))
             {
                 var demo = new Demo(@"data\shotgunguy_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -149,8 +144,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -165,9 +160,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\chaingunguy_test.wad"))
             {
                 var demo = new Demo(@"data\chaingunguy_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -179,8 +173,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -195,9 +189,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\imp_test.wad"))
             {
                 var demo = new Demo(@"data\imp_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -209,8 +202,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -225,9 +218,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\imp_test.wad"))
             {
                 var demo = new Demo(@"data\fast_imp_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -239,8 +231,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -255,9 +247,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\demon_test.wad"))
             {
                 var demo = new Demo(@"data\demon_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -269,8 +260,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -285,9 +276,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\demon_test.wad"))
             {
                 var demo = new Demo(@"data\fast_demon_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -299,8 +289,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -316,9 +306,8 @@ namespace ManagedDoomTest.CompatibilityTests
             {
                 var demo = new Demo(@"data\lostsoul_test_final2.lmp");
                 demo.Options.GameVersion = GameVersion.Final2;
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -330,8 +319,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -346,9 +335,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\cacodemon_test.wad"))
             {
                 var demo = new Demo(@"data\cacodemon_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -360,8 +348,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -376,9 +364,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\cacodemon_test.wad"))
             {
                 var demo = new Demo(@"data\fast_cacodemon_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -390,8 +377,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -406,9 +393,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\baron_test.wad"))
             {
                 var demo = new Demo(@"data\baron_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -420,8 +406,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -436,9 +422,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\baron_test.wad"))
             {
                 var demo = new Demo(@"data\fast_baron_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -450,8 +435,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -466,9 +451,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\revenant_test.wad"))
             {
                 var demo = new Demo(@"data\revenant_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -480,9 +464,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    world.Options.GameTic++; // To avoid desync due to revenant missile.
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -497,9 +480,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\fatso_test.wad"))
             {
                 var demo = new Demo(@"data\fatso_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -511,8 +493,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -527,9 +509,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\arachnotron_test.wad"))
             {
                 var demo = new Demo(@"data\arachnotron_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -541,8 +522,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -558,9 +539,8 @@ namespace ManagedDoomTest.CompatibilityTests
             {
                 var demo = new Demo(@"data\painelemental_test_final2.lmp");
                 demo.Options.GameVersion = GameVersion.Final2;
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -572,8 +552,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -588,9 +568,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\archvile_test.wad"))
             {
                 var demo = new Demo(@"data\archvile_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -602,8 +581,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 
@@ -618,9 +597,8 @@ namespace ManagedDoomTest.CompatibilityTests
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\telefrag_test.wad"))
             {
                 var demo = new Demo(@"data\telefrag_test.lmp");
-                demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-                var cmds = demo.Options.Players.Select(player => player.Cmd).ToArray();
-                var world = new World(resource, demo.Options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
 
                 var lastHash = 0;
                 var aggHash = 0;
@@ -632,8 +610,8 @@ namespace ManagedDoomTest.CompatibilityTests
                         break;
                     }
 
-                    world.Update();
-                    lastHash = DoomDebug.GetMobjHash(world);
+                    game.Update(cmds);
+                    lastHash = DoomDebug.GetMobjHash(game.World);
                     aggHash = DoomDebug.CombineHash(aggHash, lastHash);
                 }
 

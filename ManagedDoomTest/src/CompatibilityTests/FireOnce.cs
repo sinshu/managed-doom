@@ -17,11 +17,10 @@ namespace ManagedDoomTest.CompatibilityTests
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
                 options.Map = 1;
-
                 options.Players[0].InGame = true;
-                options.Players[0].PlayerState = PlayerState.Reborn;
 
-                var world = new World(resource, options);
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, options);
 
                 var tics = 700;
                 var pressFireUntil = 20;
@@ -31,18 +30,18 @@ namespace ManagedDoomTest.CompatibilityTests
                 {
                     if (i < pressFireUntil)
                     {
-                        options.Players[0].Cmd.Buttons = TicCmdButtons.Attack;
+                        cmds[0].Buttons = TicCmdButtons.Attack;
                     }
                     else
                     {
-                        options.Players[0].Cmd.Buttons = 0;
+                        cmds[0].Buttons = 0;
                     }
 
-                    world.Update();
-                    aggHash = DoomDebug.CombineHash(aggHash, DoomDebug.GetMobjHash(world));
+                    game.Update(cmds);
+                    aggHash = DoomDebug.CombineHash(aggHash, DoomDebug.GetMobjHash(game.World));
                 }
 
-                Assert.AreEqual(0xef1aa1d8u, (uint)DoomDebug.GetMobjHash(world));
+                Assert.AreEqual(0xef1aa1d8u, (uint)DoomDebug.GetMobjHash(game.World));
                 Assert.AreEqual(0xe6edcf39u, (uint)aggHash);
             }
         }
