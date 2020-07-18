@@ -48,7 +48,7 @@ namespace ManagedDoom
 						1,
 						direction);
 
-					if ((world.levelTime & 7) == 0)
+					if ((world.LevelTime & 7) == 0)
 					{
 						switch (type)
 						{
@@ -96,7 +96,7 @@ namespace ManagedDoom
 						1,
 						direction);
 
-					if ((world.levelTime & 7) == 0)
+					if ((world.LevelTime & 7) == 0)
 					{
 						switch (type)
 						{

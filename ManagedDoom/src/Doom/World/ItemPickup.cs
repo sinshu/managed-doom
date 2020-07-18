@@ -159,7 +159,7 @@ namespace ManagedDoom
 
                 player.PendingWeapon = weapon;
 
-                if (player == world.Options.Players[world.consoleplayer])
+                if (player == world.ConsolePlayer)
                 {
                     world.StartSound(player.Mobj, Sfx.WPNUP, SfxType.Misc);
                 }
@@ -735,7 +735,7 @@ namespace ManagedDoom
 
             player.BonusCount += bonusAdd;
 
-            if (player == world.Options.Players[world.consoleplayer])
+            if (player == world.ConsolePlayer)
             {
                 world.StartSound(player.Mobj, sound, SfxType.Misc);
             }

@@ -1753,7 +1753,7 @@ namespace ManagedDoom
                 }
             }
 
-            world.G_ExitLevel();
+            world.ExitLevel();
         }
 
 
@@ -1878,7 +1878,7 @@ namespace ManagedDoom
 
         public void BrainDie(Mobj actor)
         {
-            world.G_ExitLevel();
+            world.ExitLevel();
         }
 
 

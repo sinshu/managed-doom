@@ -8,25 +8,14 @@ namespace ManagedDoom
 {
     public sealed partial class World
     {
-        public GameOptions Options;
-        public DoomGame Game;
-
-        private Map map;
+        private GameOptions options;
+        private DoomGame game;
         private DoomRandom random;
 
-        public int consoleplayer = 0;
-
-        private int validCount;
-
-        public int totalKills = 0;
-        public int totalItems = 0;
-        public int totalSecrets = 0;
-
-        public int levelTime = 0;
+        private Map map;
 
         private Thinkers thinkers;
         private Specials specials;
-
         private ThingAllocation thingAllocation;
         private ThingMovement thingMovement;
         private ThingInteraction thingInteraction;
@@ -45,7 +34,15 @@ namespace ManagedDoom
         private AutoMap autoMap;
         private Cheat cheat;
 
+        private int totalKills;
+        private int totalItems;
+        private int totalSecrets;
+
+        private int levelTime;
+        private bool secretExit;
         private bool completed;
+
+        private int validCount;
 
         public World(CommonResource resorces, GameOptions options) : this(resorces, options, null)
         {
@@ -53,18 +50,14 @@ namespace ManagedDoom
 
         public World(CommonResource resorces, GameOptions options, DoomGame game)
         {
-            Options = options;
-            Game = game;
+            this.options = options;
+            this.game = game;
+            this.random = options.Random;
 
             map = new Map(resorces, this);
 
-            random = options.Random;
-
-            validCount = 0;
-
             thinkers = new Thinkers(this);
             specials = new Specials(this);
-
             thingAllocation = new ThingAllocation(this);
             thingMovement = new ThingMovement(this);
             thingInteraction = new ThingInteraction(this);
@@ -83,11 +76,9 @@ namespace ManagedDoom
             autoMap = new AutoMap(this);
             cheat = new Cheat(this);
 
-            totalKills = 0;
-            totalItems = 0;
-            totalSecrets = 0;
             options.IntermissionInfo.TotalFrags = 0;
             options.IntermissionInfo.ParTime = 180;
+
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
                 options.Players[i].KillCount = 0;
@@ -95,13 +86,16 @@ namespace ManagedDoom
                 options.Players[i].ItemCount = 0;
             }
 
-            // Initial height of PointOfView
-            // will be set by player think.
-            options.Players[consoleplayer].ViewZ = Fixed.Epsilon;
+            // Initial height of view will be set by player think.
+            options.Players[options.ConsolePlayer].ViewZ = Fixed.Epsilon;
+
+            totalKills = 0;
+            totalItems = 0;
+            totalSecrets = 0;
 
             LoadThings();
 
-            // if deathmatch, randomly spawn the active players
+            // If deathmatch, randomly spawn the active players.
             if (options.Deathmatch != 0)
             {
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -116,12 +110,16 @@ namespace ManagedDoom
 
             specials.SpawnSpecials();
 
+            levelTime = 0;
+            secretExit = false;
             completed = false;
+
+            validCount = 0;
         }
 
         public UpdateResult Update()
         {
-            var players = Options.Players;
+            var players = options.Players;
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (players[i].InGame)
@@ -138,24 +136,6 @@ namespace ManagedDoom
             autoMap.Update();
 
             levelTime++;
-
-            /*
-            var period = 3 * 35;
-            if (levelTime % period == period - 1)
-            {
-                Console.WriteLine("SAVE!");
-                var save = new SaveGame("TEST!");
-                save.Save(this, "test.dsg");
-
-                Console.WriteLine("LOAD!");
-                var load = new LoadGame(File.ReadAllBytes("test.dsg"));
-                load.Load(this);
-            }
-            */
-
-            //var mobjHash = DoomDebug.GetMobjHash(this);
-            //var sectorHash = DoomDebug.GetSectorHash(this);
-            //Console.WriteLine(levelTime + ": " + mobjHash.ToString("x8") + ", " + sectorHash.ToString("x8"));
 
             if (completed)
             {
@@ -176,36 +156,33 @@ namespace ManagedDoom
 
         private void LoadThings()
         {
-            totalKills = 0;
-            totalItems = 0;
-
             for (var i = 0; i < map.Things.Length; i++)
             {
                 var mt = map.Things[i];
 
                 var spawn = true;
 
-                // Do not spawn cool, new monsters if !commercial
-                if (Options.GameMode != GameMode.Commercial)
+                // Do not spawn cool, new monsters if not commercial.
+                if (options.GameMode != GameMode.Commercial)
                 {
                     switch (mt.Type)
                     {
-                        case 68:    // Arachnotron
-                        case 64:    // Archvile
-                        case 88:    // Boss Brain
-                        case 89:    // Boss Shooter
-                        case 69:    // Hell Knight
-                        case 67:    // Mancubus
-                        case 71:    // Pain Elemental
-                        case 65:    // Former Human Commando
-                        case 66:    // Revenant
-                        case 84:    // Wolf SS
+                        case 68: // Arachnotron
+                        case 64: // Archvile
+                        case 88: // Boss Brain
+                        case 89: // Boss Shooter
+                        case 69: // Hell Knight
+                        case 67: // Mancubus
+                        case 71: // Pain Elemental
+                        case 65: // Former Human Commando
+                        case 66: // Revenant
+                        case 84: // Wolf SS
                             spawn = false;
                             break;
                     }
                 }
 
-                if (spawn == false)
+                if (!spawn)
                 {
                     break;
                 }
@@ -214,42 +191,31 @@ namespace ManagedDoom
             }
         }
 
-
-        
-
-        
-
-
-
-        private bool secretexit = false;
-
-        public void G_ExitLevel()
+        public void ExitLevel()
         {
-            secretexit = false;
+            secretExit = false;
             completed = true;
         }
 
-        public void G_SecretExitLevel()
+        public void SecretExitLevel()
         {
-            secretexit = true;
+            secretExit = true;
             completed = true;
         }
-
-
 
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
         {
-            Options.Audio.StartSound(mobj, sfx, type);
+            options.Audio.StartSound(mobj, sfx, type);
         }
 
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type, int volume)
         {
-            Options.Audio.StartSound(mobj, sfx, type, volume);
+            options.Audio.StartSound(mobj, sfx, type, volume);
         }
 
         public void StopSound(Mobj mobj)
         {
-            Options.Audio.StopSound(mobj);
+            options.Audio.StopSound(mobj);
         }
 
         public int GetNewValidCount()
@@ -258,10 +224,9 @@ namespace ManagedDoom
             return validCount;
         }
 
-
         public bool DoEvent(DoomEvent e)
         {
-            if (!Options.NetGame && Options.Skill != GameSkill.Nightmare)
+            if (!options.NetGame && options.Skill != GameSkill.Nightmare)
             {
                 cheat.DoEvent(e);
             }
@@ -290,14 +255,14 @@ namespace ManagedDoom
             return false;
         }
 
-
+        public GameOptions Options => options;
+        public DoomGame Game => game;
+        public DoomRandom Random => random;
 
         public Map Map => map;
-        public DoomRandom Random => random;
 
         public Thinkers Thinkers => thinkers;
         public Specials Specials => specials;
-
         public ThingAllocation ThingAllocation => thingAllocation;
         public ThingMovement ThingMovement => thingMovement;
         public ThingInteraction ThingInteraction => thingInteraction;
@@ -316,8 +281,33 @@ namespace ManagedDoom
         public AutoMap AutoMap => autoMap;
         public Cheat Cheat => cheat;
 
+        public int TotalKills
+        {
+            get => totalKills;
+            set => totalKills = value;
+        }
+
+        public int TotalItems
+        {
+            get => totalItems;
+            set => totalItems = value;
+        }
+
+        public int TotalSecrets
+        {
+            get => totalSecrets;
+            set => totalSecrets = value;
+        }
+
+        public int LevelTime
+        {
+            get => levelTime;
+            set => levelTime = value;
+        }
+
+        public bool SecretExit => secretExit;
+
         public Player ConsolePlayer => Options.Players[Options.ConsolePlayer];
         public bool FirstTicIsNotYetDone => ConsolePlayer.ViewZ == Fixed.Epsilon;
-        public bool SecretExit => secretexit;
     }
 }

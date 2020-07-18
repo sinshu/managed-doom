@@ -223,7 +223,7 @@ namespace ManagedDoom.SoftwareRendering
         {
             var options = world.Options;
             var players = options.Players;
-            var consolePlayer = players[world.consoleplayer];
+            var consolePlayer = world.ConsolePlayer;
             var am = world.AutoMap;
 
             if (!options.NetGame)

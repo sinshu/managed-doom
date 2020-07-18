@@ -154,12 +154,12 @@ namespace ManagedDoom
 
             if ((mobj.Flags & MobjFlags.CountKill) != 0)
             {
-                world.totalKills++;
+                world.TotalKills++;
             }
 
             if ((mobj.Flags & MobjFlags.CountItem) != 0)
             {
-                world.totalItems++;
+                world.TotalItems++;
             }
 
             mobj.Angle = mt.Angle;
@@ -317,7 +317,7 @@ namespace ManagedDoom
                 (mobj.Type != MobjType.Ins))
             {
                 itemRespawnQue[itemQueHead] = mobj.SpawnPoint;
-                itemRespawnTime[itemQueHead] = world.levelTime;
+                itemRespawnTime[itemQueHead] = world.LevelTime;
                 itemQueHead = (itemQueHead + 1) & (itemQueSize - 1);
 
                 // Lose one off the end?
@@ -661,7 +661,7 @@ namespace ManagedDoom
             }
 
             // Wait at least 30 seconds.
-            if (world.levelTime - itemRespawnTime[itemQueTail] < 30 * 35)
+            if (world.LevelTime - itemRespawnTime[itemQueTail] < 30 * 35)
             {
                 return;
             }

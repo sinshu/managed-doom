@@ -131,7 +131,7 @@ namespace ManagedDoom
 
 					// Check for turbo cheats.
 					if (cmd.ForwardMove > GameConstants.TURBOTHRESHOLD.Data &&
-						(world.levelTime & 31) == 0 && ((world.levelTime >> 5) & 3) == i)
+						(world.LevelTime & 31) == 0 && ((world.LevelTime >> 5) & 3) == i)
 					{
 						var player = players[options.ConsolePlayer];
 						player.SendMessage("%s is turbo!");
@@ -416,9 +416,9 @@ namespace ManagedDoom
 				}
 			}
 
-			imInfo.MaxKillCount = world.totalKills;
-			imInfo.MaxItemCount = world.totalItems;
-			imInfo.MaxSecretCount = world.totalSecrets;
+			imInfo.MaxKillCount = world.TotalKills;
+			imInfo.MaxItemCount = world.TotalItems;
+			imInfo.MaxSecretCount = world.TotalSecrets;
 			imInfo.TotalFrags = 0;
 			if (options.GameMode == GameMode.Commercial)
 			{
@@ -436,7 +436,7 @@ namespace ManagedDoom
 				imInfo.Players[i].KillCount = players[i].KillCount;
 				imInfo.Players[i].ItemCount = players[i].ItemCount;
 				imInfo.Players[i].SecretCount = players[i].SecretCount;
-				imInfo.Players[i].Time = world.levelTime;
+				imInfo.Players[i].Time = world.LevelTime;
 				Array.Copy(players[i].Frags, imInfo.Players[i].Frags, Player.MaxPlayerCount);
 			}
 

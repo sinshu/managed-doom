@@ -97,9 +97,9 @@ namespace ManagedDoom
                     data[ptr++] = options.Players[i].InGame ? (byte)1 : (byte)0;
                 }
 
-                data[ptr++] = (byte)(game.World.levelTime >> 16);
-                data[ptr++] = (byte)(game.World.levelTime >> 8);
-                data[ptr++] = (byte)(game.World.levelTime);
+                data[ptr++] = (byte)(game.World.LevelTime >> 16);
+                data[ptr++] = (byte)(game.World.LevelTime >> 8);
+                data[ptr++] = (byte)(game.World.LevelTime);
 
                 ArchivePlayers(game.World);
                 ArchiveWorld(game.World);
@@ -589,7 +589,7 @@ namespace ManagedDoom
                     throw new Exception("Bad savegame!");
                 }
 
-                game.World.levelTime = levelTime;
+                game.World.LevelTime = levelTime;
 
                 options.Audio.SetListener(game.World.ConsolePlayer.Mobj);
             }

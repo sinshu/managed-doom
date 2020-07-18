@@ -215,7 +215,7 @@ namespace ManagedDoom
                     return;
                 }
 
-                if ((world.levelTime & 31) != 0)
+                if ((world.LevelTime & 31) != 0)
                 {
                     return;
                 }

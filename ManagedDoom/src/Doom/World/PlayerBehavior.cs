@@ -288,7 +288,7 @@ namespace ManagedDoom
                 return;
             }
 
-            var angle = (Trig.FineAngleCount / 20 * world.levelTime) & Trig.FineMask;
+            var angle = (Trig.FineAngleCount / 20 * world.LevelTime) & Trig.FineMask;
 
             var bob = (player.Bob / 2) * Trig.Sin(angle);
 
@@ -365,7 +365,7 @@ namespace ManagedDoom
                     // Hell slime damage.
                     if (player.Powers[(int)PowerType.IronFeet] == 0)
                     {
-                        if ((world.levelTime & 0x1f) == 0)
+                        if ((world.LevelTime & 0x1f) == 0)
                         {
                             ti.DamageMobj(player.Mobj, null, null, 10);
                         }
@@ -376,7 +376,7 @@ namespace ManagedDoom
                     // Nukage damage.
                     if (player.Powers[(int)PowerType.IronFeet] == 0)
                     {
-                        if ((world.levelTime & 0x1f) == 0)
+                        if ((world.LevelTime & 0x1f) == 0)
                         {
                             ti.DamageMobj(player.Mobj, null, null, 5);
                         }
@@ -389,7 +389,7 @@ namespace ManagedDoom
                     // Strobe hurt.
                     if (player.Powers[(int)PowerType.IronFeet] == 0 || (world.Random.Next() < 5))
                     {
-                        if ((world.levelTime & 0x1f) == 0)
+                        if ((world.LevelTime & 0x1f) == 0)
                         {
                             ti.DamageMobj(player.Mobj, null, null, 20);
                         }
@@ -405,13 +405,13 @@ namespace ManagedDoom
                 case 11:
                     // Exit super damage for E1M8 finale.
                     player.Cheats &= ~CheatFlags.GodMode;
-                    if ((world.levelTime & 0x1f) == 0)
+                    if ((world.LevelTime & 0x1f) == 0)
                     {
                         ti.DamageMobj(player.Mobj, null, null, 20);
                     }
                     if (player.Health <= 10)
                     {
-                        world.G_ExitLevel();
+                        world.ExitLevel();
                     }
                     break;
 

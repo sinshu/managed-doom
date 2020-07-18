@@ -37,7 +37,7 @@ namespace ManagedDoom
 					if (type == PlatformType.RaiseAndChange ||
 						type == PlatformType.RaiseToNearestAndChange)
 					{
-						if (((world.levelTime + sector.Number) & 7) == 0)
+						if (((world.LevelTime + sector.Number) & 7) == 0)
 						{
 							world.StartSound(sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
 						}

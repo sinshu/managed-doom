@@ -144,7 +144,7 @@ namespace ManagedDoom
 
             if (follow)
             {
-                var player = world.Options.Players[world.consoleplayer].Mobj;
+                var player = world.ConsolePlayer.Mobj;
                 viewX = player.X;
                 viewY = player.Y;
             }

@@ -78,7 +78,7 @@ namespace ManagedDoom
             }
 
             // Bob the weapon based on movement speed.
-            var angle = (128 * player.Mobj.World.levelTime) & Trig.FineMask;
+            var angle = (128 * player.Mobj.World.LevelTime) & Trig.FineMask;
             psp.Sx = Fixed.One + player.Bob * Trig.Cos(angle);
 
             angle &= Trig.FineAngleCount / 2 - 1;

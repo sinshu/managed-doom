@@ -34,7 +34,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
 
-                    if (world.levelTime == 18003)
+                    if (world.LevelTime == 18003)
                     {
                         break;
                     }
@@ -72,7 +72,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
 
-                    if (world.levelTime == 24659)
+                    if (world.LevelTime == 24659)
                     {
                         break;
                     }
@@ -110,7 +110,7 @@ namespace ManagedDoomTest.CompatibilityTests
                     lastSectorHash = DoomDebug.GetSectorHash(world);
                     aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
 
-                    if (world.levelTime == 52487)
+                    if (world.LevelTime == 52487)
                     {
                         break;
                     }

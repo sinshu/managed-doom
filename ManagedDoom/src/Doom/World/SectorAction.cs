@@ -109,7 +109,7 @@ namespace ManagedDoom
 
 			noFit = true;
 
-			if (crushChange && (world.levelTime & 3) == 0)
+			if (crushChange && (world.LevelTime & 3) == 0)
 			{
 				world.ThingInteraction.DamageMobj(thing, null, null, 10);
 

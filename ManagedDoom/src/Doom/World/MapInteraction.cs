@@ -164,7 +164,7 @@ namespace ManagedDoom
 				case 11:
 					// Exit level.
 					specials.ChangeSwitchTexture(line, false);
-					world.G_ExitLevel();
+					world.ExitLevel();
 					break;
 
 				case 14:
@@ -258,7 +258,7 @@ namespace ManagedDoom
 				case 51:
 					// Secret exit.
 					specials.ChangeSwitchTexture(line, false);
-					world.G_SecretExitLevel();
+					world.SecretExitLevel();
 					break;
 
 				case 55:
@@ -732,7 +732,7 @@ namespace ManagedDoom
 
 				case 52:
 					// Do exit.
-					world.G_ExitLevel();
+					world.ExitLevel();
 					break;
 
 				case 53:
@@ -815,7 +815,7 @@ namespace ManagedDoom
 
 				case 124:
 					// Secret exit.
-					world.G_SecretExitLevel();
+					world.SecretExitLevel();
 					break;
 
 				case 125:
