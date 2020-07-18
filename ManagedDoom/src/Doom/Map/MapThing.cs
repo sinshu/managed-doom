@@ -4,13 +4,14 @@ namespace ManagedDoom
 {
     public sealed class MapThing
     {
-        public const int DataSize = 10;
+        private static readonly int dataSize = 10;
 
         public static MapThing Empty = new MapThing(
             Fixed.Zero,
             Fixed.Zero,
             Angle.Ang0,
-            0, 0);
+            0,
+            0);
 
         private Fixed x;
         private Fixed y;
@@ -51,18 +52,18 @@ namespace ManagedDoom
         public static MapThing[] FromWad(Wad wad, int lump)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % DataSize != 0)
+            if (length % dataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / DataSize;
+            var count = length / dataSize;
             var things = new MapThing[count];
 
             for (var i = 0; i < count; i++)
             {
-                var offset = DataSize * i;
+                var offset = dataSize * i;
                 things[i] = FromData(data, offset);
             }
 

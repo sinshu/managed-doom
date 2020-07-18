@@ -4,7 +4,7 @@ namespace ManagedDoom
 {
     public sealed class LineDef
     {
-        private const int dataSize = 14;
+        private static readonly int dataSize = 14;
 
         private Vertex vertex1;
         private Vertex vertex2;

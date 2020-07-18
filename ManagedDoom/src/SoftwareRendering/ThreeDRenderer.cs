@@ -699,7 +699,7 @@ namespace ManagedDoom.SoftwareRendering
             RenderBspNode(bsp.Children[side]);
 
             // Possibly divide back space.
-            if (IsPotentiallyVisible(bsp.Bbox[side ^ 1]))
+            if (IsPotentiallyVisible(bsp.BoundingBox[side ^ 1]))
             {
                 RenderBspNode(bsp.Children[side ^ 1]);
             }
