@@ -29,6 +29,7 @@ namespace ManagedDoom
 
         private IRenderer renderer;
         private ISound sound;
+        private IMusic music;
 
         private Action resetControl;
 
@@ -61,6 +62,7 @@ namespace ManagedDoom
 
             renderer = null;
             sound = NullSound.GetInstance();
+            music = NullMusic.GetInstance();
 
             resetControl = null;
         }
@@ -163,6 +165,12 @@ namespace ManagedDoom
         {
             get => sound;
             set => sound = value;
+        }
+
+        public IMusic Music
+        {
+            get => music;
+            set => music = value;
         }
 
         public Action ResetControl
