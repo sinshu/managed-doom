@@ -4,14 +4,14 @@ namespace ManagedDoom
 {
     public sealed class SideDef
     {
-        public const int DataSize = 30;
+        private static readonly int dataSize = 30;
 
-        public Fixed TextureOffset;
-        public Fixed RowOffset;
-        public int TopTexture;
-        public int BottomTexture;
-        public int MiddleTexture;
-        public Sector Sector;
+        private Fixed textureOffset;
+        private Fixed rowOffset;
+        private int topTexture;
+        private int bottomTexture;
+        private int middleTexture;
+        private Sector sector;
 
         public SideDef(
             Fixed textureOffset,
@@ -21,12 +21,12 @@ namespace ManagedDoom
             int middleTexture,
             Sector sector)
         {
-            TextureOffset = textureOffset;
-            RowOffset = rowOffset;
-            TopTexture = topTexture;
-            BottomTexture = bottomTexture;
-            MiddleTexture = middleTexture;
-            Sector = sector;
+            this.textureOffset = textureOffset;
+            this.rowOffset = rowOffset;
+            this.topTexture = topTexture;
+            this.bottomTexture = bottomTexture;
+            this.middleTexture = middleTexture;
+            this.sector = sector;
         }
 
         public static SideDef FromData(byte[] data, int offset, TextureLookup textures, Sector[] sectors)
@@ -50,22 +50,54 @@ namespace ManagedDoom
         public static SideDef[] FromWad(Wad wad, int lump, TextureLookup textures, Sector[] sectors)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % SideDef.DataSize != 0)
+            if (length % dataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / SideDef.DataSize;
+            var count = length / dataSize;
             var sides = new SideDef[count]; ;
 
             for (var i = 0; i < count; i++)
             {
-                var offset = SideDef.DataSize * i;
-                sides[i] = SideDef.FromData(data, offset, textures, sectors);
+                var offset = dataSize * i;
+                sides[i] = FromData(data, offset, textures, sectors);
             }
 
             return sides;
         }
+
+        public Fixed TextureOffset
+        {
+            get => textureOffset;
+            set => textureOffset = value;
+        }
+
+        public Fixed RowOffset
+        {
+            get => rowOffset;
+            set => rowOffset = value;
+        }
+
+        public int TopTexture
+        {
+            get => topTexture;
+            set => topTexture = value;
+        }
+
+        public int BottomTexture
+        {
+            get => bottomTexture;
+            set => bottomTexture = value;
+        }
+
+        public int MiddleTexture
+        {
+            get => middleTexture;
+            set => middleTexture = value;
+        }
+
+        public Sector Sector => sector;
     }
 }

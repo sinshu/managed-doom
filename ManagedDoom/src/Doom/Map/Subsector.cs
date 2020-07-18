@@ -4,7 +4,7 @@ namespace ManagedDoom
 {
     public sealed class Subsector
     {
-        public const int DataSize = 4;
+        public static readonly int dataSize = 4;
 
         private Sector sector;
         private int segCount;
@@ -31,18 +31,18 @@ namespace ManagedDoom
         public static Subsector[] FromWad(Wad wad, int lump, Seg[] segs)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % Subsector.DataSize != 0)
+            if (length % Subsector.dataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / Subsector.DataSize;
+            var count = length / Subsector.dataSize;
             var subsectors = new Subsector[count];
 
             for (var i = 0; i < count; i++)
             {
-                var offset = Subsector.DataSize * i;
+                var offset = Subsector.dataSize * i;
                 subsectors[i] = Subsector.FromData(data, offset, segs);
             }
 

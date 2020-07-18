@@ -4,7 +4,7 @@ namespace ManagedDoom
 {
     public sealed class Vertex
     {
-        public const int DataSize = 4;
+        public static readonly int dataSize = 4;
 
         private Fixed x;
         private Fixed y;
@@ -26,18 +26,18 @@ namespace ManagedDoom
         public static Vertex[] FromWad(Wad wad, int lump)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % DataSize != 0)
+            if (length % dataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / DataSize;
+            var count = length / dataSize;
             var vertices = new Vertex[count]; ;
 
             for (var i = 0; i < count; i++)
             {
-                var offset = DataSize * i;
+                var offset = dataSize * i;
                 vertices[i] = FromData(data, offset);
             }
 

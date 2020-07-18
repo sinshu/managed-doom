@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Runtime.Versioning;
 
 namespace ManagedDoom
 {
@@ -54,6 +51,12 @@ namespace ManagedDoom
             }
 
             var map = wad.GetLumpNumber(name);
+
+            if (map == -1)
+            {
+                throw new Exception("Map '" + name + "' was not found!");
+            }
+
             vertices = Vertex.FromWad(wad, map + 4);
             sectors = Sector.FromWad(wad, map + 8, flats);
             sides = SideDef.FromWad(wad, map + 3, textures, sectors);
