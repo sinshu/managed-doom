@@ -209,13 +209,13 @@ namespace ManagedDoom
                 }
 
                 Sector other;
-                if (check.Side0.Sector == sec)
+                if (check.FrontSide.Sector == sec)
                 {
-                    other = check.Side1.Sector;
+                    other = check.BackSide.Sector;
                 }
                 else
                 {
-                    other = check.Side0.Sector;
+                    other = check.FrontSide.Sector;
                 }
 
                 if ((check.Flags & LineFlags.SoundBlock) != 0)

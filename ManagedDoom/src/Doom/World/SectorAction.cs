@@ -491,7 +491,7 @@ namespace ManagedDoom
 					break;
 			}
 
-			var sector = line.Side1.Sector;
+			var sector = line.BackSide.Sector;
 
 			// If the sector has an active thinker, use it.
 			if (sector.SpecialData != null)
@@ -836,7 +836,7 @@ namespace ManagedDoom
 				{
 					case PlatformType.RaiseToNearestAndChange:
 						plat.Speed = platformSpeed / 2;
-						sector.FloorFlat = line.Side0.Sector.FloorFlat;
+						sector.FloorFlat = line.FrontSide.Sector.FloorFlat;
 						plat.High = FindNextHighestFloor(sector, sector.FloorHeight);
 						plat.Wait = 0;
 						plat.Status = PlatformState.Up;
@@ -847,7 +847,7 @@ namespace ManagedDoom
 
 					case PlatformType.RaiseAndChange:
 						plat.Speed = platformSpeed / 2;
-						sector.FloorFlat = line.Side0.Sector.FloorFlat;
+						sector.FloorFlat = line.FrontSide.Sector.FloorFlat;
 						plat.High = sector.FloorHeight + amount * Fixed.One;
 						plat.Wait = 0;
 						plat.Status = PlatformState.Up;
@@ -1092,7 +1092,7 @@ namespace ManagedDoom
 						{
 							if ((sector.Lines[i].Flags & LineFlags.TwoSided) != 0)
 							{
-								var frontSide = sector.Lines[i].Side0;
+								var frontSide = sector.Lines[i].FrontSide;
 								if (frontSide.BottomTexture >= 0)
 								{
 									if (textures[frontSide.BottomTexture].Height < min)
@@ -1100,7 +1100,7 @@ namespace ManagedDoom
 										min = textures[frontSide.BottomTexture].Height;
 									}
 								}
-								var backSide = sector.Lines[i].Side1;
+								var backSide = sector.Lines[i].BackSide;
 								if (backSide.BottomTexture >= 0)
 								{
 									if (textures[backSide.BottomTexture].Height < min)
@@ -1123,9 +1123,9 @@ namespace ManagedDoom
 						{
 							if ((sector.Lines[i].Flags & LineFlags.TwoSided) != 0)
 							{
-								if (sector.Lines[i].Side0.Sector.Number == sectorNumber)
+								if (sector.Lines[i].FrontSide.Sector.Number == sectorNumber)
 								{
-									sector = sector.Lines[i].Side1.Sector;
+									sector = sector.Lines[i].BackSide.Sector;
 									if (sector.FloorHeight == floor.FloorDestHeight)
 									{
 										floor.Texture = sector.FloorFlat;
@@ -1135,7 +1135,7 @@ namespace ManagedDoom
 								}
 								else
 								{
-									sector = sector.Lines[i].Side0.Sector;
+									sector = sector.Lines[i].FrontSide.Sector;
 									if (sector.FloorHeight == floor.FloorDestHeight)
 									{
 										floor.Texture = sector.FloorFlat;

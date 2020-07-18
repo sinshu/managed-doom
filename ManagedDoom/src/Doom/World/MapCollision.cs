@@ -21,7 +21,7 @@ namespace ManagedDoom
         /// </summary>
         public void LineOpening(LineDef line)
         {
-            if (line.Side1 == null)
+            if (line.BackSide == null)
             {
                 // If the line is single sided, nothing can pass through.
                 openRange = Fixed.Zero;

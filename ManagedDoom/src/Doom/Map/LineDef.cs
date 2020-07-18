@@ -4,33 +4,33 @@ namespace ManagedDoom
 {
     public sealed class LineDef
     {
-        public const int DataSize = 14;
+        private const int dataSize = 14;
 
-        public Vertex Vertex1;
-        public Vertex Vertex2;
+        private Vertex vertex1;
+        private Vertex vertex2;
 
-        public Fixed Dx;
-        public Fixed Dy;
+        private Fixed dx;
+        private Fixed dy;
 
-        public LineFlags Flags;
-        public LineSpecial Special;
-        public short Tag;
+        private LineFlags flags;
+        private LineSpecial special;
+        private short tag;
 
-        public SideDef Side0;
-        public SideDef Side1;
+        private SideDef frontSide;
+        private SideDef backSide;
 
-        public Fixed[] Box;
+        private Fixed[] boundingBox;
 
-        public SlopeType SlopeType;
+        private SlopeType slopeType;
 
-        public Sector FrontSector;
-        public Sector BackSector;
+        private Sector frontSector;
+        private Sector backSector;
 
-        public int ValidCount;
+        private int validCount;
 
-        public Thinker SpecialData;
+        private Thinker specialData;
 
-        public Mobj SoundOrigin;
+        private Mobj soundOrigin;
 
         public LineDef(
             Vertex vertex1,
@@ -38,48 +38,48 @@ namespace ManagedDoom
             LineFlags flags,
             LineSpecial special,
             short tag,
-            SideDef side0,
-            SideDef side1)
+            SideDef frontSide,
+            SideDef backSide)
         {
-            Vertex1 = vertex1;
-            Vertex2 = vertex2;
-            Flags = flags;
-            Special = special;
-            Tag = tag;
-            Side0 = side0;
-            Side1 = side1;
+            this.vertex1 = vertex1;
+            this.vertex2 = vertex2;
+            this.flags = flags;
+            this.special = special;
+            this.tag = tag;
+            this.frontSide = frontSide;
+            this.backSide = backSide;
 
-            Dx = vertex2.X - vertex1.X;
-            Dy = vertex2.Y - vertex1.Y;
+            dx = vertex2.X - vertex1.X;
+            dy = vertex2.Y - vertex1.Y;
 
-            if (Dx == Fixed.Zero)
+            if (dx == Fixed.Zero)
             {
-                SlopeType = SlopeType.Vertical;
+                slopeType = SlopeType.Vertical;
             }
-            else if (Dy == Fixed.Zero)
+            else if (dy == Fixed.Zero)
             {
-                SlopeType = SlopeType.Horizontal;
+                slopeType = SlopeType.Horizontal;
             }
             else
             {
-                if (Dy / Dx > Fixed.Zero)
+                if (dy / dx > Fixed.Zero)
                 {
-                    SlopeType = SlopeType.Positive;
+                    slopeType = SlopeType.Positive;
                 }
                 else
                 {
-                    SlopeType = SlopeType.Negative;
+                    slopeType = SlopeType.Negative;
                 }
             }
 
-            Box = new Fixed[4];
-            Box[ManagedDoom.Box.Top] = Fixed.Max(vertex1.Y, vertex2.Y);
-            Box[ManagedDoom.Box.Bottom] = Fixed.Min(vertex1.Y, vertex2.Y);
-            Box[ManagedDoom.Box.Left] = Fixed.Min(vertex1.X, vertex2.X);
-            Box[ManagedDoom.Box.Right] = Fixed.Max(vertex1.X, vertex2.X);
+            boundingBox = new Fixed[4];
+            boundingBox[Box.Top] = Fixed.Max(vertex1.Y, vertex2.Y);
+            boundingBox[Box.Bottom] = Fixed.Min(vertex1.Y, vertex2.Y);
+            boundingBox[Box.Left] = Fixed.Min(vertex1.X, vertex2.X);
+            boundingBox[Box.Right] = Fixed.Max(vertex1.X, vertex2.X);
 
-            FrontSector = side0?.Sector;
-            BackSector = side1?.Sector;
+            frontSector = frontSide?.Sector;
+            backSector = backSide?.Sector;
         }
 
         public static LineDef FromData(byte[] data, int offset, Vertex[] vertices, SideDef[] sides)
@@ -105,13 +105,13 @@ namespace ManagedDoom
         public static LineDef[] FromWad(Wad wad, int lump, Vertex[] vertices, SideDef[] sides)
         {
             var length = wad.GetLumpSize(lump);
-            if (length % DataSize != 0)
+            if (length % dataSize != 0)
             {
                 throw new Exception();
             }
 
             var data = wad.ReadLump(lump);
-            var count = length / DataSize;
+            var count = length / dataSize;
             var lines = new LineDef[count]; ;
 
             for (var i = 0; i < count; i++)
@@ -121,6 +121,58 @@ namespace ManagedDoom
             }
 
             return lines;
+        }
+
+        public Vertex Vertex1 => vertex1;
+        public Vertex Vertex2 => vertex2;
+
+        public Fixed Dx => dx;
+        public Fixed Dy => dy;
+
+        public LineFlags Flags
+        {
+            get => flags;
+            set => flags = value;
+        }
+
+        public LineSpecial Special
+        {
+            get => special;
+            set => special = value;
+        }
+
+        public short Tag
+        {
+            get => tag;
+            set => tag = value;
+        }
+
+        public SideDef FrontSide => frontSide;
+        public SideDef BackSide => backSide;
+
+        public Fixed[] BoundingBox => boundingBox;
+
+        public SlopeType SlopeType => slopeType;
+
+        public Sector FrontSector => frontSector;
+        public Sector BackSector => backSector;
+
+        public int ValidCount
+        {
+            get => validCount;
+            set => validCount = value;
+        }
+
+        public Thinker SpecialData
+        {
+            get => specialData;
+            set => specialData = value;
+        }
+
+        public Mobj SoundOrigin
+        {
+            get => soundOrigin;
+            set => soundOrigin = value;
         }
     }
 }

@@ -4,8 +4,8 @@ namespace ManagedDoom
 {
     public sealed class BlockMap
     {
-        public const int MapBlockUnits = 128;
-        public const int MapBlockShift = Fixed.FracBits + 7;
+        public static readonly int MapBlockUnits = 128;
+        public static readonly int MapBlockShift = Fixed.FracBits + 7;
 
         public static readonly Fixed MapBlockSize = Fixed.FromInt(MapBlockUnits);
         public static readonly int MapBMask = MapBlockSize.Data - 1;

@@ -45,8 +45,8 @@ namespace ManagedDoom
             var segOffset = BitConverter.ToInt16(data, offset + 10);
 
             var lineDef = lines[lineNumber];
-            var frontSide = side == 0 ? lineDef.Side0 : lineDef.Side1;
-            var backSide = side == 0 ? lineDef.Side1 : lineDef.Side0;
+            var frontSide = side == 0 ? lineDef.FrontSide : lineDef.BackSide;
+            var backSide = side == 0 ? lineDef.BackSide : lineDef.FrontSide;
 
             return new Seg(
                 vertices[vertex1Number],

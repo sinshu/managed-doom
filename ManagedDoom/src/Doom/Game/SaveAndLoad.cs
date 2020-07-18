@@ -475,9 +475,9 @@ namespace ManagedDoom
                 Write(data, p + 4, (short)line.Tag);
                 p += 6;
 
-                if (line.Side0 != null)
+                if (line.FrontSide != null)
                 {
-                    var side = line.Side0;
+                    var side = line.FrontSide;
                     Write(data, p, (short)side.TextureOffset.ToIntFloor());
                     Write(data, p + 2, (short)side.RowOffset.ToIntFloor());
                     Write(data, p + 4, (short)side.TopTexture);
@@ -486,9 +486,9 @@ namespace ManagedDoom
                     p += 10;
                 }
 
-                if (line.Side1 != null)
+                if (line.BackSide != null)
                 {
-                    var side = line.Side1;
+                    var side = line.BackSide;
                     Write(data, p, (short)side.TextureOffset.ToIntFloor());
                     Write(data, p + 2, (short)side.RowOffset.ToIntFloor());
                     Write(data, p + 4, (short)side.TopTexture);
@@ -965,9 +965,9 @@ namespace ManagedDoom
                 line.Tag = BitConverter.ToInt16(data, p + 4);
                 p += 6;
 
-                if (line.Side0 != null)
+                if (line.FrontSide != null)
                 {
-                    var side = line.Side0;
+                    var side = line.FrontSide;
                     side.TextureOffset = Fixed.FromInt(BitConverter.ToInt16(data, p));
                     side.RowOffset = Fixed.FromInt(BitConverter.ToInt16(data, p + 2));
                     side.TopTexture = BitConverter.ToInt16(data, p + 4);
@@ -976,9 +976,9 @@ namespace ManagedDoom
                     p += 10;
                 }
 
-                if (line.Side1 != null)
+                if (line.BackSide != null)
                 {
-                    var side = line.Side1;
+                    var side = line.BackSide;
                     side.TextureOffset = Fixed.FromInt(BitConverter.ToInt16(data, p));
                     side.RowOffset = Fixed.FromInt(BitConverter.ToInt16(data, p + 2));
                     side.TopTexture = BitConverter.ToInt16(data, p + 4);

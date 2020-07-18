@@ -41,8 +41,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.AreEqual(ToRadian(4156), segs[0].Angle.ToRadian(), delta);
                 Assert.IsTrue(segs[0].LineDef == lines[160]);
                 Assert.IsTrue((segs[0].LineDef.Flags & LineFlags.TwoSided) != 0);
-                Assert.IsTrue(segs[0].FrontSector == segs[0].LineDef.Side0.Sector);
-                Assert.IsTrue(segs[0].BackSector == segs[0].LineDef.Side1.Sector);
+                Assert.IsTrue(segs[0].FrontSector == segs[0].LineDef.FrontSide.Sector);
+                Assert.IsTrue(segs[0].BackSector == segs[0].LineDef.BackSide.Sector);
                 Assert.AreEqual(0, segs[0].Offset.ToDouble(), delta);
 
                 Assert.IsTrue(segs[28].Vertex1 == vertices[390]);
@@ -50,8 +50,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.AreEqual(ToRadian(-32768), segs[28].Angle.ToRadian(), delta);
                 Assert.IsTrue(segs[28].LineDef == lines[480]);
                 Assert.IsTrue((segs[0].LineDef.Flags & LineFlags.TwoSided) != 0);
-                Assert.IsTrue(segs[28].FrontSector == segs[28].LineDef.Side1.Sector);
-                Assert.IsTrue(segs[28].BackSector == segs[28].LineDef.Side0.Sector);
+                Assert.IsTrue(segs[28].FrontSector == segs[28].LineDef.BackSide.Sector);
+                Assert.IsTrue(segs[28].BackSector == segs[28].LineDef.FrontSide.Sector);
                 Assert.AreEqual(0, segs[28].Offset.ToDouble(), delta);
 
                 Assert.IsTrue(segs[744].Vertex1 == vertices[446]);
@@ -59,7 +59,7 @@ namespace ManagedDoomTest.UnitTests
                 Assert.AreEqual(ToRadian(-16384), segs[744].Angle.ToRadian(), delta);
                 Assert.IsTrue(segs[744].LineDef == lines[452]);
                 Assert.IsTrue((segs[744].LineDef.Flags & LineFlags.TwoSided) == 0);
-                Assert.IsTrue(segs[744].FrontSector == segs[744].LineDef.Side0.Sector);
+                Assert.IsTrue(segs[744].FrontSector == segs[744].LineDef.FrontSide.Sector);
                 Assert.IsTrue(segs[744].BackSector == null);
                 Assert.AreEqual(154, segs[744].Offset.ToDouble(), delta);
 
@@ -68,7 +68,7 @@ namespace ManagedDoomTest.UnitTests
                 Assert.AreEqual(ToRadian(-13828), segs[746].Angle.ToRadian(), delta);
                 Assert.IsTrue(segs[746].LineDef == lines[451]);
                 Assert.IsTrue((segs[746].LineDef.Flags & LineFlags.TwoSided) == 0);
-                Assert.IsTrue(segs[746].FrontSector == segs[746].LineDef.Side0.Sector);
+                Assert.IsTrue(segs[746].FrontSector == segs[746].LineDef.FrontSide.Sector);
                 Assert.IsTrue(segs[746].BackSector == null);
                 Assert.AreEqual(0, segs[746].Offset.ToDouble(), delta);
             }
@@ -95,8 +95,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.AreEqual(ToRadian(-32768), segs[0].Angle.ToRadian(), delta);
                 Assert.IsTrue(segs[0].LineDef == lines[8]);
                 Assert.IsTrue((segs[0].LineDef.Flags & LineFlags.TwoSided) != 0);
-                Assert.IsTrue(segs[0].FrontSector == segs[0].LineDef.Side0.Sector);
-                Assert.IsTrue(segs[0].BackSector == segs[0].LineDef.Side1.Sector);
+                Assert.IsTrue(segs[0].FrontSector == segs[0].LineDef.FrontSide.Sector);
+                Assert.IsTrue(segs[0].BackSector == segs[0].LineDef.BackSide.Sector);
                 Assert.AreEqual(0, segs[0].Offset.ToDouble(), delta);
 
                 Assert.IsTrue(segs[42].Vertex1 == vertices[26]);
@@ -104,8 +104,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.AreEqual(ToRadian(-22209), segs[42].Angle.ToRadian(), delta);
                 Assert.IsTrue(segs[42].LineDef == lines[33]);
                 Assert.IsTrue((segs[42].LineDef.Flags & LineFlags.TwoSided) != 0);
-                Assert.IsTrue(segs[42].FrontSector == segs[42].LineDef.Side1.Sector);
-                Assert.IsTrue(segs[42].BackSector == segs[42].LineDef.Side0.Sector);
+                Assert.IsTrue(segs[42].FrontSector == segs[42].LineDef.BackSide.Sector);
+                Assert.IsTrue(segs[42].BackSector == segs[42].LineDef.FrontSide.Sector);
                 Assert.AreEqual(0, segs[42].Offset.ToDouble(), delta);
 
                 Assert.IsTrue(segs[103].Vertex1 == vertices[331]);
@@ -113,7 +113,7 @@ namespace ManagedDoomTest.UnitTests
                 Assert.AreEqual(ToRadian(16384), segs[103].Angle.ToRadian(), delta);
                 Assert.IsTrue(segs[103].LineDef == lines[347]);
                 Assert.IsTrue((segs[103].LineDef.Flags & LineFlags.TwoSided) == 0);
-                Assert.IsTrue(segs[103].FrontSector == segs[103].LineDef.Side0.Sector);
+                Assert.IsTrue(segs[103].FrontSector == segs[103].LineDef.FrontSide.Sector);
                 Assert.IsTrue(segs[103].BackSector == null);
                 Assert.AreEqual(64, segs[103].Offset.ToDouble(), delta);
 
@@ -122,8 +122,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.AreEqual(ToRadian(-16384), segs[600].Angle.ToRadian(), delta);
                 Assert.IsTrue(segs[600].LineDef == lines[271]);
                 Assert.IsTrue((segs[600].LineDef.Flags & LineFlags.TwoSided) != 0);
-                Assert.IsTrue(segs[600].FrontSector == segs[600].LineDef.Side1.Sector);
-                Assert.IsTrue(segs[600].BackSector == segs[600].LineDef.Side0.Sector);
+                Assert.IsTrue(segs[600].FrontSector == segs[600].LineDef.BackSide.Sector);
+                Assert.IsTrue(segs[600].BackSector == segs[600].LineDef.FrontSide.Sector);
                 Assert.AreEqual(0, segs[600].Offset.ToDouble(), delta);
             }
         }

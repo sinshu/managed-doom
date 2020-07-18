@@ -29,8 +29,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.IsTrue((int)lines[0].Flags == 1);
                 Assert.IsTrue((int)lines[0].Special == 0);
                 Assert.IsTrue(lines[0].Tag == 0);
-                Assert.IsTrue(lines[0].Side0 == sides[0]);
-                Assert.IsTrue(lines[0].Side1 == null);
+                Assert.IsTrue(lines[0].FrontSide == sides[0]);
+                Assert.IsTrue(lines[0].BackSide == null);
                 Assert.IsTrue(lines[0].FrontSector == sides[0].Sector);
                 Assert.IsTrue(lines[0].BackSector == null);
 
@@ -39,8 +39,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.IsTrue((int)lines[136].Flags == 28);
                 Assert.IsTrue((int)lines[136].Special == 63);
                 Assert.IsTrue(lines[136].Tag == 3);
-                Assert.IsTrue(lines[136].Side0 == sides[184]);
-                Assert.IsTrue(lines[136].Side1 == sides[185]);
+                Assert.IsTrue(lines[136].FrontSide == sides[184]);
+                Assert.IsTrue(lines[136].BackSide == sides[185]);
                 Assert.IsTrue(lines[136].FrontSector == sides[184].Sector);
                 Assert.IsTrue(lines[136].BackSector == sides[185].Sector);
 
@@ -49,8 +49,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.IsTrue((int)lines[485].Flags == 12);
                 Assert.IsTrue((int)lines[485].Special == 0);
                 Assert.IsTrue(lines[485].Tag == 0);
-                Assert.IsTrue(lines[485].Side0 == sides[664]);
-                Assert.IsTrue(lines[485].Side1 == sides[665]);
+                Assert.IsTrue(lines[485].FrontSide == sides[664]);
+                Assert.IsTrue(lines[485].BackSide == sides[665]);
                 Assert.IsTrue(lines[485].FrontSector == sides[664].Sector);
                 Assert.IsTrue(lines[485].BackSector == sides[665].Sector);
             }
@@ -76,8 +76,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.IsTrue((int)lines[0].Flags == 1);
                 Assert.IsTrue((int)lines[0].Special == 0);
                 Assert.IsTrue(lines[0].Tag == 0);
-                Assert.IsTrue(lines[0].Side0 == sides[0]);
-                Assert.IsTrue(lines[0].Side1 == null);
+                Assert.IsTrue(lines[0].FrontSide == sides[0]);
+                Assert.IsTrue(lines[0].BackSide == null);
                 Assert.IsTrue(lines[0].FrontSector == sides[0].Sector);
                 Assert.IsTrue(lines[0].BackSector == null);
 
@@ -86,8 +86,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.IsTrue((int)lines[75].Flags == 4);
                 Assert.IsTrue((int)lines[75].Special == 103);
                 Assert.IsTrue(lines[75].Tag == 4);
-                Assert.IsTrue(lines[75].Side0 == sides[97]);
-                Assert.IsTrue(lines[75].Side1 == sides[98]);
+                Assert.IsTrue(lines[75].FrontSide == sides[97]);
+                Assert.IsTrue(lines[75].BackSide == sides[98]);
                 Assert.IsTrue(lines[75].FrontSector == sides[97].Sector);
                 Assert.IsTrue(lines[75].BackSector == sides[98].Sector);
 
@@ -96,8 +96,8 @@ namespace ManagedDoomTest.UnitTests
                 Assert.IsTrue((int)lines[369].Flags == 21);
                 Assert.IsTrue((int)lines[369].Special == 0);
                 Assert.IsTrue(lines[369].Tag == 0);
-                Assert.IsTrue(lines[369].Side0 == sides[527]);
-                Assert.IsTrue(lines[369].Side1 == sides[528]);
+                Assert.IsTrue(lines[369].FrontSide == sides[527]);
+                Assert.IsTrue(lines[369].BackSide == sides[528]);
                 Assert.IsTrue(lines[369].FrontSector == sides[527].Sector);
                 Assert.IsTrue(lines[369].BackSector == sides[528].Sector);
             }

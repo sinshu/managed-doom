@@ -149,7 +149,7 @@ namespace ManagedDoom
                 line.Special = 0;
             }
 
-            var frontSide = line.Side0;
+            var frontSide = line.FrontSide;
             var topTexture = frontSide.TopTexture;
             var middleTexture = frontSide.MiddleTexture;
             var bottomTexture = frontSide.BottomTexture;
@@ -275,7 +275,7 @@ namespace ManagedDoom
             // Animate line specials.
             foreach (var line in scrollLines)
             {
-                line.Side0.TextureOffset += Fixed.One;
+                line.FrontSide.TextureOffset += Fixed.One;
             }
 
             // Do buttons.
@@ -290,15 +290,15 @@ namespace ManagedDoom
                         switch (buttonList[i].Position)
                         {
                             case ButtonPosition.Top:
-                                buttonList[i].Line.Side0.TopTexture = buttonList[i].Texture;
+                                buttonList[i].Line.FrontSide.TopTexture = buttonList[i].Texture;
                                 break;
 
                             case ButtonPosition.Middle:
-                                buttonList[i].Line.Side0.MiddleTexture = buttonList[i].Texture;
+                                buttonList[i].Line.FrontSide.MiddleTexture = buttonList[i].Texture;
                                 break;
 
                             case ButtonPosition.Bottom:
-                                buttonList[i].Line.Side0.BottomTexture = buttonList[i].Texture;
+                                buttonList[i].Line.FrontSide.BottomTexture = buttonList[i].Texture;
                                 break;
                         }
 
