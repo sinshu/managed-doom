@@ -55,8 +55,6 @@ namespace ManagedDoom
                 wad.Dispose();
                 wad = null;
             }
-
-            Console.WriteLine("Wad files are disposed.");
         }
 
         public Wad Wad => wad;

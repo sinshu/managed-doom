@@ -1,5 +1,6 @@
 ﻿using System;
 using ManagedDoom.SoftwareRendering;
+using ManagedDoom.Audio;
 
 namespace ManagedDoom
 {
@@ -27,7 +28,7 @@ namespace ManagedDoom
         private IntermissionInfo intermissionInfo;
 
         private IRenderer renderer;
-        private IAudio sound;
+        private ISound sound;
 
         private Action resetControl;
 
@@ -59,7 +60,7 @@ namespace ManagedDoom
             intermissionInfo = new IntermissionInfo();
 
             renderer = null;
-            sound = NullAudio.GetInstance();
+            sound = NullSound.GetInstance();
 
             resetControl = null;
         }
@@ -158,7 +159,7 @@ namespace ManagedDoom
             set => renderer = value;
         }
 
-        public IAudio Audio
+        public ISound Sound
         {
             get => sound;
             set => sound = value;

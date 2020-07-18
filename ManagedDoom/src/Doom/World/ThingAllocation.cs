@@ -200,7 +200,7 @@ namespace ManagedDoom
             if (mt.Type - 1 == world.Options.ConsolePlayer)
             {
                 world.StatusBar.Reset();
-                world.Options.Audio.SetListener(mobj);
+                world.Options.Sound.SetListener(mobj);
             }
 
             // Set color translations for player sprites.

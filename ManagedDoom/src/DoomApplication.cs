@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Runtime.ExceptionServices;
 using SFML.Graphics;
 using SFML.Window;
 using ManagedDoom.SoftwareRendering;
+using ManagedDoom.Audio;
 
 namespace ManagedDoom
 {
@@ -14,7 +13,7 @@ namespace ManagedDoom
         private RenderWindow window;
         private CommonResource resource;
         private SfmlRenderer renderer;
-        private SfmlAudio audio;
+        private SfmlSound sound;
 
         private GameOptions options;
         private ApplicationState state;
@@ -48,7 +47,7 @@ namespace ManagedDoom
 
                 resource = new CommonResource("DOOM2.WAD");
                 renderer = new SfmlRenderer(window, resource, true);
-                audio = new SfmlAudio(resource.Wad);
+                sound = new SfmlSound(resource.Wad);
 
                 options = new GameOptions();
                 options.Skill = GameSkill.Hard;
@@ -58,7 +57,7 @@ namespace ManagedDoom
                 options.Map = 1;
                 options.Players[0].InGame = true;
                 options.Renderer = renderer;
-                options.Audio = audio;
+                options.Sound = sound;
 
                 state = ApplicationState.Opening;
 
@@ -235,7 +234,7 @@ namespace ManagedDoom
                 }
             }
 
-            options.Audio.Update();
+            options.Sound.Update();
             if (wiping)
             {
                 var result = wipe.Update();
@@ -321,10 +320,10 @@ namespace ManagedDoom
 
         public void Dispose()
         {
-            if (audio != null)
+            if (sound != null)
             {
-                audio.Dispose();
-                audio = null;
+                sound.Dispose();
+                sound = null;
             }
 
             if (renderer != null)

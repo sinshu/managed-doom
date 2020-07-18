@@ -771,7 +771,7 @@ namespace ManagedDoom
 
         private void StartSound(Sfx sfx)
         {
-            options.Audio.StartSound(sfx);
+            options.Sound.StartSound(sfx);
         }
 
 

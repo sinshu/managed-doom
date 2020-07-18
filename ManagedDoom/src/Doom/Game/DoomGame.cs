@@ -156,11 +156,11 @@ namespace ManagedDoom
 							paused = !paused;
 							if (paused)
 							{
-								options.Audio.Pause();
+								options.Sound.Pause();
 							}
 							else
 							{
-								options.Audio.Resume();
+								options.Sound.Resume();
 							}
 						}
 					}
@@ -269,7 +269,7 @@ namespace ManagedDoom
 
 			intermission = null;
 
-			options.Audio.Reset();
+			options.Sound.Reset();
 
 			world = new World(resource, options, this);
 

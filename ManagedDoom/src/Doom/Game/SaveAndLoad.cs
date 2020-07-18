@@ -591,7 +591,7 @@ namespace ManagedDoom
 
                 game.World.LevelTime = levelTime;
 
-                options.Audio.SetListener(game.World.ConsolePlayer.Mobj);
+                options.Sound.SetListener(game.World.ConsolePlayer.Mobj);
             }
 
             private void PadPointer()

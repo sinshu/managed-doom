@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.ExceptionServices;
-using System.Text;
 using SFML.Audio;
 using SFML.System;
 
-namespace ManagedDoom
+namespace ManagedDoom.Audio
 {
-    public sealed class SfmlAudio : IAudio, IDisposable
+    public sealed class SfmlSound : ISound, IDisposable
     {
         private static readonly int channelCount = 8;
 
@@ -33,7 +30,7 @@ namespace ManagedDoom
         private int masterVolume;
         private float masterVolumeDecay;
 
-        public SfmlAudio(Wad wad)
+        public SfmlSound(Wad wad)
         {
             buffers = new SoundBuffer[DoomInfo.SfxNames.Length];
             amplitudes = new float[DoomInfo.SfxNames.Length];
@@ -74,7 +71,7 @@ namespace ManagedDoom
             }
 
             masterVolume = 8;
-            masterVolumeDecay = (float)masterVolume / MaxSoundVolume;
+            masterVolumeDecay = (float)masterVolume / MaxVolume;
         }
 
         private static short[] GetSamples(Wad wad, string name, out int sampleRate, out int sampleCount)
@@ -388,11 +385,9 @@ namespace ManagedDoom
                 uiChannel.Dispose();
                 uiChannel = null;
             }
-
-            Console.WriteLine("Audio resources are disposed.");
         }
 
-        public int MaxSoundVolume
+        public int MaxVolume
         {
             get
             {
@@ -400,7 +395,7 @@ namespace ManagedDoom
             }
         }
 
-        public int SoundVolume
+        public int Volume
         {
             get
             {
@@ -410,7 +405,7 @@ namespace ManagedDoom
             set
             {
                 masterVolume = value;
-                masterVolumeDecay = (float)masterVolume / MaxSoundVolume;
+                masterVolumeDecay = (float)masterVolume / MaxVolume;
             }
         }
 

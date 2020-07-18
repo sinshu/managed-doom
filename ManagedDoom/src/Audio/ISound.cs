@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ManagedDoom
+namespace ManagedDoom.Audio
 {
-    public interface IAudio
+    public interface ISound
     {
         public void SetListener(Mobj listener);
         public void Update();
@@ -14,7 +14,7 @@ namespace ManagedDoom
         public void Pause();
         public void Resume();
 
-        public int MaxSoundVolume { get; }
-        public int SoundVolume { get; set; }
+        public int MaxVolume { get; }
+        public int Volume { get; set; }
     }
 }

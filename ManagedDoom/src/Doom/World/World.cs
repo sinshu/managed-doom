@@ -213,17 +213,17 @@ namespace ManagedDoom
 
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
         {
-            options.Audio.StartSound(mobj, sfx, type);
+            options.Sound.StartSound(mobj, sfx, type);
         }
 
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type, int volume)
         {
-            options.Audio.StartSound(mobj, sfx, type, volume);
+            options.Sound.StartSound(mobj, sfx, type, volume);
         }
 
         public void StopSound(Mobj mobj)
         {
-            options.Audio.StopSound(mobj);
+            options.Sound.StopSound(mobj);
         }
 
         public int GetNewValidCount()

@@ -159,7 +159,7 @@ namespace ManagedDoom
                 }
             }
 
-            var audio = options.Audio;
+            var sound = options.Sound;
             volume = new SelectableMenu(
                 this,
                 "M_SVOL", 60, 38,
@@ -167,9 +167,9 @@ namespace ManagedDoom
 
                 new SliderMenuItem(
                     "M_SFXVOL", 48, 59, 80, 64,
-                    audio.MaxSoundVolume + 1,
-                    () => audio.SoundVolume,
-                    vol => audio.SoundVolume = vol),
+                    sound.MaxVolume + 1,
+                    () => sound.Volume,
+                    vol => sound.Volume = vol),
 
                 new SliderMenuItem("M_MUSVOL", 48, 91, 80, 96,
                     16,
@@ -336,7 +336,7 @@ namespace ManagedDoom
 
         public void StartSound(Sfx sfx)
         {
-            options.Audio.StartSound(sfx);
+            options.Sound.StartSound(sfx);
         }
 
         public void NotifySaveFailed()

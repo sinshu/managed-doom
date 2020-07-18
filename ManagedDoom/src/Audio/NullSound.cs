@@ -1,16 +1,16 @@
 ﻿using System;
 
-namespace ManagedDoom
+namespace ManagedDoom.Audio
 {
-    public sealed class NullAudio : IAudio
+    public sealed class NullSound : ISound
     {
-        private static NullAudio instance;
+        private static NullSound instance;
 
-        public static NullAudio GetInstance()
+        public static NullSound GetInstance()
         {
             if (instance == null)
             {
-                instance = new NullAudio();
+                instance = new NullSound();
             }
 
             return instance;
@@ -52,7 +52,7 @@ namespace ManagedDoom
         {
         }
 
-        public int MaxSoundVolume
+        public int MaxVolume
         {
             get
             {
@@ -60,7 +60,7 @@ namespace ManagedDoom
             }
         }
 
-        public int SoundVolume
+        public int Volume
         {
             get
             {
