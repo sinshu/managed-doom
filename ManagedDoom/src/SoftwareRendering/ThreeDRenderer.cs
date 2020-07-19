@@ -47,6 +47,7 @@ namespace ManagedDoom.SoftwareRendering
             InitSpriteRendering();
             InitWeaponRendering();
             InitFuzzEffect();
+            InitColorTranslation();
             InitWindowBorder(resource.Wad);
 
             SetWindowSize(windowSize);
@@ -546,6 +547,35 @@ namespace ManagedDoom.SoftwareRendering
         private void InitFuzzEffect()
         {
             fuzzPos = 0;
+        }
+
+
+
+        ////////////////////////////////////////////////////////////
+        // Color translation
+        ////////////////////////////////////////////////////////////
+
+        private byte[] greenToGray;
+        private byte[] greenToBrown;
+        private byte[] greenToRed;
+
+        private void InitColorTranslation()
+        {
+            greenToGray = new byte[256];
+            greenToBrown = new byte[256];
+            greenToRed = new byte[256];
+            for (var i = 0; i < 256; i++)
+            {
+                greenToGray[i] = (byte)i;
+                greenToBrown[i] = (byte)i;
+                greenToRed[i] = (byte)i;
+            }
+            for (var i = 112; i < 128; i++)
+            {
+                greenToGray[i] -= 16;
+                greenToBrown[i] -= 48;
+                greenToRed[i] -= 80;
+            }
         }
 
 
@@ -1385,19 +1415,6 @@ namespace ManagedDoom.SoftwareRendering
             //
             // Check which parts must be rendered.
             //
-            // Wall / plane rendering for two-sided line can be partially skipped under the following conditions.
-            //
-            //     - The line is not treated as a solid wall (like a closed door).
-            //     - The wall texture is not set.
-            //     - The front and back sectors have the identical height, flat texture and light level.
-            //     - The camera sees the wrong side of the plane.
-            //
-            // These are important not only for performance but also to reproduce the following tricks.
-            //
-            //     - The entrance to the outdoor area in E1M1 has the different height from the adjacent walls.
-            //     - The sky texture is shown where a wall should be (the chainsaw area in MAP01 for example).
-            //     - Fake 3D bridges in REQUIEM.WAD.
-            //
 
             bool drawUpperWall;
             bool drawCeiling;
@@ -2197,6 +2214,45 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
+        private void DrawColumnTranslation(
+            Column column,
+            byte[] translation,
+            byte[] map,
+            int x,
+            int y1,
+            int y2,
+            Fixed invScale,
+            Fixed textureAlt)
+        {
+            if (y2 - y1 < 0)
+            {
+                return;
+            }
+
+            // Framebuffer destination address.
+            // Use ylookup LUT to avoid multiply with ScreenWidth.
+            // Use columnofs LUT for subwindows? 
+            var pos1 = screenHeight * (windowX + x) + windowY + y1;
+            var pos2 = pos1 + (y2 - y1);
+
+            // Determine scaling, which is the only mapping to be done.
+            var fracStep = invScale;
+            var frac = textureAlt + (y1 - centerY) * fracStep;
+
+            // Inner loop that does the actual texture mapping,
+            // e.g. a DDA-lile scaling.
+            // This is as fast as it gets.
+            var source = column.Data;
+            var offset = column.Offset;
+            for (var pos = pos1; pos <= pos2; pos++)
+            {
+                // Re-map color indices from wall texture column
+                // using a lighting/special effects LUT.
+                screenData[pos] = map[translation[source[offset + ((frac.Data >> Fixed.FracBits) & 127)]]];
+                frac += fracStep;
+            }
+        }
+
         private void DrawFuzzColumn(
             Column column,
             int x,
@@ -2266,6 +2322,36 @@ namespace ManagedDoom.SoftwareRendering
                 {
                     var alt = new Fixed(textureAlt.Data - (column.TopDelta << Fixed.FracBits));
                     DrawColumn(column, map, x, y1, y2, invScale, alt);
+                }
+            }
+        }
+
+        private void DrawMaskedColumnTranslation(
+            Column[] columns,
+            byte[] translation,
+            byte[] map,
+            int x,
+            Fixed topY,
+            Fixed scale,
+            Fixed invScale,
+            Fixed textureAlt,
+            int upperClip,
+            int lowerClip)
+        {
+            foreach (var column in columns)
+            {
+                var y1Frac = topY + scale * column.TopDelta;
+                var y2Frac = y1Frac + scale * column.Length;
+                var y1 = (y1Frac.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
+                var y2 = (y2Frac.Data - 1) >> Fixed.FracBits;
+
+                y1 = Math.Max(y1, upperClip + 1);
+                y2 = Math.Min(y2, lowerClip - 1);
+
+                if (y1 <= y2)
+                {
+                    var alt = new Fixed(textureAlt.Data - (column.TopDelta << Fixed.FracBits));
+                    DrawColumnTranslation(column, translation, map, x, y1, y2, invScale, alt);
                 }
             }
         }
@@ -2602,6 +2688,39 @@ namespace ManagedDoom.SoftwareRendering
                         x,
                         centerYFrac - (sprite.TextureAlt * sprite.Scale),
                         sprite.Scale,
+                        upperClip[x],
+                        lowerClip[x]);
+                    frac += sprite.InvScale;
+                }
+            }
+            else if (((int)(sprite.MobjFlags & MobjFlags.Translation) >> (int)MobjFlags.TransShift) != 0)
+            {
+                byte[] translation;
+                switch (((int)(sprite.MobjFlags & MobjFlags.Translation) >> (int)MobjFlags.TransShift))
+                {
+                    case 1:
+                        translation = greenToGray;
+                        break;
+                    case 2:
+                        translation = greenToBrown;
+                        break;
+                    default:
+                        translation = greenToRed;
+                        break;
+                }
+                var frac = sprite.StartFrac;
+                for (var x = sprite.X1; x <= sprite.X2; x++)
+                {
+                    var textureColumn = frac.ToIntFloor();
+                    DrawMaskedColumnTranslation(
+                        sprite.Patch.Columns[textureColumn],
+                        translation,
+                        sprite.ColorMap,
+                        x,
+                        centerYFrac - (sprite.TextureAlt * sprite.Scale),
+                        sprite.Scale,
+                        Fixed.Abs(sprite.InvScale),
+                        sprite.TextureAlt,
                         upperClip[x],
                         lowerClip[x]);
                     frac += sprite.InvScale;
