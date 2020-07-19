@@ -35,7 +35,7 @@ namespace ManagedDoom
 
         public GameOptions()
         {
-            gameVersion = GameVersion.Doom19;
+            gameVersion = GameVersion.Version109;
             gameMode = GameMode.Commercial;
             missionPack = MissionPack.Doom2;
 

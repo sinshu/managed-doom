@@ -35,6 +35,7 @@ namespace ManagedDoom
                 dy = temp;
             }
 
+            // The code below to avoid zerodiv is based on chocolate-doom's R_PointToDist.
             Fixed frac;
             if (dx != Fixed.Zero)
             {

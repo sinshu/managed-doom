@@ -1118,7 +1118,7 @@ namespace ManagedDoom
 
             currentCeilingLine = null;
 
-            // The base floor/ceiling is from the subsector that contains the point.
+            // The base floor / ceiling is from the subsector that contains the point.
             // Any contacted lines the step closer together will adjust them.
             currentFloorZ = currentDropoffZ = ss.Sector.FloorHeight;
             currentCeilingZ = ss.Sector.CeilingHeight;

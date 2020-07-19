@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace ManagedDoom
 {
@@ -1491,7 +1492,11 @@ namespace ManagedDoom
 							return false;
 						}
 
-						thing.Z = thing.FloorZ;
+						// This compatibility fix is based on chocolate-doom's EV_Teleport.
+						if (world.Options.GameVersion != GameVersion.Final)
+						{
+							thing.Z = thing.FloorZ;
+						}
 
 						if (thing.Player != null)
 						{

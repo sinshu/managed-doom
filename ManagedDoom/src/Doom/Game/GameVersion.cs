@@ -4,7 +4,7 @@ namespace ManagedDoom
 {
     public enum GameVersion
     {
-        Doom19,
+        Version109,
         Ultimate,
         Final,
         Final2
