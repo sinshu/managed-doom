@@ -46,6 +46,7 @@ namespace ManagedDoom.SoftwareRendering
             InitRenderingHistory();
             InitSpriteRendering();
             InitWeaponRendering();
+            InitFuzzEffect();
             InitWindowBorder(resource.Wad);
 
             SetWindowSize(windowSize);
@@ -526,7 +527,31 @@ namespace ManagedDoom.SoftwareRendering
 
 
         ////////////////////////////////////////////////////////////
-        // Weapon rendering
+        // Fuzz effect
+        ////////////////////////////////////////////////////////////
+
+        private static sbyte[] fuzzTable = new sbyte[]
+        {
+            1, -1,  1, -1,  1,  1, -1,
+            1,  1, -1,  1,  1,  1, -1,
+            1,  1,  1, -1, -1, -1, -1,
+            1, -1, -1,  1,  1,  1,  1, -1,
+            1, -1,  1,  1, -1, -1,  1,
+            1, -1, -1, -1, -1,  1,  1,
+            1,  1, -1,  1,  1, -1,  1
+        };
+
+        private int fuzzPos;
+
+        private void InitFuzzEffect()
+        {
+            fuzzPos = 0;
+        }
+
+
+
+        ////////////////////////////////////////////////////////////
+        // Window border
         ////////////////////////////////////////////////////////////
 
         private Patch borderTopLeft;
@@ -611,27 +636,6 @@ namespace ManagedDoom.SoftwareRendering
                 xFrac += invScale;
             }
         }
-
-
-
-        ////////////////////////////////////////////////////////////
-        // Fuzz effect
-        ////////////////////////////////////////////////////////////
-
-        private static sbyte[] fuzzTable = new sbyte[]
-        {
-            1, -1,  1, -1,  1,  1, -1,
-            1,  1, -1,  1,  1,  1, -1,
-            1,  1,  1, -1, -1, -1, -1,
-            1, -1, -1,  1,  1,  1,  1, -1,
-            1, -1,  1,  1, -1, -1,  1,
-            1, -1, -1, -1, -1,  1,  1,
-            1,  1, -1,  1,  1, -1,  1
-        };
-
-        private const int fuzzLength = 50;
-
-        private int fuzzPos = 0;
 
 
 
@@ -2222,7 +2226,7 @@ namespace ManagedDoom.SoftwareRendering
             {
                 screenData[pos] = map[screenData[pos + fuzzTable[fuzzPos]]];
 
-                if (++fuzzPos == fuzzLength)
+                if (++fuzzPos == fuzzTable.Length)
                 {
                     fuzzPos = 0;
                 }
