@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using SFML.Audio;
 using SFML.System;
@@ -29,6 +30,8 @@ namespace ManagedDoom.Audio
 
         private int masterVolume;
         private float masterVolumeDecay;
+
+        private DateTime lastUpdate;
 
         public SfmlSound(Wad wad)
         {
@@ -72,6 +75,8 @@ namespace ManagedDoom.Audio
 
             masterVolume = 8;
             masterVolumeDecay = (float)masterVolume / MaxVolume;
+
+            lastUpdate = DateTime.MinValue;
         }
 
         private static short[] GetSamples(Wad wad, string name, out int sampleRate, out int sampleCount)
@@ -118,6 +123,13 @@ namespace ManagedDoom.Audio
 
         public void Update()
         {
+            var now = DateTime.Now;
+            if ((now - lastUpdate).TotalSeconds < 0.01)
+            {
+                // Don't update so frequently (for timedemo).
+                return;
+            }
+
             for (var i = 0; i < infos.Length; i++)
             {
                 var info = infos[i];
@@ -173,6 +185,8 @@ namespace ManagedDoom.Audio
                 uiChannel.Play();
                 uiReserved = Sfx.NONE;
             }
+
+            lastUpdate = now;
         }
 
         public void StartSound(Sfx sfx)
