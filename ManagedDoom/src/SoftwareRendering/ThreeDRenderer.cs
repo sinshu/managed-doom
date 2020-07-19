@@ -20,6 +20,7 @@ namespace ManagedDoom.SoftwareRendering
         private int screenWidth;
         private int screenHeight;
         private byte[] screenData;
+        private int drawScale;
 
         private int windowSize;
 
@@ -34,6 +35,7 @@ namespace ManagedDoom.SoftwareRendering
             screenWidth = screen.Width;
             screenHeight = screen.Height;
             screenData = screen.Data;
+            drawScale = screenWidth / 320;
 
             this.windowSize = windowSize;
 
@@ -560,42 +562,53 @@ namespace ManagedDoom.SoftwareRendering
 
         private void FillBackScreen()
         {
-            var scale = screenWidth / 320;
-            var fillHeight = screenHeight - scale * StatusBarRenderer.Height;
+            var fillHeight = screenHeight - drawScale * StatusBarRenderer.Height;
             FillRect(0, 0, windowX, fillHeight);
             FillRect(screenWidth - windowX, 0, windowX, fillHeight);
             FillRect(windowX, 0, screenWidth - 2 * windowX, windowY);
             FillRect(windowX, fillHeight - windowY, screenWidth - 2 * windowX, windowY);
 
-            for (var x = windowX; x < screenWidth - windowX; x += 8)
+            var step = 8 * drawScale;
+
+            for (var x = windowX; x < screenWidth - windowX; x += step)
             {
-                screen.DrawPatch(borderTop, x, windowY - 8, 1);
-                screen.DrawPatch(borderBottom, x, fillHeight - windowY, 1);
+                screen.DrawPatch(borderTop, x, windowY - step, drawScale);
+                screen.DrawPatch(borderBottom, x, fillHeight - windowY, drawScale);
             }
 
-            for (var y = windowY; y < fillHeight - windowY; y += 8)
+            for (var y = windowY; y < fillHeight - windowY; y += step)
             {
-                screen.DrawPatch(borderLeft, windowX - 8, y, 1);
-                screen.DrawPatch(borderRight, screenWidth - windowX, y, 1);
+                screen.DrawPatch(borderLeft, windowX - step, y, drawScale);
+                screen.DrawPatch(borderRight, screenWidth - windowX, y, drawScale);
             }
 
-            screen.DrawPatch(borderTopLeft, windowX - 8, windowY - 8, 1);
-            screen.DrawPatch(borderTopRight, screenWidth - windowX, windowY - 8, 1);
-            screen.DrawPatch(borderBottomLeft, windowX - 8, fillHeight - windowY, 1);
-            screen.DrawPatch(borderBottomRight, screenWidth - windowX, fillHeight - windowY, 1);
+            screen.DrawPatch(borderTopLeft, windowX - step, windowY - step, drawScale);
+            screen.DrawPatch(borderTopRight, screenWidth - windowX, windowY - step, drawScale);
+            screen.DrawPatch(borderBottomLeft, windowX - step, fillHeight - windowY, drawScale);
+            screen.DrawPatch(borderBottomRight, screenWidth - windowX, fillHeight - windowY, drawScale);
         }
 
         private void FillRect(int x, int y, int width, int height)
         {
             var data = backFlat.Data;
+
+            var srcX = x / drawScale;
+            var srcY = y / drawScale;
+
+            var invScale = Fixed.One / drawScale;
+            var xFrac = invScale - Fixed.Epsilon;
+
             for (var i = 0; i < width; i++)
             {
-                var src = 64 * ((x + i) & 63);
+                var src = ((srcX + xFrac.ToIntFloor()) & 63) << 6;
                 var dst = screenHeight * (x + i) + y;
+                var yFrac = invScale - Fixed.Epsilon;
                 for (var j = 0; j < height; j++)
                 {
-                    screenData[dst + j] = data[src | ((y + j) & 63)];
+                    screenData[dst + j] = data[src | ((srcY + yFrac.ToIntFloor()) & 63)];
+                    yFrac += invScale;
                 }
+                xFrac += invScale;
             }
         }
 
