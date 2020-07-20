@@ -1401,6 +1401,14 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
+            var range = x2 - x1 + 1;
+
+            if (clipDataLength + 3 * range >= clipData.Length)
+            {
+                // Clip info buffer is not sufficient.
+                return;
+            }
+
             // Make some aliases to shorten the following code.
             var line = seg.LineDef;
             var side = seg.SideDef;
@@ -1703,8 +1711,6 @@ namespace ManagedDoom.SoftwareRendering
                 visWallRange.UpperSilHeight = Fixed.MinValue;
                 visWallRange.Silhouette |= Silhouette.Upper;
             }
-
-            var range = x2 - x1 + 1;
 
             var maskedTextureColumn = default(int);
             if (drawMaskedTexture)
