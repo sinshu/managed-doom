@@ -427,7 +427,7 @@ namespace ManagedDoom.SoftwareRendering
             upperClip = new short[screenWidth];
             lowerClip = new short[screenWidth];
 
-            clipRanges = new ClipRange[1024];
+            clipRanges = new ClipRange[256];
             for (var i = 0; i < clipRanges.Length; i++)
             {
                 clipRanges[i] = new ClipRange();
@@ -435,7 +435,7 @@ namespace ManagedDoom.SoftwareRendering
 
             clipData = new short[128 * screenWidth];
 
-            visWallRanges = new VisWallRange[1024];
+            visWallRanges = new VisWallRange[512];
             for (var i = 0; i < visWallRanges.Length; i++)
             {
                 visWallRanges[i] = new VisWallRange();
@@ -1177,6 +1177,12 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
+            if (visWallRangeCount == visWallRanges.Length)
+            {
+                // Too many visible walls.
+                return;
+            }
+
             // Make some aliases to shorten the following code.
             var line = seg.LineDef;
             var side = seg.SideDef;
@@ -1313,6 +1319,8 @@ namespace ManagedDoom.SoftwareRendering
             //
 
             var visWallRange = visWallRanges[visWallRangeCount];
+            visWallRangeCount++;
+
             visWallRange.Seg = seg;
             visWallRange.X1 = x1;
             visWallRange.X2 = x2;
@@ -1381,14 +1389,18 @@ namespace ManagedDoom.SoftwareRendering
                 wallY1Frac += wallY1Step;
                 wallY2Frac += wallY2Step;
             }
-
-            visWallRangeCount++;
         }
 
 
 
         private void DrawPassWallRange(Seg seg, Angle rwAngle1, int x1, int x2, bool drawAsSolidWall)
         {
+            if (visWallRangeCount == visWallRanges.Length)
+            {
+                // Too many visible walls.
+                return;
+            }
+
             // Make some aliases to shorten the following code.
             var line = seg.LineDef;
             var side = seg.SideDef;
@@ -1643,6 +1655,8 @@ namespace ManagedDoom.SoftwareRendering
             //
 
             var visWallRange = visWallRanges[visWallRangeCount];
+            visWallRangeCount++;
+
             visWallRange.Seg = seg;
             visWallRange.X1 = x1;
             visWallRange.X2 = x2;
@@ -1851,8 +1865,6 @@ namespace ManagedDoom.SoftwareRendering
                 visWallRange.Silhouette |= Silhouette.Lower;
                 visWallRange.LowerSilHeight = Fixed.MaxValue;
             }
-
-            visWallRangeCount++;
         }
 
 
