@@ -311,7 +311,8 @@ namespace ManagedDoom
                 var mobj = thinker as Mobj;
                 if (mobj != null &&
                     mobj.Player == null &&
-                    ((mobj.Flags & MobjFlags.CountKill) != 0 || mobj.Type == MobjType.Skull))
+                    ((mobj.Flags & MobjFlags.CountKill) != 0 || mobj.Type == MobjType.Skull) &&
+                    mobj.Health > 0)
                 {
                     world.ThingInteraction.DamageMobj(mobj, null, player.Mobj, 10000);
                     count++;
