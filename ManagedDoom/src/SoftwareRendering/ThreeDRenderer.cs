@@ -492,7 +492,7 @@ namespace ManagedDoom.SoftwareRendering
 
         private void InitSpriteRendering()
         {
-            visSprites = new VisSprite[1024];
+            visSprites = new VisSprite[256];
             for (var i = 0; i < visSprites.Length; i++)
             {
                 visSprites[i] = new VisSprite();
@@ -2408,6 +2408,12 @@ namespace ManagedDoom.SoftwareRendering
 
         private void ProjectSprite(Mobj thing, byte[][] spriteLights)
         {
+            if (visSpriteCount == visSprites.Length)
+            {
+                // Too many sprites.
+                return;
+            }
+
             // Transform the origin point.
             var trX = thing.X - viewX;
             var trY = thing.Y - viewY;
@@ -2476,7 +2482,9 @@ namespace ManagedDoom.SoftwareRendering
             }
 
             // Store information in a vissprite.
-            var vis = NewVisSprite();
+            var vis = visSprites[visSpriteCount];
+            visSpriteCount++;
+
             vis.MobjFlags = thing.Flags;
             vis.Scale = xScale;
             vis.GlobalX = thing.X;
@@ -2486,17 +2494,18 @@ namespace ManagedDoom.SoftwareRendering
             vis.TextureAlt = vis.GlobalTopZ - viewZ;
             vis.X1 = x1 < 0 ? 0 : x1;
             vis.X2 = x2 >= windowWidth ? windowWidth - 1 : x2;
-            var iscale = Fixed.One / xScale;
+
+            var invScale = Fixed.One / xScale;
 
             if (flip)
             {
                 vis.StartFrac = new Fixed(Fixed.FromInt(lump.Width).Data - 1);
-                vis.InvScale = -iscale;
+                vis.InvScale = -invScale;
             }
             else
             {
                 vis.StartFrac = Fixed.Zero;
-                vis.InvScale = iscale;
+                vis.InvScale = invScale;
             }
 
             if (vis.X1 > x1)
@@ -2520,20 +2529,6 @@ namespace ManagedDoom.SoftwareRendering
             else
             {
                 vis.ColorMap = colorMap[fixedColorMap];
-            }
-        }
-
-        private VisSprite NewVisSprite()
-        {
-            if (visSpriteCount < visSprites.Length)
-            {
-                var visSprite = visSprites[visSpriteCount];
-                visSpriteCount++;
-                return visSprite;
-            }
-            else
-            {
-                return visSprites[visSprites.Length - 1];
             }
         }
 
