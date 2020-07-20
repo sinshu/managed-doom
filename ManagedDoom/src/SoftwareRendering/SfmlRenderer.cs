@@ -136,11 +136,7 @@ namespace ManagedDoom.SoftwareRendering
                 RenderGame(app.Game);
             }
 
-            if (app.Menu.Active)
-            {
-                menu.Render(app.Menu);
-            }
-            else
+            if (!app.Menu.Active)
             {
                 if (app.State == ApplicationState.Game &&
                     app.Game.State == GameState.Level &&
@@ -153,6 +149,14 @@ namespace ManagedDoom.SoftwareRendering
                         4 * scale,
                         scale);
                 }
+            }
+        }
+
+        private void RenderMenu(DoomApplication app)
+        {
+            if (app.Menu.Active)
+            {
+                menu.Render(app.Menu);
             }
         }
 
@@ -197,6 +201,7 @@ namespace ManagedDoom.SoftwareRendering
         public void Render(DoomApplication app)
         {
             RenderApplication(app);
+            RenderMenu(app);
 
             var colors = palette[0];
             if (app.State == ApplicationState.Game &&
@@ -232,6 +237,8 @@ namespace ManagedDoom.SoftwareRendering
                     }
                 }
             }
+
+            RenderMenu(app);
 
             Display(palette[0]);
         }

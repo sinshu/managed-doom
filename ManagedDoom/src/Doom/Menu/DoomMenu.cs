@@ -306,6 +306,11 @@ namespace ManagedDoom
             {
                 current.Update();
             }
+
+            if (active && !app.Options.NetGame)
+            {
+                app.PauseGame();
+            }
         }
 
         public void SetCurrent(MenuDef next)
@@ -317,11 +322,6 @@ namespace ManagedDoom
         public void Open()
         {
             active = true;
-
-            if (!app.Options.NetGame)
-            {
-                app.PauseGame();
-            }
         }
 
         public void Close()
