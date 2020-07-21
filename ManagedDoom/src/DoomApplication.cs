@@ -5,6 +5,7 @@ using SFML.Graphics;
 using SFML.Window;
 using ManagedDoom.SoftwareRendering;
 using ManagedDoom.Audio;
+using SFML.System;
 
 namespace ManagedDoom
 {
@@ -153,6 +154,10 @@ namespace ManagedDoom
         {
             switch (key)
             {
+                case DoomKeys.F1:
+                    menu.ShowHelpScreen();
+                    return true;
+
                 case DoomKeys.F8:
                     renderer.DisplayMessage = !renderer.DisplayMessage;
                     if (state == ApplicationState.Game && game.State == GameState.Level)

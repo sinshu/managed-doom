@@ -57,6 +57,12 @@ namespace ManagedDoom.SoftwareRendering
             {
                 DrawText(quit.Text);
             }
+
+            var help = menu.Current as HelpScreen;
+            if (help != null)
+            {
+                DrawHelp(help);
+            }
         }
 
         private void DrawSelectableMenu(SelectableMenu selectable)
@@ -227,6 +233,14 @@ namespace ManagedDoom.SoftwareRendering
                 var y = (screen.Height - height) / 2 + 7 * scale * (i + 1);
                 screen.DrawText(text[i], x, y, scale);
             }
+        }
+
+        private void DrawHelp(HelpScreen help)
+        {
+            DrawMenuPatch("HELP", 0, 0);
+
+            var skull = help.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
+            DrawMenuPatch(skull, 298, 160);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace ManagedDoom
         private SelectableMenu volume;
         private LoadMenu load;
         private SaveMenu save;
+        private HelpScreen help;
 
         private PressAnyKey thisIsShareware;
         private PressAnyKey saveFailed;
@@ -250,6 +251,8 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null, save),
                 new SimpleMenuItem("M_QUITG", 65, 131, 97, 136, null, quitConfirm));
 
+            help = new HelpScreen(this);
+
             current = main;
             active = false;
 
@@ -280,7 +283,7 @@ namespace ManagedDoom
             {
                 if (e.Key == DoomKeys.Escape && e.Type == EventType.KeyDown)
                 {
-                    current = main;
+                    SetCurrent(main);
                     Open();
                     StartSound(Sfx.SWTCHN);
                     return true;
@@ -288,10 +291,17 @@ namespace ManagedDoom
 
                 if (e.Type == EventType.KeyDown && app.State == ApplicationState.Opening)
                 {
-                    current = main;
-                    Open();
-                    StartSound(Sfx.SWTCHN);
-                    return true;
+                    if (e.Key == DoomKeys.Enter ||
+                        e.Key == DoomKeys.Space ||
+                        e.Key == DoomKeys.LControl ||
+                        e.Key == DoomKeys.RControl ||
+                        e.Key == DoomKeys.Escape)
+                    {
+                        SetCurrent(main);
+                        Open();
+                        StartSound(Sfx.SWTCHN);
+                        return true;
+                    }
                 }
 
                 return false;
@@ -342,6 +352,13 @@ namespace ManagedDoom
         public void NotifySaveFailed()
         {
             SetCurrent(saveFailed);
+        }
+
+        public void ShowHelpScreen()
+        {
+            SetCurrent(help);
+            Open();
+            StartSound(Sfx.SWTCHN);
         }
 
         public DoomApplication Application => app;
