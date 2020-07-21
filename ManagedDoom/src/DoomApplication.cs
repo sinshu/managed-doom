@@ -158,6 +158,18 @@ namespace ManagedDoom
                     menu.ShowHelpScreen();
                     return true;
 
+                case DoomKeys.F2:
+                    menu.ShowSaveScreen();
+                    return true;
+
+                case DoomKeys.F3:
+                    menu.ShowLoadScreen();
+                    return true;
+
+                case DoomKeys.F4:
+                    menu.ShowVolumeControl();
+                    return true;
+
                 case DoomKeys.F8:
                     renderer.DisplayMessage = !renderer.DisplayMessage;
                     if (state == ApplicationState.Game && game.State == GameState.Level)

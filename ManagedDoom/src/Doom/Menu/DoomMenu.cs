@@ -361,6 +361,27 @@ namespace ManagedDoom
             StartSound(Sfx.SWTCHN);
         }
 
+        public void ShowSaveScreen()
+        {
+            SetCurrent(save);
+            Open();
+            StartSound(Sfx.SWTCHN);
+        }
+
+        public void ShowLoadScreen()
+        {
+            SetCurrent(load);
+            Open();
+            StartSound(Sfx.SWTCHN);
+        }
+
+        public void ShowVolumeControl()
+        {
+            SetCurrent(volume);
+            Open();
+            StartSound(Sfx.SWTCHN);
+        }
+
         public DoomApplication Application => app;
         public GameOptions Options => app.Options;
         public MenuDef Current => current;
