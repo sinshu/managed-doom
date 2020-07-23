@@ -21,6 +21,7 @@ namespace ManagedDoom
 {
     public enum ApplicationState
     {
+        None,
         Opening,
         Game
     }

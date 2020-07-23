@@ -61,6 +61,7 @@ namespace ManagedDoom
             {
                 players[i] = new Player(i);
             }
+            players[0].InGame = true;
             consolePlayer = 0;
 
             episode = 1;

@@ -23,18 +23,21 @@ using SFML.Window;
 using ManagedDoom.SoftwareRendering;
 using ManagedDoom.Audio;
 using SFML.System;
+using System.Runtime.InteropServices;
 
 namespace ManagedDoom
 {
     public sealed class DoomApplication : IDisposable
     {
         private RenderWindow window;
+
         private CommonResource resource;
         private SfmlRenderer renderer;
         private SfmlSound sound;
 
+        private List<DoomEvent> events;
+
         private GameOptions options;
-        private ApplicationState state;
 
         private DoomMenu menu;
 
@@ -46,12 +49,10 @@ namespace ManagedDoom
         private Wipe wipe;
         private bool wiping;
 
-        private List<DoomEvent> events;
-
-        //private Demo demo;
+        private ApplicationState currentState;
+        private ApplicationState nextState;
 
         private bool sendPause;
-
         private bool quit;
 
         public DoomApplication()
@@ -67,20 +68,13 @@ namespace ManagedDoom
                 renderer = new SfmlRenderer(window, resource, true);
                 sound = new SfmlSound(resource.Wad);
 
+                events = new List<DoomEvent>();
+
                 options = new GameOptions();
-                options.Skill = GameSkill.Hard;
                 options.GameMode = resource.Wad.GameMode;
                 options.MissionPack = resource.Wad.MissionPack;
-                options.Episode = 1;
-                options.Map = 1;
-                options.Players[0].InGame = true;
                 options.Renderer = renderer;
                 options.Sound = sound;
-
-                state = ApplicationState.Opening;
-
-                //demo = new Demo("test.lmp");
-                //options = demo.Options;
 
                 menu = new DoomMenu(this);
 
@@ -94,17 +88,17 @@ namespace ManagedDoom
                 game = new DoomGame(resource, options);
 
                 wipe = new Wipe(renderer.WipeBandCount, renderer.WipeHeight);
-                wipe.Start();
-
-                events = new List<DoomEvent>();
+                wiping = false;
 
                 window.Closed += (sender, e) => window.Close();
                 window.KeyPressed += KeyPressed;
                 window.KeyReleased += KeyReleased;
                 window.SetFramerateLimit(35);
 
-                sendPause = false;
+                currentState = ApplicationState.None;
+                nextState = ApplicationState.Opening;
 
+                sendPause = false;
                 quit = false;
             }
             catch (Exception e)
@@ -119,7 +113,7 @@ namespace ManagedDoom
             {
                 window.DispatchEvents();
                 DoEvents();
-                if (Update())
+                if (Update() == UpdateResult.Completed)
                 {
                     return;
                 }
@@ -129,7 +123,7 @@ namespace ManagedDoom
         public void NewGame(GameSkill skill, int episode, int map)
         {
             game.DeferedInitNew(skill, episode, map);
-            state = ApplicationState.Game;
+            nextState = ApplicationState.Game;
         }
 
         private void DoEvents()
@@ -149,7 +143,7 @@ namespace ManagedDoom
                     }
                 }
 
-                if (state == ApplicationState.Game)
+                if (currentState == ApplicationState.Game)
                 {
                     if (e.Key == DoomKeys.Pause && e.Type == EventType.KeyDown)
                     {
@@ -189,7 +183,7 @@ namespace ManagedDoom
 
                 case DoomKeys.F8:
                     renderer.DisplayMessage = !renderer.DisplayMessage;
-                    if (state == ApplicationState.Game && game.State == GameState.Level)
+                    if (currentState == ApplicationState.Game && game.State == GameState.Level)
                     {
                         string msg;
                         if (renderer.DisplayMessage)
@@ -213,7 +207,7 @@ namespace ManagedDoom
                         gcl = 0;
                     }
                     renderer.GammaCorrectionLevel = gcl;
-                    if (state == ApplicationState.Game && game.State == GameState.Level)
+                    if (currentState == ApplicationState.Game && game.State == GameState.Level)
                     {
                         string msg;
                         if (gcl == 0)
@@ -233,42 +227,46 @@ namespace ManagedDoom
             }
         }
 
-        private bool Update()
+        private UpdateResult Update()
         {
+            currentState = nextState;
+
             menu.Update();
 
             if (quit)
             {
-                return true;
+                return UpdateResult.Completed;
             }
 
-            if (state == ApplicationState.Opening)
+            if (!wiping)
             {
-                opening.Update();
-            }
-            else if (state == ApplicationState.Game)
-            {
-                UserInput.BuildTicCmd(cmds[options.ConsolePlayer]);
-                if (sendPause)
+                switch (currentState)
                 {
-                    sendPause = false;
-                    cmds[options.ConsolePlayer].Buttons |= (byte)(TicCmdButtons.Special | TicCmdButtons.Pause);
-                }
+                    case ApplicationState.Opening:
+                        if (opening.Update() == UpdateResult.NeedWipe)
+                        {
+                            StartWipe();
+                        }
+                        break;
 
-                if (!wiping)
-                {
-                    //demo.ReadCmd(cmds);
-                    var result = game.Update(cmds);
-                    if (result == UpdateResult.NeedWipe)
-                    {
-                        wipe.Start();
-                        renderer.InitializeWipe();
-                        wiping = true;
-                    }
+                    case ApplicationState.Game:
+                        UserInput.BuildTicCmd(cmds[options.ConsolePlayer]);
+                        if (sendPause)
+                        {
+                            sendPause = false;
+                            cmds[options.ConsolePlayer].Buttons |= (byte)(TicCmdButtons.Special | TicCmdButtons.Pause);
+                        }
+                        if (game.Update(cmds) == UpdateResult.NeedWipe)
+                        {
+                            StartWipe();
+                        }
+                        break;
+
+                    default:
+                        throw new Exception("Invalid application state!");
                 }
             }
 
-            options.Sound.Update();
             if (wiping)
             {
                 var result = wipe.Update();
@@ -283,7 +281,9 @@ namespace ManagedDoom
                 renderer.Render(this);
             }
 
-            return false;
+            options.Sound.Update();
+
+            return UpdateResult.None;
         }
 
         private void KeyPressed(object sender, KeyEventArgs e)
@@ -308,9 +308,16 @@ namespace ManagedDoom
             }
         }
 
+        private void StartWipe()
+        {
+            wipe.Start();
+            renderer.InitializeWipe();
+            wiping = true;
+        }
+
         public void PauseGame()
         {
-            if (state == ApplicationState.Game &&
+            if (currentState == ApplicationState.Game &&
                 game.State == GameState.Level &&
                 !game.Paused && !sendPause)
             {
@@ -320,7 +327,7 @@ namespace ManagedDoom
 
         public void ResumeGame()
         {
-            if (state == ApplicationState.Game &&
+            if (currentState == ApplicationState.Game &&
                 game.State == GameState.Level &&
                 game.Paused && !sendPause)
             {
@@ -330,7 +337,7 @@ namespace ManagedDoom
 
         public bool SaveGame(int slotNumber, string description)
         {
-            if (state == ApplicationState.Game && game.State == GameState.Level)
+            if (currentState == ApplicationState.Game && game.State == GameState.Level)
             {
                 game.SaveGame(slotNumber, description);
                 return true;
@@ -344,7 +351,7 @@ namespace ManagedDoom
         public void LoadGame(int slotNumber)
         {
             game.LoadGame(slotNumber);
-            state = ApplicationState.Game;
+            nextState = ApplicationState.Game;
         }
 
         public void Quit()
@@ -379,7 +386,7 @@ namespace ManagedDoom
             }
         }
 
-        public ApplicationState State => state;
+        public ApplicationState State => currentState;
         public OpeningSequence Opening => opening;
         public GameOptions Options => options;
         public DoomGame Game => game;
