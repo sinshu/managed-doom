@@ -282,49 +282,48 @@ namespace ManagedDoom.SoftwareRendering
             sfmlWindow.Display();
         }
 
-        private static int GetPaletteNumber(Player plyr)
+        private static int GetPaletteNumber(Player player)
         {
-            var cnt = plyr.DamageCount;
+            var count = player.DamageCount;
 
-            if (plyr.Powers[(int)PowerType.Strength] != 0)
+            if (player.Powers[(int)PowerType.Strength] != 0)
             {
                 // Slowly fade the berzerk out.
-                var bzc = 12 - (plyr.Powers[(int)PowerType.Strength] >> 6);
-
-                if (bzc > cnt)
+                var bzc = 12 - (player.Powers[(int)PowerType.Strength] >> 6);
+                if (bzc > count)
                 {
-                    cnt = bzc;
+                    count = bzc;
                 }
             }
 
             int palette;
 
-            if (cnt != 0)
+            if (count != 0)
             {
-                palette = (cnt + 7) >> 3;
+                palette = (count + 7) >> 3;
 
-                if (palette >= Palette.NUMREDPALS)
+                if (palette >= Palette.DamageCount)
                 {
-                    palette = Palette.NUMREDPALS - 1;
+                    palette = Palette.DamageCount - 1;
                 }
 
-                palette += Palette.STARTREDPALS;
+                palette += Palette.DamageStart;
             }
-            else if (plyr.BonusCount != 0)
+            else if (player.BonusCount != 0)
             {
-                palette = (plyr.BonusCount + 7) >> 3;
+                palette = (player.BonusCount + 7) >> 3;
 
-                if (palette >= Palette.NUMBONUSPALS)
+                if (palette >= Palette.BonusCount)
                 {
-                    palette = Palette.NUMBONUSPALS - 1;
+                    palette = Palette.BonusCount - 1;
                 }
 
-                palette += Palette.STARTBONUSPALS;
+                palette += Palette.BonusStart;
             }
-            else if (plyr.Powers[(int)PowerType.IronFeet] > 4 * 32 ||
-                (plyr.Powers[(int)PowerType.IronFeet] & 8) != 0)
+            else if (player.Powers[(int)PowerType.IronFeet] > 4 * 32 ||
+                (player.Powers[(int)PowerType.IronFeet] & 8) != 0)
             {
-                palette = Palette.RADIATIONPAL;
+                palette = Palette.IronFeet;
             }
             else
             {
@@ -348,8 +347,6 @@ namespace ManagedDoom.SoftwareRendering
                 sfmlTexture = null;
             }
         }
-
-
 
         public int WipeBandCount => wipeBandCount;
         public int WipeHeight => wipeHeight;
