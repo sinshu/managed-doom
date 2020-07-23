@@ -1461,7 +1461,7 @@ namespace ManagedDoom.SoftwareRendering
                 frontSector.LightLevel != backSector.LightLevel)
             {
                 drawUpperWall = side.TopTexture != 0 && worldBackZ1 < worldFrontZ1;
-                drawCeiling = worldFrontZ1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
+                drawCeiling = worldFrontZ1 >= Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
             }
             else
             {
@@ -1477,7 +1477,7 @@ namespace ManagedDoom.SoftwareRendering
                 frontSector.LightLevel != backSector.LightLevel)
             {
                 drawLowerWall = side.BottomTexture != 0 && worldBackZ2 > worldFrontZ2;
-                drawFloor = worldFrontZ2 < Fixed.Zero;
+                drawFloor = worldFrontZ2 <= Fixed.Zero;
             }
             else
             {
