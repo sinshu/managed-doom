@@ -219,6 +219,7 @@ namespace ManagedDoom
 								case 20:
 								case 30:
 									DoFinale();
+									result = UpdateResult.NeedWipe;
 									break;
 
 								case 15:
@@ -226,6 +227,7 @@ namespace ManagedDoom
 									if (world.SecretExit)
 									{
 										DoFinale();
+										result = UpdateResult.NeedWipe;
 									}
 									break;
 							}

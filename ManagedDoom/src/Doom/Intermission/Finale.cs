@@ -15,7 +15,7 @@
 
 
 
-﻿using System;
+using System;
 
 namespace ManagedDoom
 {
@@ -38,6 +38,8 @@ namespace ManagedDoom
 		private int scrolled;
 		private bool showTheEnd;
 		private int theEndIndex;
+
+		private UpdateResult updateResult;
 
 		public Finale(GameOptions options)
 		{
@@ -168,6 +170,8 @@ namespace ManagedDoom
 
 		public UpdateResult Update()
 		{
+			updateResult = UpdateResult.None;
+
 			// Check for skipping.
 			if (options.GameMode == GameMode.Commercial && count > 50)
 			{
@@ -201,19 +205,19 @@ namespace ManagedDoom
 			if (stage == 2)
 			{
 				UpdateCast();
-				return UpdateResult.None;
+				return updateResult;
 			}
 
 			if (options.GameMode == GameMode.Commercial)
 			{
-				return UpdateResult.None;
+				return updateResult;
 			}
 
 			if (stage == 0 && count > text.Length * TextSpeed + TextWait)
 			{
 				count = 0;
 				stage = 1;
-				//wipegamestate = -1; // force a wipe
+				updateResult = UpdateResult.NeedWipe;
 				if (options.Episode == 3)
 				{
 					//S_StartMusic(mus_bunny);
@@ -225,7 +229,7 @@ namespace ManagedDoom
 				BunnyScroll();
 			}
 
-			return UpdateResult.None;
+			return updateResult;
 		}
 
 		private void BunnyScroll()
@@ -260,7 +264,7 @@ namespace ManagedDoom
 			}
 			if (stage > theEndIndex)
 			{
-				//S_StartSound(NULL, sfx_pistol);
+				StartSound(Sfx.PISTOL);
 				theEndIndex = stage;
 			}
 		}
@@ -299,16 +303,17 @@ namespace ManagedDoom
 		private void StartCast()
 		{
 			stage = 2;
-			
+
 			castNumber = 0;
 			castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].SeeState];
 			castTics = castState.Tics;
 			castFrames = 0;
-			castDeath = false;		
+			castDeath = false;
 			castOnMelee = false;
 			castAttacking = false;
 
-			// wipegamestate = -1; // force a screen wipe
+			updateResult = UpdateResult.NeedWipe;
+
 			// S_ChangeMusic(mus_evil, true);
 		}
 
@@ -331,7 +336,7 @@ namespace ManagedDoom
 				}
 				if (DoomInfo.MobjInfos[(int)castorder[castNumber].Type].SeeSound != 0)
 				{
-					//S_StartSound(NULL, mobjinfo[castorder[castnum].type].seesound);
+					StartSound(DoomInfo.MobjInfos[(int)castorder[castNumber].Type].SeeSound);
 				}
 				castState = DoomInfo.States[(int)DoomInfo.MobjInfos[(int)castorder[castNumber].Type].SeeState];
 				castFrames = 0;
@@ -439,7 +444,7 @@ namespace ManagedDoom
 
 				if (sfx != 0)
 				{
-					// S_StartSound(NULL, sfx);
+					StartSound(sfx);
 				}
 			}
 
@@ -481,7 +486,7 @@ namespace ManagedDoom
 				}
 			}
 
-		stopAttack:
+			stopAttack:
 
 			castTics = castState.Tics;
 			if (castTics == -1)
@@ -513,13 +518,18 @@ namespace ManagedDoom
 				castAttacking = false;
 				if (DoomInfo.MobjInfos[(int)castorder[castNumber].Type].DeathSound != 0)
 				{
-					// S_StartSound(NULL, mobjinfo[castorder[castnum].type].deathsound);
+					StartSound(DoomInfo.MobjInfos[(int)castorder[castNumber].Type].DeathSound);
 				}
 
 				return true;
 			}
 
 			return false;
+		}
+
+		private void StartSound(Sfx sfx)
+		{
+			options.Sound.StartSound(sfx);
 		}
 
 
