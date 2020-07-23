@@ -110,7 +110,7 @@ namespace ManagedDoom
                     null,
                     nightmareConfirm));
 
-            if (app.GameMode == GameMode.Retail)
+            if (app.Options.GameMode == GameMode.Retail)
             {
                 episodeMenu = new SelectableMenu(
                     this,
@@ -139,7 +139,7 @@ namespace ManagedDoom
             }
             else
             {
-                if (app.GameMode == GameMode.Shareware)
+                if (app.Options.GameMode == GameMode.Shareware)
                 {
                     episodeMenu = new SelectableMenu(
                         this,
@@ -257,7 +257,7 @@ namespace ManagedDoom
                 new TextBoxMenuItem(48, 129, 72, 141));
 
             MenuDef newGameMenu;
-            if (app.GameMode == GameMode.Commercial)
+            if (app.Options.GameMode == GameMode.Commercial)
             {
                 newGameMenu = skillMenu;
             }

@@ -467,6 +467,5 @@ namespace ManagedDoom
         public GameOptions Options => options;
         public DoomGame Game => game;
         public DoomMenu Menu => menu;
-        public GameMode GameMode => resource.Wad.GameMode;
     }
 }
