@@ -56,6 +56,7 @@ namespace ManagedDoom
         private int totalSecrets;
 
         private int levelTime;
+        private bool doneFirstTic;
         private bool secretExit;
         private bool completed;
 
@@ -136,6 +137,7 @@ namespace ManagedDoom
             specials.SpawnSpecials();
 
             levelTime = 0;
+            doneFirstTic = false;
             secretExit = false;
             completed = false;
 
@@ -168,13 +170,14 @@ namespace ManagedDoom
             }
             else
             {
-                if (levelTime == 1)
+                if (doneFirstTic)
                 {
-                    return UpdateResult.NeedWipe;
+                    return UpdateResult.None;
                 }
                 else
                 {
-                    return UpdateResult.None;
+                    doneFirstTic = true;
+                    return UpdateResult.NeedWipe;
                 }
             }
         }
