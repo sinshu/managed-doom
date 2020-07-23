@@ -44,12 +44,14 @@ namespace ManagedDoom
             {
                 action();
                 Menu.Close();
+                Menu.StartSound(Sfx.PISTOL);
             }
 
             if (e.Key == DoomKeys.N ||
                 e.Key == DoomKeys.Escape)
             {
                 Menu.Close();
+                Menu.StartSound(Sfx.SWTCHX);
             }
 
             return true;

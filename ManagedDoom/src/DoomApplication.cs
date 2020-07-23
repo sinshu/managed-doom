@@ -181,6 +181,10 @@ namespace ManagedDoom
                     menu.ShowVolumeControl();
                     return true;
 
+                case DoomKeys.F6:
+                    menu.QuickSave();
+                    return true;
+
                 case DoomKeys.F8:
                     renderer.DisplayMessage = !renderer.DisplayMessage;
                     if (currentState == ApplicationState.Game && game.State == GameState.Level)
@@ -197,6 +201,10 @@ namespace ManagedDoom
                         game.World.ConsolePlayer.SendMessage(msg);
                     }
                     menu.StartSound(Sfx.SWTCHN);
+                    return true;
+
+                case DoomKeys.F9:
+                    menu.QuickLoad();
                     return true;
 
                 case DoomKeys.F11:

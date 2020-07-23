@@ -113,7 +113,7 @@ namespace ManagedDoom
             return true;
         }
 
-        private bool DoLoad(int slotNumber)
+        public bool DoLoad(int slotNumber)
         {
             if (Menu.SaveSlots[slotNumber] != null)
             {

@@ -41,6 +41,7 @@ namespace ManagedDoom
                 }
 
                 Menu.Close();
+                Menu.StartSound(Sfx.SWTCHX);
 
                 return true;
             }

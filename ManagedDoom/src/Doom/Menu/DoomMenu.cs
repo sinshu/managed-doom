@@ -399,6 +399,50 @@ namespace ManagedDoom
             StartSound(Sfx.SWTCHN);
         }
 
+        public void QuickSave()
+        {
+            if (save.LastSaveSlot == -1)
+            {
+                ShowSaveScreen();
+            }
+            else
+            {
+                var desc = saveSlots[save.LastSaveSlot];
+                var confirm = new YesNoConfirm(
+                    this,
+                    ((string)DoomInfo.Strings.QSPROMPT).Replace("%s", desc),
+                    () => save.DoSave(save.LastSaveSlot));
+                SetCurrent(confirm);
+                Open();
+                StartSound(Sfx.SWTCHN);
+            }
+        }
+
+        public void QuickLoad()
+        {
+            if (save.LastSaveSlot == -1)
+            {
+                var pak = new PressAnyKey(
+                    this,
+                    DoomInfo.Strings.QSAVESPOT,
+                    null);
+                SetCurrent(pak);
+                Open();
+                StartSound(Sfx.SWTCHN);
+            }
+            else
+            {
+                var desc = saveSlots[save.LastSaveSlot];
+                var confirm = new YesNoConfirm(
+                    this,
+                    ((string)DoomInfo.Strings.QLPROMPT).Replace("%s", desc),
+                    () => load.DoLoad(save.LastSaveSlot));
+                SetCurrent(confirm);
+                Open();
+                StartSound(Sfx.SWTCHN);
+            }
+        }
+
         public DoomApplication Application => app;
         public GameOptions Options => app.Options;
         public MenuDef Current => current;

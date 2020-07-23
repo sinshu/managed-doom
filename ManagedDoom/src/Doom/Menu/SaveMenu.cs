@@ -33,6 +33,8 @@ namespace ManagedDoom
 
         private TextInput textInput;
 
+        private int lastSaveSlot;
+
         public SaveMenu(
             DoomMenu menu,
             string name, int titleX, int titleY,
@@ -46,6 +48,8 @@ namespace ManagedDoom
 
             index = firstChoice;
             choice = items[index];
+
+            lastSaveSlot = -1;
         }
 
         public override void Open()
@@ -138,12 +142,13 @@ namespace ManagedDoom
             return true;
         }
 
-        private void DoSave(int slotNumber)
+        public void DoSave(int slotNumber)
         {
             Menu.SaveSlots[slotNumber] = new string(items[slotNumber].Text.ToArray());
             if (Menu.Application.SaveGame(slotNumber, Menu.SaveSlots[slotNumber]))
             {
                 Menu.Close();
+                lastSaveSlot = slotNumber;
             }
             else
             {
@@ -157,5 +162,6 @@ namespace ManagedDoom
         public IReadOnlyList<int> TitleY => titleY;
         public IReadOnlyList<MenuItem> Items => items;
         public MenuItem Choice => choice;
+        public int LastSaveSlot => lastSaveSlot;
     }
 }
