@@ -26,6 +26,8 @@ namespace ManagedDoom
         private static int next_weapon;
         private static bool[] weaponKeys;
 
+        private static KeyBinding keyBinding = new KeyBinding();
+
         static UserInput()
         {
             turnheld = 0;
@@ -35,14 +37,14 @@ namespace ManagedDoom
 
         public static void BuildTicCmd(TicCmd cmd)
         {
-            var keyLeft = Keyboard.IsKeyPressed(Keyboard.Key.Left);
-            var keyRight = Keyboard.IsKeyPressed(Keyboard.Key.Right);
-            var keyUp = Keyboard.IsKeyPressed(Keyboard.Key.Up);
-            var keyDown = Keyboard.IsKeyPressed(Keyboard.Key.Down);
-            var keySpeed = Keyboard.IsKeyPressed(Keyboard.Key.LShift);
-            var keyStrafe = Keyboard.IsKeyPressed(Keyboard.Key.LAlt);
-            var keyFire = Keyboard.IsKeyPressed(Keyboard.Key.LControl);
-            var keyUse = Keyboard.IsKeyPressed(Keyboard.Key.Space);
+            var keyLeft = keyBinding.TurnLeft.IsPressed();
+            var keyRight = keyBinding.TurnRight.IsPressed();
+            var keyUp = keyBinding.Forward.IsPressed();
+            var keyDown = keyBinding.Backward.IsPressed();
+            var keySpeed = keyBinding.Run.IsPressed();
+            var keyStrafe = keyBinding.KeyStrafe.IsPressed();
+            var keyFire = keyBinding.Fire.IsPressed();
+            var keyUse = keyBinding.Use.IsPressed();
             weaponKeys[0] = Keyboard.IsKeyPressed(Keyboard.Key.Num1);
             weaponKeys[1] = Keyboard.IsKeyPressed(Keyboard.Key.Num2);
             weaponKeys[2] = Keyboard.IsKeyPressed(Keyboard.Key.Num3);
