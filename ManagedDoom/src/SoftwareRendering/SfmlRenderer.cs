@@ -185,14 +185,18 @@ namespace ManagedDoom.SoftwareRendering
                 if (game.World.AutoMap.Visible)
                 {
                     autoMap.Render(player);
-                    statusBar.Render(player);
+                    statusBar.Render(player, true);
                 }
                 else
                 {
                     threeD.Render(player);
                     if (threeD.WindowSize < 8)
                     {
-                        statusBar.Render(player);
+                        statusBar.Render(player, true);
+                    }
+                    else if (threeD.WindowSize == ThreeDRenderer.MaxScreenSize)
+                    {
+                        statusBar.Render(player, false);
                     }
                 }
 

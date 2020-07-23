@@ -215,13 +215,16 @@ namespace ManagedDoom.SoftwareRendering
             keys[2].Patches = patches.Keys;
         }
 
-        public void Render(Player player)
+        public void Render(Player player, bool drawBackground)
         {
-            screen.DrawPatch(
-                patches.Background,
-                0,
-                scale * (200 - Height),
-                scale);
+            if (drawBackground)
+            {
+                screen.DrawPatch(
+                    patches.Background,
+                    0,
+                    scale * (200 - Height),
+                    scale);
+            }
 
             if (DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo != AmmoType.NoAmmo)
             {
@@ -240,11 +243,14 @@ namespace ManagedDoom.SoftwareRendering
 
             if (player.Mobj.World.Options.Deathmatch == 0)
             {
-                screen.DrawPatch(
-                    patches.ArmsBackground,
-                    scale * armsBackgroundX,
-                    scale * armsBackgroundY,
-                    scale);
+                if (drawBackground)
+                {
+                    screen.DrawPatch(
+                        patches.ArmsBackground,
+                        scale * armsBackgroundX,
+                        scale * armsBackgroundY,
+                        scale);
+                }
 
                 for (var i = 0; i < weapons.Length; i++)
                 {
@@ -261,20 +267,23 @@ namespace ManagedDoom.SoftwareRendering
                 DrawNumber(frags, sum);
             }
 
-            if (player.Mobj.World.Options.NetGame)
+            if (drawBackground)
             {
+                if (player.Mobj.World.Options.NetGame)
+                {
+                    screen.DrawPatch(
+                        patches.FaceBackground[player.Number],
+                        scale * faceBackgroundX,
+                        scale * faceBackgroundY,
+                        scale);
+                }
+
                 screen.DrawPatch(
-                    patches.FaceBackground[player.Number],
-                    scale * faceBackgroundX,
-                    scale * faceBackgroundY,
+                    patches.Faces[player.Mobj.World.StatusBar.FaceIndex],
+                    scale * faceX,
+                    scale * faceY,
                     scale);
             }
-
-            screen.DrawPatch(
-                patches.Faces[player.Mobj.World.StatusBar.FaceIndex],
-                scale * faceX,
-                scale * faceY,
-                scale);
 
             for (var i = 0; i < 3; i++)
             {
