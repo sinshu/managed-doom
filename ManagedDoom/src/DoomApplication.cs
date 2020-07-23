@@ -79,7 +79,7 @@ namespace ManagedDoom
 
                 menu = new DoomMenu(this);
 
-                opening = new OpeningSequence();
+                opening = new OpeningSequence(resource, options);
 
                 cmds = new TicCmd[Player.MaxPlayerCount];
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -124,6 +124,7 @@ namespace ManagedDoom
 
         public void NewGame(GameSkill skill, int episode, int map)
         {
+            opening.Reset();
             game.DeferedInitNew(skill, episode, map);
             nextState = ApplicationState.Game;
         }
@@ -136,6 +137,11 @@ namespace ManagedDoom
 
         private void DoEvents()
         {
+            if (wiping)
+            {
+                return;
+            }
+
             foreach (var e in events)
             {
                 if (menu.DoEvent(e))
@@ -299,19 +305,22 @@ namespace ManagedDoom
 
         private UpdateResult Update()
         {
-            menu.Update();
-
-            currentState = nextState;
-
-            if (quit)
+            if (!wiping)
             {
-                return UpdateResult.Completed;
-            }
+                menu.Update();
 
-            if (needWipe)
-            {
-                needWipe = false;
-                StartWipe();
+                currentState = nextState;
+
+                if (quit)
+                {
+                    return UpdateResult.Completed;
+                }
+
+                if (needWipe)
+                {
+                    needWipe = false;
+                    StartWipe();
+                }
             }
 
             if (!wiping)

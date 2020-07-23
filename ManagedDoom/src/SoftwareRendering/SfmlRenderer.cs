@@ -142,7 +142,7 @@ namespace ManagedDoom.SoftwareRendering
             palette.ResetColors(gammaCorrectionParameters[gammaCorrectionLevel]);
         }
 
-        private void RenderApplication(DoomApplication app)
+        public void RenderApplication(DoomApplication app)
         {
             if (app.State == ApplicationState.Opening)
             {
@@ -169,7 +169,7 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        private void RenderMenu(DoomApplication app)
+        public void RenderMenu(DoomApplication app)
         {
             if (app.Menu.Active)
             {
@@ -177,7 +177,7 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        private void RenderGame(DoomGame game)
+        public void RenderGame(DoomGame game)
         {
             if (game.State == GameState.Level)
             {
@@ -229,6 +229,12 @@ namespace ManagedDoom.SoftwareRendering
                 app.Game.State == GameState.Level)
             {
                 colors = palette[GetPaletteNumber(app.Game.World.ConsolePlayer)];
+            }
+            else if (app.State == ApplicationState.Opening &&
+                app.Opening.State == OpeningSequenceState.Demo &&
+                app.Opening.DemoGame.State == GameState.Level)
+            {
+                colors = palette[GetPaletteNumber(app.Opening.DemoGame.World.ConsolePlayer)];
             }
 
             Display(colors);
