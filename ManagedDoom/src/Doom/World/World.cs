@@ -62,6 +62,8 @@ namespace ManagedDoom
 
         private int validCount;
 
+        private int displayPlayer;
+
         public World(CommonResource resorces, GameOptions options) : this(resorces, options, null)
         {
         }
@@ -142,6 +144,8 @@ namespace ManagedDoom
             completed = false;
 
             validCount = 0;
+
+            displayPlayer = options.ConsolePlayer;
         }
 
         public UpdateResult Update()
@@ -283,6 +287,16 @@ namespace ManagedDoom
             return false;
         }
 
+        public void ChangeDisplayPlayer()
+        {
+            displayPlayer++;
+            if (displayPlayer == Player.MaxPlayerCount ||
+                !options.Players[displayPlayer].InGame)
+            {
+                displayPlayer = 0;
+            }
+        }
+
         public GameOptions Options => options;
         public DoomGame Game => game;
         public DoomRandom Random => random;
@@ -350,7 +364,8 @@ namespace ManagedDoom
 
         public bool SecretExit => secretExit;
 
-        public Player ConsolePlayer => Options.Players[Options.ConsolePlayer];
+        public Player ConsolePlayer => options.Players[options.ConsolePlayer];
+        public Player DisplayPlayer => options.Players[displayPlayer];
         public bool FirstTicIsNotYetDone => ConsolePlayer.ViewZ == Fixed.Epsilon;
     }
 }

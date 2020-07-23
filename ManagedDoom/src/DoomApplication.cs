@@ -253,6 +253,15 @@ namespace ManagedDoom
                     }
                     return true;
 
+                case DoomKeys.F12:
+                    if (options.Deathmatch == 0 &&
+                        currentState == ApplicationState.Game &&
+                        game.State == GameState.Level)
+                    {
+                        game.World.ChangeDisplayPlayer();
+                    }
+                    return true;
+
                 case DoomKeys.Add:
                 case DoomKeys.Quote:
                     if (currentState == ApplicationState.Game &&
