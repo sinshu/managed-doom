@@ -22,8 +22,6 @@ using SFML.Graphics;
 using SFML.Window;
 using ManagedDoom.SoftwareRendering;
 using ManagedDoom.Audio;
-using SFML.System;
-using System.Runtime.InteropServices;
 
 namespace ManagedDoom
 {
@@ -61,11 +59,11 @@ namespace ManagedDoom
             try
             {
                 var style = Styles.Close | Styles.Titlebar;
-                window = new RenderWindow(new VideoMode(640, 400), "Managed Doom", style);
+                window = new RenderWindow(SettingUtilities.GetDefaultVideoMode(), "Managed Doom", style);
                 window.Clear(new Color(128, 128, 128));
                 window.Display();
 
-                resource = new CommonResource("DOOM2.WAD");
+                resource = new CommonResource(SettingUtilities.GetDefaultIwadPath());
                 renderer = new SfmlRenderer(window, resource, true);
                 sound = new SfmlSound(resource.Wad);
 
