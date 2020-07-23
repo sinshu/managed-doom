@@ -567,7 +567,7 @@ namespace ManagedDoom
 			}
 
 			// New door thinker.
-			var newDoor = ThinkerPool.RentVlDoor(world);
+			var newDoor = new VerticalDoor(world);
 			world.Thinkers.Add(newDoor);
 			sector.SpecialData = newDoor;
 			newDoor.Sector = sector;
@@ -628,7 +628,7 @@ namespace ManagedDoom
 				result = true;
 
 				// New door thinker.
-				var door = ThinkerPool.RentVlDoor(world);
+				var door = new VerticalDoor(world);
 				world.Thinkers.Add(door);
 				sector.SpecialData = door;
 				door.Sector = sector;
@@ -842,7 +842,7 @@ namespace ManagedDoom
 				result = true;
 
 				// Find lowest and highest floors around sector.
-				var plat = ThinkerPool.RentPlatform(world);
+				var plat = new Platform(world);
 				world.Thinkers.Add(plat);
 				plat.Type = type;
 				plat.Sector = sector;
@@ -1013,7 +1013,7 @@ namespace ManagedDoom
 				result = true;
 
 				// New floor thinker.
-				var floor = ThinkerPool.RentFloorMove(world);
+				var floor = new FloorMove(world);
 				world.Thinkers.Add(floor);
 				sector.SpecialData = floor;
 				floor.Type = type;
@@ -1190,7 +1190,7 @@ namespace ManagedDoom
 				result = true;
 
 				// New floor thinker.
-				var floor = ThinkerPool.RentFloorMove(world);
+				var floor = new FloorMove(world);
 				world.Thinkers.Add(floor);
 				sector.SpecialData = floor;
 				floor.Direction = 1;
@@ -1258,7 +1258,7 @@ namespace ManagedDoom
 
 						sector = target;
 						sectorNumber = newSectorNumber;
-						floor = ThinkerPool.RentFloorMove(world);
+						floor = new FloorMove(world);
 
 						world.Thinkers.Add(floor);
 
@@ -1312,7 +1312,7 @@ namespace ManagedDoom
 				result = true;
 
 				// New door thinker.
-				var ceiling = ThinkerPool.RentCeiligMove(world);
+				var ceiling = new CeilingMove(world);
 				world.Thinkers.Add(ceiling);
 				sector.SpecialData = ceiling;
 				ceiling.Sector = sector;
@@ -1698,7 +1698,7 @@ namespace ManagedDoom
 					var thinkers = world.Thinkers;
 
 					// Spawn rising slime.
-					var floor1 = ThinkerPool.RentFloorMove(world);
+					var floor1 = new FloorMove(world);
 					thinkers.Add(floor1);
 					s2.SpecialData = floor1;
 					floor1.Type = FloorMoveType.DonutRaise;
@@ -1711,7 +1711,7 @@ namespace ManagedDoom
 					floor1.FloorDestHeight = s3.FloorHeight;
 
 					// Spawn lowering donut-hole.
-					var floor2 = ThinkerPool.RentFloorMove(world);
+					var floor2 = new FloorMove(world);
 					thinkers.Add(floor2);
 					s1.SpecialData = floor2;
 					floor2.Type = FloorMoveType.LowerFloor;
@@ -1731,7 +1731,7 @@ namespace ManagedDoom
 
 		public void SpawnDoorCloseIn30(Sector sector)
 		{
-			var door = ThinkerPool.RentVlDoor(world);
+			var door = new VerticalDoor(world);
 
 			world.Thinkers.Add(door);
 
@@ -1747,7 +1747,7 @@ namespace ManagedDoom
 
 		public void SpawnDoorRaiseIn5Mins(Sector sector)
 		{
-			var door = ThinkerPool.RentVlDoor(world);
+			var door = new VerticalDoor(world);
 
 			world.Thinkers.Add(door);
 

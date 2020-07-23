@@ -268,7 +268,7 @@ namespace ManagedDoom
         /// </summary>
         public Mobj SpawnMobj(Fixed x, Fixed y, Fixed z, MobjType type)
         {
-            var mobj = ThinkerPool.RentMobj(world);
+            var mobj = new Mobj(world);
 
             var info = DoomInfo.MobjInfos[(int)type];
 

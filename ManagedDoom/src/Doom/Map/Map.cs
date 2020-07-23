@@ -119,10 +119,10 @@ namespace ManagedDoom
             {
                 if (line.Special != 0)
                 {
-                    var mo = ThinkerPool.RentMobj(world);
-                    mo.X = (line.Vertex1.X + line.Vertex2.X) / 2;
-                    mo.Y = (line.Vertex1.Y + line.Vertex2.Y) / 2;
-                    line.SoundOrigin = mo;
+                    var so = new Mobj(world);
+                    so.X = (line.Vertex1.X + line.Vertex2.X) / 2;
+                    so.Y = (line.Vertex1.Y + line.Vertex2.Y) / 2;
+                    line.SoundOrigin = so;
                 }
             }
 
@@ -144,7 +144,7 @@ namespace ManagedDoom
                 sector.Lines = sectorLines.ToArray();
 
                 // Set the degenmobj_t to the middle of the bounding box.
-                sector.SoundOrigin = ThinkerPool.RentMobj(world);
+                sector.SoundOrigin = new Mobj(world);
                 sector.SoundOrigin.X = (boundingBox[Box.Right] + boundingBox[Box.Left]) / 2;
                 sector.SoundOrigin.Y = (boundingBox[Box.Top] + boundingBox[Box.Bottom]) / 2;
 

@@ -64,7 +64,6 @@ namespace ManagedDoom
                     // Time to remove it.
                     current.Next.Prev = current.Prev;
                     current.Prev.Next = current.Next;
-                    ThinkerPool.Return(current);
                 }
                 else
                 {
@@ -79,14 +78,6 @@ namespace ManagedDoom
 
         public void Reset()
         {
-            var current = cap.Next;
-            while (current != cap)
-            {
-                var next = current.Next;
-                ThinkerPool.Return(current);
-                current = next;
-            }
-
             cap.Prev = cap.Next = cap;
         }
 

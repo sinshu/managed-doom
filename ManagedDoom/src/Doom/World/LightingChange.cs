@@ -34,7 +34,7 @@ namespace ManagedDoom
             // Nothing special about it during gameplay.
             sector.Special = 0;
 
-            var flicker = ThinkerPool.RentFireFlicker(world);
+            var flicker = new FireFlicker(world);
 
             world.Thinkers.Add(flicker);
 
@@ -49,7 +49,7 @@ namespace ManagedDoom
             // Nothing special about it during gameplay.
             sector.Special = 0;
 
-            var light = ThinkerPool.RentLightFlash(world);
+            var light = new LightFlash(world);
 
             world.Thinkers.Add(light);
 
@@ -64,7 +64,7 @@ namespace ManagedDoom
 
         public void SpawnStrobeFlash(Sector sector, int fastOrSlow, int inSync)
         {
-            var strobe = ThinkerPool.RentStrobeFlash(world);
+            var strobe = new StrobeFlash(world);
 
             world.Thinkers.Add(strobe);
 
@@ -94,7 +94,7 @@ namespace ManagedDoom
 
         public void SpawnGlowingLight(Sector sector)
         {
-            var glowing = ThinkerPool.RentGlowingLight(world);
+            var glowing = new GlowingLight(world);
 
             world.Thinkers.Add(glowing);
 

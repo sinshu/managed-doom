@@ -691,7 +691,7 @@ namespace ManagedDoom
 
                         case ThinkerClass.Mobj:
                             PadPointer();
-                            var mobj = ThinkerPool.RentMobj(world);
+                            var mobj = new Mobj(world);
                             mobj.ThinkerState = ReadThinkerState(data, ptr + 8);
                             mobj.X = new Fixed(BitConverter.ToInt32(data, ptr + 12));
                             mobj.Y = new Fixed(BitConverter.ToInt32(data, ptr + 16));
@@ -760,7 +760,7 @@ namespace ManagedDoom
 
                         case SpecialClass.Ceiling:
                             PadPointer();
-                            var ceiling = ThinkerPool.RentCeiligMove(world);
+                            var ceiling = new CeilingMove(world);
                             ceiling.ThinkerState = ReadThinkerState(data, ptr + 8);
                             ceiling.Type = (CeilingMoveType)BitConverter.ToInt32(data, ptr + 12);
                             ceiling.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 16)];
@@ -780,7 +780,7 @@ namespace ManagedDoom
 
                         case SpecialClass.Door:
                             PadPointer();
-                            var door = ThinkerPool.RentVlDoor(world);
+                            var door = new VerticalDoor(world);
                             door.ThinkerState = ReadThinkerState(data, ptr + 8);
                             door.Type = (VerticalDoorType)BitConverter.ToInt32(data, ptr + 12);
                             door.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 16)];
@@ -797,7 +797,7 @@ namespace ManagedDoom
 
                         case SpecialClass.Floor:
                             PadPointer();
-                            var floor = ThinkerPool.RentFloorMove(world);
+                            var floor = new FloorMove(world);
                             floor.ThinkerState = ReadThinkerState(data, ptr + 8);
                             floor.Type = (FloorMoveType)BitConverter.ToInt32(data, ptr + 12);
                             floor.Crush = BitConverter.ToInt32(data, ptr + 16) != 0;
@@ -815,7 +815,7 @@ namespace ManagedDoom
 
                         case SpecialClass.Plat:
                             PadPointer();
-                            var plat = ThinkerPool.RentPlatform(world);
+                            var plat = new Platform(world);
                             plat.ThinkerState = ReadThinkerState(data, ptr + 8);
                             plat.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
                             plat.Sector.SpecialData = plat;
@@ -837,7 +837,7 @@ namespace ManagedDoom
 
                         case SpecialClass.Flash:
                             PadPointer();
-                            var flash = ThinkerPool.RentLightFlash(world);
+                            var flash = new LightFlash(world);
                             flash.ThinkerState = ReadThinkerState(data, ptr + 8);
                             flash.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
                             flash.Count = BitConverter.ToInt32(data, ptr + 16);
@@ -852,7 +852,7 @@ namespace ManagedDoom
 
                         case SpecialClass.Strobe:
                             PadPointer();
-                            var strobe = ThinkerPool.RentStrobeFlash(world);
+                            var strobe = new StrobeFlash(world);
                             strobe.ThinkerState = ReadThinkerState(data, ptr + 8);
                             strobe.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
                             strobe.Count = BitConverter.ToInt32(data, ptr + 16);
@@ -867,7 +867,7 @@ namespace ManagedDoom
 
                         case SpecialClass.Glow:
                             PadPointer();
-                            var glow = ThinkerPool.RentGlowingLight(world);
+                            var glow = new GlowingLight(world);
                             glow.ThinkerState = ReadThinkerState(data, ptr + 8);
                             glow.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
                             glow.MinLight = BitConverter.ToInt32(data, ptr + 16);
