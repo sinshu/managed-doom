@@ -16,7 +16,6 @@
 
 
 ﻿using System;
-using System.Net;
 
 namespace ManagedDoom
 {

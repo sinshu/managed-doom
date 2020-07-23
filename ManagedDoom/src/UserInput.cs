@@ -16,7 +16,6 @@
 
 
 ﻿using System;
-using SFML.System;
 using SFML.Window;
 
 namespace ManagedDoom

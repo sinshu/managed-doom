@@ -16,13 +16,10 @@
 
 
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using SFML.Graphics;
 using SFML.System;
-using SFML.Window;
 
 namespace ManagedDoom.SoftwareRendering
 {
