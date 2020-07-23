@@ -21,12 +21,11 @@ namespace ManagedDoom
 {
     public sealed class BlockMap
     {
-        public static readonly int MapBlockUnits = 128;
-        public static readonly int MapBlockShift = Fixed.FracBits + 7;
-
-        public static readonly Fixed MapBlockSize = Fixed.FromInt(MapBlockUnits);
-        public static readonly int MapBMask = MapBlockSize.Data - 1;
-        public static readonly int MapBToFrac = MapBlockShift - Fixed.FracBits;
+        public static readonly int IntBlockSize = 128;
+        public static readonly Fixed BlockSize = Fixed.FromInt(IntBlockSize);
+        public static readonly int BlockMask = BlockSize.Data - 1;
+        public static readonly int FracToBlockShift = Fixed.FracBits + 7;
+        public static readonly int BlockToFracShift = FracToBlockShift - Fixed.FracBits;
 
         private Fixed originX;
         private Fixed originY;
@@ -85,12 +84,12 @@ namespace ManagedDoom
 
         public int GetBlockX(Fixed x)
         {
-            return (x - originX).Data >> MapBlockShift;
+            return (x - originX).Data >> FracToBlockShift;
         }
 
         public int GetBlockY(Fixed y)
         {
-            return (y - originY).Data >> MapBlockShift;
+            return (y - originY).Data >> FracToBlockShift;
         }
 
         public int GetIndex(int blockX, int blockY)

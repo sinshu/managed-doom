@@ -31,8 +31,8 @@ namespace ManagedDoomTest.UnitTests
 
                     Assert.AreEqual(blockMap.OriginX.ToDouble(), minX, 64);
                     Assert.AreEqual(blockMap.OriginY.ToDouble(), minY, 64);
-                    Assert.AreEqual((blockMap.OriginX + BlockMap.MapBlockSize * blockMap.Width).ToDouble(), maxX, 128);
-                    Assert.AreEqual((blockMap.OriginY + BlockMap.MapBlockSize * blockMap.Height).ToDouble(), maxY, 128);
+                    Assert.AreEqual((blockMap.OriginX + BlockMap.BlockSize * blockMap.Width).ToDouble(), maxX, 128);
+                    Assert.AreEqual((blockMap.OriginY + BlockMap.BlockSize * blockMap.Height).ToDouble(), maxY, 128);
                 }
 
                 var spots = new List<Tuple<int, int>>();
@@ -82,10 +82,10 @@ namespace ManagedDoomTest.UnitTests
 
                         if (count > 1)
                         {
-                            Assert.IsTrue(minX <= (blockMap.OriginX + BlockMap.MapBlockSize * (blockX + 1)).ToDouble());
-                            Assert.IsTrue(maxX >= (blockMap.OriginX + BlockMap.MapBlockSize * blockX).ToDouble());
-                            Assert.IsTrue(minY <= (blockMap.OriginY + BlockMap.MapBlockSize * (blockY + 1)).ToDouble());
-                            Assert.IsTrue(maxY >= (blockMap.OriginY + BlockMap.MapBlockSize * blockY).ToDouble());
+                            Assert.IsTrue(minX <= (blockMap.OriginX + BlockMap.BlockSize * (blockX + 1)).ToDouble());
+                            Assert.IsTrue(maxX >= (blockMap.OriginX + BlockMap.BlockSize * blockX).ToDouble());
+                            Assert.IsTrue(minY <= (blockMap.OriginY + BlockMap.BlockSize * (blockY + 1)).ToDouble());
+                            Assert.IsTrue(maxY >= (blockMap.OriginY + BlockMap.BlockSize * blockY).ToDouble());
                         }
 
                         total += count;
@@ -118,8 +118,8 @@ namespace ManagedDoomTest.UnitTests
 
                     Assert.AreEqual(blockMap.OriginX.ToDouble(), minX, 64);
                     Assert.AreEqual(blockMap.OriginY.ToDouble(), minY, 64);
-                    Assert.AreEqual((blockMap.OriginX + BlockMap.MapBlockSize * blockMap.Width).ToDouble(), maxX, 128);
-                    Assert.AreEqual((blockMap.OriginY + BlockMap.MapBlockSize * blockMap.Height).ToDouble(), maxY, 128);
+                    Assert.AreEqual((blockMap.OriginX + BlockMap.BlockSize * blockMap.Width).ToDouble(), maxX, 128);
+                    Assert.AreEqual((blockMap.OriginY + BlockMap.BlockSize * blockMap.Height).ToDouble(), maxY, 128);
                 }
 
                 var spots = new List<Tuple<int, int>>();
@@ -169,10 +169,10 @@ namespace ManagedDoomTest.UnitTests
 
                         if (count > 1)
                         {
-                            Assert.IsTrue(minX <= (blockMap.OriginX + BlockMap.MapBlockSize * (blockX + 1)).ToDouble());
-                            Assert.IsTrue(maxX >= (blockMap.OriginX + BlockMap.MapBlockSize * blockX).ToDouble());
-                            Assert.IsTrue(minY <= (blockMap.OriginY + BlockMap.MapBlockSize * (blockY + 1)).ToDouble());
-                            Assert.IsTrue(maxY >= (blockMap.OriginY + BlockMap.MapBlockSize * blockY).ToDouble());
+                            Assert.IsTrue(minX <= (blockMap.OriginX + BlockMap.BlockSize * (blockX + 1)).ToDouble());
+                            Assert.IsTrue(maxX >= (blockMap.OriginX + BlockMap.BlockSize * blockX).ToDouble());
+                            Assert.IsTrue(minY <= (blockMap.OriginY + BlockMap.BlockSize * (blockY + 1)).ToDouble());
+                            Assert.IsTrue(maxY >= (blockMap.OriginY + BlockMap.BlockSize * blockY).ToDouble());
                         }
 
                         total += count;

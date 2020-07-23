@@ -21,7 +21,7 @@ namespace ManagedDoom
 {
     public sealed class Seg
     {
-        public static readonly int dataSize = 12;
+        private static readonly int dataSize = 12;
 
         private Vertex vertex1;
         private Vertex vertex2;

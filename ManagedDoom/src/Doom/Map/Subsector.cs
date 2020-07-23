@@ -21,7 +21,7 @@ namespace ManagedDoom
 {
     public sealed class Subsector
     {
-        public static readonly int dataSize = 4;
+        private static readonly int dataSize = 4;
 
         private Sector sector;
         private int segCount;

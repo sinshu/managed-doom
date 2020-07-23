@@ -21,7 +21,7 @@ namespace ManagedDoom
 {
     public sealed class Node
     {
-        public static readonly int dataSize = 28;
+        private static readonly int dataSize = 28;
 
         private Fixed x;
         private Fixed y;

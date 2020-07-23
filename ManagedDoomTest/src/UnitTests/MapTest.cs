@@ -41,10 +41,10 @@ namespace ManagedDoomTest.UnitTests
                     var maxY = sLines.Max(line => Fixed.Max(line.Vertex1.Y, line.Vertex2.Y).ToDouble()) + maxRadius;
                     maxY = Math.Min(maxY, mapMaxY);
 
-                    var bboxTop = (map.BlockMap.OriginY + BlockMap.MapBlockSize * (sector.BlockBox[Box.Top] + 1)).ToDouble();
-                    var bboxBottom = (map.BlockMap.OriginY + BlockMap.MapBlockSize * sector.BlockBox[Box.Bottom]).ToDouble();
-                    var bboxLeft = (map.BlockMap.OriginX + BlockMap.MapBlockSize * sector.BlockBox[Box.Left]).ToDouble();
-                    var bboxRight = (map.BlockMap.OriginX + BlockMap.MapBlockSize * (sector.BlockBox[Box.Right] + 1)).ToDouble();
+                    var bboxTop = (map.BlockMap.OriginY + BlockMap.BlockSize * (sector.BlockBox[Box.Top] + 1)).ToDouble();
+                    var bboxBottom = (map.BlockMap.OriginY + BlockMap.BlockSize * sector.BlockBox[Box.Bottom]).ToDouble();
+                    var bboxLeft = (map.BlockMap.OriginX + BlockMap.BlockSize * sector.BlockBox[Box.Left]).ToDouble();
+                    var bboxRight = (map.BlockMap.OriginX + BlockMap.BlockSize * (sector.BlockBox[Box.Right] + 1)).ToDouble();
 
                     Assert.IsTrue(bboxLeft <= minX);
                     Assert.IsTrue(bboxRight >= maxX);
@@ -89,10 +89,10 @@ namespace ManagedDoomTest.UnitTests
                     var maxY = sLines.Max(line => Fixed.Max(line.Vertex1.Y, line.Vertex2.Y).ToDouble()) + maxRadius;
                     maxY = Math.Min(maxY, mapMaxY);
 
-                    var bboxTop = (map.BlockMap.OriginY + BlockMap.MapBlockSize * (sector.BlockBox[Box.Top] + 1)).ToDouble();
-                    var bboxBottom = (map.BlockMap.OriginY + BlockMap.MapBlockSize * sector.BlockBox[Box.Bottom]).ToDouble();
-                    var bboxLeft = (map.BlockMap.OriginX + BlockMap.MapBlockSize * sector.BlockBox[Box.Left]).ToDouble();
-                    var bboxRight = (map.BlockMap.OriginX + BlockMap.MapBlockSize * (sector.BlockBox[Box.Right] + 1)).ToDouble();
+                    var bboxTop = (map.BlockMap.OriginY + BlockMap.BlockSize * (sector.BlockBox[Box.Top] + 1)).ToDouble();
+                    var bboxBottom = (map.BlockMap.OriginY + BlockMap.BlockSize * sector.BlockBox[Box.Bottom]).ToDouble();
+                    var bboxLeft = (map.BlockMap.OriginX + BlockMap.BlockSize * sector.BlockBox[Box.Left]).ToDouble();
+                    var bboxRight = (map.BlockMap.OriginX + BlockMap.BlockSize * (sector.BlockBox[Box.Right] + 1)).ToDouble();
 
                     Assert.IsTrue(bboxLeft <= minX);
                     Assert.IsTrue(bboxRight >= maxX);

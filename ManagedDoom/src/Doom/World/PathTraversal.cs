@@ -241,13 +241,13 @@ namespace ManagedDoom
 
             interceptCount = 0;
 
-            if (((x1 - bm.OriginX).Data & (BlockMap.MapBlockSize.Data - 1)) == 0)
+            if (((x1 - bm.OriginX).Data & (BlockMap.BlockSize.Data - 1)) == 0)
             {
                 // Don't side exactly on a line.
                 x1 += Fixed.One;
             }
 
-            if (((y1 - bm.OriginY).Data & (BlockMap.MapBlockSize.Data - 1)) == 0)
+            if (((y1 - bm.OriginY).Data & (BlockMap.BlockSize.Data - 1)) == 0)
             {
                 // Don't side exactly on a line.
                 y1 += Fixed.One;
@@ -261,14 +261,14 @@ namespace ManagedDoom
             x1 -= bm.OriginX;
             y1 -= bm.OriginY;
 
-            var blockX1 = x1.Data >> BlockMap.MapBlockShift;
-            var blockY1 = y1.Data >> BlockMap.MapBlockShift;
+            var blockX1 = x1.Data >> BlockMap.FracToBlockShift;
+            var blockY1 = y1.Data >> BlockMap.FracToBlockShift;
 
             x2 -= bm.OriginX;
             y2 -= bm.OriginY;
 
-            var blockX2 = x2.Data >> BlockMap.MapBlockShift;
-            var blockY2 = y2.Data >> BlockMap.MapBlockShift;
+            var blockX2 = x2.Data >> BlockMap.FracToBlockShift;
+            var blockY2 = y2.Data >> BlockMap.FracToBlockShift;
 
             Fixed stepX;
             Fixed stepY;
@@ -281,13 +281,13 @@ namespace ManagedDoom
             if (blockX2 > blockX1)
             {
                 blockStepX = 1;
-                partial = new Fixed(Fixed.FracUnit - ((x1.Data >> BlockMap.MapBToFrac) & (Fixed.FracUnit - 1)));
+                partial = new Fixed(Fixed.FracUnit - ((x1.Data >> BlockMap.BlockToFracShift) & (Fixed.FracUnit - 1)));
                 stepY = (y2 - y1) / Fixed.Abs(x2 - x1);
             }
             else if (blockX2 < blockX1)
             {
                 blockStepX = -1;
-                partial = new Fixed((x1.Data >> BlockMap.MapBToFrac) & (Fixed.FracUnit - 1));
+                partial = new Fixed((x1.Data >> BlockMap.BlockToFracShift) & (Fixed.FracUnit - 1));
                 stepY = (y2 - y1) / Fixed.Abs(x2 - x1);
             }
             else
@@ -297,19 +297,19 @@ namespace ManagedDoom
                 stepY = Fixed.FromInt(256);
             }
 
-            var interceptY = new Fixed(y1.Data >> BlockMap.MapBToFrac) + (partial * stepY);
+            var interceptY = new Fixed(y1.Data >> BlockMap.BlockToFracShift) + (partial * stepY);
 
 
             if (blockY2 > blockY1)
             {
                 blockStepY = 1;
-                partial = new Fixed(Fixed.FracUnit - ((y1.Data >> BlockMap.MapBToFrac) & (Fixed.FracUnit - 1)));
+                partial = new Fixed(Fixed.FracUnit - ((y1.Data >> BlockMap.BlockToFracShift) & (Fixed.FracUnit - 1)));
                 stepX = (x2 - x1) / Fixed.Abs(y2 - y1);
             }
             else if (blockY2 < blockY1)
             {
                 blockStepY = -1;
-                partial = new Fixed((y1.Data >> BlockMap.MapBToFrac) & (Fixed.FracUnit - 1));
+                partial = new Fixed((y1.Data >> BlockMap.BlockToFracShift) & (Fixed.FracUnit - 1));
                 stepX = (x2 - x1) / Fixed.Abs(y2 - y1);
             }
             else
@@ -319,7 +319,7 @@ namespace ManagedDoom
                 stepX = Fixed.FromInt(256);
             }
 
-            var interceptX = new Fixed(x1.Data >> BlockMap.MapBToFrac) + (partial * stepX);
+            var interceptX = new Fixed(x1.Data >> BlockMap.BlockToFracShift) + (partial * stepX);
 
             // Step through map blocks.
             // Count is present to prevent a round off error from skipping the break.

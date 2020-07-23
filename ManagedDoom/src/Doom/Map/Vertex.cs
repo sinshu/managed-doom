@@ -21,7 +21,7 @@ namespace ManagedDoom
 {
     public sealed class Vertex
     {
-        public static readonly int dataSize = 4;
+        private static readonly int dataSize = 4;
 
         private Fixed x;
         private Fixed y;
