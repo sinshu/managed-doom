@@ -37,6 +37,7 @@ namespace ManagedDoom
         private PressAnyKey thisIsShareware;
         private PressAnyKey saveFailed;
         private YesNoConfirm nightmareConfirm;
+        private YesNoConfirm endGameConfirm;
         private QuitConfirm quitConfirm;
 
         private MenuDef current;
@@ -68,6 +69,11 @@ namespace ManagedDoom
                 this,
                 DoomInfo.Strings.NIGHTMARE,
                 () => app.NewGame(GameSkill.Nightmare, selectedEpisode, 1));
+
+            endGameConfirm = new YesNoConfirm(
+                this,
+                DoomInfo.Strings.ENDGAME,
+                () => app.EndGame());
 
             quitConfirm = new QuitConfirm(
                 this,
@@ -203,7 +209,8 @@ namespace ManagedDoom
                 new SimpleMenuItem(
                     "M_ENDGAM", 28, 32, 60, 37,
                     null,
-                    null),
+                    endGameConfirm,
+                    () => app.State == ApplicationState.Game),
 
                 new ToggleMenuItem(
                     "M_MESSG", 28, 48, 60, 53, "M_MSGON", "M_MSGOFF", 180,
@@ -265,7 +272,9 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_NGAME", 65, 67, 97, 72, null, newGameMenu),
                 new SimpleMenuItem("M_OPTION", 65, 83, 97, 88, null, optionMenu),
                 new SimpleMenuItem("M_LOADG", 65, 99, 97, 104, null, load),
-                new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null, save),
+                new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null, save, () =>
+                    !(app.State == ApplicationState.Game &&
+                        app.Game.State != GameState.Level)),
                 new SimpleMenuItem("M_QUITG", 65, 131, 97, 136, null, quitConfirm));
 
             help = new HelpScreen(this);
@@ -441,6 +450,20 @@ namespace ManagedDoom
                 Open();
                 StartSound(Sfx.SWTCHN);
             }
+        }
+
+        public void EndGame()
+        {
+            SetCurrent(endGameConfirm);
+            Open();
+            StartSound(Sfx.SWTCHN);
+        }
+
+        public void Quit()
+        {
+            SetCurrent(quitConfirm);
+            Open();
+            StartSound(Sfx.SWTCHN);
         }
 
         public DoomApplication Application => app;

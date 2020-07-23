@@ -187,17 +187,20 @@ namespace ManagedDoom
                 var simple = choice as SimpleMenuItem;
                 if (simple != null)
                 {
-                    if (simple.Action != null)
+                    if (simple.Selectable)
                     {
-                        simple.Action();
-                    }
-                    if (simple.Next != null)
-                    {
-                        Menu.SetCurrent(simple.Next);
-                    }
-                    else
-                    {
-                        Menu.Close();
+                        if (simple.Action != null)
+                        {
+                            simple.Action();
+                        }
+                        if (simple.Next != null)
+                        {
+                            Menu.SetCurrent(simple.Next);
+                        }
+                        else
+                        {
+                            Menu.Close();
+                        }
                     }
                     Menu.StartSound(Sfx.PISTOL);
                     return true;

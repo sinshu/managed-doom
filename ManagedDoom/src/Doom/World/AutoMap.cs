@@ -169,7 +169,7 @@ namespace ManagedDoom
 
         public bool DoEvent(DoomEvent e)
         {
-            if (e.Key == DoomKeys.Add)
+            if (e.Key == DoomKeys.Add || e.Key == DoomKeys.Quote)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -182,7 +182,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == DoomKeys.Subtract)
+            else if (e.Key == DoomKeys.Subtract || e.Key == DoomKeys.Hyphen)
             {
                 if (e.Type == EventType.KeyDown)
                 {

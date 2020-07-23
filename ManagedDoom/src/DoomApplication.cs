@@ -51,6 +51,7 @@ namespace ManagedDoom
 
         private ApplicationState currentState;
         private ApplicationState nextState;
+        private bool needWipe;
 
         private bool sendPause;
         private bool quit;
@@ -97,6 +98,7 @@ namespace ManagedDoom
 
                 currentState = ApplicationState.None;
                 nextState = ApplicationState.Opening;
+                needWipe = false;
 
                 sendPause = false;
                 quit = false;
@@ -124,6 +126,12 @@ namespace ManagedDoom
         {
             game.DeferedInitNew(skill, episode, map);
             nextState = ApplicationState.Game;
+        }
+
+        public void EndGame()
+        {
+            nextState = ApplicationState.Opening;
+            needWipe = true;
         }
 
         private void DoEvents()
@@ -185,6 +193,17 @@ namespace ManagedDoom
                     menu.QuickSave();
                     return true;
 
+                case DoomKeys.F7:
+                    if (currentState == ApplicationState.Game)
+                    {
+                        menu.EndGame();
+                    }
+                    else
+                    {
+                        options.Sound.StartSound(Sfx.OOF);
+                    }
+                    return true;
+
                 case DoomKeys.F8:
                     renderer.DisplayMessage = !renderer.DisplayMessage;
                     if (currentState == ApplicationState.Game && game.State == GameState.Level)
@@ -205,6 +224,10 @@ namespace ManagedDoom
 
                 case DoomKeys.F9:
                     menu.QuickLoad();
+                    return true;
+
+                case DoomKeys.F10:
+                    menu.Quit();
                     return true;
 
                 case DoomKeys.F11:
@@ -230,6 +253,36 @@ namespace ManagedDoom
                     }
                     return true;
 
+                case DoomKeys.Add:
+                case DoomKeys.Quote:
+                    if (currentState == ApplicationState.Game &&
+                        game.State == GameState.Level &&
+                        game.World.AutoMap.Visible)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        renderer.WindowSize = Math.Min(renderer.WindowSize + 1, renderer.MaxWindowSize);
+                        options.Sound.StartSound(Sfx.STNMOV);
+                        return true;
+                    }
+
+                case DoomKeys.Subtract:
+                case DoomKeys.Hyphen:
+                    if (currentState == ApplicationState.Game &&
+                        game.State == GameState.Level &&
+                        game.World.AutoMap.Visible)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        renderer.WindowSize = Math.Max(renderer.WindowSize - 1, 0);
+                        options.Sound.StartSound(Sfx.STNMOV);
+                        return true;
+                    }
+
                 default:
                     return false;
             }
@@ -237,13 +290,19 @@ namespace ManagedDoom
 
         private UpdateResult Update()
         {
-            currentState = nextState;
-
             menu.Update();
+
+            currentState = nextState;
 
             if (quit)
             {
                 return UpdateResult.Completed;
+            }
+
+            if (needWipe)
+            {
+                needWipe = false;
+                StartWipe();
             }
 
             if (!wiping)
