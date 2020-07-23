@@ -124,7 +124,6 @@ namespace ManagedDoom
 
         public void NewGame(GameSkill skill, int episode, int map)
         {
-            opening.Reset();
             game.DeferedInitNew(skill, episode, map);
             nextState = ApplicationState.Game;
         }
@@ -309,7 +308,15 @@ namespace ManagedDoom
             {
                 menu.Update();
 
-                currentState = nextState;
+                if (nextState != currentState)
+                {
+                    if (nextState != ApplicationState.Opening)
+                    {
+                        opening.Reset();
+                    }
+
+                    currentState = nextState;
+                }
 
                 if (quit)
                 {
