@@ -19,9 +19,10 @@ using System;
 
 namespace ManagedDoom
 {
-    public enum DoomMouseButtons
+    public enum DoomMouseButton
     {
-        Mouse1,
+        Unknown = -1,
+        Mouse1 = 0,
         Mouse2,
         Mouse3,
         Mouse4,

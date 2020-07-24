@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (C) 1993-1996 Id Software, Inc.
 // Copyright (C) 2019-2020 Nobuaki Tanaka
 //
@@ -15,13 +15,30 @@
 
 
 
-﻿using System;
+using System;
 
 namespace ManagedDoom
 {
-    public sealed class DoomEvent
+    public sealed class NullUserInput : IUserInput
     {
-        public EventType Type;
-        public DoomKey Key;
+        private static NullUserInput instance;
+
+        public static NullUserInput GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new NullUserInput();
+            }
+
+            return instance;
+        }
+
+        public void BuildTicCmd(TicCmd cmd)
+        {
+        }
+
+        public void Reset()
+        {
+        }
     }
 }

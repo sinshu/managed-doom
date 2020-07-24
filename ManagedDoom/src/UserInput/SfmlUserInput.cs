@@ -20,31 +20,35 @@ using SFML.Window;
 
 namespace ManagedDoom
 {
-    public static class UserInput
+    public sealed class SfmlUserInput : IUserInput
     {
-        private static int turnheld;
-        private static int next_weapon;
+        private Config config;
+
         private static bool[] weaponKeys;
+        private static int turnHeld;
 
-        private static KeyBinding keyBinding = new KeyBinding();
-
-        static UserInput()
+        public SfmlUserInput(Config config)
         {
-            turnheld = 0;
-            next_weapon = 0;
+            this.config = config;
+
             weaponKeys = new bool[7];
+            turnHeld = 0;
         }
 
-        public static void BuildTicCmd(TicCmd cmd)
+        public void BuildTicCmd(TicCmd cmd)
         {
-            var keyLeft = keyBinding.TurnLeft.IsPressed();
-            var keyRight = keyBinding.TurnRight.IsPressed();
-            var keyUp = keyBinding.Forward.IsPressed();
-            var keyDown = keyBinding.Backward.IsPressed();
-            var keySpeed = keyBinding.Run.IsPressed();
-            var keyStrafe = keyBinding.KeyStrafe.IsPressed();
-            var keyFire = keyBinding.Fire.IsPressed();
-            var keyUse = keyBinding.Use.IsPressed();
+            var keyForward = IsPressed(config.key_forward);
+            var keyBackward = IsPressed(config.key_backward);
+            var keyStrafeLeft = IsPressed(config.key_strafeleft);
+            var keyStrafeRight = IsPressed(config.key_straferight);
+            var keyTurnLeft = IsPressed(config.key_turnleft);
+            var keyTurnRight = IsPressed(config.key_turnright);
+            var keyFire = IsPressed(config.key_fire);
+            var keyUse = IsPressed(config.key_use);
+            var keyRun = IsPressed(config.key_run);
+            var keyStrafe = IsPressed(config.key_strafe);
+            var mouseStrafe = IsPressed(config.key_mousestrafe);
+
             weaponKeys[0] = Keyboard.IsKeyPressed(Keyboard.Key.Num1);
             weaponKeys[1] = Keyboard.IsKeyPressed(Keyboard.Key.Num2);
             weaponKeys[2] = Keyboard.IsKeyPressed(Keyboard.Key.Num3);
@@ -56,61 +60,68 @@ namespace ManagedDoom
             cmd.Clear();
 
             var strafe = keyStrafe;
-
-            var speed = keySpeed ? 1 : 0;
-
+            var speed = keyRun ? 1 : 0;
             var forward = 0;
             var side = 0;
 
-            if (keyLeft || keyRight)
+            if (keyTurnLeft || keyTurnRight)
             {
-                turnheld++;
+                turnHeld++;
             }
             else
             {
-                turnheld = 0;
+                turnHeld = 0;
             }
 
-            int tspeed;
-            if (turnheld < PlayerBehavior.SlowTurnTics)
+            int turnSpeed;
+            if (turnHeld < PlayerBehavior.SlowTurnTics)
             {
-                tspeed = 2;
+                turnSpeed = 2;
             }
             else
             {
-                tspeed = speed;
+                turnSpeed = speed;
             }
 
             if (strafe)
             {
-                if (keyRight)
+                if (keyTurnRight)
                 {
                     side += PlayerBehavior.SideMove[speed];
                 }
-                if (keyLeft)
+                if (keyTurnLeft)
                 {
                     side -= PlayerBehavior.SideMove[speed];
                 }
             }
             else
             {
-                if (keyRight)
+                if (keyTurnRight)
                 {
-                    cmd.AngleTurn -= (short)PlayerBehavior.AngleTurn[tspeed];
+                    cmd.AngleTurn -= (short)PlayerBehavior.AngleTurn[turnSpeed];
                 }
-                if (keyLeft)
+                if (keyTurnLeft)
                 {
-                    cmd.AngleTurn += (short)PlayerBehavior.AngleTurn[tspeed];
+                    cmd.AngleTurn += (short)PlayerBehavior.AngleTurn[turnSpeed];
                 }
             }
 
-            if (keyUp)
+            if (keyForward)
             {
                 forward += PlayerBehavior.ForwardMove[speed];
             }
-            if (keyDown)
+            if (keyBackward)
             {
                 forward -= PlayerBehavior.ForwardMove[speed];
+            }
+
+            if (keyStrafeLeft)
+            {
+                side -= PlayerBehavior.SideMove[speed];
+            }
+            if (keyStrafeRight)
+            {
+                side += PlayerBehavior.SideMove[speed];
             }
 
             if (keyFire)
@@ -123,33 +134,16 @@ namespace ManagedDoom
                 cmd.Buttons |= TicCmdButtons.Use;
             }
 
-            // If the previous or next weapon button is pressed, the
-            // next_weapon variable is set to change weapons when
-            // we generate a ticcmd.  Choose a new weapon.
-
-            /*
-            if (gamestate == GS_LEVEL && next_weapon != 0)
+            // Check weapon keys.
+            for (var i = 0; i < weaponKeys.Length; i++)
             {
-                i = G_NextWeapon(next_weapon);
-                cmd->buttons |= BT_CHANGE;
-                cmd->buttons |= i << BT_WEAPONSHIFT;
-            }
-            else
-            */
-            {
-                // Check weapon keys.
-                for (var i = 0; i < weaponKeys.Length; i++)
+                if (weaponKeys[i])
                 {
-                    if (weaponKeys[i])
-                    {
-                        cmd.Buttons |= TicCmdButtons.Change;
-                        cmd.Buttons |= (byte)(i << TicCmdButtons.WeaponShift);
-                        break;
-                    }
+                    cmd.Buttons |= TicCmdButtons.Change;
+                    cmd.Buttons |= (byte)(i << TicCmdButtons.WeaponShift);
+                    break;
                 }
             }
-
-            next_weapon = 0;
 
             if (forward > PlayerBehavior.MaxMove)
             {
@@ -170,6 +164,31 @@ namespace ManagedDoom
 
             cmd.ForwardMove += (sbyte)forward;
             cmd.SideMove += (sbyte)side;
+        }
+
+        private static bool IsPressed(KeyBinding keyBinding)
+        {
+            foreach (var key in keyBinding.Keys)
+            {
+                if (Keyboard.IsKeyPressed((Keyboard.Key)key))
+                {
+                    return true;
+                }
+            }
+
+            foreach (var mouseButton in keyBinding.MouseButtons)
+            {
+                if (Mouse.IsButtonPressed((Mouse.Button)mouseButton))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void Reset()
+        {
         }
     }
 }

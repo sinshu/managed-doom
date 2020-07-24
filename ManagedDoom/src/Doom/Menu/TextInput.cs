@@ -54,7 +54,7 @@ namespace ManagedDoom
                 return true;
             }
 
-            if (e.Key == DoomKeys.Backspace && e.Type == EventType.KeyDown)
+            if (e.Key == DoomKey.Backspace && e.Type == EventType.KeyDown)
             {
                 if (text.Count > 0)
                 {
@@ -64,14 +64,14 @@ namespace ManagedDoom
                 return true;
             }
 
-            if (e.Key == DoomKeys.Enter && e.Type == EventType.KeyDown)
+            if (e.Key == DoomKey.Enter && e.Type == EventType.KeyDown)
             {
                 finished(text);
                 state = TextInputState.Finished;
                 return true;
             }
 
-            if (e.Key == DoomKeys.Escape && e.Type == EventType.KeyDown)
+            if (e.Key == DoomKey.Escape && e.Type == EventType.KeyDown)
             {
                 canceled();
                 state = TextInputState.Canceled;

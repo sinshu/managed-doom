@@ -19,7 +19,7 @@
 
 namespace ManagedDoom
 {
-    public enum DoomKeys
+    public enum DoomKey
     {
         Unknown = -1,
         A = 0,

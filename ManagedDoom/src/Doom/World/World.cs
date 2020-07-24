@@ -267,7 +267,7 @@ namespace ManagedDoom
                 }
             }
 
-            if (e.Key == DoomKeys.Tab && e.Type == EventType.KeyDown)
+            if (e.Key == DoomKey.Tab && e.Type == EventType.KeyDown)
             {
                 if (autoMap.Visible)
                 {

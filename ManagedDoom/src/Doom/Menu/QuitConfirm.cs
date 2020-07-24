@@ -94,9 +94,9 @@ namespace ManagedDoom
                 return true;
             }
 
-            if (e.Key == DoomKeys.Y ||
-                e.Key == DoomKeys.Enter ||
-                e.Key == DoomKeys.Space)
+            if (e.Key == DoomKey.Y ||
+                e.Key == DoomKey.Enter ||
+                e.Key == DoomKey.Space)
             {
                 endCount = 0;
 
@@ -112,8 +112,8 @@ namespace ManagedDoom
                 Menu.StartSound(sfx);
             }
 
-            if (e.Key == DoomKeys.N ||
-                e.Key == DoomKeys.Escape)
+            if (e.Key == DoomKey.N ||
+                e.Key == DoomKey.Escape)
             {
                 Menu.Close();
                 Menu.StartSound(Sfx.SWTCHX);

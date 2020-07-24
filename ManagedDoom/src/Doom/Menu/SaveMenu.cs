@@ -115,25 +115,25 @@ namespace ManagedDoom
                 }
             }
 
-            if (e.Key == DoomKeys.Up)
+            if (e.Key == DoomKey.Up)
             {
                 Up();
                 Menu.StartSound(Sfx.PSTOP);
             }
 
-            if (e.Key == DoomKeys.Down)
+            if (e.Key == DoomKey.Down)
             {
                 Down();
                 Menu.StartSound(Sfx.PSTOP);
             }
 
-            if (e.Key == DoomKeys.Enter)
+            if (e.Key == DoomKey.Enter)
             {
                 textInput = choice.Edit(() => DoSave(index));
                 Menu.StartSound(Sfx.PISTOL);
             }
 
-            if (e.Key == DoomKeys.Escape)
+            if (e.Key == DoomKey.Escape)
             {
                 Menu.Close();
                 Menu.StartSound(Sfx.SWTCHX);

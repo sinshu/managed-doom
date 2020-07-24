@@ -32,7 +32,7 @@ namespace ManagedDoom
                 return true;
             }
 
-            if (e.Key == DoomKeys.Escape)
+            if (e.Key == DoomKey.Escape)
             {
                 Menu.Close();
                 Menu.StartSound(Sfx.SWTCHX);

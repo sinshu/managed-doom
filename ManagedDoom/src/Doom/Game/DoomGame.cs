@@ -292,10 +292,7 @@ namespace ManagedDoom
 
 			world = new World(resource, options, this);
 
-			if (options.ResetControl != null)
-			{
-				options.ResetControl();
-			}
+			options.UserInput.Reset();
 		}
 
 		private void DoNewGame()

@@ -129,19 +129,19 @@ namespace ManagedDoom
                 }
             }
 
-            if (e.Key == DoomKeys.Up)
+            if (e.Key == DoomKey.Up)
             {
                 Up();
                 Menu.StartSound(Sfx.PSTOP);
             }
 
-            if (e.Key == DoomKeys.Down)
+            if (e.Key == DoomKey.Down)
             {
                 Down();
                 Menu.StartSound(Sfx.PSTOP);
             }
 
-            if (e.Key == DoomKeys.Left)
+            if (e.Key == DoomKey.Left)
             {
                 var toggle = choice as ToggleMenuItem;
                 if (toggle != null)
@@ -158,7 +158,7 @@ namespace ManagedDoom
                 }
             }
 
-            if (e.Key == DoomKeys.Right)
+            if (e.Key == DoomKey.Right)
             {
                 var toggle = choice as ToggleMenuItem;
                 if (toggle != null)
@@ -175,7 +175,7 @@ namespace ManagedDoom
                 }
             }
 
-            if (e.Key == DoomKeys.Enter)
+            if (e.Key == DoomKey.Enter)
             {
                 var toggle = choice as ToggleMenuItem;
                 if (toggle != null)
@@ -213,7 +213,7 @@ namespace ManagedDoom
                 }
             }
 
-            if (e.Key == DoomKeys.Escape)
+            if (e.Key == DoomKey.Escape)
             {
                 Menu.Close();
                 Menu.StartSound(Sfx.SWTCHX);

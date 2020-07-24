@@ -17,168 +17,82 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using SFML.Window;
 
 namespace ManagedDoom
 {
     public sealed class KeyBinding
     {
-        private Item forward;
-        private Item backward;
+        public static readonly KeyBinding Empty = new KeyBinding();
 
-        private Item strafeLeft;
-        private Item strafeRight;
+        private DoomKey[] keys;
+        private DoomMouseButton[] mouseButtons;
 
-        private Item turnLeft;
-        private Item turnRight;
-
-        private Item fire;
-        private Item use;
-
-        private Item run;
-
-        private Item keyStrafe;
-        private Item mouseStrafe;
-
-        public KeyBinding()
+        private KeyBinding()
         {
-            forward = new Item(
-                new DoomKeys[]
-                {
-                    DoomKeys.Up,
-                    DoomKeys.W
-                });
-
-            backward = new Item(
-                new DoomKeys[]
-                {
-                    DoomKeys.Down,
-                    DoomKeys.S
-                });
-
-            strafeLeft = new Item(
-                new DoomKeys[]
-                {
-                    DoomKeys.A
-                });
-
-            strafeRight = new Item(
-                new DoomKeys[]
-                {
-                    DoomKeys.D
-                });
-
-            turnLeft = new Item(
-                new DoomKeys[]
-                {
-                    DoomKeys.Left
-                });
-
-            turnRight = new Item(
-                new DoomKeys[]
-                {
-                    DoomKeys.Right
-                });
-
-            fire = new Item(
-                new DoomKeys[]
-                {
-                    DoomKeys.LControl,
-                    DoomKeys.RControl
-                },
-                new DoomMouseButtons[]
-                {
-                    DoomMouseButtons.Mouse1
-                });
-
-            use = new Item(
-                new DoomKeys[]
-                {
-                    DoomKeys.Space
-                },
-                new DoomMouseButtons[]
-                {
-                    DoomMouseButtons.Mouse2
-                });
-
-            run = new Item(
-                new DoomKeys[]
-                {
-                    DoomKeys.LShift,
-                    DoomKeys.RShift
-                });
-
-            keyStrafe = new Item(
-                new DoomKeys[]
-                {
-                    DoomKeys.LAlt,
-                    DoomKeys.RAlt
-                });
-
-            mouseStrafe = new Item();
+            keys = Array.Empty<DoomKey>();
+            mouseButtons = Array.Empty<DoomMouseButton>();
         }
 
-        public Item Forward => forward;
-        public Item Backward => backward;
-        public Item StrafeLeft => strafeLeft;
-        public Item StrafeRight => strafeRight;
-        public Item TurnLeft => turnLeft;
-        public Item TurnRight => turnRight;
-        public Item Fire => fire;
-        public Item Use => use;
-        public Item Run => run;
-        public Item KeyStrafe => keyStrafe;
-        public Item MouseStrafe => mouseStrafe;
-
-
-
-        public class Item
+        public KeyBinding(IReadOnlyList<DoomKey> keys)
         {
-            private DoomKeys[] keys;
-            private DoomMouseButtons[] mouseButtons;
-
-            public Item()
-            {
-                this.keys = Array.Empty<DoomKeys>();
-                this.mouseButtons = Array.Empty<DoomMouseButtons>();
-            }
-
-            public Item(IReadOnlyList<DoomKeys> keys)
-            {
-                this.keys = keys.ToArray();
-                this.mouseButtons = Array.Empty<DoomMouseButtons>();
-            }
-
-            public Item(IReadOnlyList<DoomKeys> keys, IReadOnlyList<DoomMouseButtons> mouseButtons)
-            {
-                this.keys = keys.ToArray();
-                this.mouseButtons = mouseButtons.ToArray();
-            }
-
-            public bool IsPressed()
-            {
-                foreach (var key in keys)
-                {
-                    if (Keyboard.IsKeyPressed((Keyboard.Key)key))
-                    {
-                        return true;
-                    }
-                }
-
-                foreach (var mouseButton in mouseButtons)
-                {
-                    if (Mouse.IsButtonPressed((Mouse.Button)mouseButton))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            public IReadOnlyList<DoomKeys> Keys => keys;
-            public IReadOnlyList<DoomMouseButtons> MouseButtons => mouseButtons;
+            this.keys = keys.ToArray();
+            this.mouseButtons = Array.Empty<DoomMouseButton>();
         }
+
+        public KeyBinding(IReadOnlyList<DoomKey> keys, IReadOnlyList<DoomMouseButton> mouseButtons)
+        {
+            this.keys = keys.ToArray();
+            this.mouseButtons = mouseButtons.ToArray();
+        }
+
+        public override string ToString()
+        {
+            var keyValues = keys.Select(key => DoomKeyEx.ToString(key));
+            var mouseValues = mouseButtons.Select(button => DoomMouseButtonEx.ToString(button));
+            var values = keyValues.Concat(mouseValues).ToArray();
+            if (values.Length > 0)
+            {
+                return string.Join(", ", values);
+            }
+            else
+            {
+                return "none";
+            }
+        }
+
+        public static KeyBinding Parse(string value)
+        {
+            if (value == "none")
+            {
+                return Empty;
+            }
+
+            var keys = new List<DoomKey>();
+            var mouseButtons = new List<DoomMouseButton>();
+
+            var split = value.Split(',').Select(x => x.Trim());
+            foreach (var s in split)
+            {
+                var key = DoomKeyEx.Parse(s);
+                if (key != DoomKey.Unknown)
+                {
+                    keys.Add(key);
+                    continue;
+                }
+
+                var mouseButton = DoomMouseButtonEx.Parse(s);
+                if (mouseButton != DoomMouseButton.Unknown)
+                {
+                    mouseButtons.Add(mouseButton);
+                }
+            }
+
+            return new KeyBinding(keys, mouseButtons);
+        }
+
+        public IReadOnlyList<DoomKey> Keys => keys;
+        public IReadOnlyList<DoomMouseButton> MouseButtons => mouseButtons;
     }
 }

@@ -169,7 +169,7 @@ namespace ManagedDoom
 
         public bool DoEvent(DoomEvent e)
         {
-            if (e.Key == DoomKeys.Add || e.Key == DoomKeys.Quote)
+            if (e.Key == DoomKey.Add || e.Key == DoomKey.Quote)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -182,7 +182,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == DoomKeys.Subtract || e.Key == DoomKeys.Hyphen)
+            else if (e.Key == DoomKey.Subtract || e.Key == DoomKey.Hyphen)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -195,7 +195,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == DoomKeys.Left)
+            else if (e.Key == DoomKey.Left)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -208,7 +208,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == DoomKeys.Right)
+            else if (e.Key == DoomKey.Right)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -221,7 +221,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == DoomKeys.Up)
+            else if (e.Key == DoomKey.Up)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -234,7 +234,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == DoomKeys.Down)
+            else if (e.Key == DoomKey.Down)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -247,7 +247,7 @@ namespace ManagedDoom
 
                 return true;
             }
-            else if (e.Key == DoomKeys.F)
+            else if (e.Key == DoomKey.F)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -263,7 +263,7 @@ namespace ManagedDoom
                     return true;
                 }
             }
-            else if (e.Key == DoomKeys.M)
+            else if (e.Key == DoomKey.M)
             {
                 if (e.Type == EventType.KeyDown)
                 {
@@ -284,7 +284,7 @@ namespace ManagedDoom
                     return true;
                 }
             }
-            else if (e.Key == DoomKeys.C)
+            else if (e.Key == DoomKey.C)
             {
                 if (e.Type == EventType.KeyDown)
                 {

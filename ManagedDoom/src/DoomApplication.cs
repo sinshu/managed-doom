@@ -30,8 +30,10 @@ namespace ManagedDoom
         private RenderWindow window;
 
         private CommonResource resource;
+
         private SfmlRenderer renderer;
         private SfmlSound sound;
+        private SfmlUserInput userInput;
 
         private List<DoomEvent> events;
 
@@ -56,6 +58,9 @@ namespace ManagedDoom
 
         public DoomApplication()
         {
+            var config = new Config();
+            config.Save("test.cfg");
+
             try
             {
                 var style = Styles.Close | Styles.Titlebar;
@@ -64,8 +69,10 @@ namespace ManagedDoom
                 window.Display();
 
                 resource = new CommonResource(SettingUtilities.GetDefaultIwadPath());
+
                 renderer = new SfmlRenderer(window, resource, true);
                 sound = new SfmlSound(resource.Wad);
+                userInput = new SfmlUserInput(new Config());
 
                 events = new List<DoomEvent>();
 
@@ -74,6 +81,7 @@ namespace ManagedDoom
                 options.MissionPack = resource.Wad.MissionPack;
                 options.Renderer = renderer;
                 options.Sound = sound;
+                options.UserInput = userInput;
 
                 menu = new DoomMenu(this);
 
@@ -156,7 +164,7 @@ namespace ManagedDoom
 
                 if (currentState == ApplicationState.Game)
                 {
-                    if (e.Key == DoomKeys.Pause && e.Type == EventType.KeyDown)
+                    if (e.Key == DoomKey.Pause && e.Type == EventType.KeyDown)
                     {
                         sendPause = true;
                         continue;
@@ -172,31 +180,31 @@ namespace ManagedDoom
             events.Clear();
         }
 
-        private bool CheckFunctionKey(DoomKeys key)
+        private bool CheckFunctionKey(DoomKey key)
         {
             switch (key)
             {
-                case DoomKeys.F1:
+                case DoomKey.F1:
                     menu.ShowHelpScreen();
                     return true;
 
-                case DoomKeys.F2:
+                case DoomKey.F2:
                     menu.ShowSaveScreen();
                     return true;
 
-                case DoomKeys.F3:
+                case DoomKey.F3:
                     menu.ShowLoadScreen();
                     return true;
 
-                case DoomKeys.F4:
+                case DoomKey.F4:
                     menu.ShowVolumeControl();
                     return true;
 
-                case DoomKeys.F6:
+                case DoomKey.F6:
                     menu.QuickSave();
                     return true;
 
-                case DoomKeys.F7:
+                case DoomKey.F7:
                     if (currentState == ApplicationState.Game)
                     {
                         menu.EndGame();
@@ -207,7 +215,7 @@ namespace ManagedDoom
                     }
                     return true;
 
-                case DoomKeys.F8:
+                case DoomKey.F8:
                     renderer.DisplayMessage = !renderer.DisplayMessage;
                     if (currentState == ApplicationState.Game && game.State == GameState.Level)
                     {
@@ -225,15 +233,15 @@ namespace ManagedDoom
                     menu.StartSound(Sfx.SWTCHN);
                     return true;
 
-                case DoomKeys.F9:
+                case DoomKey.F9:
                     menu.QuickLoad();
                     return true;
 
-                case DoomKeys.F10:
+                case DoomKey.F10:
                     menu.Quit();
                     return true;
 
-                case DoomKeys.F11:
+                case DoomKey.F11:
                     var gcl = renderer.GammaCorrectionLevel;
                     gcl++;
                     if (gcl == renderer.MaxGammaCorrectionLevel)
@@ -256,7 +264,7 @@ namespace ManagedDoom
                     }
                     return true;
 
-                case DoomKeys.F12:
+                case DoomKey.F12:
                     if (options.Deathmatch == 0 &&
                         currentState == ApplicationState.Game &&
                         game.State == GameState.Level)
@@ -265,8 +273,8 @@ namespace ManagedDoom
                     }
                     return true;
 
-                case DoomKeys.Add:
-                case DoomKeys.Quote:
+                case DoomKey.Add:
+                case DoomKey.Quote:
                     if (currentState == ApplicationState.Game &&
                         game.State == GameState.Level &&
                         game.World.AutoMap.Visible)
@@ -280,8 +288,8 @@ namespace ManagedDoom
                         return true;
                     }
 
-                case DoomKeys.Subtract:
-                case DoomKeys.Hyphen:
+                case DoomKey.Subtract:
+                case DoomKey.Hyphen:
                     if (currentState == ApplicationState.Game &&
                         game.State == GameState.Level &&
                         game.World.AutoMap.Visible)
@@ -340,7 +348,7 @@ namespace ManagedDoom
                         break;
 
                     case ApplicationState.Game:
-                        UserInput.BuildTicCmd(cmds[options.ConsolePlayer]);
+                        userInput.BuildTicCmd(cmds[options.ConsolePlayer]);
                         if (sendPause)
                         {
                             sendPause = false;
@@ -382,7 +390,7 @@ namespace ManagedDoom
             {
                 var de = new DoomEvent();
                 de.Type = EventType.KeyDown;
-                de.Key = (DoomKeys)e.Code;
+                de.Key = (DoomKey)e.Code;
                 events.Add(de);
             }
         }
@@ -393,7 +401,7 @@ namespace ManagedDoom
             {
                 var de = new DoomEvent();
                 de.Type = EventType.KeyUp;
-                de.Key = (DoomKeys)e.Code;
+                de.Key = (DoomKey)e.Code;
                 events.Add(de);
             }
         }

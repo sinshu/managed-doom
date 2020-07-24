@@ -297,7 +297,7 @@ namespace ManagedDoom
                     return true;
                 }
 
-                if (e.Key == DoomKeys.Escape && e.Type == EventType.KeyDown)
+                if (e.Key == DoomKey.Escape && e.Type == EventType.KeyDown)
                 {
                     Close();
                 }
@@ -306,7 +306,7 @@ namespace ManagedDoom
             }
             else
             {
-                if (e.Key == DoomKeys.Escape && e.Type == EventType.KeyDown)
+                if (e.Key == DoomKey.Escape && e.Type == EventType.KeyDown)
                 {
                     SetCurrent(main);
                     Open();
@@ -316,11 +316,11 @@ namespace ManagedDoom
 
                 if (e.Type == EventType.KeyDown && app.State == ApplicationState.Opening)
                 {
-                    if (e.Key == DoomKeys.Enter ||
-                        e.Key == DoomKeys.Space ||
-                        e.Key == DoomKeys.LControl ||
-                        e.Key == DoomKeys.RControl ||
-                        e.Key == DoomKeys.Escape)
+                    if (e.Key == DoomKey.Enter ||
+                        e.Key == DoomKey.Space ||
+                        e.Key == DoomKey.LControl ||
+                        e.Key == DoomKey.RControl ||
+                        e.Key == DoomKey.Escape)
                     {
                         SetCurrent(main);
                         Open();
