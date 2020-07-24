@@ -25,7 +25,7 @@ using AudioSynthesis.Synthesis;
 
 namespace ManagedDoom.Audio
 {
-    public sealed class SfmlMusic : IMusic
+    public sealed class SfmlMusic : IMusic, IDisposable
     {
         private Config config;
         private Wad wad;
@@ -55,6 +55,16 @@ namespace ManagedDoom.Audio
             stream.SetDecoder(decoder);
 
             current = bgm;
+        }
+
+        public void Dispose()
+        {
+            if (stream != null)
+            {
+                stream.Stop();
+                stream.Dispose();
+                stream = null;
+            }
         }
 
         public int MaxVolume

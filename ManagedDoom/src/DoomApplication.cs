@@ -475,6 +475,12 @@ namespace ManagedDoom
                 userInput = null;
             }
 
+            if (music != null)
+            {
+                music.Dispose();
+                music = null;
+            }
+
             if (sound != null)
             {
                 sound.Dispose();
