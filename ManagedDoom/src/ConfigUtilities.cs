@@ -22,8 +22,14 @@ using SFML.Window;
 
 namespace ManagedDoom
 {
-    public static class SettingUtilities
+    public static class ConfigUtilities
     {
+        public static string GetConfigPath()
+        {
+            var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+            return Path.Combine(directory, "managed-doom.cfg");
+        }
+
         public static VideoMode GetDefaultVideoMode()
         {
             var desktop = VideoMode.DesktopMode;

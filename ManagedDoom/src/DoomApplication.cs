@@ -27,11 +27,11 @@ namespace ManagedDoom
 {
     public sealed class DoomApplication : IDisposable
     {
+        private Config config;
+
         private RenderWindow window;
 
         private CommonResource resource;
-        private Config config;
-
         private SfmlRenderer renderer;
         private SfmlSound sound;
         private SfmlUserInput userInput;
@@ -59,19 +59,19 @@ namespace ManagedDoom
 
         public DoomApplication()
         {
-            var config = new Config();
-            config.Save("test.cfg");
+            config = new Config(ConfigUtilities.GetConfigPath());
 
             try
             {
+                config.video_screenwidth = Math.Clamp(config.video_screenwidth, 320, 32000);
+                config.video_screenheight = Math.Clamp(config.video_screenheight, 200, 20000);
+                var videoMode = new VideoMode((uint)config.video_screenwidth, (uint)config.video_screenheight);
                 var style = Styles.Close | Styles.Titlebar;
-                window = new RenderWindow(SettingUtilities.GetDefaultVideoMode(), "Managed Doom", style);
+                window = new RenderWindow(videoMode, "Managed Doom", style);
                 window.Clear(new Color(128, 128, 128));
                 window.Display();
 
-                resource = new CommonResource(SettingUtilities.GetDefaultIwadPath());
-                config = new Config();
-
+                resource = new CommonResource(ConfigUtilities.GetDefaultIwadPath());
                 renderer = new SfmlRenderer(window, resource, true);
                 sound = new SfmlSound(resource.Wad);
                 userInput = new SfmlUserInput(window, config);
@@ -125,6 +125,7 @@ namespace ManagedDoom
                 DoEvents();
                 if (Update() == UpdateResult.Completed)
                 {
+                    config.Save(ConfigUtilities.GetConfigPath());
                     return;
                 }
             }
