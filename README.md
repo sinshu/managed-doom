@@ -26,7 +26,7 @@ The rendering engine and game system (player movement, weapons, monster AI and m
 
 https://www.youtube.com/watch?v=QntRMbe-ot0  
 
-[![YouTube video of Managed Doom](https://img.youtube.com/vi/QntRMbe-ot0/0.jpg)](https://www.youtube.com/watch?v=QntRMbe-ot0)
+[![YouTube video of Managed Doom](https://img.youtube.com/vi/9_tncwL7qvM/0.jpg)](https://www.youtube.com/watch?v=9_tncwL7qvM)
 
 
 
