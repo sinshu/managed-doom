@@ -56,7 +56,7 @@ https://www.youtube.com/watch?v=9_tncwL7qvM
 
 - __Audio__
     * [x] Sound
-    * [ ] Music
+    * [x] Music
 
 - __Other things__
     * [x] Status bar
