@@ -40,5 +40,25 @@ namespace ManagedDoom
         public void Reset()
         {
         }
+
+        public int MaxMouseSensitivity
+        {
+            get
+            {
+                return 9;
+            }
+        }
+
+        public int MouseSensitivity
+        {
+            get
+            {
+                return 3;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

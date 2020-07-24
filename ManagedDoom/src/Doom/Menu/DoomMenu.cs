@@ -200,6 +200,7 @@ namespace ManagedDoom
                     null));
 
             var renderer = options.Renderer;
+            var userInput = options.UserInput;
             optionMenu = new SelectableMenu(
                 this,
                 "M_OPTTTL", 108, 15,
@@ -224,9 +225,9 @@ namespace ManagedDoom
 
                 new SliderMenuItem(
                     "M_MSENS", 28, 112 - 16, 60, 117 - 16,
-                    10,
-                    () => 3,
-                    null),
+                    userInput.MaxMouseSensitivity + 1,
+                    () => userInput.MouseSensitivity,
+                    ms => userInput.MouseSensitivity = ms),
 
                 new SimpleMenuItem(
                     "M_SVOL", 28, 144 - 16, 60, 149 - 16,

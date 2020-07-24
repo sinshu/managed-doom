@@ -23,5 +23,8 @@ namespace ManagedDoom
     {
         void BuildTicCmd(TicCmd cmd);
         void Reset();
+
+        public int MaxMouseSensitivity { get; }
+        public int MouseSensitivity { get; set; }
     }
 }

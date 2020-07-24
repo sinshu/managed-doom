@@ -32,7 +32,10 @@ namespace ManagedDoom
         public KeyBinding key_use;
         public KeyBinding key_run;
         public KeyBinding key_strafe;
-        public KeyBinding key_mousestrafe;
+
+        public int mouse_sensitivity;
+
+        public bool game_alwaysrun;
 
         // Default settings.
         public Config()
@@ -43,38 +46,32 @@ namespace ManagedDoom
                     DoomKey.Up,
                     DoomKey.W
                 });
-
             key_backward = new KeyBinding(
                 new DoomKey[]
                 {
                     DoomKey.Down,
                     DoomKey.S
                 });
-
             key_strafeleft = new KeyBinding(
                 new DoomKey[]
                 {
                     DoomKey.A
                 });
-
             key_straferight = new KeyBinding(
                 new DoomKey[]
                 {
                     DoomKey.D
                 });
-
             key_turnleft = new KeyBinding(
                 new DoomKey[]
                 {
                     DoomKey.Left
                 });
-
             key_turnright = new KeyBinding(
                 new DoomKey[]
                 {
                     DoomKey.Right
                 });
-
             key_fire = new KeyBinding(
                 new DoomKey[]
                 {
@@ -85,7 +82,6 @@ namespace ManagedDoom
                 {
                     DoomMouseButton.Mouse1
                 });
-
             key_use = new KeyBinding(
                 new DoomKey[]
                 {
@@ -95,14 +91,12 @@ namespace ManagedDoom
                 {
                     DoomMouseButton.Mouse2
                 });
-
             key_run = new KeyBinding(
                 new DoomKey[]
                 {
                     DoomKey.LShift,
                     DoomKey.RShift
                 });
-
             key_strafe = new KeyBinding(
                 new DoomKey[]
                 {
@@ -110,7 +104,9 @@ namespace ManagedDoom
                     DoomKey.RAlt
                 });
 
-            key_mousestrafe = KeyBinding.Empty;
+            mouse_sensitivity = 3;
+
+            game_alwaysrun = true;
         }
 
         public void Save(string path)
@@ -126,8 +122,16 @@ namespace ManagedDoom
                 writer.WriteLine(nameof(key_use) + " = " + key_use);
                 writer.WriteLine(nameof(key_run) + " = " + key_run);
                 writer.WriteLine(nameof(key_strafe) + " = " + key_strafe);
-                writer.WriteLine(nameof(key_mousestrafe) + " = " + key_mousestrafe);
+
+                writer.WriteLine(nameof(mouse_sensitivity) + " = " + mouse_sensitivity);
+
+                writer.WriteLine(nameof(game_alwaysrun) + " = " + BoolToString(game_alwaysrun));
             }
+        }
+
+        private string BoolToString(bool value)
+        {
+            return value ? "true" : "false";
         }
     }
 }

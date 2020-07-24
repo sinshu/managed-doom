@@ -30,6 +30,7 @@ namespace ManagedDoom
         private RenderWindow window;
 
         private CommonResource resource;
+        private Config config;
 
         private SfmlRenderer renderer;
         private SfmlSound sound;
@@ -69,10 +70,11 @@ namespace ManagedDoom
                 window.Display();
 
                 resource = new CommonResource(SettingUtilities.GetDefaultIwadPath());
+                config = new Config();
 
                 renderer = new SfmlRenderer(window, resource, true);
                 sound = new SfmlSound(resource.Wad);
-                userInput = new SfmlUserInput(new Config());
+                userInput = new SfmlUserInput(window, config);
 
                 events = new List<DoomEvent>();
 
@@ -459,6 +461,12 @@ namespace ManagedDoom
 
         public void Dispose()
         {
+            if (userInput != null)
+            {
+                userInput.Dispose();
+                userInput = null;
+            }
+
             if (sound != null)
             {
                 sound.Dispose();

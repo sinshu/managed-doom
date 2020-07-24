@@ -16,23 +16,42 @@
 
 
 ﻿using System;
+using SFML.Graphics;
+using SFML.System;
 using SFML.Window;
 
 namespace ManagedDoom
 {
-    public sealed class SfmlUserInput : IUserInput
+    public sealed class SfmlUserInput : IUserInput, IDisposable
     {
+        private RenderWindow window;
         private Config config;
 
-        private static bool[] weaponKeys;
-        private static int turnHeld;
+        private bool[] weaponKeys;
+        private int turnHeld;
 
-        public SfmlUserInput(Config config)
+        private int windowCenterX;
+        private int windowCenterY;
+        private int mouseX;
+        private int mouseY;
+        private bool cursorCentered;
+
+        public SfmlUserInput(RenderWindow window, Config config)
         {
+            this.window = window;
             this.config = config;
 
             weaponKeys = new bool[7];
             turnHeld = 0;
+
+            windowCenterX = (int)window.Size.X / 2;
+            windowCenterY = (int)window.Size.Y / 2;
+            mouseX = 0;
+            mouseY = 0;
+            cursorCentered = false;
+
+            window.SetMouseCursorGrabbed(true);
+            window.SetMouseCursorVisible(false);
         }
 
         public void BuildTicCmd(TicCmd cmd)
@@ -47,7 +66,6 @@ namespace ManagedDoom
             var keyUse = IsPressed(config.key_use);
             var keyRun = IsPressed(config.key_run);
             var keyStrafe = IsPressed(config.key_strafe);
-            var mouseStrafe = IsPressed(config.key_mousestrafe);
 
             weaponKeys[0] = Keyboard.IsKeyPressed(Keyboard.Key.Num1);
             weaponKeys[1] = Keyboard.IsKeyPressed(Keyboard.Key.Num2);
@@ -63,6 +81,11 @@ namespace ManagedDoom
             var speed = keyRun ? 1 : 0;
             var forward = 0;
             var side = 0;
+
+            if (config.game_alwaysrun)
+            {
+                speed = 1 - speed;
+            }
 
             if (keyTurnLeft || keyTurnRight)
             {
@@ -145,6 +168,20 @@ namespace ManagedDoom
                 }
             }
 
+            UpdateMouse();
+            var ms = 0.5F * config.mouse_sensitivity;
+            var mx = (int)MathF.Round(ms * mouseX);
+            var my = (int)MathF.Round(ms * mouseY);
+            forward += my;
+            if (strafe)
+            {
+                side += mx * 2;
+            }
+            else
+            {
+                cmd.AngleTurn -= (short)(mx * 0x8);
+            }
+
             if (forward > PlayerBehavior.MaxMove)
             {
                 forward = PlayerBehavior.MaxMove;
@@ -189,6 +226,55 @@ namespace ManagedDoom
 
         public void Reset()
         {
+            mouseX = 0;
+            mouseY = 0;
+            cursorCentered = false;
+        }
+
+        private void UpdateMouse()
+        {
+            if (cursorCentered)
+            {
+                var current = Mouse.GetPosition(window);
+                mouseX = current.X - windowCenterX;
+                mouseY = -(current.Y - windowCenterY);
+            }
+            else
+            {
+                mouseX = 0;
+                mouseY = 0;
+            }
+
+            Mouse.SetPosition(new Vector2i(windowCenterX, windowCenterY), window);
+            var pos = Mouse.GetPosition(window);
+            cursorCentered = (pos.X == windowCenterX && pos.Y == windowCenterY);
+        }
+
+        public void Dispose()
+        {
+            window.SetMouseCursorVisible(true);
+            window.SetMouseCursorGrabbed(false);
+        }
+
+        public int MaxMouseSensitivity
+        {
+            get
+            {
+                return 9;
+            }
+        }
+
+        public int MouseSensitivity
+        {
+            get
+            {
+                return config.mouse_sensitivity;
+            }
+
+            set
+            {
+                config.mouse_sensitivity = value;
+            }
         }
     }
 }
