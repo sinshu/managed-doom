@@ -24,8 +24,9 @@ namespace ManagedDoom
 {
     public sealed class SfmlUserInput : IUserInput, IDisposable
     {
-        private RenderWindow window;
         private Config config;
+
+        private RenderWindow window;
 
         private bool[] weaponKeys;
         private int turnHeld;
@@ -36,10 +37,13 @@ namespace ManagedDoom
         private int mouseY;
         private bool cursorCentered;
 
-        public SfmlUserInput(RenderWindow window, Config config)
+        public SfmlUserInput(Config config, RenderWindow window)
         {
-            this.window = window;
             this.config = config;
+
+            config.mouse_sensitivity = Math.Max(config.mouse_sensitivity, 0);
+
+            this.window = window;
 
             weaponKeys = new bool[7];
             turnHeld = 0;

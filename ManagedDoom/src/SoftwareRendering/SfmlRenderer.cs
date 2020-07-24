@@ -40,6 +40,8 @@ namespace ManagedDoom.SoftwareRendering
             0.50
         };
 
+        private Config config;
+
         private RenderWindow sfmlWindow;
         private Palette palette;
 
@@ -71,19 +73,20 @@ namespace ManagedDoom.SoftwareRendering
         private int wipeHeight;
         private byte[] wipeBuffer;
 
-        private bool displayMessage;
-
-        private int gammaCorrectionLevel;
-
-        public SfmlRenderer(RenderWindow window, CommonResource resource, bool highResolution)
+        public SfmlRenderer(Config config, RenderWindow window, CommonResource resource)
         {
+            this.config = config;
+
+            config.video_gamescreensize = Math.Clamp(config.video_gamescreensize, 0, MaxWindowSize);
+            config.video_gammacorrection = Math.Clamp(config.video_gammacorrection, 0, MaxGammaCorrectionLevel);
+
             sfmlWindow = window;
             palette = resource.Palette;
 
             sfmlWindowWidth = (int)window.Size.X;
             sfmlWindowHeight = (int)window.Size.Y;
 
-            if (highResolution)
+            if (config.video_highresolution)
             {
                 screen = new DrawScreen(resource.Wad, 640, 400);
                 sfmlTextureWidth = 512;
@@ -118,7 +121,7 @@ namespace ManagedDoom.SoftwareRendering
             sfmlStates = new RenderStates(BlendMode.None);
 
             menu = new MenuRenderer(resource.Wad, screen);
-            threeD = new ThreeDRenderer(resource, screen, 7);
+            threeD = new ThreeDRenderer(resource, screen, config.video_gamescreensize);
             statusBar = new StatusBarRenderer(resource.Wad, screen);
             intermission = new IntermissionRenderer(resource.Wad, screen);
             openingSequence = new OpeningSequenceRenderer(resource.Wad, screen, this);
@@ -133,10 +136,7 @@ namespace ManagedDoom.SoftwareRendering
             wipeHeight = screen.Height / scale;
             wipeBuffer = new byte[screen.Data.Length];
 
-            displayMessage = true;
-
-            gammaCorrectionLevel = 0;
-            palette.ResetColors(gammaCorrectionParameters[gammaCorrectionLevel]);
+            palette.ResetColors(gammaCorrectionParameters[config.video_gammacorrection]);
         }
 
         public void RenderApplication(DoomApplication app)
@@ -197,7 +197,7 @@ namespace ManagedDoom.SoftwareRendering
                     }
                 }
 
-                if (displayMessage || ReferenceEquals(player.Message, (string)DoomInfo.Strings.MSGOFF))
+                if (config.video_displaymessage || ReferenceEquals(player.Message, (string)DoomInfo.Strings.MSGOFF))
                 {
                     if (player.MessageTime > 0)
                     {
@@ -371,6 +371,7 @@ namespace ManagedDoom.SoftwareRendering
 
             set
             {
+                config.video_gamescreensize = value;
                 threeD.WindowSize = value;
             }
         }
@@ -379,12 +380,12 @@ namespace ManagedDoom.SoftwareRendering
         {
             get
             {
-                return displayMessage;
+                return config.video_displaymessage;
             }
 
             set
             {
-                displayMessage = value;
+                config.video_displaymessage = value;
             }
         }
 
@@ -392,7 +393,7 @@ namespace ManagedDoom.SoftwareRendering
         {
             get
             {
-                return gammaCorrectionParameters.Length;
+                return gammaCorrectionParameters.Length - 1;
             }
         }
 
@@ -400,13 +401,13 @@ namespace ManagedDoom.SoftwareRendering
         {
             get
             {
-                return gammaCorrectionLevel;
+                return config.video_gammacorrection;
             }
 
             set
             {
-                gammaCorrectionLevel = value;
-                palette.ResetColors(gammaCorrectionParameters[gammaCorrectionLevel]);
+                config.video_gammacorrection = value;
+                palette.ResetColors(gammaCorrectionParameters[config.video_gammacorrection]);
             }
         }
     }

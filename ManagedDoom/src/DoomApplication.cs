@@ -63,8 +63,8 @@ namespace ManagedDoom
 
             try
             {
-                config.video_screenwidth = Math.Clamp(config.video_screenwidth, 320, 32000);
-                config.video_screenheight = Math.Clamp(config.video_screenheight, 200, 20000);
+                config.video_screenwidth = Math.Clamp(config.video_screenwidth, 320, 3200);
+                config.video_screenheight = Math.Clamp(config.video_screenheight, 200, 2000);
                 var videoMode = new VideoMode((uint)config.video_screenwidth, (uint)config.video_screenheight);
                 var style = Styles.Close | Styles.Titlebar;
                 window = new RenderWindow(videoMode, "Managed Doom", style);
@@ -72,9 +72,9 @@ namespace ManagedDoom
                 window.Display();
 
                 resource = new CommonResource(ConfigUtilities.GetDefaultIwadPath());
-                renderer = new SfmlRenderer(window, resource, true);
-                sound = new SfmlSound(resource.Wad);
-                userInput = new SfmlUserInput(window, config);
+                renderer = new SfmlRenderer(config, window, resource);
+                sound = new SfmlSound(config, resource.Wad);
+                userInput = new SfmlUserInput(config, window);
 
                 events = new List<DoomEvent>();
 
@@ -247,7 +247,7 @@ namespace ManagedDoom
                 case DoomKey.F11:
                     var gcl = renderer.GammaCorrectionLevel;
                     gcl++;
-                    if (gcl == renderer.MaxGammaCorrectionLevel)
+                    if (gcl > renderer.MaxGammaCorrectionLevel)
                     {
                         gcl = 0;
                     }

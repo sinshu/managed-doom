@@ -214,8 +214,8 @@ namespace ManagedDoom
 
                 new ToggleMenuItem(
                     "M_MESSG", 28, 48, 60, 53, "M_MSGON", "M_MSGOFF", 180,
-                    () => 0,
-                    null),
+                    () => renderer.DisplayMessage ? 0 : 1,
+                    value => renderer.DisplayMessage = value == 0),
 
                 new SliderMenuItem(
                     "M_SCRNSZ", 28, 80 - 16, 60, 85 - 16,

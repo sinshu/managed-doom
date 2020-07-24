@@ -33,6 +33,8 @@ namespace ManagedDoom.Audio
         private static readonly float closeDist = 160;
         private static readonly float attenuator = clipDist - closeDist;
 
+        private Config config;
+
         private SoundBuffer[] buffers;
         private float[] amplitudes;
 
@@ -44,13 +46,16 @@ namespace ManagedDoom.Audio
 
         private Mobj listener;
 
-        private int masterVolume;
         private float masterVolumeDecay;
 
         private DateTime lastUpdate;
 
-        public SfmlSound(Wad wad)
+        public SfmlSound(Config config, Wad wad)
         {
+            this.config = config;
+
+            config.audio_soundvolume = Math.Clamp(config.audio_soundvolume, 0, MaxVolume);
+
             buffers = new SoundBuffer[DoomInfo.SfxNames.Length];
             amplitudes = new float[DoomInfo.SfxNames.Length];
 
@@ -89,8 +94,7 @@ namespace ManagedDoom.Audio
                 ExceptionDispatchInfo.Throw(e);
             }
 
-            masterVolume = 8;
-            masterVolumeDecay = (float)masterVolume / MaxVolume;
+            masterVolumeDecay = (float)config.audio_soundvolume / MaxVolume;
 
             lastUpdate = DateTime.MinValue;
         }
@@ -429,13 +433,13 @@ namespace ManagedDoom.Audio
         {
             get
             {
-                return masterVolume;
+                return config.audio_soundvolume;
             }
 
             set
             {
-                masterVolume = value;
-                masterVolumeDecay = (float)masterVolume / MaxVolume;
+                config.audio_soundvolume = value;
+                masterVolumeDecay = (float)config.audio_soundvolume / MaxVolume;
             }
         }
 
