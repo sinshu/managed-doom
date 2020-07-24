@@ -10,4 +10,8 @@
     <PackageReference Include="SFML.Net" Version="2.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="src\Audio\CSharpSynthProject\" />
+  </ItemGroup>
+
 </Project>

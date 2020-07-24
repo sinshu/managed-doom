@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using ManagedDoom.Audio;
 using SFML.Window;
 
 namespace ManagedDoom
@@ -73,7 +74,7 @@ namespace ManagedDoom
                 "DOOM1.WAD"
             };
 
-            var directory = ConfigUtilities.GetExeDirectory();
+            var directory = GetExeDirectory();
 
             foreach (var name in names)
             {
@@ -85,6 +86,19 @@ namespace ManagedDoom
             }
 
             throw new Exception("No IWAD was found!");
+        }
+
+        public static SfmlMusic GetSfmlMusicInstance(Config config, Wad wad)
+        {
+            var sfPath = Path.Combine(GetExeDirectory(), "TimGM6mb.sf2");
+            if (File.Exists(sfPath))
+            {
+                return new SfmlMusic(config, wad, sfPath);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

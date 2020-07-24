@@ -184,19 +184,52 @@ namespace ManagedDoom
         public ISound Sound
         {
             get => sound;
-            set => sound = value;
+
+            set
+            {
+                if (value != null)
+                {
+                    sound = value;
+                }
+                else
+                {
+                    sound = NullSound.GetInstance();
+                }
+            }
         }
 
         public IMusic Music
         {
             get => music;
-            set => music = value;
+
+            set
+            {
+                if (value != null)
+                {
+                    music = value;
+                }
+                else
+                {
+                    music = NullMusic.GetInstance();
+                }
+            }
         }
 
         public IUserInput UserInput
         {
             get => userInput;
-            set => userInput = value;
+
+            set
+            {
+                if (value != null)
+                {
+                    userInput = value;
+                }
+                else
+                {
+                    userInput = NullUserInput.GetInstance();
+                }
+            }
         }
     }
 }

@@ -34,6 +34,7 @@ namespace ManagedDoom
         private CommonResource resource;
         private SfmlRenderer renderer;
         private SfmlSound sound;
+        private SfmlMusic music;
         private SfmlUserInput userInput;
 
         private List<DoomEvent> events;
@@ -78,6 +79,7 @@ namespace ManagedDoom
                 resource = new CommonResource(ConfigUtilities.GetDefaultIwadPath());
                 renderer = new SfmlRenderer(config, window, resource);
                 sound = new SfmlSound(config, resource.Wad);
+                music = ConfigUtilities.GetSfmlMusicInstance(config, resource.Wad);
                 userInput = new SfmlUserInput(config, window);
 
                 events = new List<DoomEvent>();
@@ -87,6 +89,7 @@ namespace ManagedDoom
                 options.MissionPack = resource.Wad.MissionPack;
                 options.Renderer = renderer;
                 options.Sound = sound;
+                options.Music = music;
                 options.UserInput = userInput;
 
                 menu = new DoomMenu(this);
