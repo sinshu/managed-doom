@@ -16,7 +16,6 @@
 
 
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace ManagedDoom
@@ -32,7 +31,7 @@ namespace ManagedDoom
         {
             slots = new string[slotCount];
 
-            var directory = GetSaveDirectory();
+            var directory = ConfigUtilities.GetExeDirectory();
             var buffer = new byte[descriptionSize];
             for (var i = 0; i < slots.Length; i++)
             {
@@ -46,11 +45,6 @@ namespace ManagedDoom
                     }
                 }
             }
-        }
-
-        private string GetSaveDirectory()
-        {
-            return Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
         }
 
         public string this[int number]

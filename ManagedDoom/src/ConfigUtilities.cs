@@ -24,10 +24,14 @@ namespace ManagedDoom
 {
     public static class ConfigUtilities
     {
+        public static string GetExeDirectory()
+        {
+            return Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+        }
+
         public static string GetConfigPath()
         {
-            var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            return Path.Combine(directory, "managed-doom.cfg");
+            return Path.Combine(GetExeDirectory(), "managed-doom.cfg");
         }
 
         public static VideoMode GetDefaultVideoMode()
@@ -69,7 +73,7 @@ namespace ManagedDoom
                 "DOOM1.WAD"
             };
 
-            var directory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+            var directory = ConfigUtilities.GetExeDirectory();
 
             foreach (var name in names)
             {
