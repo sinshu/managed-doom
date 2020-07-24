@@ -21,7 +21,16 @@ namespace ManagedDoom
 {
     public sealed class DoomEvent
     {
-        public EventType Type;
-        public DoomKey Key;
+        private EventType type;
+        private DoomKey key;
+
+        public DoomEvent(EventType type, DoomKey key)
+        {
+            this.type = type;
+            this.key = key;
+        }
+
+        public EventType Type => type;
+        public DoomKey Key => key;
     }
 }

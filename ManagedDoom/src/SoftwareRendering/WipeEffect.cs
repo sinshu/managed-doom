@@ -19,13 +19,13 @@
 
 namespace ManagedDoom.SoftwareRendering
 {
-    public sealed class Wipe
+    public sealed class WipeEffect
     {
         private short[] y;
         private int height;
         private DoomRandom random;
 
-        public Wipe(int width, int height)
+        public WipeEffect(int width, int height)
         {
             y = new short[width];
             this.height = height;

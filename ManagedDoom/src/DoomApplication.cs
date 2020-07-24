@@ -48,7 +48,7 @@ namespace ManagedDoom
         private TicCmd[] cmds;
         private DoomGame game;
 
-        private Wipe wipe;
+        private WipeEffect wipe;
         private bool wiping;
 
         private ApplicationState currentState;
@@ -103,7 +103,7 @@ namespace ManagedDoom
                 }
                 game = new DoomGame(resource, options);
 
-                wipe = new Wipe(renderer.WipeBandCount, renderer.WipeHeight);
+                wipe = new WipeEffect(renderer.WipeBandCount, renderer.WipeHeight);
                 wiping = false;
 
                 window.Closed += (sender, e) => window.Close();
@@ -120,6 +120,7 @@ namespace ManagedDoom
             }
             catch (Exception e)
             {
+                Dispose();
                 ExceptionDispatchInfo.Throw(e);
             }
         }
@@ -398,10 +399,7 @@ namespace ManagedDoom
         {
             if (events.Count < 64)
             {
-                var de = new DoomEvent();
-                de.Type = EventType.KeyDown;
-                de.Key = (DoomKey)e.Code;
-                events.Add(de);
+                events.Add(new DoomEvent(EventType.KeyDown, (DoomKey)e.Code));
             }
         }
 
@@ -409,10 +407,7 @@ namespace ManagedDoom
         {
             if (events.Count < 64)
             {
-                var de = new DoomEvent();
-                de.Type = EventType.KeyUp;
-                de.Key = (DoomKey)e.Code;
-                events.Add(de);
+                events.Add(new DoomEvent(EventType.KeyUp, (DoomKey)e.Code));
             }
         }
 

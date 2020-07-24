@@ -237,7 +237,7 @@ namespace ManagedDoom.SoftwareRendering
             Display(colors);
         }
 
-        public void RenderWipe(DoomApplication app, Wipe wipe)
+        public void RenderWipe(DoomApplication app, WipeEffect wipe)
         {
             RenderApplication(app);
 

@@ -49,8 +49,6 @@ namespace ManagedDoom
         private IMusic music;
         private IUserInput userInput;
 
-        private Action resetControl;
-
         public GameOptions()
         {
             gameVersion = GameVersion.Version109;
@@ -83,8 +81,6 @@ namespace ManagedDoom
             sound = NullSound.GetInstance();
             music = NullMusic.GetInstance();
             userInput = NullUserInput.GetInstance();
-
-            resetControl = null;
         }
 
         public GameVersion GameVersion

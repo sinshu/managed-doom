@@ -19,8 +19,6 @@ using System;
 using System.Runtime.ExceptionServices;
 using SFML.Audio;
 using SFML.System;
-using AudioSynthesis;
-using AudioSynthesis.Sf2;
 using AudioSynthesis.Synthesis;
 
 namespace ManagedDoom.Audio
@@ -38,8 +36,16 @@ namespace ManagedDoom.Audio
             this.config = config;
             this.wad = wad;
 
-            stream = new MusStream(this, config, sfPath);
-            current = Bgm.NONE;
+            try
+            {
+                stream = new MusStream(this, config, sfPath);
+                current = Bgm.NONE;
+            }
+            catch (Exception e)
+            {
+                Dispose();
+                ExceptionDispatchInfo.Throw(e);
+            }
         }
 
         public void StartMusic(Bgm bgm, bool loop)
