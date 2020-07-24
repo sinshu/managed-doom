@@ -25,6 +25,6 @@ namespace ManagedDoom
 
         public static readonly Fixed MaxThingRadius = Fixed.FromInt(32);
 
-        public static readonly Fixed TURBOTHRESHOLD = new Fixed(0x32);
+        public static readonly int TurboThreshold = 0x32;
     }
 }

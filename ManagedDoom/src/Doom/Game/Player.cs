@@ -26,7 +26,16 @@ namespace ManagedDoom
         public static readonly int MaxHealth = 100;
         public static readonly Fixed NormalViewHeight = Fixed.FromInt(41);
 
+        private static readonly string[] defaultPlayerNames = new string[]
+        {
+            "Green",
+            "Indigo",
+            "Brown",
+            "Red"
+        };
+
         private int number;
+        private string name;
         private bool inGame;
 
         private Mobj mobj;
@@ -117,6 +126,8 @@ namespace ManagedDoom
         public Player(int number)
         {
             this.number = number;
+
+            name = defaultPlayerNames[number];
 
             cmd = new TicCmd();
 
@@ -293,6 +304,8 @@ namespace ManagedDoom
         }
 
         public int Number => number;
+
+        public string Name => name;
 
         public bool InGame
         {

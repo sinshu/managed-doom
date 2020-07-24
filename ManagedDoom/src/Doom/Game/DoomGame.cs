@@ -151,11 +151,12 @@ namespace ManagedDoom
 					*/
 
 					// Check for turbo cheats.
-					if (cmd.ForwardMove > GameConstants.TURBOTHRESHOLD.Data &&
-						(world.LevelTime & 31) == 0 && ((world.LevelTime >> 5) & 3) == i)
+					if (cmd.ForwardMove > GameConstants.TurboThreshold &&
+						(world.LevelTime & 31) == 0 &&
+						((world.LevelTime >> 5) & 3) == i)
 					{
 						var player = players[options.ConsolePlayer];
-						player.SendMessage("%s is turbo!");
+						player.SendMessage(players[i].Name + " is turbo!");
 					}
 				}
 			}
