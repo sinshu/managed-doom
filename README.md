@@ -66,7 +66,7 @@ https://www.youtube.com/watch?v=QntRMbe-ot0
     * [x] Menu screen
     * [x] Save / load
     * [x] Screen melt animation
-    * [ ] Config
+    * [x] Config
     * [ ] DeHackEd support
 
 
