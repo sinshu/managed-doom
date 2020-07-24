@@ -15,7 +15,7 @@
 
 
 
-﻿using System;
+using System;
 
 namespace ManagedDoom
 {
@@ -61,10 +61,10 @@ namespace ManagedDoom
             new DoomString("COUNTD"),
             new DoomString("BETWEE"),
             new DoomString("DOOM"),
-            new DoomString("THE"),
+            new DoomString("THE_DA"),
             new DoomString("SHAWN"),
             new DoomString("DDTBLU"),
-            new DoomString("IN"),
+            new DoomString("IN_CIT"),
             new DoomString("DEAD"),
             new DoomString("STLKS2"),
             new DoomString("THEDA2"),
@@ -88,7 +88,7 @@ namespace ManagedDoom
             new DoomString("OPENIN"),
             new DoomString("EVIL"),
             new DoomString("ULTIMA"),
-            new DoomString("READ"),
+            new DoomString("READ_M"),
             new DoomString("DM2TTL"),
             new DoomString("DM2INT")
         };

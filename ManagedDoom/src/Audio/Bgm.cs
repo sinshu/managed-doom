@@ -15,7 +15,7 @@
 
 
 
-﻿using System;
+using System;
 
 namespace ManagedDoom
 {
@@ -59,10 +59,10 @@ namespace ManagedDoom
         COUNTD,
         BETWEE,
         DOOM,
-        THE,
+        THE_DA,
         SHAWN,
         DDTBLU,
-        IN,
+        IN_CIT,
         DEAD,
         STLKS2,
         THEDA2,
@@ -86,7 +86,7 @@ namespace ManagedDoom
         OPENIN,
         EVIL,
         ULTIMA,
-        READ,
+        READ_M,
         DM2TTL,
         DM2INT
     }

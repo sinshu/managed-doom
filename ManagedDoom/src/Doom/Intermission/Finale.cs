@@ -86,7 +86,7 @@ namespace ManagedDoom
 				case GameMode.Shareware:
 				case GameMode.Registered:
 				case GameMode.Retail:
-					//S_ChangeMusic(mus_victor, true);
+					options.Music.StartMusic(Bgm.VICTOR, true);
 					switch (options.Episode)
 					{
 						case 1:
@@ -115,7 +115,7 @@ namespace ManagedDoom
 					break;
 
 				case GameMode.Commercial:
-					//S_ChangeMusic(mus_read_m, true);
+					options.Music.StartMusic(Bgm.READ_M, true);
 					switch (options.Map)
 					{
 						case 6:
@@ -154,7 +154,7 @@ namespace ManagedDoom
 					break;
 
 				default:
-					//S_ChangeMusic(mus_read_m, true);
+					options.Music.StartMusic(Bgm.READ_M, true);
 					flat = "F_SKY1";
 					text = DoomInfo.Strings.C1TEXT;
 					break;
@@ -220,7 +220,7 @@ namespace ManagedDoom
 				updateResult = UpdateResult.NeedWipe;
 				if (options.Episode == 3)
 				{
-					//S_StartMusic(mus_bunny);
+					options.Music.StartMusic(Bgm.BUNNY, true);
 				}
 			}
 
@@ -314,7 +314,7 @@ namespace ManagedDoom
 
 			updateResult = UpdateResult.NeedWipe;
 
-			// S_ChangeMusic(mus_evil, true);
+			options.Music.StartMusic(Bgm.EVIL, true);
 		}
 
 		private void UpdateCast()

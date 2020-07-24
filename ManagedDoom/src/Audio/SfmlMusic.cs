@@ -107,7 +107,7 @@ namespace ManagedDoom.Audio
                 synthBufferLength = synthesizer.sampleBuffer.Length;
 
                 var synthBufferDuration = (double)(synthBufferLength / 2) / MusDecoder.SampleRate;
-                stepCount = (int)Math.Ceiling(0.2 / synthBufferDuration);
+                stepCount = (int)Math.Ceiling(0.02 / synthBufferDuration);
                 batchLength = synthBufferLength * stepCount;
                 batch = new short[batchLength];
 
