@@ -41,6 +41,7 @@ namespace ManagedDoom
 
         public int video_screenwidth;
         public int video_screenheight;
+        public bool video_fullscreen;
         public bool video_highresolution;
         public bool video_displaymessage;
         public int video_gamescreensize;
@@ -123,6 +124,7 @@ namespace ManagedDoom
             var vm = ConfigUtilities.GetDefaultVideoMode();
             video_screenwidth = (int)vm.Width;
             video_screenheight = (int)vm.Height;
+            video_fullscreen = false;
             video_highresolution = true;
             video_gamescreensize = 7;
             video_displaymessage = true;
@@ -159,6 +161,7 @@ namespace ManagedDoom
 
                 video_screenwidth = GetInt(dic, nameof(video_screenwidth), video_screenwidth);
                 video_screenheight = GetInt(dic, nameof(video_screenheight), video_screenheight);
+                video_fullscreen = GetBool(dic, nameof(video_fullscreen), video_fullscreen);
                 video_highresolution = GetBool(dic, nameof(video_highresolution), video_highresolution);
                 video_displaymessage = GetBool(dic, nameof(video_displaymessage), video_displaymessage);
                 video_gamescreensize = GetInt(dic, nameof(video_gamescreensize), video_gamescreensize);
@@ -194,6 +197,7 @@ namespace ManagedDoom
 
                     writer.WriteLine(nameof(video_screenwidth) + " = " + video_screenwidth);
                     writer.WriteLine(nameof(video_screenheight) + " = " + video_screenheight);
+                    writer.WriteLine(nameof(video_fullscreen) + " = " + BoolToString(video_fullscreen));
                     writer.WriteLine(nameof(video_highresolution) + " = " + BoolToString(video_highresolution));
                     writer.WriteLine(nameof(video_displaymessage) + " = " + BoolToString(video_displaymessage));
                     writer.WriteLine(nameof(video_gamescreensize) + " = " + video_gamescreensize);

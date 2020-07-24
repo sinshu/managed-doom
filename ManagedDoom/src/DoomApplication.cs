@@ -67,6 +67,10 @@ namespace ManagedDoom
                 config.video_screenheight = Math.Clamp(config.video_screenheight, 200, 2000);
                 var videoMode = new VideoMode((uint)config.video_screenwidth, (uint)config.video_screenheight);
                 var style = Styles.Close | Styles.Titlebar;
+                if (config.video_fullscreen)
+                {
+                    style |= Styles.Fullscreen;
+                }
                 window = new RenderWindow(videoMode, "Managed Doom", style);
                 window.Clear(new Color(128, 128, 128));
                 window.Display();
