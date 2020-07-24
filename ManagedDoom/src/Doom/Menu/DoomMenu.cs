@@ -183,6 +183,7 @@ namespace ManagedDoom
             }
 
             var sound = options.Sound;
+            var music = options.Music;
             volume = new SelectableMenu(
                 this,
                 "M_SVOL", 60, 38,
@@ -195,9 +196,9 @@ namespace ManagedDoom
                     vol => sound.Volume = vol),
 
                 new SliderMenuItem("M_MUSVOL", 48, 91, 80, 96,
-                    16,
-                    () => 8,
-                    null));
+                    music.MaxVolume + 1,
+                    () => music.Volume,
+                    vol => music.Volume = vol));
 
             var renderer = options.Renderer;
             var userInput = options.UserInput;

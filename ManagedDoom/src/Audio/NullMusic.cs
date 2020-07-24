@@ -36,5 +36,25 @@ namespace ManagedDoom.Audio
         public void StartMusic(Bgm bgm, bool loop)
         {
         }
+
+        public int MaxVolume
+        {
+            get
+            {
+                return 15;
+            }
+        }
+
+        public int Volume
+        {
+            get
+            {
+                return 8;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

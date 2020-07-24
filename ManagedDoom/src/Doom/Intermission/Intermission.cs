@@ -214,6 +214,19 @@ namespace ManagedDoom
 
             CheckForAccelerate();
 
+            if (bgCount == 1)
+            {
+                // intermission music
+                if (options.GameMode == GameMode.Commercial)
+                {
+                    options.Music.StartMusic(Bgm.DM2INT, true);
+                }
+                else
+                {
+                    options.Music.StartMusic(Bgm.INTER, true);
+                }
+            }
+
             switch (state)
             {
                 case IntermissionState.StatCount:

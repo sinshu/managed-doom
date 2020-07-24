@@ -204,6 +204,15 @@ namespace ManagedDoom
             {
                 timer = 170;
             }
+
+            if (options.GameMode == GameMode.Commercial)
+            {
+                options.Music.StartMusic(Bgm.DM2TTL, false);
+            }
+            else
+            {
+                options.Music.StartMusic(Bgm.INTRO, false);
+            }
         }
 
         private void StartCreditScreen()

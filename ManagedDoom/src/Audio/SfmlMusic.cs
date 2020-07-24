@@ -31,43 +31,84 @@ namespace ManagedDoom.Audio
         private Wad wad;
 
         private MusStream stream;
+        private Bgm current;
 
         public SfmlMusic(Config config, Wad wad, string sfPath)
         {
             this.config = config;
             this.wad = wad;
-            
-            stream = new MusStream(sfPath);
+
+            stream = new MusStream(this, config, sfPath);
+            current = Bgm.NONE;
         }
 
         public void StartMusic(Bgm bgm, bool loop)
         {
+            if (bgm == current)
+            {
+                return;
+            }
+
             var lump = "D_" + DoomInfo.BgmNames[(int)bgm];
             var data = wad.ReadLump(lump);
             var decoder = new MusDecoder(data, true);
             stream.SetDecoder(decoder);
+
+            current = bgm;
+        }
+
+        public int MaxVolume
+        {
+            get
+            {
+                return 15;
+            }
+        }
+
+        public int Volume
+        {
+            get
+            {
+                return config.audio_musicvolume;
+            }
+
+            set
+            {
+                config.audio_musicvolume = value;
+            }
         }
 
 
 
         private class MusStream : SoundStream
         {
-            private static readonly int stepCount = 28;
-            private static readonly int synthLength = 2 * MusDecoder.BufferLength;
-            private static readonly int batchLength = synthLength * stepCount;
+            private SfmlMusic parent;
+            private Config config;
 
             private Synthesizer synthesizer;
+            private int synthBufferLength;
+            private int stepCount;
+            private int batchLength;
 
             private MusDecoder current;
             private MusDecoder reserved;
 
             private short[] batch;
 
-            public MusStream(string sfPath)
+            public MusStream(SfmlMusic parent, Config config, string sfPath)
             {
+                this.parent = parent;
+                this.config = config;
+
+                config.audio_musicvolume = Math.Clamp(config.audio_musicvolume, 0, parent.MaxVolume);
+
                 synthesizer = new Synthesizer(MusDecoder.SampleRate, 2, MusDecoder.BufferLength, 1);
                 synthesizer.LoadBank(sfPath);
+                synthBufferLength = synthesizer.sampleBuffer.Length;
 
+                var synthBufferDuration = (double)(synthBufferLength / 2) / MusDecoder.SampleRate;
+                stepCount = (int)Math.Ceiling(0.2 / synthBufferDuration);
+                batchLength = synthBufferLength * stepCount;
                 batch = new short[batchLength];
 
                 Initialize(2, (uint)MusDecoder.SampleRate);
@@ -92,14 +133,16 @@ namespace ManagedDoom.Audio
                     current = reserved;
                 }
 
+                var a = 32768 * (6.0F * config.audio_musicvolume / parent.MaxVolume);
+
                 var t = 0;
                 for (var i = 0; i < stepCount; i++)
                 {
                     current.FillBuffer(synthesizer);
                     var buffer = synthesizer.sampleBuffer;
-                    for (var j = 0; j < synthLength; j++)
+                    for (var j = 0; j < buffer.Length; j++)
                     {
-                        var sample = (int)(32768 * buffer[j]);
+                        var sample = (int)(a * buffer[j]);
                         if (sample < short.MinValue)
                         {
                             sample = short.MinValue;
