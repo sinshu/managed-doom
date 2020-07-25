@@ -289,11 +289,11 @@ namespace ManagedDoom
 			public static readonly int GodIndex = PainFaceCount * Stride;
 			public static readonly int DeadIndex = GodIndex + 1;
 
-			public static readonly int EvilGrinDuration = (2 * GameConstants.TicRate);
-			public static readonly int StraightFaceDuration = (GameConstants.TicRate / 2);
-			public static readonly int TurnDuration = (1 * GameConstants.TicRate);
-			public static readonly int OuchDuration = (1 * GameConstants.TicRate);
-			public static readonly int RampageDelay = (2 * GameConstants.TicRate);
+			public static readonly int EvilGrinDuration = (2 * GameConst.TicRate);
+			public static readonly int StraightFaceDuration = (GameConst.TicRate / 2);
+			public static readonly int TurnDuration = (1 * GameConst.TicRate);
+			public static readonly int OuchDuration = (1 * GameConst.TicRate);
+			public static readonly int RampageDelay = (2 * GameConst.TicRate);
 
 			public static readonly int MuchPain = 20;
 		}

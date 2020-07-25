@@ -152,19 +152,19 @@ namespace ManagedDoom
                 int block;
 
                 // Adjust bounding box to map blocks.
-                block = (boundingBox[Box.Top] - blockMap.OriginY + GameConstants.MaxThingRadius).Data >> BlockMap.FracToBlockShift;
+                block = (boundingBox[Box.Top] - blockMap.OriginY + GameConst.MaxThingRadius).Data >> BlockMap.FracToBlockShift;
                 block = block >= blockMap.Height ? blockMap.Height - 1 : block;
                 sector.BlockBox[Box.Top] = block;
 
-                block = (boundingBox[Box.Bottom] - blockMap.OriginY - GameConstants.MaxThingRadius).Data >> BlockMap.FracToBlockShift;
+                block = (boundingBox[Box.Bottom] - blockMap.OriginY - GameConst.MaxThingRadius).Data >> BlockMap.FracToBlockShift;
                 block = block < 0 ? 0 : block;
                 sector.BlockBox[Box.Bottom] = block;
 
-                block = (boundingBox[Box.Right] - blockMap.OriginX + GameConstants.MaxThingRadius).Data >> BlockMap.FracToBlockShift;
+                block = (boundingBox[Box.Right] - blockMap.OriginX + GameConst.MaxThingRadius).Data >> BlockMap.FracToBlockShift;
                 block = block >= blockMap.Width ? blockMap.Width - 1 : block;
                 sector.BlockBox[Box.Right] = block;
 
-                block = (boundingBox[Box.Left] - blockMap.OriginX - GameConstants.MaxThingRadius).Data >> BlockMap.FracToBlockShift;
+                block = (boundingBox[Box.Left] - blockMap.OriginX - GameConst.MaxThingRadius).Data >> BlockMap.FracToBlockShift;
                 block = block < 0 ? 0 : block;
                 sector.BlockBox[Box.Left] = block;
             }

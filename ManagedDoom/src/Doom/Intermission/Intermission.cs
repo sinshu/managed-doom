@@ -119,7 +119,7 @@ namespace ManagedDoom
             spState = 1;
             killCount[0] = itemCount[0] = secretCount[0] = -1;
             timeCount = parCount = -1;
-            pauseCount = GameConstants.TicRate;
+            pauseCount = GameConst.TicRate;
 
             InitAnimatedBack();
         }
@@ -130,7 +130,7 @@ namespace ManagedDoom
             state = IntermissionState.StatCount;
             accelerateStage = false;
             ngState = 1;
-            pauseCount = GameConstants.TicRate;
+            pauseCount = GameConst.TicRate;
 
             var frags = 0;
             for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -155,7 +155,7 @@ namespace ManagedDoom
             state = IntermissionState.StatCount;
             accelerateStage = false;
             dmState = 1;
-            pauseCount = GameConstants.TicRate;
+            pauseCount = GameConst.TicRate;
 
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
@@ -190,7 +190,7 @@ namespace ManagedDoom
         {
             state = IntermissionState.ShowNextLoc;
             accelerateStage = false;
-            count = showNextLocDelay * GameConstants.TicRate;
+            count = showNextLocDelay * GameConst.TicRate;
 
             InitAnimatedBack();
         }
@@ -294,8 +294,8 @@ namespace ManagedDoom
                 killCount[0] = (scores[0].KillCount * 100) / info.MaxKillCount;
                 itemCount[0] = (scores[0].ItemCount * 100) / info.MaxItemCount;
                 secretCount[0] = (scores[0].SecretCount * 100) / info.MaxSecretCount;
-                timeCount = scores[0].Time / GameConstants.TicRate;
-                parCount = info.ParTime / GameConstants.TicRate;
+                timeCount = scores[0].Time / GameConst.TicRate;
+                parCount = info.ParTime / GameConst.TicRate;
                 StartSound(Sfx.BAREXP);
                 spState = 10;
             }
@@ -358,18 +358,18 @@ namespace ManagedDoom
 
                 timeCount += 3;
 
-                if (timeCount >= scores[0].Time / GameConstants.TicRate)
+                if (timeCount >= scores[0].Time / GameConst.TicRate)
                 {
-                    timeCount = scores[0].Time / GameConstants.TicRate;
+                    timeCount = scores[0].Time / GameConst.TicRate;
                 }
 
                 parCount += 3;
 
-                if (parCount >= info.ParTime / GameConstants.TicRate)
+                if (parCount >= info.ParTime / GameConst.TicRate)
                 {
-                    parCount = info.ParTime / GameConstants.TicRate;
+                    parCount = info.ParTime / GameConst.TicRate;
 
-                    if (timeCount >= scores[0].Time / GameConstants.TicRate)
+                    if (timeCount >= scores[0].Time / GameConst.TicRate)
                     {
                         StartSound(Sfx.BAREXP);
                         spState++;
@@ -397,7 +397,7 @@ namespace ManagedDoom
                 if (--pauseCount == 0)
                 {
                     spState++;
-                    pauseCount = GameConstants.TicRate;
+                    pauseCount = GameConst.TicRate;
                 }
             }
         }
@@ -591,7 +591,7 @@ namespace ManagedDoom
                 if (--pauseCount == 0)
                 {
                     ngState++;
-                    pauseCount = GameConstants.TicRate;
+                    pauseCount = GameConst.TicRate;
                 }
             }
         }
@@ -711,7 +711,7 @@ namespace ManagedDoom
                 if (--pauseCount == 0)
                 {
                     dmState++;
-                    pauseCount = GameConstants.TicRate;
+                    pauseCount = GameConst.TicRate;
                 }
             }
         }

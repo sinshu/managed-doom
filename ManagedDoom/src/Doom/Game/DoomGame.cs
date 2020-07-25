@@ -151,7 +151,7 @@ namespace ManagedDoom
 					*/
 
 					// Check for turbo cheats.
-					if (cmd.ForwardMove > GameConstants.TurboThreshold &&
+					if (cmd.ForwardMove > GameConst.TurboThreshold &&
 						(world.LevelTime & 31) == 0 &&
 						((world.LevelTime >> 5) & 3) == i)
 					{

@@ -379,7 +379,7 @@ namespace ManagedDoom
 		{
 			var bm = world.Map.BlockMap;
 
-			var dist = Fixed.FromInt(damage + GameConstants.MaxThingRadius.Data);
+			var dist = Fixed.FromInt(damage + GameConst.MaxThingRadius.Data);
 
 			var blockY1 = bm.GetBlockY(spot.Y - dist);
 			var blockY2 = bm.GetBlockY(spot.Y + dist);

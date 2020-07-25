@@ -19,7 +19,7 @@
 
 namespace ManagedDoom
 {
-    public static class GameConstants
+    public static class GameConst
     {
         public static readonly int TicRate = 35;
 

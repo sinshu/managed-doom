@@ -300,7 +300,7 @@ namespace ManagedDoom
             }
 
             this.message = message;
-            messageTime = 4 * GameConstants.TicRate;
+            messageTime = 4 * GameConst.TicRate;
         }
 
         public int Number => number;

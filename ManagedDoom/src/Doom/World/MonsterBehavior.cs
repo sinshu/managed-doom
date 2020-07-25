@@ -1221,7 +1221,7 @@ namespace ManagedDoom
 
                 var bm = world.Map.BlockMap;
 
-                var maxRadius = GameConstants.MaxThingRadius * 2;
+                var maxRadius = GameConst.MaxThingRadius * 2;
                 var blockX1 = bm.GetBlockX(vileTryX - maxRadius);
                 var blockX2 = bm.GetBlockX(vileTryX + maxRadius);
                 var blockY1 = bm.GetBlockY(vileTryY - maxRadius);

@@ -428,10 +428,10 @@ namespace ManagedDoom
             // mapblocks based on their origin point, and can overlap into adjacent blocks by up
             // to MaxThingRadius units.
             {
-                var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConstants.MaxThingRadius);
-                var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConstants.MaxThingRadius);
-                var blockY1 = bm.GetBlockY(currentBox[Box.Bottom] - GameConstants.MaxThingRadius);
-                var blockY2 = bm.GetBlockY(currentBox[Box.Top] + GameConstants.MaxThingRadius);
+                var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConst.MaxThingRadius);
+                var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConst.MaxThingRadius);
+                var blockY1 = bm.GetBlockY(currentBox[Box.Bottom] - GameConst.MaxThingRadius);
+                var blockY2 = bm.GetBlockY(currentBox[Box.Top] + GameConst.MaxThingRadius);
 
                 for (var bx = blockX1; bx <= blockX2; bx++)
                 {
@@ -1146,10 +1146,10 @@ namespace ManagedDoom
 
             // Stomp on any things contacted.
             var bm = world.Map.BlockMap;
-            var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConstants.MaxThingRadius);
-            var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConstants.MaxThingRadius);
-            var blockY1 = bm.GetBlockY(currentBox[Box.Bottom] - GameConstants.MaxThingRadius);
-            var blockY2 = bm.GetBlockY(currentBox[Box.Top] + GameConstants.MaxThingRadius);
+            var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConst.MaxThingRadius);
+            var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConst.MaxThingRadius);
+            var blockY1 = bm.GetBlockY(currentBox[Box.Bottom] - GameConst.MaxThingRadius);
+            var blockY2 = bm.GetBlockY(currentBox[Box.Top] + GameConst.MaxThingRadius);
 
             for (var bx = blockX1; bx <= blockX2; bx++)
             {
