@@ -395,7 +395,7 @@ namespace ManagedDoom
                 options.Episode = episode;
                 options.Map = map;
             }
-            world.Options.Music.StartMusic(World.GetMapBgm(options), true);
+            world.Options.Music.StartMusic(Map.GetMapBgm(options), true);
             world.ConsolePlayer.SendMessage(DoomInfo.Strings.STSTR_MUS);
         }
     }

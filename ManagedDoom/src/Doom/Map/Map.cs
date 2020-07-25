@@ -221,5 +221,42 @@ namespace ManagedDoom
         public Texture SkyTexture => skyTexture;
         public int SkyFlatNumber => flats.SkyFlatNumber;
         public string Title => title;
+
+
+
+        private static readonly Bgm[] e4BgmList = new Bgm[]
+        {
+            Bgm.E3M4, // American   e4m1
+            Bgm.E3M2, // Romero     e4m2
+            Bgm.E3M3, // Shawn      e4m3
+            Bgm.E1M5, // American   e4m4
+            Bgm.E2M7, // Tim        e4m5
+            Bgm.E2M4, // Romero     e4m6
+            Bgm.E2M6, // J.Anderson e4m7 CHIRON.WAD
+            Bgm.E2M5, // Shawn      e4m8
+            Bgm.E1M9  // Tim        e4m9
+        };
+
+        public static Bgm GetMapBgm(GameOptions options)
+        {
+            Bgm bgm;
+            if (options.GameMode == GameMode.Commercial)
+            {
+                bgm = Bgm.RUNNIN + options.Map - 1;
+            }
+            else
+            {
+                if (options.Episode < 4)
+                {
+                    bgm = Bgm.E1M1 + (options.Episode - 1) * 9 + options.Map - 1;
+                }
+                else
+                {
+                    bgm = e4BgmList[options.Map - 1];
+                }
+            }
+
+            return bgm;
+        }
     }
 }
