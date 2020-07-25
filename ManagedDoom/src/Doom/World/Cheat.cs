@@ -36,7 +36,8 @@ namespace ManagedDoom
             Tuple.Create("tntem", (Action<Cheat, string>)((cheat, typed) => cheat.KillMonsters())),
             Tuple.Create("killem", (Action<Cheat, string>)((cheat, typed) => cheat.KillMonsters())),
             Tuple.Create("fhhall", (Action<Cheat, string>)((cheat, typed) => cheat.KillMonsters())),
-            Tuple.Create("idclev??", (Action<Cheat, string>)((cheat, typed) => cheat.ChangeLevel(typed)))
+            Tuple.Create("idclev??", (Action<Cheat, string>)((cheat, typed) => cheat.ChangeLevel(typed))),
+            Tuple.Create("idmus??", (Action<Cheat, string>)((cheat, typed) => cheat.ChangeMusic(typed)))
         };
 
         private static readonly int maxLength = list.Max(tuple => tuple.Item1.Length);
@@ -364,6 +365,38 @@ namespace ManagedDoom
                 var skill = world.Options.Skill;
                 world.Game.DeferedInitNew(skill, episode, map);
             }
+        }
+
+        private void ChangeMusic(string typed)
+        {
+            var options = new GameOptions();
+            options.GameMode = world.Options.GameMode;
+            if (world.Options.GameMode == GameMode.Commercial)
+            {
+                int map;
+                if (!int.TryParse(typed.Substring(typed.Length - 2, 2), out map))
+                {
+                    return;
+                }
+                options.Map = map;
+            }
+            else
+            {
+                int episode;
+                if (!int.TryParse(typed.Substring(typed.Length - 2, 1), out episode))
+                {
+                    return;
+                }
+                int map;
+                if (!int.TryParse(typed.Substring(typed.Length - 1, 1), out map))
+                {
+                    return;
+                }
+                options.Episode = episode;
+                options.Map = map;
+            }
+            world.Options.Music.StartMusic(World.GetMapBgm(options), true);
+            world.ConsolePlayer.SendMessage(DoomInfo.Strings.STSTR_MUS);
         }
     }
 }

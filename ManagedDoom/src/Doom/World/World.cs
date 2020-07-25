@@ -390,7 +390,7 @@ namespace ManagedDoom
             Bgm.E1M9  // Tim        e4m9
         };
 
-        private static Bgm GetMapBgm(GameOptions options)
+        public static Bgm GetMapBgm(GameOptions options)
         {
             Bgm bgm;
             if (options.GameMode == GameMode.Commercial)
