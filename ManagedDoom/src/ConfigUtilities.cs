@@ -74,11 +74,20 @@ namespace ManagedDoom
                 "DOOM1.WAD"
             };
 
-            var directory = GetExeDirectory();
-
+            var exeDirectory = GetExeDirectory();
             foreach (var name in names)
             {
-                var path = Path.Combine(directory, name);
+                var path = Path.Combine(exeDirectory, name);
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+            }
+
+            var currentDirectory = Directory.GetCurrentDirectory();
+            foreach (var name in names)
+            {
+                var path = Path.Combine(currentDirectory, name);
                 if (File.Exists(path))
                 {
                     return path;
