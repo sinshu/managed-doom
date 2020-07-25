@@ -70,10 +70,10 @@ namespace ManagedDoom
                 var style = Styles.Close | Styles.Titlebar;
                 if (config.video_fullscreen)
                 {
-                    style |= Styles.Fullscreen;
+                    style = Styles.Fullscreen;
                 }
                 window = new RenderWindow(videoMode, "Managed Doom", style);
-                window.Clear(new Color(128, 128, 128));
+                window.Clear(new Color(64, 64, 64));
                 window.Display();
 
                 resource = new CommonResource(GetWadPaths(args));
