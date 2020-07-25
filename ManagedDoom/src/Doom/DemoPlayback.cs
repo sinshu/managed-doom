@@ -16,6 +16,7 @@
 
 
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace ManagedDoom
@@ -25,6 +26,9 @@ namespace ManagedDoom
         private Demo demo;
         private TicCmd[] cmds;
         private DoomGame game;
+
+        private Stopwatch stopwatch;
+        private int frameCount;
 
         public DemoPlayback(CommonResource resource, GameOptions options, string demoName)
         {
@@ -63,16 +67,25 @@ namespace ManagedDoom
             var episode = demo.Options.Episode;
             var map = demo.Options.Map;
             game.DeferedInitNew(skill, episode, map);
+
+            stopwatch = new Stopwatch();
         }
 
         public UpdateResult Update()
         {
+            if (!stopwatch.IsRunning)
+            {
+                stopwatch.Start();
+            }
+
             if (!demo.ReadCmd(cmds))
             {
+                stopwatch.Stop();
                 return UpdateResult.Completed;
             }
             else
             {
+                frameCount++;
                 return game.Update(cmds);
             }
         }
@@ -83,5 +96,6 @@ namespace ManagedDoom
         }
 
         public DoomGame Game => game;
+        public double Fps => frameCount / stopwatch.Elapsed.TotalSeconds;
     }
 }

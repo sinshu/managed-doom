@@ -36,6 +36,7 @@ namespace ManagedDoom
         public readonly Arg nomonsters;
 
         public readonly Arg<string> playdemo;
+        public readonly Arg<string> timedemo;
 
         public readonly Arg<int> loadgame;
 
@@ -59,6 +60,7 @@ namespace ManagedDoom
             nomonsters = new Arg(args.Contains("-nomonsters"));
 
             playdemo = GetString(args, "-playdemo");
+            timedemo = GetString(args, "-timedemo");
 
             loadgame = GetInt(args, "-loadgame");
 

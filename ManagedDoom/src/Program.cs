@@ -23,9 +23,18 @@ namespace ManagedDoom
     {
         static void Main(string[] args)
         {
+            string quitMessage = null;
+
             using (var app = new DoomApplication(new CommandLineArgs(args)))
             {
                 app.Run();
+                quitMessage = app.QuitMessage;
+            }
+
+            if (quitMessage != null)
+            {
+                Console.Write(quitMessage);
+                Console.ReadKey();
             }
         }
     }

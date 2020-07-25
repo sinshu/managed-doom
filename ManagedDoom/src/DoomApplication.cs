@@ -58,7 +58,9 @@ namespace ManagedDoom
         private bool needWipe;
 
         private bool sendPause;
+
         private bool quit;
+        private string quitMessage;
 
         public DoomApplication(CommandLineArgs args)
         {
@@ -123,14 +125,20 @@ namespace ManagedDoom
                 needWipe = false;
 
                 sendPause = false;
+
                 quit = false;
+                quitMessage = null;
 
                 CheckGameArgs(args);
 
                 window.Closed += (sender, e) => window.Close();
                 window.KeyPressed += KeyPressed;
                 window.KeyReleased += KeyReleased;
-                window.SetFramerateLimit(35);
+
+                if (!args.timedemo.Present)
+                {
+                    window.SetFramerateLimit(35);
+                }
             }
             catch (Exception e)
             {
@@ -212,6 +220,12 @@ namespace ManagedDoom
             {
                 nextState = ApplicationState.DemoPlayback;
                 demoPlayback = new DemoPlayback(resource, options, args.playdemo.Value);
+            }
+
+            if (args.timedemo.Present)
+            {
+                nextState = ApplicationState.DemoPlayback;
+                demoPlayback = new DemoPlayback(resource, options, args.timedemo.Value);
             }
         }
 
@@ -455,7 +469,7 @@ namespace ManagedDoom
                         }
                         else if (result == UpdateResult.Completed)
                         {
-                            Quit();
+                            Quit("FPS: " + demoPlayback.Fps.ToString("0.0"));
                         }
                         break;
 
@@ -563,6 +577,12 @@ namespace ManagedDoom
             quit = true;
         }
 
+        public void Quit(string message)
+        {
+            quit = true;
+            quitMessage = message;
+        }
+
         public void Dispose()
         {
             if (userInput != null)
@@ -608,5 +628,6 @@ namespace ManagedDoom
         public GameOptions Options => options;
         public DoomGame Game => game;
         public DoomMenu Menu => menu;
+        public string QuitMessage => quitMessage;
     }
 }
