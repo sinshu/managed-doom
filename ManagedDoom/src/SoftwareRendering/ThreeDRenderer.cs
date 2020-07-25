@@ -608,14 +608,14 @@ namespace ManagedDoom.SoftwareRendering
 
         private void InitWindowBorder(Wad wad)
         {
-            borderTopLeft = Patch.FromWad("BRDR_TL", wad);
-            borderTopRight = Patch.FromWad("BRDR_TR", wad);
-            borderBottomLeft = Patch.FromWad("BRDR_BL", wad);
-            borderBottomRight = Patch.FromWad("BRDR_BR", wad);
-            borderTop = Patch.FromWad("BRDR_T", wad);
-            borderBottom = Patch.FromWad("BRDR_B", wad);
-            borderLeft = Patch.FromWad("BRDR_L", wad);
-            borderRight = Patch.FromWad("BRDR_R", wad);
+            borderTopLeft = Patch.FromWad(wad, "BRDR_TL");
+            borderTopRight = Patch.FromWad(wad, "BRDR_TR");
+            borderBottomLeft = Patch.FromWad(wad, "BRDR_BL");
+            borderBottomRight = Patch.FromWad(wad, "BRDR_BR");
+            borderTop = Patch.FromWad(wad, "BRDR_T");
+            borderBottom = Patch.FromWad(wad, "BRDR_B");
+            borderLeft = Patch.FromWad(wad, "BRDR_L");
+            borderRight = Patch.FromWad(wad, "BRDR_R");
 
             if (wad.GameMode == GameMode.Commercial)
             {

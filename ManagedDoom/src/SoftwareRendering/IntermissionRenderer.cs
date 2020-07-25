@@ -109,14 +109,14 @@ namespace ManagedDoom.SoftwareRendering
 
             cache = new PatchCache(wad);
 
-            minus = Patch.FromWad("WIMINUS", wad);
+            minus = Patch.FromWad(wad, "WIMINUS");
             numbers = new Patch[10];
             for (var i = 0; i < 10; i++)
             {
-                numbers[i] = Patch.FromWad("WINUM" + i, wad);
+                numbers[i] = Patch.FromWad(wad, "WINUM" + i);
             }
-            percent = Patch.FromWad("WIPCNT", wad);
-            colon = Patch.FromWad("WICOLON", wad);
+            percent = Patch.FromWad(wad, "WIPCNT");
+            colon = Patch.FromWad(wad, "WICOLON");
 
             scale = screen.Width / 320;
         }

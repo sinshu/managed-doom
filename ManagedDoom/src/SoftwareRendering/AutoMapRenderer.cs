@@ -114,7 +114,7 @@ namespace ManagedDoom.SoftwareRendering
             markNumbers = new Patch[10];
             for (var i = 0; i < markNumbers.Length; i++)
             {
-                markNumbers[i] = Patch.FromWad("AMMNUM" + i, wad);
+                markNumbers[i] = Patch.FromWad(wad, "AMMNUM" + i);
             }
         }
 

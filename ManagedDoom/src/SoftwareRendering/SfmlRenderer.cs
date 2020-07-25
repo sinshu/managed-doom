@@ -128,7 +128,7 @@ namespace ManagedDoom.SoftwareRendering
             autoMap = new AutoMapRenderer(resource.Wad, screen);
             finale = new FinaleRenderer(resource, screen);
 
-            pause = Patch.FromWad("M_PAUSE", resource.Wad);
+            pause = Patch.FromWad(resource.Wad, "M_PAUSE");
 
             var scale = screen.Width / 320;
             wipeBandWidth = 2 * scale;

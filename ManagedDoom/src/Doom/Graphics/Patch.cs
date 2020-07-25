@@ -83,7 +83,7 @@ namespace ManagedDoom
                 columns);
         }
 
-        public static Patch FromWad(string name, Wad wad)
+        public static Patch FromWad(Wad wad, string name)
         {
             return FromData(name, wad.ReadLump(name));
         }

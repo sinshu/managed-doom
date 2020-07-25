@@ -39,7 +39,7 @@ namespace ManagedDoom
                 Patch patch;
                 if (!cache.TryGetValue(name, out patch))
                 {
-                    patch = Patch.FromWad(name, wad);
+                    patch = Patch.FromWad(wad, name);
                     cache.Add(name, patch);
                 }
                 return patch;
