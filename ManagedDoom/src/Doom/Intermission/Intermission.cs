@@ -108,6 +108,10 @@ namespace ManagedDoom
 
 
 
+        ////////////////////////////////////////////////////////////
+        // Initialization
+        ////////////////////////////////////////////////////////////
+        
         private void InitSinglePLayerStats()
         {
             state = IntermissionState.StatCount;
@@ -119,6 +123,7 @@ namespace ManagedDoom
 
             InitAnimatedBack();
         }
+
 
         private void InitNetGameStats()
         {
@@ -143,6 +148,7 @@ namespace ManagedDoom
 
             InitAnimatedBack();
         }
+
 
         private void InitDeathmatchStats()
         {
@@ -169,12 +175,14 @@ namespace ManagedDoom
             InitAnimatedBack();
         }
 
+
         private void InitNoState()
         {
             state = IntermissionState.NoState;
             accelerateStage = false;
             count = 10;
         }
+
 
         private static readonly int showNextLocDelay = 4;
 
@@ -186,6 +194,7 @@ namespace ManagedDoom
 
             InitAnimatedBack();
         }
+
 
         private void InitAnimatedBack()
         {
@@ -206,6 +215,10 @@ namespace ManagedDoom
         }
 
 
+
+        ////////////////////////////////////////////////////////////
+        // Update
+        ////////////////////////////////////////////////////////////
 
         public UpdateResult Update()
         {
@@ -269,6 +282,7 @@ namespace ManagedDoom
                 }
             }
         }
+
 
         private void UpdateSinglePlayerStats()
         {
@@ -387,6 +401,7 @@ namespace ManagedDoom
                 }
             }
         }
+
 
         private void UpdateNetGameStats()
         {
@@ -581,6 +596,7 @@ namespace ManagedDoom
             }
         }
 
+
         private void UpdateDeathmatchStats()
         {
             UpdateAnimatedBack();
@@ -700,6 +716,7 @@ namespace ManagedDoom
             }
         }
 
+
         private void UpdateShowNextLoc()
         {
             UpdateAnimatedBack();
@@ -714,6 +731,7 @@ namespace ManagedDoom
             }
         }
 
+
         private void UpdateNoState()
         {
 
@@ -724,6 +742,7 @@ namespace ManagedDoom
                 completed = true;
             }
         }
+
 
         private void UpdateAnimatedBack()
         {
@@ -744,6 +763,10 @@ namespace ManagedDoom
         }
 
 
+
+        ////////////////////////////////////////////////////////////
+        // Check for button press
+        ////////////////////////////////////////////////////////////
 
         private void CheckForAccelerate()
         {
@@ -782,6 +805,12 @@ namespace ManagedDoom
             }
         }
 
+
+
+        ////////////////////////////////////////////////////////////
+        // Miscellaneous functions
+        ////////////////////////////////////////////////////////////
+
         private int GetFragSum(int playerNumber)
         {
             var frags = 0;
@@ -798,6 +827,7 @@ namespace ManagedDoom
 
             return frags;
         }
+
 
         private void StartSound(Sfx sfx)
         {
