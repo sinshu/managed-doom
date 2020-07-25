@@ -14,7 +14,7 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
             {
-                var demo = new Demo(@"data\altdeath_test.lmp", resource.Wad.GameMode);
+                var demo = new Demo(@"data\altdeath_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
 
