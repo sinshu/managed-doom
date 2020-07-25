@@ -37,7 +37,7 @@ namespace ManagedDoom
         private SfmlMusic music;
         private SfmlUserInput userInput;
 
-        private Queue<DoomEvent> events;
+        private List<DoomEvent> events;
 
         private GameOptions options;
 
@@ -92,7 +92,7 @@ namespace ManagedDoom
 
                 userInput = new SfmlUserInput(config, window, !args.nomouse.Present);
 
-                events = new Queue<DoomEvent>();
+                events = new List<DoomEvent>();
 
                 options = new GameOptions();
                 options.GameMode = resource.Wad.GameMode;
@@ -212,7 +212,7 @@ namespace ManagedDoom
             while (window.IsOpen)
             {
                 window.DispatchEvents();
-                DoEvent();
+                DoEvents();
                 if (Update() == UpdateResult.Completed)
                 {
                     config.Save(ConfigUtilities.GetConfigPath());
@@ -232,46 +232,44 @@ namespace ManagedDoom
             nextState = ApplicationState.Opening;
         }
 
-        private void DoEvent()
+        private void DoEvents()
         {
             if (wiping)
             {
                 return;
             }
 
-            if (events.Count == 0)
+            foreach (var e in events)
             {
-                return;
-            }
-
-            var e = events.Dequeue();
-
-            if (menu.DoEvent(e))
-            {
-                return;
-            }
-
-            if (e.Type == EventType.KeyDown)
-            {
-                if (CheckFunctionKey(e.Key))
+                if (menu.DoEvent(e))
                 {
-                    return;
+                    continue;
+                }
+
+                if (e.Type == EventType.KeyDown)
+                {
+                    if (CheckFunctionKey(e.Key))
+                    {
+                        continue;
+                    }
+                }
+
+                if (currentState == ApplicationState.Game)
+                {
+                    if (e.Key == DoomKey.Pause && e.Type == EventType.KeyDown)
+                    {
+                        sendPause = true;
+                        continue;
+                    }
+
+                    if (game.DoEvent(e))
+                    {
+                        continue;
+                    }
                 }
             }
 
-            if (currentState == ApplicationState.Game)
-            {
-                if (e.Key == DoomKey.Pause && e.Type == EventType.KeyDown)
-                {
-                    sendPause = true;
-                    return;
-                }
-
-                if (game.DoEvent(e))
-                {
-                    return;
-                }
-            }
+            events.Clear();
         }
 
         private bool CheckFunctionKey(DoomKey key)
@@ -355,15 +353,6 @@ namespace ManagedDoom
                             msg = "Gamma correction level " + gcl;
                         }
                         game.World.ConsolePlayer.SendMessage(msg);
-                    }
-                    return true;
-
-                case DoomKey.F12:
-                    if (options.Deathmatch == 0 &&
-                        currentState == ApplicationState.Game &&
-                        game.State == GameState.Level)
-                    {
-                        game.World.ChangeDisplayPlayer();
                     }
                     return true;
 
@@ -482,7 +471,7 @@ namespace ManagedDoom
         {
             if (events.Count < 64)
             {
-                events.Enqueue(new DoomEvent(EventType.KeyDown, (DoomKey)e.Code));
+                events.Add(new DoomEvent(EventType.KeyDown, (DoomKey)e.Code));
             }
         }
 
@@ -490,7 +479,7 @@ namespace ManagedDoom
         {
             if (events.Count < 64)
             {
-                events.Enqueue(new DoomEvent(EventType.KeyUp, (DoomKey)e.Code));
+                events.Add(new DoomEvent(EventType.KeyUp, (DoomKey)e.Code));
             }
         }
 

@@ -282,6 +282,15 @@ namespace ManagedDoom
                 return true;
             }
 
+            if (e.Key == DoomKey.F12 && e.Type == EventType.KeyDown)
+            {
+                if (options.DemoPlayback || options.Deathmatch == 0)
+                {
+                    ChangeDisplayPlayer();
+                }
+                return true;
+            }
+
             return false;
         }
 
