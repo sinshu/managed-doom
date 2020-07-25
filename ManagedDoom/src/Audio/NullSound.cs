@@ -81,7 +81,7 @@ namespace ManagedDoom.Audio
         {
             get
             {
-                return 8;
+                return 0;
             }
 
             set

@@ -77,10 +77,20 @@ namespace ManagedDoom
                 window.Display();
 
                 resource = new CommonResource(GetWadPaths(args));
+
                 renderer = new SfmlRenderer(config, window, resource);
-                sound = new SfmlSound(config, resource.Wad);
-                music = ConfigUtilities.GetSfmlMusicInstance(config, resource.Wad);
-                userInput = new SfmlUserInput(config, window);
+
+                if (!args.nosound.Present && !args.nosfx.Present)
+                {
+                    sound = new SfmlSound(config, resource.Wad);
+                }
+
+                if (!args.nosound.Present && !args.nomusic.Present)
+                {
+                    music = ConfigUtilities.GetSfmlMusicInstance(config, resource.Wad);
+                }
+
+                userInput = new SfmlUserInput(config, window, !args.nomouse.Present);
 
                 events = new Queue<DoomEvent>();
 
@@ -163,6 +173,37 @@ namespace ManagedDoom
             if (args.skill.Present)
             {
                 options.Skill = (GameSkill)(args.skill.Value - 1);
+            }
+
+            if (args.deathmatch.Present)
+            {
+                options.Deathmatch = 1;
+            }
+
+            if (args.altdeath.Present)
+            {
+                options.Deathmatch = 2;
+            }
+
+            if (args.fast.Present)
+            {
+                options.FastMonsters = true;
+            }
+
+            if (args.respawn.Present)
+            {
+                options.RespawnMonsters = true;
+            }
+
+            if (args.nomonsters.Present)
+            {
+                options.NoMonsters = true;
+            }
+
+            if (args.loadgame.Present)
+            {
+                nextState = ApplicationState.Game;
+                game.LoadGame(args.loadgame.Value);
             }
         }
 

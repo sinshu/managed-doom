@@ -29,24 +29,43 @@ namespace ManagedDoom
         public readonly Arg<Tuple<int, int>> warp;
         public readonly Arg<int> skill;
 
+        public readonly Arg deathmatch;
+        public readonly Arg altdeath;
+        public readonly Arg fast;
+        public readonly Arg respawn;
+        public readonly Arg nomonsters;
+
+        public readonly Arg<string> playdemo;
+
+        public readonly Arg<int> loadgame;
+
+        public readonly Arg nomouse;
+        public readonly Arg nosound;
+        public readonly Arg nosfx;
+        public readonly Arg nomusic;
+
         public CommandLineArgs(string[] args)
         {
-            iwad = Check_iwad(args);
+            iwad = GetString(args, "-iwad");
             file = Check_file(args);
 
             warp = Check_warp(args);
-            skill = Check_skill(args);
-        }
+            skill = GetInt(args, "-skill");
 
-        private static Arg<string> Check_iwad(string[] args)
-        {
-            var values = GetValues(args, "-iwad");
-            if (values.Length == 1)
-            {
-                return new Arg<string>(values[0]);
-            }
+            deathmatch = new Arg(args.Contains("-deathmatch"));
+            altdeath = new Arg(args.Contains("-altdeath"));
+            fast = new Arg(args.Contains("-fast"));
+            respawn = new Arg(args.Contains("-respawn"));
+            nomonsters = new Arg(args.Contains("-nomonsters"));
 
-            return new Arg<string>();
+            playdemo = GetString(args, "-playdemo");
+
+            loadgame = GetInt(args, "-loadgame");
+
+            nomouse = new Arg(args.Contains("-nomouse"));
+            nosound = new Arg(args.Contains("-nosound"));
+            nosfx = new Arg(args.Contains("-nosfx"));
+            nomusic = new Arg(args.Contains("-nomusic"));
         }
 
         private static Arg<string[]> Check_file(string[] args)
@@ -84,15 +103,26 @@ namespace ManagedDoom
             return new Arg<Tuple<int, int>>();
         }
 
-        private static Arg<int> Check_skill(string[] args)
+        private static Arg<string> GetString(string[] args, string name)
         {
-            var values = GetValues(args, "-skill");
+            var values = GetValues(args, name);
             if (values.Length == 1)
             {
-                int skill;
-                if (int.TryParse(values[0], out skill))
+                return new Arg<string>(values[0]);
+            }
+
+            return new Arg<string>();
+        }
+
+        private static Arg<int> GetInt(string[] args, string name)
+        {
+            var values = GetValues(args, name);
+            if (values.Length == 1)
+            {
+                int result;
+                if (int.TryParse(values[0], out result))
                 {
-                    return new Arg<int>(skill);
+                    return new Arg<int>(result);
                 }
             }
 

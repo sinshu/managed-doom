@@ -28,6 +28,8 @@ namespace ManagedDoom
 
         private RenderWindow window;
 
+        private bool useMouse;
+
         private bool[] weaponKeys;
         private int turnHeld;
 
@@ -37,13 +39,15 @@ namespace ManagedDoom
         private int mouseY;
         private bool cursorCentered;
 
-        public SfmlUserInput(Config config, RenderWindow window)
+        public SfmlUserInput(Config config, RenderWindow window, bool useMouse)
         {
             this.config = config;
 
             config.mouse_sensitivity = Math.Max(config.mouse_sensitivity, 0);
 
             this.window = window;
+
+            this.useMouse = useMouse;
 
             weaponKeys = new bool[7];
             turnHeld = 0;
@@ -54,8 +58,11 @@ namespace ManagedDoom
             mouseY = 0;
             cursorCentered = false;
 
-            window.SetMouseCursorGrabbed(true);
-            window.SetMouseCursorVisible(false);
+            if (useMouse)
+            {
+                window.SetMouseCursorGrabbed(true);
+                window.SetMouseCursorVisible(false);
+            }
         }
 
         public void BuildTicCmd(TicCmd cmd)
@@ -172,18 +179,21 @@ namespace ManagedDoom
                 }
             }
 
-            UpdateMouse();
-            var ms = 0.5F * config.mouse_sensitivity;
-            var mx = (int)MathF.Round(ms * mouseX);
-            var my = (int)MathF.Round(ms * mouseY);
-            forward += my;
-            if (strafe)
+            if (useMouse)
             {
-                side += mx * 2;
-            }
-            else
-            {
-                cmd.AngleTurn -= (short)(mx * 0x8);
+                UpdateMouse();
+                var ms = 0.5F * config.mouse_sensitivity;
+                var mx = (int)MathF.Round(ms * mouseX);
+                var my = (int)MathF.Round(ms * mouseY);
+                forward += my;
+                if (strafe)
+                {
+                    side += mx * 2;
+                }
+                else
+                {
+                    cmd.AngleTurn -= (short)(mx * 0x8);
+                }
             }
 
             if (forward > PlayerBehavior.MaxMove)
@@ -256,8 +266,11 @@ namespace ManagedDoom
 
         public void Dispose()
         {
-            window.SetMouseCursorVisible(true);
-            window.SetMouseCursorGrabbed(false);
+            if (useMouse)
+            {
+                window.SetMouseCursorVisible(true);
+                window.SetMouseCursorGrabbed(false);
+            }
         }
 
         public int MaxMouseSensitivity
