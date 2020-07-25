@@ -564,7 +564,8 @@ namespace ManagedDoom
                 ((int)Math.Round(mthing.Angle.ToDegree()) / 45);
 
             //
-            // The code below is based on chocolate-doom's G_CheckSpot implementation.
+            // The code below to reproduce respawn fog bug in deathmath
+            // is based on Chocolate Doom's implementation.
             //
 
             Fixed xa;

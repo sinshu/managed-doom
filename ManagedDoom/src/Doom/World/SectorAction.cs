@@ -1508,7 +1508,7 @@ namespace ManagedDoom
 							return false;
 						}
 
-						// This compatibility fix is based on chocolate-doom's EV_Teleport.
+						// This compatibility fix is based on Chocolate Doom's implementation.
 						if (world.Options.GameVersion != GameVersion.Final)
 						{
 							thing.Z = thing.FloorZ;
@@ -1671,7 +1671,7 @@ namespace ManagedDoom
 				var s2 = GetNextSector(s1.Lines[0], s1);
 
 				//
-				// The code below is based on chocolate-doom's EV_DoDonut implementation.
+				// The code below is based on Chocolate Doom's implementation.
 				//
 
 				if (s2 == null)

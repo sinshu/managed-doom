@@ -52,7 +52,7 @@ namespace ManagedDoom
                 dy = temp;
             }
 
-            // The code below to avoid zerodiv is based on chocolate-doom's R_PointToDist.
+            // The code below to avoid division by zero is based on Chocolate Doom's implementation.
             Fixed frac;
             if (dx != Fixed.Zero)
             {

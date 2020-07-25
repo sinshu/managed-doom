@@ -391,7 +391,8 @@ namespace ManagedDoom
 
             if (targetAngle - player.Mobj.Angle > Angle.Ang180)
             {
-                // The code below is based on Mocha Doom's A_Saw implementation.
+                // The code below is based on Mocha Doom's implementation.
+                // It is still unclear for me why this code works like the original verion...
                 if ((int)(targetAngle - player.Mobj.Angle).Data < -Angle.Ang90.Data / 20)
                 {
                     player.Mobj.Angle = targetAngle + Angle.Ang90 / 21;

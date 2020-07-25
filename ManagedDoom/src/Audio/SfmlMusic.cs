@@ -151,6 +151,13 @@ namespace ManagedDoom.Audio
 
                 var a = 32768 * (6.0F * config.audio_musicvolume / parent.MaxVolume);
 
+                //
+                // Due to a design error, this implementation makes the music
+                // playback speed a bit slower.
+                // The slowdown is around 1 sec per minute, so I hope no one
+                // will notice.
+                //
+
                 var t = 0;
                 for (var i = 0; i < stepCount; i++)
                 {

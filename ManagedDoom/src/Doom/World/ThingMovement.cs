@@ -740,7 +740,7 @@ namespace ManagedDoom
                 // Hit the floor.
 
                 //
-                // The lost soul bounce fix below is based on chocolate-doom's P_ZMovement.
+                // The lost soul bounce fix below is based on Chocolate Doom's implementation.
                 //
 
                 var correctLostSoulBounce = world.Options.GameVersion >= GameVersion.Ultimate;
