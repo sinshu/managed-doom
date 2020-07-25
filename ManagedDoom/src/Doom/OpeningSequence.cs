@@ -36,6 +36,8 @@ namespace ManagedDoom
         private Demo demo;
         private DoomGame game;
 
+        private bool reset;
+
         public OpeningSequence(CommonResource resource, GameOptions options)
         {
             this.resource = resource;
@@ -50,6 +52,8 @@ namespace ManagedDoom
             currentStage = 0;
             nextStage = 0;
 
+            reset = false;
+
             StartTitleScreen();
         }
 
@@ -60,6 +64,8 @@ namespace ManagedDoom
 
             demo = null;
             game = null;
+
+            reset = true;
 
             StartTitleScreen();
         }
@@ -188,7 +194,27 @@ namespace ManagedDoom
                     break;
             }
 
-            return updateResult;
+            if (state == OpeningSequenceState.Title && count == 1)
+            {
+                if (options.GameMode == GameMode.Commercial)
+                {
+                    options.Music.StartMusic(Bgm.DM2TTL, false);
+                }
+                else
+                {
+                    options.Music.StartMusic(Bgm.INTRO, false);
+                }
+            }
+
+            if (reset)
+            {
+                reset = false;
+                return UpdateResult.NeedWipe;
+            }
+            else
+            {
+                return updateResult;
+            }
         }
 
         private void StartTitleScreen()
@@ -203,15 +229,6 @@ namespace ManagedDoom
             else
             {
                 timer = 170;
-            }
-
-            if (options.GameMode == GameMode.Commercial)
-            {
-                options.Music.StartMusic(Bgm.DM2TTL, false);
-            }
-            else
-            {
-                options.Music.StartMusic(Bgm.INTRO, false);
             }
         }
 

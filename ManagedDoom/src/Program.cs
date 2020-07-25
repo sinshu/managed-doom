@@ -23,7 +23,7 @@ namespace ManagedDoom
     {
         static void Main(string[] args)
         {
-            using (var app = new DoomApplication())
+            using (var app = new DoomApplication(new CommandLineArgs(args)))
             {
                 app.Run();
             }

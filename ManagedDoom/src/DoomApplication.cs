@@ -58,7 +58,7 @@ namespace ManagedDoom
         private bool sendPause;
         private bool quit;
 
-        public DoomApplication()
+        public DoomApplication(CommandLineArgs args)
         {
             config = new Config(ConfigUtilities.GetConfigPath());
 
@@ -76,7 +76,7 @@ namespace ManagedDoom
                 window.Clear(new Color(128, 128, 128));
                 window.Display();
 
-                resource = new CommonResource(ConfigUtilities.GetDefaultIwadPath());
+                resource = new CommonResource(GetWadPaths(args));
                 renderer = new SfmlRenderer(config, window, resource);
                 sound = new SfmlSound(config, resource.Wad);
                 music = ConfigUtilities.GetSfmlMusicInstance(config, resource.Wad);
@@ -106,22 +106,63 @@ namespace ManagedDoom
                 wipe = new WipeEffect(renderer.WipeBandCount, renderer.WipeHeight);
                 wiping = false;
 
-                window.Closed += (sender, e) => window.Close();
-                window.KeyPressed += KeyPressed;
-                window.KeyReleased += KeyReleased;
-                window.SetFramerateLimit(35);
-
                 currentState = ApplicationState.None;
                 nextState = ApplicationState.Opening;
                 needWipe = false;
 
                 sendPause = false;
                 quit = false;
+
+                CheckGameArgs(args);
+
+                window.Closed += (sender, e) => window.Close();
+                window.KeyPressed += KeyPressed;
+                window.KeyReleased += KeyReleased;
+                window.SetFramerateLimit(35);
             }
             catch (Exception e)
             {
                 Dispose();
                 ExceptionDispatchInfo.Throw(e);
+            }
+        }
+
+        private string[] GetWadPaths(CommandLineArgs args)
+        {
+            var wadPaths = new List<string>();
+
+            if (args.iwad.Present)
+            {
+                wadPaths.Add(args.iwad.Value);
+            }
+            else
+            {
+                wadPaths.Add(ConfigUtilities.GetDefaultIwadPath());
+            }
+
+            if (args.file.Present)
+            {
+                foreach (var path in args.file.Value)
+                {
+                    wadPaths.Add(path);
+                }
+            }
+
+            return wadPaths.ToArray();
+        }
+
+        private void CheckGameArgs(CommandLineArgs args)
+        {
+            if (args.warp.Present)
+            {
+                nextState = ApplicationState.Game;
+                options.Episode = args.warp.Value.Item1;
+                options.Map = args.warp.Value.Item2;
+            }
+
+            if (args.skill.Present)
+            {
+                options.Skill = (GameSkill)(args.skill.Value - 1);
             }
         }
 
@@ -148,7 +189,6 @@ namespace ManagedDoom
         public void EndGame()
         {
             nextState = ApplicationState.Opening;
-            needWipe = true;
         }
 
         private void DoEvent()
