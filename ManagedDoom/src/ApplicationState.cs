@@ -23,6 +23,7 @@ namespace ManagedDoom
     {
         None,
         Opening,
+        DemoPlayback,
         Game
     }
 }

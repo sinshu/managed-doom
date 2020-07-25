@@ -45,6 +45,8 @@ namespace ManagedDoom
 
         private OpeningSequence opening;
 
+        private DemoPlayback demoPlayback;
+
         private TicCmd[] cmds;
         private DoomGame game;
 
@@ -205,6 +207,12 @@ namespace ManagedDoom
                 nextState = ApplicationState.Game;
                 game.LoadGame(args.loadgame.Value);
             }
+
+            if (args.playdemo.Present)
+            {
+                nextState = ApplicationState.DemoPlayback;
+                demoPlayback = new DemoPlayback(resource, options, args.playdemo.Value);
+            }
         }
 
         public void Run()
@@ -266,6 +274,10 @@ namespace ManagedDoom
                     {
                         continue;
                     }
+                }
+                else if (currentState == ApplicationState.DemoPlayback)
+                {
+                    demoPlayback.DoEvent(e);
                 }
             }
 
@@ -404,6 +416,11 @@ namespace ManagedDoom
                         opening.Reset();
                     }
 
+                    if (nextState != ApplicationState.DemoPlayback)
+                    {
+                        demoPlayback = null;
+                    }
+
                     currentState = nextState;
                 }
 
@@ -427,6 +444,18 @@ namespace ManagedDoom
                         if (opening.Update() == UpdateResult.NeedWipe)
                         {
                             StartWipe();
+                        }
+                        break;
+
+                    case ApplicationState.DemoPlayback:
+                        var result = demoPlayback.Update();
+                        if (result == UpdateResult.NeedWipe)
+                        {
+                            StartWipe();
+                        }
+                        else if (result == UpdateResult.Completed)
+                        {
+                            Quit();
                         }
                         break;
 
@@ -575,6 +604,7 @@ namespace ManagedDoom
 
         public ApplicationState State => currentState;
         public OpeningSequence Opening => opening;
+        public DemoPlayback DemoPlayback => demoPlayback;
         public GameOptions Options => options;
         public DoomGame Game => game;
         public DoomMenu Menu => menu;

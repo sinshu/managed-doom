@@ -145,6 +145,10 @@ namespace ManagedDoom.SoftwareRendering
             {
                 openingSequence.Render(app.Opening);
             }
+            else if (app.State == ApplicationState.DemoPlayback)
+            {
+                RenderGame(app.DemoPlayback.Game);
+            }
             else if (app.State == ApplicationState.Game)
             {
                 RenderGame(app.Game);
@@ -178,31 +182,33 @@ namespace ManagedDoom.SoftwareRendering
         {
             if (game.State == GameState.Level)
             {
-                var player = game.World.DisplayPlayer;
+                var consolePlayer = game.World.ConsolePlayer;
+                var displayPlayer = game.World.DisplayPlayer;
+
                 if (game.World.AutoMap.Visible)
                 {
-                    autoMap.Render(player);
-                    statusBar.Render(player, true);
+                    autoMap.Render(consolePlayer);
+                    statusBar.Render(consolePlayer, true);
                 }
                 else
                 {
-                    threeD.Render(player);
+                    threeD.Render(displayPlayer);
                     if (threeD.WindowSize < 8)
                     {
-                        statusBar.Render(player, true);
+                        statusBar.Render(consolePlayer, true);
                     }
                     else if (threeD.WindowSize == ThreeDRenderer.MaxScreenSize)
                     {
-                        statusBar.Render(player, false);
+                        statusBar.Render(consolePlayer, false);
                     }
                 }
 
-                if (config.video_displaymessage || ReferenceEquals(player.Message, (string)DoomInfo.Strings.MSGOFF))
+                if (config.video_displaymessage || ReferenceEquals(consolePlayer.Message, (string)DoomInfo.Strings.MSGOFF))
                 {
-                    if (player.MessageTime > 0)
+                    if (consolePlayer.MessageTime > 0)
                     {
                         var scale = screen.Width / 320;
-                        screen.DrawText(player.Message, 0, 7 * scale, scale);
+                        screen.DrawText(consolePlayer.Message, 0, 7 * scale, scale);
                     }
                 }
             }
@@ -232,6 +238,11 @@ namespace ManagedDoom.SoftwareRendering
                 app.Opening.DemoGame.State == GameState.Level)
             {
                 colors = palette[GetPaletteNumber(app.Opening.DemoGame.World.ConsolePlayer)];
+            }
+            else if (app.State == ApplicationState.DemoPlayback &&
+                app.DemoPlayback.Game.State == GameState.Level)
+            {
+                colors = palette[GetPaletteNumber(app.DemoPlayback.Game.World.ConsolePlayer)];
             }
 
             Display(colors);
