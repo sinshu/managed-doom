@@ -17,6 +17,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(@"data\altdeath_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;

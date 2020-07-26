@@ -18,6 +18,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 demo.Options.GameVersion = GameVersion.Final2;
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -55,6 +56,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 demo.Options.Players[0].PlayerState = PlayerState.Reborn;
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -91,6 +93,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -127,6 +130,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -162,6 +166,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -197,6 +202,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -232,6 +238,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -267,6 +274,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -302,6 +310,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;

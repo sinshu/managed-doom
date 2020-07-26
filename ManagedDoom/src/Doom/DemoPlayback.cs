@@ -63,10 +63,7 @@ namespace ManagedDoom
             }
 
             game = new DoomGame(resource, demo.Options);
-            var skill = demo.Options.Skill;
-            var episode = demo.Options.Episode;
-            var map = demo.Options.Map;
-            game.DeferedInitNew(skill, episode, map);
+            game.DeferedInitNew();
 
             stopwatch = new Stopwatch();
         }

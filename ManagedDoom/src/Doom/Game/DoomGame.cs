@@ -46,7 +46,7 @@ namespace ManagedDoom
 			this.resource = resource;
 			this.options = options;
 
-			gameAction = GameAction.NewGame;
+			gameAction = GameAction.Nothing;
 
 			gameTic = 0;
 			random = new DoomRandom();
@@ -56,6 +56,15 @@ namespace ManagedDoom
 		////////////////////////////////////////////////////////////
 		// Public methods to control the game state
 		////////////////////////////////////////////////////////////
+
+		/// <summary>
+		/// Start a new game.
+		/// Can be called by the startup code or the menu task.
+		/// </summary>
+		public void DeferedInitNew()
+		{
+			gameAction = GameAction.NewGame;
+		}
 
 		/// <summary>
 		/// Start a new game.
@@ -597,5 +606,19 @@ namespace ManagedDoom
 		public Intermission Intermission => intermission;
 		public Finale Finale => finale;
 		public bool Paused => paused;
+
+
+
+		private enum GameAction
+		{
+			Nothing,
+			LoadLevel,
+			NewGame,
+			LoadGame,
+			SaveGame,
+			Completed,
+			Victory,
+			WorldDone
+		}
 	}
 }

@@ -22,6 +22,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, options);
+                game.DeferedInitNew();
 
                 var tics = 350;
 
@@ -53,6 +54,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, options);
+                game.DeferedInitNew();
 
                 var tics = 350;
 
@@ -81,6 +83,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, options);
+                game.DeferedInitNew();
 
                 var tics = 350;
 

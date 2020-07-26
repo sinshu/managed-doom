@@ -253,10 +253,7 @@ namespace ManagedDoom
             demo.Options.Music = options.Music;
 
             game = new DoomGame(resource, demo.Options);
-            var skill = demo.Options.Skill;
-            var episode = demo.Options.Episode;
-            var map = demo.Options.Map;
-            game.DeferedInitNew(skill, episode, map);
+            game.DeferedInitNew();
         }
 
         public OpeningSequenceState State => state;

@@ -18,6 +18,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 demo.Options.GameMode = GameMode.Retail;
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -138,6 +139,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(@"data\multilevel_test_doom2.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -258,6 +260,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(@"data\finale_test1.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
@@ -318,6 +321,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 var demo = new Demo(@"data\finale_test2.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
                 var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
 
                 var lastMobjHash = 0;
                 var aggMobjHash = 0;
