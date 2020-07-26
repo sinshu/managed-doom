@@ -18,6 +18,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
@@ -49,30 +50,42 @@ namespace ManagedDoom
 
         private void Init(Wad wad)
         {
-            textures = new List<Texture>();
-            nameToTexture = new Dictionary<string, Texture>();
-            nameToNumber = new Dictionary<string, int>();
-
-            var patches = LoadPatches(wad);
-
-            for (var n = 1; n <= 2; n++)
+            try
             {
-                var lumpNumber = wad.GetLumpNumber("TEXTURE" + n);
-                if (lumpNumber == -1)
+                Console.Write("Load textures: ");
+
+                textures = new List<Texture>();
+                nameToTexture = new Dictionary<string, Texture>();
+                nameToNumber = new Dictionary<string, int>();
+
+                var patches = LoadPatches(wad);
+
+                for (var n = 1; n <= 2; n++)
                 {
-                    break;
+                    var lumpNumber = wad.GetLumpNumber("TEXTURE" + n);
+                    if (lumpNumber == -1)
+                    {
+                        break;
+                    }
+
+                    var data = wad.ReadLump(lumpNumber);
+                    var count = BitConverter.ToInt32(data, 0);
+                    for (var i = 0; i < count; i++)
+                    {
+                        var offset = BitConverter.ToInt32(data, 4 + 4 * i);
+                        var texture = Texture.FromData(data, offset, patches);
+                        nameToNumber.Add(texture.Name, textures.Count);
+                        textures.Add(texture);
+                        nameToTexture.Add(texture.Name, texture);
+                    }
                 }
 
-                var data = wad.ReadLump(lumpNumber);
-                var count = BitConverter.ToInt32(data, 0);
-                for (var i = 0; i < count; i++)
-                {
-                    var offset = BitConverter.ToInt32(data, 4 + 4 * i);
-                    var texture = Texture.FromData(data, offset, patches);
-                    nameToNumber.Add(texture.Name, textures.Count);
-                    textures.Add(texture);
-                    nameToTexture.Add(texture.Name, texture);
-                }
+                Console.WriteLine("OK (" + nameToTexture.Count + " textures)");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                ExceptionDispatchInfo.Throw(e);
             }
         }
 

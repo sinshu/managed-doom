@@ -33,16 +33,21 @@ namespace ManagedDoom.Audio
 
         public SfmlMusic(Config config, Wad wad, string sfPath)
         {
-            this.config = config;
-            this.wad = wad;
-
             try
             {
+                Console.Write("Initialize music: ");
+
+                this.config = config;
+                this.wad = wad;
+
                 stream = new MusStream(this, config, sfPath);
                 current = Bgm.NONE;
+
+                Console.WriteLine("OK");
             }
             catch (Exception e)
             {
+                Console.WriteLine("Failed");
                 Dispose();
                 ExceptionDispatchInfo.Throw(e);
             }
@@ -65,6 +70,8 @@ namespace ManagedDoom.Audio
 
         public void Dispose()
         {
+            Console.WriteLine("Shutdown music.");
+
             if (stream != null)
             {
                 stream.Stop();

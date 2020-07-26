@@ -16,6 +16,7 @@
 
 
 ﻿using System;
+using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
@@ -35,13 +36,25 @@ namespace ManagedDoom
 
         public Palette(Wad wad)
         {
-            data = wad.ReadLump("PLAYPAL");
-
-            var count = data.Length / (3 * 256);
-            palettes = new uint[count][];
-            for (var i = 0; i < palettes.Length; i++)
+            try
             {
-                palettes[i] = new uint[256];
+                Console.Write("Load palette: ");
+
+                data = wad.ReadLump("PLAYPAL");
+
+                var count = data.Length / (3 * 256);
+                palettes = new uint[count][];
+                for (var i = 0; i < palettes.Length; i++)
+                {
+                    palettes[i] = new uint[256];
+                }
+
+                Console.WriteLine("OK");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                ExceptionDispatchInfo.Throw(e);
             }
         }
 

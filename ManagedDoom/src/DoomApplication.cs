@@ -76,7 +76,7 @@ namespace ManagedDoom
                 {
                     style = Styles.Fullscreen;
                 }
-                window = new RenderWindow(videoMode, "Managed Doom", style);
+                window = new RenderWindow(videoMode, ApplicationInfo.Title, style);
                 window.Clear(new Color(64, 64, 64));
                 window.Display();
 

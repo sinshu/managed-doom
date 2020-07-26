@@ -17,6 +17,7 @@
 
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
@@ -50,63 +51,75 @@ namespace ManagedDoom
 
         public Map(Wad wad, TextureLookup textures, FlatLookup flats, TextureAnimation animation, World world)
         {
-            this.textures = textures;
-            this.flats = flats;
-            this.animation = animation;
-            this.world = world;
-
-            var options = world.Options;
-
-            string name;
-            if (wad.GameMode == GameMode.Commercial)
+            try
             {
-                name = "MAP" + options.Map.ToString("00");
-            }
-            else
-            {
-                name = "E" + options.Episode + "M" + options.Map;
-            }
+                this.textures = textures;
+                this.flats = flats;
+                this.animation = animation;
+                this.world = world;
 
-            var map = wad.GetLumpNumber(name);
+                var options = world.Options;
 
-            if (map == -1)
-            {
-                throw new Exception("Map '" + name + "' was not found!");
-            }
-
-            vertices = Vertex.FromWad(wad, map + 4);
-            sectors = Sector.FromWad(wad, map + 8, flats);
-            sides = SideDef.FromWad(wad, map + 3, textures, sectors);
-            lines = LineDef.FromWad(wad, map + 2, vertices, sides);
-            segs = Seg.FromWad(wad, map + 5, vertices, lines);
-            subsectors = Subsector.FromWad(wad, map + 6, segs);
-            nodes = Node.FromWad(wad, map + 7, subsectors);
-            things = MapThing.FromWad(wad, map + 1);
-            blockMap = BlockMap.FromWad(wad, map + 10, lines);
-            reject = Reject.FromWad(wad, map + 9, sectors);
-
-            GroupLines();
-
-            skyTexture = GetSkyTextureByMapName(name);
-
-            if (options.GameMode == GameMode.Commercial)
-            {
-                switch (options.MissionPack)
+                string name;
+                if (wad.GameMode == GameMode.Commercial)
                 {
-                    case MissionPack.Plutonia:
-                        title = DoomInfo.MapTitles.Plutonia[options.Map - 1];
-                        break;
-                    case MissionPack.Tnt:
-                        title = DoomInfo.MapTitles.Tnt[options.Map - 1];
-                        break;
-                    default:
-                        title = DoomInfo.MapTitles.Doom2[options.Map - 1];
-                        break;
+                    name = "MAP" + options.Map.ToString("00");
                 }
+                else
+                {
+                    name = "E" + options.Episode + "M" + options.Map;
+                }
+
+                Console.Write("Load map '" + name + "': ");
+
+                var map = wad.GetLumpNumber(name);
+
+                if (map == -1)
+                {
+                    throw new Exception("Map '" + name + "' was not found!");
+                }
+
+                vertices = Vertex.FromWad(wad, map + 4);
+                sectors = Sector.FromWad(wad, map + 8, flats);
+                sides = SideDef.FromWad(wad, map + 3, textures, sectors);
+                lines = LineDef.FromWad(wad, map + 2, vertices, sides);
+                segs = Seg.FromWad(wad, map + 5, vertices, lines);
+                subsectors = Subsector.FromWad(wad, map + 6, segs);
+                nodes = Node.FromWad(wad, map + 7, subsectors);
+                things = MapThing.FromWad(wad, map + 1);
+                blockMap = BlockMap.FromWad(wad, map + 10, lines);
+                reject = Reject.FromWad(wad, map + 9, sectors);
+
+                GroupLines();
+
+                skyTexture = GetSkyTextureByMapName(name);
+
+                if (options.GameMode == GameMode.Commercial)
+                {
+                    switch (options.MissionPack)
+                    {
+                        case MissionPack.Plutonia:
+                            title = DoomInfo.MapTitles.Plutonia[options.Map - 1];
+                            break;
+                        case MissionPack.Tnt:
+                            title = DoomInfo.MapTitles.Tnt[options.Map - 1];
+                            break;
+                        default:
+                            title = DoomInfo.MapTitles.Doom2[options.Map - 1];
+                            break;
+                    }
+                }
+                else
+                {
+                    title = DoomInfo.MapTitles.Doom[options.Episode - 1][options.Map - 1];
+                }
+
+                Console.WriteLine("OK");
             }
-            else
+            catch (Exception e)
             {
-                title = DoomInfo.MapTitles.Doom[options.Episode - 1][options.Map - 1];
+                Console.WriteLine("Failed");
+                ExceptionDispatchInfo.Throw(e);
             }
         }
 

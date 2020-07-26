@@ -52,15 +52,17 @@ namespace ManagedDoom.Audio
 
         public SfmlSound(Config config, Wad wad)
         {
-            this.config = config;
-
-            config.audio_soundvolume = Math.Clamp(config.audio_soundvolume, 0, MaxVolume);
-
-            buffers = new SoundBuffer[DoomInfo.SfxNames.Length];
-            amplitudes = new float[DoomInfo.SfxNames.Length];
-
             try
             {
+                Console.Write("Initialize sound: ");
+
+                this.config = config;
+
+                config.audio_soundvolume = Math.Clamp(config.audio_soundvolume, 0, MaxVolume);
+
+                buffers = new SoundBuffer[DoomInfo.SfxNames.Length];
+                amplitudes = new float[DoomInfo.SfxNames.Length];
+
                 for (var i = 0; i < DoomInfo.SfxNames.Length; i++)
                 {
                     var name = "DS" + DoomInfo.SfxNames[i];
@@ -87,16 +89,19 @@ namespace ManagedDoom.Audio
 
                 uiChannel = new Sound();
                 uiReserved = Sfx.NONE;
+
+                masterVolumeDecay = (float)config.audio_soundvolume / MaxVolume;
+
+                lastUpdate = DateTime.MinValue;
+
+                Console.WriteLine("OK");
             }
             catch (Exception e)
             {
+                Console.WriteLine("Failed");
                 Dispose();
                 ExceptionDispatchInfo.Throw(e);
             }
-
-            masterVolumeDecay = (float)config.audio_soundvolume / MaxVolume;
-
-            lastUpdate = DateTime.MinValue;
         }
 
         private static short[] GetSamples(Wad wad, string name, out int sampleRate, out int sampleCount)
@@ -395,6 +400,8 @@ namespace ManagedDoom.Audio
 
         public void Dispose()
         {
+            Console.WriteLine("Shutdown sound.");
+
             for (var i = 0; i < channels.Length; i++)
             {
                 if (channels[i] != null)

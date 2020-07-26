@@ -16,6 +16,7 @@
 
 
 ﻿using System;
+using System.Runtime.ExceptionServices;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -41,27 +42,40 @@ namespace ManagedDoom
 
         public SfmlUserInput(Config config, RenderWindow window, bool useMouse)
         {
-            this.config = config;
-
-            config.mouse_sensitivity = Math.Max(config.mouse_sensitivity, 0);
-
-            this.window = window;
-
-            this.useMouse = useMouse;
-
-            weaponKeys = new bool[7];
-            turnHeld = 0;
-
-            windowCenterX = (int)window.Size.X / 2;
-            windowCenterY = (int)window.Size.Y / 2;
-            mouseX = 0;
-            mouseY = 0;
-            cursorCentered = false;
-
-            if (useMouse)
+            try
             {
-                window.SetMouseCursorGrabbed(true);
-                window.SetMouseCursorVisible(false);
+                Console.Write("Initialize user input: ");
+
+                this.config = config;
+
+                config.mouse_sensitivity = Math.Max(config.mouse_sensitivity, 0);
+
+                this.window = window;
+
+                this.useMouse = useMouse;
+
+                weaponKeys = new bool[7];
+                turnHeld = 0;
+
+                windowCenterX = (int)window.Size.X / 2;
+                windowCenterY = (int)window.Size.Y / 2;
+                mouseX = 0;
+                mouseY = 0;
+                cursorCentered = false;
+
+                if (useMouse)
+                {
+                    window.SetMouseCursorGrabbed(true);
+                    window.SetMouseCursorVisible(false);
+                }
+
+                Console.WriteLine("OK");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                Dispose();
+                ExceptionDispatchInfo.Throw(e);
             }
         }
 
@@ -266,6 +280,8 @@ namespace ManagedDoom
 
         public void Dispose()
         {
+            Console.WriteLine("Shutdown user input.");
+
             if (useMouse)
             {
                 window.SetMouseCursorVisible(true);

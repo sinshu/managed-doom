@@ -18,6 +18,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
@@ -49,33 +50,45 @@ namespace ManagedDoom
 
         private void Init(Wad wad)
         {
-            var firstFlat = wad.GetLumpNumber("F_START") + 1;
-            var lastFlat = wad.GetLumpNumber("F_END") - 1;
-            var count = lastFlat - firstFlat + 1;
-
-            flats = new Flat[count];
-
-            nameToFlat = new Dictionary<string, Flat>();
-            nameToNumber = new Dictionary<string, int>();
-
-            for (var lump = firstFlat; lump <= lastFlat; lump++)
+            try
             {
-                if (wad.GetLumpSize(lump) != 4096)
+                Console.Write("Load flats: ");
+
+                var firstFlat = wad.GetLumpNumber("F_START") + 1;
+                var lastFlat = wad.GetLumpNumber("F_END") - 1;
+                var count = lastFlat - firstFlat + 1;
+
+                flats = new Flat[count];
+
+                nameToFlat = new Dictionary<string, Flat>();
+                nameToNumber = new Dictionary<string, int>();
+
+                for (var lump = firstFlat; lump <= lastFlat; lump++)
                 {
-                    continue;
+                    if (wad.GetLumpSize(lump) != 4096)
+                    {
+                        continue;
+                    }
+
+                    var number = lump - firstFlat;
+                    var name = wad.LumpInfos[lump].Name;
+                    var flat = new Flat(name, wad.ReadLump(lump));
+
+                    flats[number] = flat;
+                    nameToFlat[name] = flat;
+                    nameToNumber[name] = number;
                 }
 
-                var number = lump - firstFlat;
-                var name = wad.LumpInfos[lump].Name;
-                var flat = new Flat(name, wad.ReadLump(lump));
+                skyFlatNumber = nameToNumber["F_SKY1"];
+                skyFlat = nameToFlat["F_SKY1"];
 
-                flats[number] = flat;
-                nameToFlat[name] = flat;
-                nameToNumber[name] = number;
+                Console.WriteLine("OK (" + nameToFlat.Count + " flats)");
             }
-
-            skyFlatNumber = nameToNumber["F_SKY1"];
-            skyFlat = nameToFlat["F_SKY1"];
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                ExceptionDispatchInfo.Throw(e);
+            }
         }
 
         private void InitDummy(Wad wad)

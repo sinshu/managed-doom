@@ -16,6 +16,7 @@
 
 
 ﻿using System;
+using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
@@ -27,17 +28,29 @@ namespace ManagedDoom
 
         public ColorMap(Wad wad)
         {
-            var raw = wad.ReadLump("COLORMAP");
-            var num = raw.Length / 256;
-            data = new byte[num][];
-            for (var i = 0; i < num; i++)
+            try
             {
-                data[i] = new byte[256];
-                var offset = 256 * i;
-                for (var c = 0; c < 256; c++)
+                Console.Write("Load color map: ");
+
+                var raw = wad.ReadLump("COLORMAP");
+                var num = raw.Length / 256;
+                data = new byte[num][];
+                for (var i = 0; i < num; i++)
                 {
-                    data[i][c] = raw[offset + c];
+                    data[i] = new byte[256];
+                    var offset = 256 * i;
+                    for (var c = 0; c < 256; c++)
+                    {
+                        data[i][c] = raw[offset + c];
+                    }
                 }
+
+                Console.WriteLine("OK");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                ExceptionDispatchInfo.Throw(e);
             }
         }
 

@@ -75,68 +75,73 @@ namespace ManagedDoom.SoftwareRendering
 
         public SfmlRenderer(Config config, RenderWindow window, CommonResource resource)
         {
-            this.config = config;
-
-            config.video_gamescreensize = Math.Clamp(config.video_gamescreensize, 0, MaxWindowSize);
-            config.video_gammacorrection = Math.Clamp(config.video_gammacorrection, 0, MaxGammaCorrectionLevel);
-
-            sfmlWindow = window;
-            palette = resource.Palette;
-
-            sfmlWindowWidth = (int)window.Size.X;
-            sfmlWindowHeight = (int)window.Size.Y;
-
-            if (config.video_highresolution)
-            {
-                screen = new DrawScreen(resource.Wad, 640, 400);
-                sfmlTextureWidth = 512;
-                sfmlTextureHeight = 1024;
-            }
-            else
-            {
-                screen = new DrawScreen(resource.Wad, 320, 200);
-                sfmlTextureWidth = 256;
-                sfmlTextureHeight = 512;
-            }
-
-            sfmlTextureData = new byte[4 * screen.Width * screen.Height];
-
             try
             {
+                Console.Write("Initialize renderer: ");
+
+                this.config = config;
+
+                config.video_gamescreensize = Math.Clamp(config.video_gamescreensize, 0, MaxWindowSize);
+                config.video_gammacorrection = Math.Clamp(config.video_gammacorrection, 0, MaxGammaCorrectionLevel);
+
+                sfmlWindow = window;
+                palette = resource.Palette;
+
+                sfmlWindowWidth = (int)window.Size.X;
+                sfmlWindowHeight = (int)window.Size.Y;
+
+                if (config.video_highresolution)
+                {
+                    screen = new DrawScreen(resource.Wad, 640, 400);
+                    sfmlTextureWidth = 512;
+                    sfmlTextureHeight = 1024;
+                }
+                else
+                {
+                    screen = new DrawScreen(resource.Wad, 320, 200);
+                    sfmlTextureWidth = 256;
+                    sfmlTextureHeight = 512;
+                }
+
+                sfmlTextureData = new byte[4 * screen.Width * screen.Height];
+
                 sfmlTexture = new SFML.Graphics.Texture((uint)sfmlTextureWidth, (uint)sfmlTextureHeight);
                 sfmlSprite = new SFML.Graphics.Sprite(sfmlTexture);
+
+                sfmlSprite.Position = new Vector2f(0, 0);
+                sfmlSprite.Rotation = 90;
+                var scaleX = (float)sfmlWindowWidth / screen.Width;
+                var scaleY = (float)sfmlWindowHeight / screen.Height;
+                sfmlSprite.Scale = new Vector2f(scaleY, -scaleX);
+
+                sfmlStates = new RenderStates(BlendMode.None);
+
+                menu = new MenuRenderer(resource.Wad, screen);
+                threeD = new ThreeDRenderer(resource, screen, config.video_gamescreensize);
+                statusBar = new StatusBarRenderer(resource.Wad, screen);
+                intermission = new IntermissionRenderer(resource.Wad, screen);
+                openingSequence = new OpeningSequenceRenderer(resource.Wad, screen, this);
+                autoMap = new AutoMapRenderer(resource.Wad, screen);
+                finale = new FinaleRenderer(resource, screen);
+
+                pause = Patch.FromWad(resource.Wad, "M_PAUSE");
+
+                var scale = screen.Width / 320;
+                wipeBandWidth = 2 * scale;
+                wipeBandCount = screen.Width / wipeBandWidth + 1;
+                wipeHeight = screen.Height / scale;
+                wipeBuffer = new byte[screen.Data.Length];
+
+                palette.ResetColors(gammaCorrectionParameters[config.video_gammacorrection]);
+
+                Console.WriteLine("OK");
             }
             catch (Exception e)
             {
+                Console.WriteLine("Failed");
                 Dispose();
                 ExceptionDispatchInfo.Throw(e);
             }
-
-            sfmlSprite.Position = new Vector2f(0, 0);
-            sfmlSprite.Rotation = 90;
-            var scaleX = (float)sfmlWindowWidth / screen.Width;
-            var scaleY = (float)sfmlWindowHeight / screen.Height;
-            sfmlSprite.Scale = new Vector2f(scaleY, -scaleX);
-
-            sfmlStates = new RenderStates(BlendMode.None);
-
-            menu = new MenuRenderer(resource.Wad, screen);
-            threeD = new ThreeDRenderer(resource, screen, config.video_gamescreensize);
-            statusBar = new StatusBarRenderer(resource.Wad, screen);
-            intermission = new IntermissionRenderer(resource.Wad, screen);
-            openingSequence = new OpeningSequenceRenderer(resource.Wad, screen, this);
-            autoMap = new AutoMapRenderer(resource.Wad, screen);
-            finale = new FinaleRenderer(resource, screen);
-
-            pause = Patch.FromWad(resource.Wad, "M_PAUSE");
-
-            var scale = screen.Width / 320;
-            wipeBandWidth = 2 * scale;
-            wipeBandCount = screen.Width / wipeBandWidth + 1;
-            wipeHeight = screen.Height / scale;
-            wipeBuffer = new byte[screen.Data.Length];
-
-            palette.ResetColors(gammaCorrectionParameters[config.video_gammacorrection]);
         }
 
         public void RenderApplication(DoomApplication app)
@@ -349,6 +354,8 @@ namespace ManagedDoom.SoftwareRendering
 
         public void Dispose()
         {
+            Console.WriteLine("Shutdown renderer.");
+
             if (sfmlSprite != null)
             {
                 sfmlSprite.Dispose();

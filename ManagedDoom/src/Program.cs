@@ -23,6 +23,11 @@ namespace ManagedDoom
     {
         public static void Main(string[] args)
         {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine(ApplicationInfo.Title);
+            Console.ResetColor();
+
 #if DEBUG
             Main_Debug(args);
 #else
@@ -45,7 +50,7 @@ namespace ManagedDoom
                 if (quitMessage != null)
                 {
                     Console.WriteLine(quitMessage);
-                    Console.Write("Press any key to exit");
+                    Console.Write("Press any key to exit.");
                     Console.ReadKey();
                 }
             }
@@ -54,7 +59,7 @@ namespace ManagedDoom
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(e);
                 Console.ResetColor();
-                Console.Write("Press any key to exit");
+                Console.Write("Press any key to exit.");
                 Console.ReadKey();
             }
         }

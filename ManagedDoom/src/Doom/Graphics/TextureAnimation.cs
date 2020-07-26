@@ -17,6 +17,7 @@
 
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
@@ -26,49 +27,61 @@ namespace ManagedDoom
 
         public TextureAnimation(TextureLookup textures, FlatLookup flats)
         {
-            var list = new List<TextureAnimationInfo>();
-
-            foreach (var animDef in DoomInfo.TextureAnimation)
+            try
             {
-                int picNum;
-                int basePic;
-                if (animDef.IsTexture)
+                Console.Write("Load texture animation info: ");
+
+                var list = new List<TextureAnimationInfo>();
+
+                foreach (var animDef in DoomInfo.TextureAnimation)
                 {
-                    if (textures.GetNumber(animDef.StartName) == -1)
+                    int picNum;
+                    int basePic;
+                    if (animDef.IsTexture)
                     {
-                        continue;
+                        if (textures.GetNumber(animDef.StartName) == -1)
+                        {
+                            continue;
+                        }
+
+                        picNum = textures.GetNumber(animDef.EndName);
+                        basePic = textures.GetNumber(animDef.StartName);
+                    }
+                    else
+                    {
+                        if (flats.GetNumber(animDef.StartName) == -1)
+                        {
+                            continue;
+                        }
+
+                        picNum = flats.GetNumber(animDef.EndName);
+                        basePic = flats.GetNumber(animDef.StartName);
                     }
 
-                    picNum = textures.GetNumber(animDef.EndName);
-                    basePic = textures.GetNumber(animDef.StartName);
-                }
-                else
-                {
-                    if (flats.GetNumber(animDef.StartName) == -1)
+                    var anim = new TextureAnimationInfo(
+                        animDef.IsTexture,
+                        picNum,
+                        basePic,
+                        picNum - basePic + 1,
+                        animDef.Speed);
+
+                    if (anim.NumPics < 2)
                     {
-                        continue;
+                        throw new Exception("Bad animation cycle from " + animDef.StartName + " to " + animDef.EndName + "!");
                     }
 
-                    picNum = flats.GetNumber(animDef.EndName);
-                    basePic = flats.GetNumber(animDef.StartName);
+                    list.Add(anim);
                 }
 
-                var anim = new TextureAnimationInfo(
-                    animDef.IsTexture,
-                    picNum,
-                    basePic,
-                    picNum - basePic + 1,
-                    animDef.Speed);
+                animations = list.ToArray();
 
-                if (anim.NumPics < 2)
-                {
-                    throw new Exception("Bad animation cycle from " + animDef.StartName + " to " + animDef.EndName + "!");
-                }
-
-                list.Add(anim);
+                Console.WriteLine("OK");
             }
-
-            animations = list.ToArray();
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                ExceptionDispatchInfo.Throw(e);
+            }
         }
 
         public TextureAnimationInfo[] Animations => animations;
