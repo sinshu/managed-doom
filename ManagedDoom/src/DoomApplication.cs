@@ -178,6 +178,7 @@ namespace ManagedDoom
                 nextState = ApplicationState.Game;
                 options.Episode = args.warp.Value.Item1;
                 options.Map = args.warp.Value.Item2;
+                game.DeferedInitNew();
             }
 
             if (args.skill.Present)
