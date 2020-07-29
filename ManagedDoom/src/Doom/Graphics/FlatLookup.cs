@@ -40,7 +40,41 @@ namespace ManagedDoom
         {
             if (!useDummy)
             {
-                Init(wad);
+                var fStartCount = CountLump(wad, "F_START");
+                var fEndCount = CountLump(wad, "F_END");
+                var ffStartCount = CountLump(wad, "FF_START");
+                var ffEndCount = CountLump(wad, "FF_END");
+
+                // Usual case.
+                var standard =
+                    fStartCount == 1 &&
+                    fEndCount == 1 &&
+                    ffStartCount == 0 &&
+                    ffEndCount == 0;
+
+                // A trick to add custom flats is used.
+                // https://www.doomworld.com/tutorials/fx2.php
+                var customFlatTrick =
+                    fStartCount == 1 &&
+                    fEndCount >= 2;
+
+                // Need deutex to add flats.
+                var deutexMerge =
+                    fStartCount + ffStartCount >= 2 &&
+                    fEndCount + ffEndCount >= 2;
+
+                if (standard || customFlatTrick)
+                {
+                    InitStandard(wad);
+                }
+                else if (deutexMerge)
+                {
+                    InitDeuTexMerge(wad);
+                }
+                else
+                {
+                    throw new Exception("Faild to read flats.");
+                }
             }
             else
             {
@@ -48,11 +82,11 @@ namespace ManagedDoom
             }
         }
 
-        private void Init(Wad wad)
+        private void InitStandard(Wad wad)
         {
             try
             {
-                Console.Write("Load flats: ");
+                Console.Write("Load flats (standard): ");
 
                 var firstFlat = wad.GetLumpNumber("F_START") + 1;
                 var lastFlat = wad.GetLumpNumber("F_END") - 1;
@@ -71,6 +105,84 @@ namespace ManagedDoom
                     }
 
                     var number = lump - firstFlat;
+                    var name = wad.LumpInfos[lump].Name;
+                    var flat = new Flat(name, wad.ReadLump(lump));
+
+                    flats[number] = flat;
+                    nameToFlat[name] = flat;
+                    nameToNumber[name] = number;
+                }
+
+                skyFlatNumber = nameToNumber["F_SKY1"];
+                skyFlat = nameToFlat["F_SKY1"];
+
+                Console.WriteLine("OK (" + nameToFlat.Count + " flats)");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                ExceptionDispatchInfo.Throw(e);
+            }
+        }
+
+        private void InitDeuTexMerge(Wad wad)
+        {
+            try
+            {
+                Console.Write("Load flats (deutex): ");
+                
+                var allFlats = new List<int>();
+                var flatZone = false;
+                for (var lump = 0; lump < wad.LumpInfos.Count; lump++)
+                {
+                    var name = wad.LumpInfos[lump].Name;
+                    if (flatZone)
+                    {
+                        if (name == "F_END" || name == "FF_END")
+                        {
+                            flatZone = false;
+                        }
+                        else
+                        {
+                            allFlats.Add(lump);
+                        }
+                    }
+                    else
+                    {
+                        if (name == "F_START" || name == "FF_START")
+                        {
+                            flatZone = true;
+                        }
+                    }
+                }
+                allFlats.Reverse();
+
+                var dupCheck = new HashSet<string>();
+                var distinctFlats = new List<int>();
+                foreach (var lump in allFlats)
+                {
+                    if (!dupCheck.Contains(wad.LumpInfos[lump].Name))
+                    {
+                        distinctFlats.Add(lump);
+                        dupCheck.Add(wad.LumpInfos[lump].Name);
+                    }
+                }
+                distinctFlats.Reverse();
+
+                flats = new Flat[distinctFlats.Count];
+
+                nameToFlat = new Dictionary<string, Flat>();
+                nameToNumber = new Dictionary<string, int>();
+
+                for (var number = 0; number < flats.Length; number++)
+                {
+                    var lump = distinctFlats[number];
+
+                    if (wad.GetLumpSize(lump) != 4096)
+                    {
+                        continue;
+                    }
+
                     var name = wad.LumpInfos[lump].Name;
                     var flat = new Flat(name, wad.ReadLump(lump));
 
@@ -142,6 +254,19 @@ namespace ManagedDoom
         IEnumerator IEnumerable.GetEnumerator()
         {
             return flats.GetEnumerator();
+        }
+
+        private static int CountLump(Wad wad, string name)
+        {
+            var count = 0;
+            foreach (var lump in wad.LumpInfos)
+            {
+                if (lump.Name == name)
+                {
+                    count++;
+                }
+            }
+            return count;
         }
 
         public int Count => flats.Length;
