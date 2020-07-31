@@ -1,90 +1,104 @@
 # Managed Doom
 
-![Managed Doom](screenshots/window.png)
+![Doom II MAP01 screenshot](screenshots/doom2-map01.png)
 
-The goal of this project is to make a fully functional Doom source port written in C# without unsafe code.  
-
-The rendering engine and game system (player movement, weapons, monster AI and map gimmicks) are almost complete. Now I'm working on the other miscellaneous functionalities, including save / load, menu, config and so on.  
-
-
+Managed Doom is a Doom source port entirely written in C#. Based on [Linux Doom](https://github.com/id-Software/DOOM), most functionalities necessary for single player game are implemented and now it's in the playable state.
 
 ## Screenshots
 
-![E1M1 start](screenshots/doom-e1m1-start.png)
+![Doom E1M1](screenshots/doom-e1m1.png)
 
-![E1M1 outside](screenshots/doom-e1m1-outside.png)
+![Doom II MAP11](screenshots/doom2-map11.png)
 
-![A fake 3D bridge in Requiem MAP13](screenshots/requiem-map13-bridge1.png)
+![Mr.DooM 30 MAP29](screenshots/mrdoom30-map29.png)
 
-![Another 3D bridge](screenshots/requiem-map13-bridge2.png)
+![Eternal Doom MAP29](screenshots/eternal-map29.png)
 
-![Slime trail](screenshots/doom-e1m1-slime.png)
+![Requiem MAP13](screenshots/requiem-map13.png)
 
-
-
-## Video sample
+## Demo video
 
 https://www.youtube.com/watch?v=9_tncwL7qvM  
 
-[![YouTube video of Managed Doom](https://img.youtube.com/vi/9_tncwL7qvM/0.jpg)](https://www.youtube.com/watch?v=9_tncwL7qvM)
-
-
+[![Demo video](https://img.youtube.com/vi/9_tncwL7qvM/0.jpg)](https://www.youtube.com/watch?v=9_tncwL7qvM)
 
 ## Todo
 
-- __Software renderer__  
-    * [x] Front-to-back rendering using BSP
-    * [x] Wall texture mapping
-    * [x] Ceiling / floor texture mapping
-    * [x] Transparent textures
-    * [x] Diminishing lighting
-    * [x] Sky rendering
-    * [x] Sprite rendering
-    * [x] High resolution rendering
-    * [x] Optimization
-    * [x] Fuzz effect
-    * [x] Palette effects
+* __Software renderering__  
+    - [x] Front-to-back rendering using BSP
+    - [x] Wall texture mapping
+    - [x] Ceiling / floor texture mapping
+    - [x] Transparent textures
+    - [x] Diminishing lighting
+    - [x] Sky rendering
+    - [x] Sprite rendering
+    - [x] High resolution rendering
+    - [x] Optimization
+    - [x] Fuzz effect
+    - [x] Palette effects
 
-- __Gaming code__
-    * [x] Collision detection
-    * [x] Player movement
-    * [x] Player attack
-    * [x] Monster AI
-    * [x] Doors and platforms
-    * [x] Animated textures
-    * [x] Demo compatibility (All the v1.9 IWAD demos can be played)
+* __Game__
+    - [x] Collision detection
+    - [x] Player movement
+    - [x] Player attack
+    - [x] Monster AI
+    - [x] Doors and platforms
+    - [x] Animated textures
+    - [x] Demo compatibility (All the v1.9 IWAD demos can be played)
 
-- __Audio__
-    * [x] Sound
-    * [x] Music
+* __Audio__
+    - [x] Sound
+    - [x] Music
 
-- __Other things__
-    * [x] Status bar
-    * [x] Automap
-    * [x] Title screen
-    * [x] Intermission screen
-    * [x] Menu screen
-    * [x] Save / load
-    * [x] Screen melt animation
-    * [x] Config
-    * [ ] DeHackEd support
+* __Misc__
+    - [x] Status bar
+    - [x] Automap
+    - [x] Title screen
+    - [x] Intermission screen
+    - [x] Menu screen
+    - [x] Save / load
+    - [x] Screen melt animation
+    - [x] Config
+    - [ ] DeHackEd support
 
+## License
 
+Managed Doom is distributed under the [GPLv2 license](licenses/LICENSE_ManagedDoom.txt).  
+Managed Doom uses the following libraries.
+
+* __[SFML](https://github.com/SFML/SFML), [CSFML](https://github.com/SFML/CSFML) and [SFML.Net](https://github.com/SFML/SFML.Net) by Laurent Gomila ([zlib license](licenses/LICENSE_SFML.txt))__
+* __[C# Synth](https://archive.codeplex.com/?p=csharpsynthproject) by Alex Veltsistas ([MIT license](licenses/LICENSE_CSharpSynth.txt))__
+* __[TimGM6mb](https://musescore.org/en/handbook/soundfonts-and-sfz-files) by Tim Brechbill ([GPLv2 license](licenses/LICENSE_TimGM6mb.txt))__
+
+SFML uses the following libraries.
+
+* __FreeType ([GPLv2 license](licenses/LICENSE_FreeType.txt))__
+* __libjpeg (public domain)__
+* __stb_image (public domain)__
+* __OpenAL Soft ([LGPL license](licenses/LICENSE_OpenALSoft.txt))__
+* __libogg ([BSD-3 license](licenses/LICENSE_libogg.txt))__
+* __libvorbis ([BSD-3 license](licenses/LICENSE_libvorbis.txt))__
+* __libFLAC ([BSD-3 license](licenses/LICENSE_libFRAC.txt))__
 
 ## References
 
-- __The original source code by id Software__  
-https://github.com/id-Software/DOOM
+* __The Game Engine Black Book: DOOM by Fabien Sanglard__  
+If you want to understand the big picture of the rendering process in Doom, buy this one.  
+https://fabiensanglard.net/gebbdoom/index.html
 
-- __The Game Engine Black Book: DOOM by Fabien Sanglard__  
-If you want to understand the big picture of the rendering process in Doom, buy this one!  
-http://fabiensanglard.net/gebbdoom/
-
-- __The Unofficial Doom Specs by Matthew S Fell__  
+* __The Unofficial Doom Specs by Matthew S Fell__  
 http://www.gamers.org/dhs/helpdocs/dmsp1666.html
 
-- __Doom Wiki__  
-https://doomwiki.org/wiki/Entryway
+* __MUS File Format Description by Vladimir Arnost__  
+https://www.doomworld.com/idgames/docs/editing/mus_form
 
-- __SFML - Simple and Fast Multimedia Library__  
-https://www.sfml-dev.org
+* __Chocolate Doom by Simon Howard__  
+Chocolate Doom is used as the reference of  compatibility tests.  
+https://github.com/chocolate-doom/chocolate-doom
+
+* __Crispy Doom by Fabian Greffrath__  
+The minimal HUD is imported from Crispy Doom.  
+https://github.com/fabiangreffrath/crispy-doom
+
+* __Doom Wiki__  
+https://doomwiki.org/wiki/Entryway
