@@ -208,8 +208,8 @@ namespace ManagedDoom
                 // Shot continues.
                 return true;
 
-            // Hit line.
-            hitLine:
+                // Hit line.
+                hitLine:
 
                 // Position a bit closer.
                 var frac = intercept.Frac - Fixed.FromInt(4) / currentRange;
@@ -311,7 +311,7 @@ namespace ManagedDoom
             currentRange = range;
 
             var targetX = shooter.X + range.ToIntFloor() * Trig.Cos(angle);
-            var targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);        
+            var targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);
 
             // Can't shoot outside view angles.
             topSlope = Fixed.FromInt(100) / 160;
@@ -346,7 +346,7 @@ namespace ManagedDoom
             currentDamage = damage;
 
             var targetX = shooter.X + range.ToIntFloor() * Trig.Cos(angle);
-            var targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);          
+            var targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);
 
             world.PathTraversal.PathTraverse(
                 shooter.X, shooter.Y,

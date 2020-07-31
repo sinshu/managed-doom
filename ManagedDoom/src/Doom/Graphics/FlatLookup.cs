@@ -86,7 +86,7 @@ namespace ManagedDoom
         {
             try
             {
-                Console.Write("Load flats (standard): ");
+                Console.Write("Load flats: ");
 
                 var firstFlat = wad.GetLumpNumber("F_START") + 1;
                 var lastFlat = wad.GetLumpNumber("F_END") - 1;
@@ -129,7 +129,7 @@ namespace ManagedDoom
         {
             try
             {
-                Console.Write("Load flats (deutex): ");
+                Console.Write("Load flats: ");
                 
                 var allFlats = new List<int>();
                 var flatZone = false;
