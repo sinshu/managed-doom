@@ -423,6 +423,7 @@ namespace ManagedDoom
                 {
                     Write(data, p + 68 + 4 * i, player.Cards[i] ? 1 : 0);
                 }
+                Write(data, p + 92, player.Backpack ? 1 : 0);
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     Write(data, p + 96 + 4 * i, player.Frags[i]);
@@ -914,6 +915,7 @@ namespace ManagedDoom
                 {
                     player.Cards[i] = BitConverter.ToInt32(data, p + 68 + 4 * i) != 0;
                 }
+                player.Backpack = BitConverter.ToInt32(data, p + 92) != 0;
                 for (var i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     player.Frags[i] = BitConverter.ToInt32(data, p + 96 + 4 * i);
