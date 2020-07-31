@@ -62,7 +62,7 @@ namespace ManagedDoom.Audio
 
             var lump = "D_" + DoomInfo.BgmNames[(int)bgm];
             var data = wad.ReadLump(lump);
-            var decoder = new MusDecoder(data, true);
+            var decoder = new MusDecoder(data, loop);
             stream.SetDecoder(decoder);
 
             current = bgm;
@@ -280,9 +280,14 @@ namespace ManagedDoom.Audio
                     delay = ReadSingleEventGroup();
                     SendEvents(synthesizer);
 
-                    if (delay == -1 && loop)
+                    if (delay == -1)
                     {
-                        Reset();
+                        synthesizer.NoteOffAll(true);
+
+                        if (loop)
+                        {
+                            Reset();
+                        }
                     }
                 }
 
