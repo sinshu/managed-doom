@@ -2,7 +2,7 @@
 
 ![Doom II MAP01 screenshot](screenshots/doom2-map01.png)
 
-Managed Doom is a Doom source port entirely written in C#. Based on [Linux Doom](https://github.com/id-Software/DOOM), most functionalities necessary for single player game are implemented and now it's in the playable state.
+Managed Doom is a Doom source port written in C#. The entire code is manually translated from [Linux Doom](https://github.com/id-Software/DOOM) with some effort to make it natural C# code. Most functionalities necessary for single player game are implemented, and now it's in the playable state.
 
 ## Screenshots
 
