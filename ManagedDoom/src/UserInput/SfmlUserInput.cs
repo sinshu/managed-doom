@@ -21,7 +21,7 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
-namespace ManagedDoom
+namespace ManagedDoom.UserInput
 {
     public sealed class SfmlUserInput : IUserInput, IDisposable
     {

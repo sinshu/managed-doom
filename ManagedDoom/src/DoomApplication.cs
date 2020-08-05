@@ -22,6 +22,7 @@ using SFML.Graphics;
 using SFML.Window;
 using ManagedDoom.SoftwareRendering;
 using ManagedDoom.Audio;
+using ManagedDoom.UserInput;
 
 namespace ManagedDoom
 {

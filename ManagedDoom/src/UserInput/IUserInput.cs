@@ -17,7 +17,7 @@
 
 using System;
 
-namespace ManagedDoom
+namespace ManagedDoom.UserInput
 {
     public interface IUserInput
     {
