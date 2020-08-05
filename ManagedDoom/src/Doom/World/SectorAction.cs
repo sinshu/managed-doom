@@ -758,7 +758,8 @@ namespace ManagedDoom
 		// Platform
 		////////////////////////////////////////////////////////////
 
-		private static readonly int maxAdjoiningSectorCount = 40;
+		// In plutonia MAP23, number of adjoining sectors can be 44.
+		private static readonly int maxAdjoiningSectorCount = 64;
 		private Fixed[] heightList = new Fixed[maxAdjoiningSectorCount];
 
 		private Fixed FindNextHighestFloor(Sector sector, Fixed currentHeight)
