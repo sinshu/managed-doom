@@ -123,7 +123,7 @@ namespace AudioSynthesis.Sequencer
                 SilentProcess(targetSampleTime);
             }
         }
-        public void FillMidiEventQueue()
+        public void FillMidiEventQueue(bool loop)
         {
             if (!playing || synth.midiEventQueue.Count != 0)
                 return;
@@ -131,7 +131,7 @@ namespace AudioSynthesis.Sequencer
             {
                 sampleTime = 0;
                 eventIndex = 0;
-                playing = false;
+                playing = loop;
                 synth.NoteOffAll(true);
                 synth.ResetPrograms();
                 synth.ResetSynthControls();

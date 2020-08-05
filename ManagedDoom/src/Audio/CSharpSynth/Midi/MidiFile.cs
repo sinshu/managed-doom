@@ -35,7 +35,7 @@
 
         public MidiFile(string fileName)
             :this(CrossPlatformHelper.OpenResource(fileName)) { }
-        private MidiFile(Stream stream)
+        public MidiFile(Stream stream)
         {
             using (BinaryReader reader = new BinaryReader(stream))
             {

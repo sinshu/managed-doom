@@ -16,9 +16,12 @@
 
 
 using System;
+using System.IO;
 using System.Runtime.ExceptionServices;
 using SFML.Audio;
 using SFML.System;
+using AudioSynthesis.Midi;
+using AudioSynthesis.Sequencer;
 using AudioSynthesis.Synthesis;
 
 namespace ManagedDoom.Audio
@@ -62,10 +65,43 @@ namespace ManagedDoom.Audio
 
             var lump = "D_" + DoomInfo.BgmNames[(int)bgm];
             var data = wad.ReadLump(lump);
-            var decoder = new MusDecoder(data, loop);
+            var decoder = ReadData(data, loop);
             stream.SetDecoder(decoder);
 
             current = bgm;
+        }
+
+        private IDecoder ReadData(byte[] data, bool loop)
+        {
+            var isMus = true;
+            for (var i = 0; i < MusDecoder.MusHeader.Length; i++)
+            {
+                if (data[i] != MusDecoder.MusHeader[i])
+                {
+                    isMus = false;
+                }
+            }
+
+            if (isMus)
+            {
+                return new MusDecoder(data, loop);
+            }
+
+            var isMidi = true;
+            for (var i = 0; i < MidiDecoder.MidiHeader.Length; i++)
+            {
+                if (data[i] != MidiDecoder.MidiHeader[i])
+                {
+                    isMidi = false;
+                }
+            }
+
+            if (isMidi)
+            {
+                return new MidiDecoder(data, loop);
+            }
+
+            throw new Exception("Unknown format!");
         }
 
         public void Dispose()
@@ -113,8 +149,8 @@ namespace ManagedDoom.Audio
             private int stepCount;
             private int batchLength;
 
-            private MusDecoder current;
-            private MusDecoder reserved;
+            private IDecoder current;
+            private IDecoder reserved;
 
             private short[] batch;
 
@@ -137,7 +173,7 @@ namespace ManagedDoom.Audio
                 Initialize(2, (uint)MusDecoder.SampleRate);
             }
 
-            public void SetDecoder(MusDecoder decoder)
+            public void SetDecoder(IDecoder decoder)
             {
                 reserved = decoder;
 
@@ -197,12 +233,19 @@ namespace ManagedDoom.Audio
 
 
 
-        private class MusDecoder
+        private interface IDecoder
+        {
+            void FillBuffer(Synthesizer synthesizer);
+        }
+
+
+
+        private class MusDecoder : IDecoder
         {
             public static readonly int SampleRate = 44100;
             public static readonly int BufferLength = SampleRate / 140;
 
-            private static readonly byte[] header = new byte[]
+            public static readonly byte[] MusHeader = new byte[]
             {
                 (byte)'M',
                 (byte)'U',
@@ -259,9 +302,9 @@ namespace ManagedDoom.Audio
 
             private static void CheckHeader(byte[] data)
             {
-                for (var p = 0; p < header.Length; p++)
+                for (var p = 0; p < MusHeader.Length; p++)
                 {
-                    if (data[p] != header[p])
+                    if (data[p] != MusHeader[p])
                     {
                         throw new Exception("Invalid format!");
                     }
@@ -511,8 +554,6 @@ namespace ManagedDoom.Audio
                 }
             }
 
-
-
             private class MusEvent
             {
                 public int Type;
@@ -526,6 +567,44 @@ namespace ManagedDoom.Audio
                 Ongoing,
                 EndOfGroup,
                 EndOfFile
+            }
+        }
+
+
+
+        private class MidiDecoder : IDecoder
+        {
+            public static readonly byte[] MidiHeader = new byte[]
+            {
+                (byte)'M',
+                (byte)'T',
+                (byte)'h',
+                (byte)'d'
+            };
+
+            private MidiFile midi;
+            private MidiFileSequencer sequencer;
+
+            private bool loop;
+
+            public MidiDecoder(byte[] data, bool loop)
+            {
+                midi = new MidiFile(new MemoryStream(data));
+
+                this.loop = loop;
+            }
+
+            public void FillBuffer(Synthesizer synthesizer)
+            {
+                if (sequencer == null)
+                {
+                    sequencer = new MidiFileSequencer(synthesizer);
+                    sequencer.LoadMidi(midi);
+                    sequencer.Play();
+                }
+
+                sequencer.FillMidiEventQueue(loop);
+                synthesizer.GetNext();
             }
         }
     }
