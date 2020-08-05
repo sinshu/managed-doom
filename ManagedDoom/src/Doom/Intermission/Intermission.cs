@@ -82,14 +82,6 @@ namespace ManagedDoom
             }
             dmTotalCount = new int[Player.MaxPlayerCount];
 
-            animations = new Animation[AnimationInfo.Episodes[info.Episode].Count];
-            for (var i = 0; i < animations.Length; i++)
-            {
-                animations[i] = new Animation(this, AnimationInfo.Episodes[info.Episode][i], i);
-            }
-
-            random = new DoomRandom();
-
             if (options.Deathmatch != 0)
             {
                 InitDeathmatchStats();
@@ -206,6 +198,17 @@ namespace ManagedDoom
             if (info.Episode > 2)
             {
                 return;
+            }
+
+            if (animations == null)
+            {
+                animations = new Animation[AnimationInfo.Episodes[info.Episode].Count];
+                for (var i = 0; i < animations.Length; i++)
+                {
+                    animations[i] = new Animation(this, AnimationInfo.Episodes[info.Episode][i], i);
+                }
+
+                random = new DoomRandom();
             }
 
             foreach (var animation in animations)
