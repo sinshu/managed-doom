@@ -100,6 +100,7 @@ namespace ManagedDoom
                 events = new List<DoomEvent>();
 
                 options = new GameOptions();
+                options.GameVersion = resource.Wad.GameVersion;
                 options.GameMode = resource.Wad.GameMode;
                 options.MissionPack = resource.Wad.MissionPack;
                 options.Renderer = renderer;

@@ -50,6 +50,7 @@ namespace ManagedDoom
                 demo = new Demo(resource.Wad.ReadLump(lumpName));
             }
 
+            demo.Options.GameVersion = options.GameVersion;
             demo.Options.GameMode = options.GameMode;
             demo.Options.MissionPack = options.MissionPack;
             demo.Options.Renderer = options.Renderer;

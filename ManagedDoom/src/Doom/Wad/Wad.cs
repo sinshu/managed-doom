@@ -28,6 +28,7 @@ namespace ManagedDoom
         private List<string> names;
         private List<Stream> streams;
         private List<LumpInfo> lumpInfos;
+        private GameVersion gameVersion;
         private GameMode gameMode;
         private MissionPack missionPack;
 
@@ -48,6 +49,7 @@ namespace ManagedDoom
 
                 gameMode = GetGameMode(names);
                 missionPack = GetMissionPack(names);
+                gameVersion = GetGameVersion(names);
 
                 Console.WriteLine("OK (" + string.Join(", ", fileNames.Select(x => Path.GetFileName(x))) + ")");
             }
@@ -164,6 +166,26 @@ namespace ManagedDoom
             streams.Clear();
         }
 
+        private static GameVersion GetGameVersion(IReadOnlyList<string> names)
+        {
+            foreach (var name in names)
+            {
+                switch (name.ToLower())
+                {
+                    case "doom2":
+                        return GameVersion.Version109;
+                    case "doom":
+                    case "doom1":
+                        return GameVersion.Ultimate;
+                    case "plutonia":
+                    case "tnt":
+                        return GameVersion.Final;
+                }
+            }
+
+            return GameVersion.Version109;
+        }
+
         private static GameMode GetGameMode(IReadOnlyList<string> names)
         {
             foreach (var name in names)
@@ -202,6 +224,7 @@ namespace ManagedDoom
 
         public IReadOnlyList<string> Names => names;
         public IReadOnlyList<LumpInfo> LumpInfos => lumpInfos;
+        public GameVersion GameVersion => gameVersion;
         public GameMode GameMode => gameMode;
         public MissionPack MissionPack => missionPack;
     }
