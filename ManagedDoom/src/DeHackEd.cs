@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ManagedDoom
 {
@@ -57,6 +58,9 @@ namespace ManagedDoom
 
         private static void ProcessBlock(Block type, List<string> data)
         {
+            // Ensure the static members are initialized.
+            DoomInfo.Strings.PRESSKEY.GetHashCode();
+
             switch (type)
             {
                 case Block.Thing:
@@ -82,6 +86,12 @@ namespace ManagedDoom
                     break;
                 case Block.Misc:
                     ProcessMiscBlock(data);
+                    break;
+                case Block.Text:
+                    ProcessTextBlock(data);
+                    break;
+                case Block.Sprite:
+                    ProcessSpriteBlock(data);
                     break;
             }
         }
@@ -183,6 +193,54 @@ namespace ManagedDoom
         }
 
         private static void ProcessMiscBlock(List<string> data)
+        {
+        }
+
+        private static void ProcessTextBlock(List<string> data)
+        {
+            var split = data[0].Split(' ');
+            var length1 = int.Parse(split[1]);
+            var length2 = int.Parse(split[2]);
+
+            var line = 1;
+            var pos = 0;
+
+            var sb1 = new StringBuilder();
+            for (var i = 0; i < length1; i++)
+            {
+                if (pos == data[line].Length)
+                {
+                    sb1.Append('\n');
+                    line++;
+                    pos = 0;
+                }
+                else
+                {
+                    sb1.Append(data[line][pos]);
+                    pos++;
+                }
+            }
+
+            var sb2 = new StringBuilder();
+            for (var i = 0; i < length2; i++)
+            {
+                if (pos == data[line].Length)
+                {
+                    sb2.Append('\n');
+                    line++;
+                    pos = 0;
+                }
+                else
+                {
+                    sb2.Append(data[line][pos]);
+                    pos++;
+                }
+            }
+
+            DoomString.Replace(sb1.ToString(), sb2.ToString());
+        }
+
+        private static void ProcessSpriteBlock(List<string> data)
         {
         }
 

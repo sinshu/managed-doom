@@ -25,6 +25,7 @@ namespace ManagedDoom
     {
         public readonly Arg<string> iwad;
         public readonly Arg<string[]> file;
+        public readonly Arg<string> deh;
 
         public readonly Arg<Tuple<int, int>> warp;
         public readonly Arg<int> skill;
@@ -49,6 +50,7 @@ namespace ManagedDoom
         {
             iwad = GetString(args, "-iwad");
             file = Check_file(args);
+            deh = GetString(args, "-deh");
 
             warp = Check_warp(args);
             skill = GetInt(args, "-skill");

@@ -81,6 +81,11 @@ namespace ManagedDoom
                 window.Clear(new Color(64, 64, 64));
                 window.Display();
 
+                if (args.deh.Present)
+                {
+                    DeHackEd.ReadFile(args.deh.Value);
+                }
+
                 resource = new CommonResource(GetWadPaths(args));
 
                 renderer = new SfmlRenderer(config, window, resource);
