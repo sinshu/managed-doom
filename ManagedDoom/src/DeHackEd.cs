@@ -68,6 +68,21 @@ namespace ManagedDoom
                 case Block.Pointer:
                     ProcessPointerBlock(data);
                     break;
+                case Block.Sound:
+                    ProcessSoundBlock(data);
+                    break;
+                case Block.Ammo:
+                    ProcessAmmoBlock(data);
+                    break;
+                case Block.Weapon:
+                    ProcessWeaponBlock(data);
+                    break;
+                case Block.Cheat:
+                    ProcessCheatBlock(data);
+                    break;
+                case Block.Misc:
+                    ProcessMiscBlock(data);
+                    break;
             }
         }
 
@@ -132,6 +147,43 @@ namespace ManagedDoom
 
             info.PlayerAction = sourcePointerTable[sourceFrameNumber].Item1;
             info.MobjAction = sourcePointerTable[sourceFrameNumber].Item2;
+        }
+
+        private static void ProcessSoundBlock(List<string> data)
+        {
+        }
+
+        private static void ProcessAmmoBlock(List<string> data)
+        {
+            var ammoNumber = int.Parse(data[0].Split(' ')[1]);
+            var dic = GetKeyValuePairs(data);
+            var max = DoomInfo.AmmoInfos.Max;
+            var clip = DoomInfo.AmmoInfos.Clip;
+
+            max[ammoNumber] = GetInt(dic, "Max ammo", max[ammoNumber]);
+            clip[ammoNumber] = GetInt(dic, "Per ammo", clip[ammoNumber]);
+        }
+
+        private static void ProcessWeaponBlock(List<string> data)
+        {
+            var weaponNumber = int.Parse(data[0].Split(' ')[1]);
+            var info = DoomInfo.WeaponInfos[weaponNumber];
+            var dic = GetKeyValuePairs(data);
+
+            info.Ammo = (AmmoType)GetInt(dic, "Ammo type", (int)info.Ammo);
+            info.UpState = (MobjState)GetInt(dic, "Deselect frame", (int)info.UpState);
+            info.DownState = (MobjState)GetInt(dic, "Select frame", (int)info.DownState);
+            info.ReadyState = (MobjState)GetInt(dic, "Bobbing frame", (int)info.ReadyState);
+            info.AttackState = (MobjState)GetInt(dic, "Shooting frame", (int)info.AttackState);
+            info.FlashState = (MobjState)GetInt(dic, "Firing frame", (int)info.FlashState);
+        }
+
+        private static void ProcessCheatBlock(List<string> data)
+        {
+        }
+
+        private static void ProcessMiscBlock(List<string> data)
+        {
         }
 
         private static Block GetBlockType(string[] split)

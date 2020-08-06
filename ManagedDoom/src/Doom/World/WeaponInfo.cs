@@ -44,11 +44,40 @@ namespace ManagedDoom
             this.flashState = flashState;
         }
 
-        public AmmoType Ammo => ammo;
-        public MobjState UpState => upState;
-        public MobjState DownState => downState;
-        public MobjState ReadyState => readyState;
-        public MobjState AttackState => attackState;
-        public MobjState FlashState => flashState;
+        public AmmoType Ammo
+        {
+            get => ammo;
+            set => ammo = value;
+        }
+
+        public MobjState UpState
+        {
+            get => upState;
+            set => upState = value;
+        }
+
+        public MobjState DownState
+        {
+            get => downState;
+            set => downState = value;
+        }
+
+        public MobjState ReadyState
+        {
+            get => readyState;
+            set => readyState = value;
+        }
+
+        public MobjState AttackState
+        {
+            get => attackState;
+            set => attackState = value;
+        }
+
+        public MobjState FlashState
+        {
+            get => flashState;
+            set => flashState = value;
+        }
     }
 }
