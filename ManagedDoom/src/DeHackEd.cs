@@ -22,8 +22,18 @@ namespace ManagedDoom
 {
     public static class DeHackEd
     {
+        private static Tuple<Action<World, Player, PlayerSpriteDef>, Action<World, Mobj>>[] sourcePointerTable;
+
         public static void ReadFile(string path)
         {
+            sourcePointerTable = new Tuple<Action<World, Player, PlayerSpriteDef>, Action<World, Mobj>>[DoomInfo.States.Length];
+            for (var i = 0; i < sourcePointerTable.Length; i++)
+            {
+                var playerAction = DoomInfo.States[i].PlayerAction;
+                var mobjAction = DoomInfo.States[i].MobjAction;
+                sourcePointerTable[i] = Tuple.Create(playerAction, mobjAction);
+            }
+
             var data = new List<string>();
             var last = Block.None;
             foreach (var line in File.ReadLines(path))
@@ -54,6 +64,9 @@ namespace ManagedDoom
                     break;
                 case Block.Frame:
                     ProcessFrameBlock(data);
+                    break;
+                case Block.Pointer:
+                    ProcessPointerBlock(data);
                     break;
             }
         }
@@ -101,6 +114,24 @@ namespace ManagedDoom
             info.Next = (MobjState)GetInt(dic, "Next frame", (int)info.Next);
             info.Misc1 = GetInt(dic, "Unknown 1", info.Misc1);
             info.Misc2 = GetInt(dic, "Unknown 2", info.Misc2);
+        }
+
+        private static void ProcessPointerBlock(List<string> data)
+        {
+            var dic = GetKeyValuePairs(data);
+            var start = data[0].IndexOf('(') + 1;
+            var end = data[0].IndexOf(')');
+            var length = end - start;
+            var targetFrameNumber = int.Parse(data[0].Substring(start, length).Split(' ')[1]);
+            var sourceFrameNumber = GetInt(dic, "Codep Frame", -1);
+            if (sourceFrameNumber == -1)
+            {
+                return;
+            }
+            var info = DoomInfo.States[targetFrameNumber];
+
+            info.PlayerAction = sourcePointerTable[sourceFrameNumber].Item1;
+            info.MobjAction = sourcePointerTable[sourceFrameNumber].Item2;
         }
 
         private static Block GetBlockType(string[] split)
