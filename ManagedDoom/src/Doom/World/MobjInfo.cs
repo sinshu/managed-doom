@@ -95,28 +95,142 @@ namespace ManagedDoom
             this.raiseState = raiseState;
         }
 
-        public int DoomEdNum => doomEdNum;
-        public MobjState SpawnState => spawnState;
-        public int SpawnHealth => spawnHealth;
-        public MobjState SeeState => seeState;
-        public Sfx SeeSound => seeSound;
-        public int ReactionTime => reactionTime;
-        public Sfx AttackSound => attackSound;
-        public MobjState PainState => painState;
-        public int PainChance => painChance;
-        public Sfx PainSound => painSound;
-        public MobjState MeleeState => meleeState;
-        public MobjState MissileState => missileState;
-        public MobjState DeathState => deathState;
-        public MobjState XdeathState => xdeathState;
-        public Sfx DeathSound => deathSound;
-        public int Speed => speed;
-        public Fixed Radius => radius;
-        public Fixed Height => height;
-        public int Mass => mass;
-        public int Damage => damage;
-        public Sfx ActiveSound => activeSound;
-        public MobjFlags Flags => flags;
-        public MobjState Raisestate => raiseState;
+        public int DoomEdNum
+        {
+            get => doomEdNum;
+            set => doomEdNum = value;
+        }
+
+        public MobjState SpawnState
+        {
+            get => spawnState;
+            set => spawnState = value;
+        }
+
+        public int SpawnHealth
+        {
+            get => spawnHealth;
+            set => spawnHealth = value;
+        }
+
+        public MobjState SeeState
+        {
+            get => seeState;
+            set => seeState = value;
+        }
+
+        public Sfx SeeSound
+        {
+            get => seeSound;
+            set => seeSound = value;
+        }
+
+        public int ReactionTime
+        {
+            get => reactionTime;
+            set => reactionTime = value;
+        }
+
+        public Sfx AttackSound
+        {
+            get => attackSound;
+            set => attackSound = value;
+        }
+
+        public MobjState PainState
+        {
+            get => painState;
+            set => painState = value;
+        }
+
+        public int PainChance
+        {
+            get => painChance;
+            set => painChance = value;
+        }
+
+        public Sfx PainSound
+        {
+            get => painSound;
+            set => painSound = value;
+        }
+
+        public MobjState MeleeState
+        {
+            get => meleeState;
+            set => meleeState = value;
+        }
+
+        public MobjState MissileState
+        {
+            get => missileState;
+            set => missileState = value;
+        }
+
+        public MobjState DeathState
+        {
+            get => deathState;
+            set => deathState = value;
+        }
+
+        public MobjState XdeathState
+        {
+            get => xdeathState;
+            set => xdeathState = value;
+        }
+
+        public Sfx DeathSound
+        {
+            get => deathSound;
+            set => deathSound = value;
+        }
+
+        public int Speed
+        {
+            get => speed;
+            set => speed = value;
+        }
+
+        public Fixed Radius
+        {
+            get => radius;
+            set => radius = value;
+        }
+
+        public Fixed Height
+        {
+            get => height;
+            set => height = value;
+        }
+
+        public int Mass
+        {
+            get => mass;
+            set => mass = value;
+        }
+
+        public int Damage
+        {
+            get => damage;
+            set => damage = value;
+        }
+
+        public Sfx ActiveSound
+        {
+            get => activeSound;
+            set => activeSound = value;
+        }
+
+        public MobjFlags Flags
+        {
+            get => flags;
+            set => flags = value;
+        }
+
+        public MobjState Raisestate
+        {
+            get => raiseState;
+            set => raiseState = value;
+        }
     }
 }
