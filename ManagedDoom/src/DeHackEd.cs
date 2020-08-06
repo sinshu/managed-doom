@@ -52,6 +52,9 @@ namespace ManagedDoom
                 case Block.Thing:
                     ProcessThingBlock(data);
                     break;
+                case Block.Frame:
+                    ProcessFrameBlock(data);
+                    break;
             }
         }
 
@@ -84,6 +87,20 @@ namespace ManagedDoom
             info.ActiveSound = (Sfx)GetInt(dic, "Action sound", (int)info.ActiveSound);
             info.Flags = (MobjFlags)GetInt(dic, "Bits", (int)info.Flags);
             info.Raisestate = (MobjState)GetInt(dic, "Respawn frame", (int)info.Raisestate);
+        }
+
+        private static void ProcessFrameBlock(List<string> data)
+        {
+            var frameNumber = int.Parse(data[0].Split(' ')[1]);
+            var info = DoomInfo.States[frameNumber];
+            var dic = GetKeyValuePairs(data);
+
+            info.Sprite = (Sprite)GetInt(dic, "Sprite number", (int)info.Sprite);
+            info.Frame = GetInt(dic, "Sprite subnumber", info.Frame);
+            info.Tics = GetInt(dic, "Duration", info.Tics);
+            info.Next = (MobjState)GetInt(dic, "Next frame", (int)info.Next);
+            info.Misc1 = GetInt(dic, "Unknown 1", info.Misc1);
+            info.Misc2 = GetInt(dic, "Unknown 2", info.Misc2);
         }
 
         private static Block GetBlockType(string[] split)

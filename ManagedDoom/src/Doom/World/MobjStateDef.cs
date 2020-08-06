@@ -53,14 +53,58 @@ namespace ManagedDoom
             this.misc2 = misc2;
         }
 
-        public int Number => number;
-        public Sprite Sprite => sprite;
-        public int Frame => frame;
-        public int Tics => tics;
-        public Action<World, Player, PlayerSpriteDef> PlayerAction => playerAction;
-        public Action<World, Mobj> MobjAction => mobjAction;
-        public MobjState Next => next;
-        public int Misc1 => misc1;
-        public int Misc2 => misc2;
+        public int Number
+        {
+            get => number;
+            set => number = value;
+        }
+
+        public Sprite Sprite
+        {
+            get => sprite;
+            set => sprite = value;
+        }
+
+        public int Frame
+        {
+            get => frame;
+            set => frame = value;
+        }
+
+        public int Tics
+        {
+            get => tics;
+            set => tics = value;
+        }
+
+        public Action<World, Player, PlayerSpriteDef> PlayerAction
+        {
+            get => playerAction;
+            set => playerAction = value;
+        }
+
+        public Action<World, Mobj> MobjAction
+        {
+            get => mobjAction;
+            set => mobjAction = value;
+        }
+
+        public MobjState Next
+        {
+            get => next;
+            set => next = value;
+        }
+
+        public int Misc1
+        {
+            get => misc1;
+            set => misc1 = value;
+        }
+
+        public int Misc2
+        {
+            get => misc2;
+            set => misc2 = value;
+        }
     }
 }
