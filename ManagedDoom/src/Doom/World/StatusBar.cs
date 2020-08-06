@@ -84,7 +84,6 @@ namespace ManagedDoom
 		{
 			randomNumber = random.Next();
 			UpdateFace();
-			oldHealth = world.ConsolePlayer.Health;
 		}
 
 		private void UpdateFace()
@@ -107,18 +106,18 @@ namespace ManagedDoom
 				if (player.BonusCount != 0)
 				{
 					// Picking up bonus.
-					var doevilgrin = false;
+					var doEvilGrin = false;
 
 					for (var i = 0; i < DoomInfo.WeaponInfos.Length; i++)
 					{
 						if (oldWeaponsOwned[i] != player.WeaponOwned[i])
 						{
-							doevilgrin = true;
+							doEvilGrin = true;
 							oldWeaponsOwned[i] = player.WeaponOwned[i];
 						}
 					}
 
-					if (doevilgrin)
+					if (doEvilGrin)
 					{
 						// Evil grin if just picked up weapon.
 						priority = 8;
@@ -254,16 +253,17 @@ namespace ManagedDoom
 
 		private int CalcPainOffset()
 		{
-			var plyr = world.Options.Players[world.Options.ConsolePlayer];
+			var player = world.Options.Players[world.Options.ConsolePlayer];
 
-			var health = plyr.Health > 100 ? 100 : plyr.Health;
+			var health = player.Health > 100 ? 100 : player.Health;
 
 			if (health != oldHealth)
 			{
-				lastPainOffset = Face.Stride
-					* (((100 - health) * Face.PainFaceCount) / 101);
+				lastPainOffset = Face.Stride *
+					(((100 - health) * Face.PainFaceCount) / 101);
 				oldHealth = health;
 			}
+
 			return lastPainOffset;
 		}
 
