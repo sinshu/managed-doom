@@ -83,10 +83,7 @@ namespace ManagedDoom
 
                 if (args.deh.Present)
                 {
-                    foreach (var path in args.deh.Value)
-                    {
-                        DeHackEd.ReadFile(path);
-                    }
+                    DeHackEd.ReadFiles(args.deh.Value);
                 }
 
                 resource = new CommonResource(GetWadPaths(args));

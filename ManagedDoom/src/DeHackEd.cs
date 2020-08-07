@@ -17,6 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 
 namespace ManagedDoom
@@ -25,7 +27,27 @@ namespace ManagedDoom
     {
         private static Tuple<Action<World, Player, PlayerSpriteDef>, Action<World, Mobj>>[] sourcePointerTable;
 
-        public static void ReadFile(string path)
+        public static void ReadFiles(params string[] fileNames)
+        {
+            try
+            {
+                Console.Write("Apply DeHackEd patches: ");
+
+                foreach (var fileName in fileNames)
+                {
+                    ReadFile(fileName);
+                }
+
+                Console.WriteLine("OK (" + string.Join(", ", fileNames.Select(x => Path.GetFileName(x))) + ")");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                ExceptionDispatchInfo.Throw(e);
+            }
+        }
+
+        private static void ReadFile(string fileName)
         {
             if (sourcePointerTable == null)
             {
@@ -40,7 +62,7 @@ namespace ManagedDoom
 
             var data = new List<string>();
             var last = Block.None;
-            foreach (var line in File.ReadLines(path))
+            foreach (var line in File.ReadLines(fileName))
             {
                 var split = line.Split(' ');
                 var blockType = GetBlockType(split);
