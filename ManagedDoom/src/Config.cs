@@ -138,11 +138,17 @@ namespace ManagedDoom
         {
             try
             {
-                var dic = File
-                    .ReadLines(path)
-                    .Select(line => line.Split('='))
-                    .Where(split => split.Length == 2)
-                    .ToDictionary(split => split[0].Trim(), split => split[1].Trim());
+                Console.Write("Restore settings: ");
+
+                var dic = new Dictionary<string, string>();
+                foreach (var line in File.ReadLines(path))
+                {
+                    var split = line.Split('=', StringSplitOptions.RemoveEmptyEntries);
+                    if (split.Length == 2)
+                    {
+                        dic[split[0].Trim()] = split[1].Trim();
+                    }
+                }
 
                 key_forward = GetKeyBinding(dic, nameof(key_forward), key_forward);
                 key_backward = GetKeyBinding(dic, nameof(key_backward), key_backward);
@@ -169,9 +175,12 @@ namespace ManagedDoom
 
                 audio_soundvolume = GetInt(dic, nameof(audio_soundvolume), audio_soundvolume);
                 audio_musicvolume = GetInt(dic, nameof(audio_musicvolume), audio_musicvolume);
+
+                Console.WriteLine("OK");
             }
             catch
             {
+                Console.WriteLine("Failed");
             }
         }
 
