@@ -264,8 +264,17 @@ namespace ManagedDoom.UserInput
             if (cursorCentered)
             {
                 var current = Mouse.GetPosition(window);
+
                 mouseX = current.X - windowCenterX;
-                mouseY = -(current.Y - windowCenterY);
+
+                if (config.mouse_disableyaxis)
+                {
+                    mouseY = 0;
+                }
+                else
+                {
+                    mouseY = -(current.Y - windowCenterY);
+                }
             }
             else
             {

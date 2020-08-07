@@ -36,6 +36,7 @@ namespace ManagedDoom
         public KeyBinding key_strafe;
 
         public int mouse_sensitivity;
+        public bool mouse_disableyaxis;
 
         public bool game_alwaysrun;
 
@@ -118,6 +119,7 @@ namespace ManagedDoom
                 });
 
             mouse_sensitivity = 3;
+            mouse_disableyaxis = false;
 
             game_alwaysrun = true;
 
@@ -162,6 +164,7 @@ namespace ManagedDoom
                 key_strafe = GetKeyBinding(dic, nameof(key_strafe), key_strafe);
 
                 mouse_sensitivity = GetInt(dic, nameof(mouse_sensitivity), mouse_sensitivity);
+                mouse_disableyaxis = GetBool(dic, nameof(mouse_disableyaxis), mouse_disableyaxis);
 
                 game_alwaysrun = GetBool(dic, nameof(game_alwaysrun), game_alwaysrun);
 
@@ -201,6 +204,7 @@ namespace ManagedDoom
                     writer.WriteLine(nameof(key_strafe) + " = " + key_strafe);
 
                     writer.WriteLine(nameof(mouse_sensitivity) + " = " + mouse_sensitivity);
+                    writer.WriteLine(nameof(mouse_disableyaxis) + " = " + BoolToString(mouse_disableyaxis));
 
                     writer.WriteLine(nameof(game_alwaysrun) + " = " + BoolToString(game_alwaysrun));
 
