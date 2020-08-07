@@ -102,3 +102,6 @@ https://github.com/fabiangreffrath/crispy-doom
 
 * __Doom Wiki__  
 https://doomwiki.org/wiki/Entryway
+
+* __Eternity Engine DeHackEd / BEX Reference v2.06__  
+http://eternity.mancubus.net/svn/trunk/docs/dehref.html
