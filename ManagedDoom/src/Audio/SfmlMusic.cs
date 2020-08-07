@@ -288,7 +288,7 @@ namespace ManagedDoom.Audio
                     instruments[i] = BitConverter.ToUInt16(data, 16 + 2 * i);
                 }
 
-                events = new MusEvent[64];
+                events = new MusEvent[128];
                 for (var i = 0; i < events.Length; i++)
                 {
                     events[i] = new MusEvent();

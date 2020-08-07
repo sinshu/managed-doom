@@ -75,8 +75,11 @@ namespace ManagedDoom.Audio
                     int sampleRate;
                     int sampleCount;
                     var samples = GetSamples(wad, name, out sampleRate, out sampleCount);
-                    buffers[i] = new SoundBuffer(samples, 1, (uint)sampleRate);
-                    amplitudes[i] = GetAmplitude(samples, sampleRate, sampleCount);
+                    if (samples != null)
+                    {
+                        buffers[i] = new SoundBuffer(samples, 1, (uint)sampleRate);
+                        amplitudes[i] = GetAmplitude(samples, sampleRate, sampleCount);
+                    }
                 }
 
                 channels = new Sound[channelCount];
@@ -111,12 +114,19 @@ namespace ManagedDoom.Audio
             sampleRate = BitConverter.ToUInt16(data, 2);
             sampleCount = BitConverter.ToInt32(data, 4) - 32;
 
-            var samples = new short[sampleCount];
-            for (var t = 0; t < samples.Length; t++)
+            if (sampleCount > 0)
             {
-                samples[t] = (short)((data[24 + t] - 128) << 8);
+                var samples = new short[sampleCount];
+                for (var t = 0; t < samples.Length; t++)
+                {
+                    samples[t] = (short)((data[24 + t] - 128) << 8);
+                }
+                return samples;
             }
-            return samples;
+            else
+            {
+                return null;
+            }
         }
 
         private static float GetAmplitude(short[] samples, int sampleRate, int sampleCount)
@@ -216,6 +226,11 @@ namespace ManagedDoom.Audio
 
         public void StartSound(Sfx sfx)
         {
+            if (buffers[(int)sfx] == null)
+            {
+                return;
+            }
+
             uiReserved = sfx;
         }
 
@@ -226,6 +241,11 @@ namespace ManagedDoom.Audio
 
         public void StartSound(Mobj mobj, Sfx sfx, SfxType type, int volume)
         {
+            if (buffers[(int)sfx] == null)
+            {
+                return;
+            }
+
             var x = (mobj.X - listener.X).ToFloat();
             var y = (mobj.Y - listener.Y).ToFloat();
             var dist = MathF.Sqrt(x * x + y * y);
@@ -402,23 +422,31 @@ namespace ManagedDoom.Audio
         {
             Console.WriteLine("Shutdown sound.");
 
-            for (var i = 0; i < channels.Length; i++)
+            if (channels != null)
             {
-                if (channels[i] != null)
+                for (var i = 0; i < channels.Length; i++)
                 {
-                    channels[i].Stop();
-                    channels[i].Dispose();
-                    channels[i] = null;
+                    if (channels[i] != null)
+                    {
+                        channels[i].Stop();
+                        channels[i].Dispose();
+                        channels[i] = null;
+                    }
                 }
+                channels = null;
             }
 
-            for (var i = 0; i < buffers.Length; i++)
+            if (buffers != null)
             {
-                if (buffers[i] != null)
+                for (var i = 0; i < buffers.Length; i++)
                 {
-                    buffers[i].Dispose();
-                    buffers[i] = null;
+                    if (buffers[i] != null)
+                    {
+                        buffers[i].Dispose();
+                        buffers[i] = null;
+                    }
                 }
+                buffers = null;
             }
 
             if (uiChannel != null)
