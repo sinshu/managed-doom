@@ -1784,8 +1784,11 @@ namespace ManagedDoom.SoftwareRendering
 
                     var wy1 = Math.Max(drawUpperWallY1, upperClip[x] + 1);
                     var wy2 = Math.Min(drawUpperWallY2, lowerClip[x] - 1);
-                    var source = upperWallTexture.Composite.Columns[textureColumn & upperWallWidthMask][0];
-                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, invScale, uperTextureAlt);
+                    var source = upperWallTexture.Composite.Columns[textureColumn & upperWallWidthMask];
+                    if (source.Length > 0)
+                    {
+                        DrawColumn(source[0], wallLights[lightIndex], x, wy1, wy2, invScale, uperTextureAlt);
+                    }
 
                     if (upperClip[x] < wy2)
                     {
@@ -1813,8 +1816,11 @@ namespace ManagedDoom.SoftwareRendering
 
                     var wy1 = Math.Max(drawLowerWallY1, upperClip[x] + 1);
                     var wy2 = Math.Min(drawLowerWallY2, lowerClip[x] - 1);
-                    var source = lowerWallTexture.Composite.Columns[textureColumn & lowerWallWidthMask][0];
-                    DrawColumn(source, wallLights[lightIndex], x, wy1, wy2, invScale, lowerTextureAlt);
+                    var source = lowerWallTexture.Composite.Columns[textureColumn & lowerWallWidthMask];
+                    if (source.Length > 0)
+                    {
+                        DrawColumn(source[0], wallLights[lightIndex], x, wy1, wy2, invScale, lowerTextureAlt);
+                    }
 
                     if (drawFloor)
                     {
