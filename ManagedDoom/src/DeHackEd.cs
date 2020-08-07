@@ -27,12 +27,15 @@ namespace ManagedDoom
 
         public static void ReadFile(string path)
         {
-            sourcePointerTable = new Tuple<Action<World, Player, PlayerSpriteDef>, Action<World, Mobj>>[DoomInfo.States.Length];
-            for (var i = 0; i < sourcePointerTable.Length; i++)
+            if (sourcePointerTable == null)
             {
-                var playerAction = DoomInfo.States[i].PlayerAction;
-                var mobjAction = DoomInfo.States[i].MobjAction;
-                sourcePointerTable[i] = Tuple.Create(playerAction, mobjAction);
+                sourcePointerTable = new Tuple<Action<World, Player, PlayerSpriteDef>, Action<World, Mobj>>[DoomInfo.States.Length];
+                for (var i = 0; i < sourcePointerTable.Length; i++)
+                {
+                    var playerAction = DoomInfo.States[i].PlayerAction;
+                    var mobjAction = DoomInfo.States[i].MobjAction;
+                    sourcePointerTable[i] = Tuple.Create(playerAction, mobjAction);
+                }
             }
 
             var data = new List<string>();

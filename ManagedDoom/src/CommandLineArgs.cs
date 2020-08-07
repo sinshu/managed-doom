@@ -25,7 +25,7 @@ namespace ManagedDoom
     {
         public readonly Arg<string> iwad;
         public readonly Arg<string[]> file;
-        public readonly Arg<string> deh;
+        public readonly Arg<string[]> deh;
 
         public readonly Arg<Tuple<int, int>> warp;
         public readonly Arg<int> skill;
@@ -50,7 +50,7 @@ namespace ManagedDoom
         {
             iwad = GetString(args, "-iwad");
             file = Check_file(args);
-            deh = GetString(args, "-deh");
+            deh = Check_deh(args);
 
             warp = Check_warp(args);
             skill = GetInt(args, "-skill");
@@ -75,6 +75,17 @@ namespace ManagedDoom
         private static Arg<string[]> Check_file(string[] args)
         {
             var values = GetValues(args, "-file");
+            if (values.Length >= 1)
+            {
+                return new Arg<string[]>(values);
+            }
+
+            return new Arg<string[]>();
+        }
+
+        private static Arg<string[]> Check_deh(string[] args)
+        {
+            var values = GetValues(args, "-deh");
             if (values.Length >= 1)
             {
                 return new Arg<string[]>(values);
