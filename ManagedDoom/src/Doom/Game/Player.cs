@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (C) 1993-1996 Id Software, Inc.
 // Copyright (C) 2019-2020 Nobuaki Tanaka
 //
@@ -15,7 +15,7 @@
 
 
 
-﻿using System;
+using System;
 
 namespace ManagedDoom
 {

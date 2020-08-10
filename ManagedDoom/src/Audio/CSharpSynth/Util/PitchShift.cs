@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using AudioSynthesis.Synthesis;
 
 namespace AudioSynthesis.Util
