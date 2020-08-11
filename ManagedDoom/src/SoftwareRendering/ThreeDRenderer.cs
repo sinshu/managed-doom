@@ -311,11 +311,12 @@ namespace ManagedDoom.SoftwareRendering
 
         private const int lightLevelCount = 16;
         private const int lightSegShift = 4;
-        private const int maxScaleLight = 48;
         private const int scaleLightShift = 12;
-        private const int maxZLight = 128;
         private const int zLightShift = 20;
         private const int colorMapCount = 32;
+
+        private int maxScaleLight;
+        private const int maxZLight = 128;
 
         private byte[][][] diminishingScaleLight;
         private byte[][][] diminishingZLight;
@@ -329,6 +330,8 @@ namespace ManagedDoom.SoftwareRendering
 
         private void InitLighting()
         {
+            maxScaleLight = 48 * (screenWidth / 320);
+
             diminishingScaleLight = new byte[lightLevelCount][][];
             diminishingZLight = new byte[lightLevelCount][][];
             fixedLight = new byte[lightLevelCount][][];
@@ -2432,8 +2435,8 @@ namespace ManagedDoom.SoftwareRendering
             // Well, now it will be done.
             sector.ValidCount = validCount;
 
-            var lightLevel = (sector.LightLevel >> lightSegShift) + extraLight;
-            var spriteLights = scaleLight[Math.Clamp(lightLevel, 0, lightLevelCount - 1)];
+            var spriteLightLevel = (sector.LightLevel >> lightSegShift) + extraLight;
+            var spriteLights = scaleLight[Math.Clamp(spriteLightLevel, 0, lightLevelCount - 1)];
 
             // Handle all things in sector.
             foreach (var thing in sector)
@@ -2477,25 +2480,25 @@ namespace ManagedDoom.SoftwareRendering
                 return;
             }
 
-            var sprDef = sprites[thing.Sprite];
-            var frameNum = thing.Frame & 0x7F;
-            var sprFrame = sprDef.Frames[frameNum];
+            var spriteDef = sprites[thing.Sprite];
+            var frameNumber = thing.Frame & 0x7F;
+            var spriteFrame = spriteDef.Frames[frameNumber];
 
             Patch lump;
             bool flip;
-            if (sprFrame.Rotate)
+            if (spriteFrame.Rotate)
             {
                 // Choose a different rotation based on player view.
                 var ang = Geometry.PointToAngle(viewX, viewY, thing.X, thing.Y);
                 var rot = (ang.Data - thing.Angle.Data + (uint)(Angle.Ang45.Data / 2) * 9) >> 29;
-                lump = sprFrame.Patches[rot];
-                flip = sprFrame.Flip[rot];
+                lump = spriteFrame.Patches[rot];
+                flip = spriteFrame.Flip[rot];
             }
             else
             {
                 // Use single rotation for all views.
-                lump = sprFrame.Patches[0];
-                flip = sprFrame.Flip[0];
+                lump = spriteFrame.Patches[0];
+                flip = spriteFrame.Flip[0];
             }
 
             // Calculate edges of the shape.
@@ -2783,12 +2786,12 @@ namespace ManagedDoom.SoftwareRendering
         private void DrawPlayerSprite(PlayerSpriteDef psp, byte[][] spriteLights, bool fuzz)
         {
             // Decide which patch to use.
-            var sprDef = sprites[psp.State.Sprite];
+            var spriteDef = sprites[psp.State.Sprite];
 
-            var sprFrame = sprDef.Frames[psp.State.Frame & 0x7fff];
+            var spriteFrame = spriteDef.Frames[psp.State.Frame & 0x7fff];
 
-            var lump = sprFrame.Patches[0];
-            var flip = sprFrame.Flip[0];
+            var lump = spriteFrame.Patches[0];
+            var flip = spriteFrame.Flip[0];
 
             // Calculate edges of the shape.
             var tx = psp.Sx - Fixed.FromInt(160);
@@ -2895,21 +2898,20 @@ namespace ManagedDoom.SoftwareRendering
         private void DrawPlayerSprites(Player player)
         {
             // Get light level.
-            var lightnum =
-                (player.Mobj.Subsector.Sector.LightLevel >> lightSegShift) + extraLight;
+            var spriteLightLevel = (player.Mobj.Subsector.Sector.LightLevel >> lightSegShift) + extraLight;
 
             byte[][] spriteLights;
-            if (lightnum < 0)
+            if (spriteLightLevel < 0)
             {
                 spriteLights = scaleLight[0];
             }
-            else if (lightnum >= lightLevelCount)
+            else if (spriteLightLevel >= lightLevelCount)
             {
                 spriteLights = scaleLight[lightLevelCount - 1];
             }
             else
             {
-                spriteLights = scaleLight[lightnum];
+                spriteLights = scaleLight[spriteLightLevel];
             }
 
             bool fuzz;
