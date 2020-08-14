@@ -111,6 +111,13 @@ namespace ManagedDoom.Audio
         {
             var data = wad.ReadLump(name);
 
+            if (data.Length < 8)
+            {
+                sampleRate = -1;
+                sampleCount = -1;
+                return null;
+            }
+
             sampleRate = BitConverter.ToUInt16(data, 2);
             sampleCount = BitConverter.ToInt32(data, 4) - 32;
 
