@@ -28,15 +28,6 @@ namespace ManagedDoom
             Console.WriteLine(ApplicationInfo.Title);
             Console.ResetColor();
 
-#if DEBUG
-            Main_Debug(args);
-#else
-            Main_Release(args);
-#endif
-        }
-
-        private static void Main_Release(string[] args)
-        {
             try
             {
                 string quitMessage = null;
@@ -49,7 +40,9 @@ namespace ManagedDoom
 
                 if (quitMessage != null)
                 {
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine(quitMessage);
+                    Console.ResetColor();
                     Console.Write("Press any key to exit.");
                     Console.ReadKey();
                 }
@@ -61,14 +54,6 @@ namespace ManagedDoom
                 Console.ResetColor();
                 Console.Write("Press any key to exit.");
                 Console.ReadKey();
-            }
-        }
-
-        private static void Main_Debug(string[] args)
-        {
-            using (var app = new DoomApplication(new CommandLineArgs(args)))
-            {
-                app.Run();
             }
         }
     }
