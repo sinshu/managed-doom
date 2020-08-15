@@ -106,7 +106,7 @@ namespace AudioSynthesis.Bank.Patches
                     SynthHelper.MixMonoToMonoInterpolation(x, volume, voiceparams);
                 }
                 //--Check and end early if necessary
-                if ((voiceparams.envelopes[1].CurrentState > EnvelopeStateEnum.Hold && volume <= Synthesizer.NonAudible) || voiceparams.generatorParams[0].currentState == GeneratorStateEnum.Finished)
+                if (voiceparams.generatorParams[0].currentState == GeneratorStateEnum.Finished)
                 {
                     voiceparams.state = VoiceStateEnum.Stopped;
                     return;
