@@ -96,17 +96,17 @@ namespace ManagedDoom
 
                     case 2:
                         // Strobe fast.
-                        lc.SpawnStrobeFlash(sector, StrobeFlash.FastDark, 0);
+                        lc.SpawnStrobeFlash(sector, StrobeFlash.FastDark, false);
                         break;
 
                     case 3:
                         // Strobe slow.
-                        lc.SpawnStrobeFlash(sector, StrobeFlash.SlowDark, 0);
+                        lc.SpawnStrobeFlash(sector, StrobeFlash.SlowDark, false);
                         break;
 
                     case 4:
                         // Strobe fast / death slime.
-                        lc.SpawnStrobeFlash(sector, StrobeFlash.FastDark, 0);
+                        lc.SpawnStrobeFlash(sector, StrobeFlash.FastDark, false);
                         sector.Special = (SectorSpecial)4;
                         break;
 
@@ -126,12 +126,12 @@ namespace ManagedDoom
 
                     case 12:
                         // Sync strobe slow.
-                        lc.SpawnStrobeFlash(sector, StrobeFlash.SlowDark, 1);
+                        lc.SpawnStrobeFlash(sector, StrobeFlash.SlowDark, true);
                         break;
 
                     case 13:
                         // Sync strobe fast.
-                        lc.SpawnStrobeFlash(sector, StrobeFlash.FastDark, 1);
+                        lc.SpawnStrobeFlash(sector, StrobeFlash.FastDark, true);
                         break;
 
                     case 14:

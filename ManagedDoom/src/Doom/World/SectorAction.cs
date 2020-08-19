@@ -1641,7 +1641,7 @@ namespace ManagedDoom
 					continue;
 				}
 
-				world.LightingChange.SpawnStrobeFlash(sector, StrobeFlash.SlowDark, 0);
+				world.LightingChange.SpawnStrobeFlash(sector, StrobeFlash.SlowDark, false);
 			}
 		}
 
