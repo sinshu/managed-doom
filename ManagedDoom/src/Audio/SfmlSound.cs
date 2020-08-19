@@ -119,14 +119,21 @@ namespace ManagedDoom.Audio
             }
 
             sampleRate = BitConverter.ToUInt16(data, 2);
-            sampleCount = BitConverter.ToInt32(data, 4) - 32;
+            sampleCount = BitConverter.ToInt32(data, 4);
+
+            var offset = 8;
+            if (ContainsDmxPadding(data))
+            {
+                offset += 16;
+                sampleCount -= 32;
+            }
 
             if (sampleCount > 0)
             {
                 var samples = new short[sampleCount];
                 for (var t = 0; t < samples.Length; t++)
                 {
-                    samples[t] = (short)((data[24 + t] - 128) << 8);
+                    samples[t] = (short)((data[offset + t] - 128) << 8);
                 }
                 return samples;
             }
@@ -134,6 +141,41 @@ namespace ManagedDoom.Audio
             {
                 return null;
             }
+        }
+
+        // Check if the data contains pad bytes.
+        // If the first and last 16 samples are the same,
+        // the data should contain pad bytes.
+        // https://doomwiki.org/wiki/Sound
+        private static bool ContainsDmxPadding(byte[] data)
+        {
+            var sampleCount = BitConverter.ToInt32(data, 4);
+            if (sampleCount < 32)
+            {
+                return false;
+            }
+            else
+            {
+                var first = data[8];
+                for (var i = 1; i < 16; i++)
+                {
+                    if (data[8 + i] != first)
+                    {
+                        return false;
+                    }
+                }
+
+                var last = data[8 + sampleCount - 1];
+                for (var i = 1; i < 16; i++)
+                {
+                    if (data[8 + sampleCount - i - 1] != last)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private static float GetAmplitude(short[] samples, int sampleRate, int sampleCount)
