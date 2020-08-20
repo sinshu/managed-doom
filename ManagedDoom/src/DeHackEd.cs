@@ -219,6 +219,24 @@ namespace ManagedDoom
 
         private static void ProcessMiscBlock(List<string> data)
         {
+            var dic = GetKeyValuePairs(data);
+
+            DoomInfo.DeHackEdConst.InitialHealth = GetInt(dic, "Initial Health", DoomInfo.DeHackEdConst.InitialHealth);
+            DoomInfo.DeHackEdConst.InitialBullets = GetInt(dic, "Initial Bullets", DoomInfo.DeHackEdConst.InitialBullets);
+            DoomInfo.DeHackEdConst.MaxHealth = GetInt(dic, "Max Health", DoomInfo.DeHackEdConst.MaxHealth);
+            DoomInfo.DeHackEdConst.MaxArmor = GetInt(dic, "Max Armor", DoomInfo.DeHackEdConst.MaxArmor);
+            DoomInfo.DeHackEdConst.GreenArmorClass = GetInt(dic, "Green Armor Class", DoomInfo.DeHackEdConst.GreenArmorClass);
+            DoomInfo.DeHackEdConst.BlueArmorClass = GetInt(dic, "Blue Armor Class", DoomInfo.DeHackEdConst.BlueArmorClass);
+            DoomInfo.DeHackEdConst.MaxSoulsphere = GetInt(dic, "Max Soulsphere", DoomInfo.DeHackEdConst.MaxSoulsphere);
+            DoomInfo.DeHackEdConst.SoulsphereHealth = GetInt(dic, "Soulsphere Health", DoomInfo.DeHackEdConst.SoulsphereHealth);
+            DoomInfo.DeHackEdConst.MegasphereHealth = GetInt(dic, "Megasphere Health", DoomInfo.DeHackEdConst.MegasphereHealth);
+            DoomInfo.DeHackEdConst.GodModeHealth = GetInt(dic, "God Mode Health", DoomInfo.DeHackEdConst.GodModeHealth);
+            DoomInfo.DeHackEdConst.IdfaArmor = GetInt(dic, "IDFA Armor", DoomInfo.DeHackEdConst.IdfaArmor);
+            DoomInfo.DeHackEdConst.IdfaArmorClass = GetInt(dic, "IDFA Armor Class", DoomInfo.DeHackEdConst.IdfaArmorClass);
+            DoomInfo.DeHackEdConst.IdkfaArmor = GetInt(dic, "IDKFA Armor", DoomInfo.DeHackEdConst.IdkfaArmor);
+            DoomInfo.DeHackEdConst.IdkfaArmorClass = GetInt(dic, "IDKFA Armor Class", DoomInfo.DeHackEdConst.IdkfaArmorClass);
+            DoomInfo.DeHackEdConst.BfgCellsPerShot = GetInt(dic, "BFG Cells/Shot", DoomInfo.DeHackEdConst.BfgCellsPerShot);
+            DoomInfo.DeHackEdConst.MonstersInfight = GetInt(dic, "Monsters Infight", 0) == 221;
         }
 
         private static void ProcessTextBlock(List<string> data)

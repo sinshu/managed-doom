@@ -146,6 +146,8 @@ namespace ManagedDoom
         {
             GiveWeapons();
             var player = world.ConsolePlayer;
+            player.ArmorType = DoomInfo.DeHackEdConst.IdfaArmorClass;
+            player.ArmorPoints = DoomInfo.DeHackEdConst.IdfaArmor;
             player.SendMessage(DoomInfo.Strings.STSTR_FAADDED);
         }
 
@@ -153,6 +155,8 @@ namespace ManagedDoom
         {
             GiveWeapons();
             var player = world.ConsolePlayer;
+            player.ArmorType = DoomInfo.DeHackEdConst.IdkfaArmorClass;
+            player.ArmorPoints = DoomInfo.DeHackEdConst.IdkfaArmor;
             for (var i = 0; i < (int)CardType.Count; i++)
             {
                 player.Cards[i] = true;
@@ -171,6 +175,7 @@ namespace ManagedDoom
             else
             {
                 player.Cheats |= CheatFlags.GodMode;
+                player.Health = Math.Max(DoomInfo.DeHackEdConst.GodModeHealth, player.Health);
                 player.SendMessage(DoomInfo.Strings.STSTR_DQDON);
             }
         }

@@ -30,8 +30,6 @@ namespace ManagedDoom
         private static readonly Fixed RaiseSpeed = Fixed.FromInt(6);
         private static readonly Fixed LowerSpeed = Fixed.FromInt(6);
 
-        private static readonly int bfgCells = 40;
-
         private World world;
 
         private Fixed currentBulletSlope;
@@ -111,7 +109,7 @@ namespace ManagedDoom
             int count;
             if (player.ReadyWeapon == WeaponType.Bfg)
             {
-                count = bfgCells;
+                count = DoomInfo.DeHackEdConst.BfgCellsPerShot;
             }
             else if (player.ReadyWeapon == WeaponType.SuperShotgun)
             {
@@ -171,7 +169,7 @@ namespace ManagedDoom
                     player.PendingWeapon = WeaponType.Missile;
                 }
                 else if (player.WeaponOwned[(int)WeaponType.Bfg] &&
-                    player.Ammo[(int)AmmoType.Cell] > 40 &&
+                    player.Ammo[(int)AmmoType.Cell] > DoomInfo.DeHackEdConst.BfgCellsPerShot &&
                     world.Options.GameMode != GameMode.Shareware)
                 {
                     player.PendingWeapon = WeaponType.Bfg;
@@ -652,7 +650,7 @@ namespace ManagedDoom
 
         public void FireBFG(Player player)
         {
-            player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] -= bfgCells;
+            player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] -= DoomInfo.DeHackEdConst.BfgCellsPerShot;
 
             world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Bfg);
         }

@@ -23,7 +23,6 @@ namespace ManagedDoom
     {
         public static readonly int MaxPlayerCount = 4;
 
-        public static readonly int MaxHealth = 100;
         public static readonly Fixed NormalViewHeight = Fixed.FromInt(41);
 
         private static readonly string[] defaultPlayerNames = new string[]
@@ -219,7 +218,7 @@ namespace ManagedDoom
             deltaViewHeight = Fixed.Zero;
             bob = Fixed.Zero;
 
-            health = MaxHealth;
+            health = DoomInfo.DeHackEdConst.InitialHealth;
             armorPoints = 0;
             armorType = 0;
 
@@ -236,7 +235,7 @@ namespace ManagedDoom
 
             weaponOwned[(int)WeaponType.Fist] = true;
             weaponOwned[(int)WeaponType.Pistol] = true;
-            ammo[(int)AmmoType.Clip] = 50;
+            ammo[(int)AmmoType.Clip] = DoomInfo.DeHackEdConst.InitialBullets;
             for (var i = 0; i < (int)AmmoType.Count; i++)
             {
                 maxAmmo[i] = DoomInfo.AmmoInfos.Max[i];
