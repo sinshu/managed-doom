@@ -59,7 +59,7 @@ https://www.youtube.com/watch?v=9_tncwL7qvM
     - [x] Save / load
     - [x] Screen melt animation
     - [x] Config
-    - [ ] DeHackEd support
+    - [x] DeHackEd support
 
 ## License
 
@@ -103,5 +103,5 @@ https://github.com/fabiangreffrath/crispy-doom
 * __Doom Wiki__  
 https://doomwiki.org/wiki/Entryway
 
-* __Eternity Engine DeHackEd / BEX Reference v2.06__  
+* __Eternity Engine DeHackEd / BEX Reference__  
 http://eternity.mancubus.net/svn/trunk/docs/dehref.html
