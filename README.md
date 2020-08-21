@@ -16,6 +16,10 @@ Managed Doom is a Doom source port written in C#. The entire code is manually tr
 
 ![Requiem MAP13](screenshots/requiem-map13.png)
 
+![Zombies TC MAP01](screenshots/zombies-map01.png)
+
+![Batman Doom MAP27](screenshots/batman-map27.png)
+
 ## Demo video
 
 https://www.youtube.com/watch?v=9_tncwL7qvM  
