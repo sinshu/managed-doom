@@ -176,6 +176,7 @@ namespace ManagedDoom
             {
                 player.Cheats |= CheatFlags.GodMode;
                 player.Health = Math.Max(DoomInfo.DeHackEdConst.GodModeHealth, player.Health);
+                player.Mobj.Health = player.Health;
                 player.SendMessage(DoomInfo.Strings.STSTR_DQDON);
             }
         }
