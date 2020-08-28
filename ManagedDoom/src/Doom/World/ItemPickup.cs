@@ -226,15 +226,15 @@ namespace ManagedDoom
         /// </returns>
         private bool GiveHealth(Player player, int amount)
         {
-            if (player.Health >= Player.MaxHealth)
+            if (player.Health >= DoomInfo.DeHackEdConst.InitialHealth)
             {
                 return false;
             }
 
             player.Health += amount;
-            if (player.Health > Player.MaxHealth)
+            if (player.Health > DoomInfo.DeHackEdConst.InitialHealth)
             {
-                player.Health = Player.MaxHealth;
+                player.Health = DoomInfo.DeHackEdConst.InitialHealth;
             }
 
             player.Mobj.Health = player.Health;
@@ -361,7 +361,7 @@ namespace ManagedDoom
             {
                 // Armor.
                 case Sprite.ARM1:
-                    if (!GiveArmor(player, 1))
+                    if (!GiveArmor(player, DoomInfo.DeHackEdConst.GreenArmorClass))
                     {
                         return;
                     }
@@ -369,7 +369,7 @@ namespace ManagedDoom
                     break;
 
                 case Sprite.ARM2:
-                    if (!GiveArmor(player, 2))
+                    if (!GiveArmor(player, DoomInfo.DeHackEdConst.BlueArmorClass))
                     {
                         return;
                     }
@@ -380,9 +380,9 @@ namespace ManagedDoom
                 case Sprite.BON1:
                     // Can go over 100%.
                     player.Health++;
-                    if (player.Health > 200)
+                    if (player.Health > DoomInfo.DeHackEdConst.MaxHealth)
                     {
-                        player.Health = 200;
+                        player.Health = DoomInfo.DeHackEdConst.MaxHealth;
                     }
                     player.Mobj.Health = player.Health;
                     player.SendMessage(DoomInfo.Strings.GOTHTHBONUS);
@@ -391,22 +391,22 @@ namespace ManagedDoom
                 case Sprite.BON2:
                     // Can go over 100%.
                     player.ArmorPoints++;
-                    if (player.ArmorPoints > 200)
+                    if (player.ArmorPoints > DoomInfo.DeHackEdConst.MaxArmor)
                     {
-                        player.ArmorPoints = 200;
+                        player.ArmorPoints = DoomInfo.DeHackEdConst.MaxArmor;
                     }
                     if (player.ArmorType == 0)
                     {
-                        player.ArmorType = 1;
+                        player.ArmorType = DoomInfo.DeHackEdConst.GreenArmorClass;
                     }
                     player.SendMessage(DoomInfo.Strings.GOTARMBONUS);
                     break;
 
                 case Sprite.SOUL:
-                    player.Health += 100;
-                    if (player.Health > 200)
+                    player.Health += DoomInfo.DeHackEdConst.SoulsphereHealth;
+                    if (player.Health > DoomInfo.DeHackEdConst.MaxSoulsphere)
                     {
-                        player.Health = 200;
+                        player.Health = DoomInfo.DeHackEdConst.MaxSoulsphere;
                     }
                     player.Mobj.Health = player.Health;
                     player.SendMessage(DoomInfo.Strings.GOTSUPER);
@@ -419,9 +419,9 @@ namespace ManagedDoom
                         return;
                     }
 
-                    player.Health = 200;
+                    player.Health = DoomInfo.DeHackEdConst.MegasphereHealth;
                     player.Mobj.Health = player.Health;
-                    GiveArmor(player, 2);
+                    GiveArmor(player, DoomInfo.DeHackEdConst.BlueArmorClass);
                     player.SendMessage(DoomInfo.Strings.GOTMSPHERE);
                     sound = Sfx.GETPOW;
                     break;

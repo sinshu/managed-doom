@@ -329,7 +329,7 @@ namespace ManagedDoom
                         return true;
                     }
 
-                    if (thing.Type != MobjType.Player)
+                    if (thing.Type != MobjType.Player && !DoomInfo.DeHackEdConst.MonstersInfight)
                     {
                         // Explode, but do no damage.
                         // Let players missile other players.
