@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace ManagedDoom
@@ -74,10 +75,22 @@ namespace ManagedDoom
 
         private static Arg<string[]> Check_file(string[] args)
         {
-            var values = GetValues(args, "-file");
-            if (values.Length >= 1)
+            // PWAD file paths can be specified without "-file" option for drag & drop support.
+            if (args.Length > 0 && args.All(arg => arg.FirstOrDefault() != '-'))
             {
-                return new Arg<string[]>(values);
+                var values = args.Where(arg => Path.GetExtension(arg).ToLower() == ".wad").ToArray();
+                if (values.Length >= 1)
+                {
+                    return new Arg<string[]>(values);
+                }
+            }
+            else
+            {
+                var values = GetValues(args, "-file");
+                if (values.Length >= 1)
+                {
+                    return new Arg<string[]>(values);
+                }
             }
 
             return new Arg<string[]>();
@@ -85,10 +98,22 @@ namespace ManagedDoom
 
         private static Arg<string[]> Check_deh(string[] args)
         {
-            var values = GetValues(args, "-deh");
-            if (values.Length >= 1)
+            // DEH file paths can be specified without "-deh" option for drag & drop support.
+            if (args.Length > 0 && args.All(arg => arg.FirstOrDefault() != '-'))
             {
-                return new Arg<string[]>(values);
+                var values = args.Where(arg => Path.GetExtension(arg).ToLower() == ".deh").ToArray();
+                if (values.Length >= 1)
+                {
+                    return new Arg<string[]>(values);
+                }
+            }
+            else
+            {
+                var values = GetValues(args, "-deh");
+                if (values.Length >= 1)
+                {
+                    return new Arg<string[]>(values);
+                }
             }
 
             return new Arg<string[]>();
