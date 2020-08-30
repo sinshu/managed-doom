@@ -50,6 +50,7 @@ namespace ManagedDoom
 
         public int audio_soundvolume;
         public int audio_musicvolume;
+        public bool audio_randompitch;
 
         // Default settings.
         public Config()
@@ -134,6 +135,7 @@ namespace ManagedDoom
 
             audio_soundvolume = 8;
             audio_musicvolume = 8;
+            audio_randompitch = false;
         }
 
         public Config(string path) : this()
@@ -178,6 +180,7 @@ namespace ManagedDoom
 
                 audio_soundvolume = GetInt(dic, nameof(audio_soundvolume), audio_soundvolume);
                 audio_musicvolume = GetInt(dic, nameof(audio_musicvolume), audio_musicvolume);
+                audio_randompitch = GetBool(dic, nameof(audio_randompitch), audio_randompitch);
 
                 Console.WriteLine("OK");
             }
@@ -218,6 +221,7 @@ namespace ManagedDoom
 
                     writer.WriteLine(nameof(audio_soundvolume) + " = " + audio_soundvolume);
                     writer.WriteLine(nameof(audio_musicvolume) + " = " + audio_musicvolume);
+                    writer.WriteLine(nameof(audio_randompitch) + " = " + BoolToString(audio_randompitch));
                 }
             }
             catch

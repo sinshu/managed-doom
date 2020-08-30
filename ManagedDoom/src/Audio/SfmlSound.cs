@@ -38,6 +38,8 @@ namespace ManagedDoom.Audio
         private SoundBuffer[] buffers;
         private float[] amplitudes;
 
+        private DoomRandom random;
+
         private Sound[] channels;
         private ChannelInfo[] infos;
 
@@ -62,6 +64,11 @@ namespace ManagedDoom.Audio
 
                 buffers = new SoundBuffer[DoomInfo.SfxNames.Length];
                 amplitudes = new float[DoomInfo.SfxNames.Length];
+
+                if (config.audio_randompitch)
+                {
+                    random = new DoomRandom();
+                }
 
                 for (var i = 0; i < DoomInfo.SfxNames.Length; i++)
                 {
@@ -252,6 +259,7 @@ namespace ManagedDoom.Audio
 
                     channel.SoundBuffer = buffers[(int)info.Reserved];
                     SetParam(channel, info);
+                    channel.Pitch = GetPitch(info.Type);
                     channel.Play();
                     info.Playing = info.Reserved;
                     info.Reserved = Sfx.NONE;
@@ -464,6 +472,25 @@ namespace ManagedDoom.Audio
             else
             {
                 return Math.Max((clipDist - dist) / attenuator, 0F);
+            }
+        }
+
+        private float GetPitch(SfxType type)
+        {
+            if (random != null)
+            {
+                if (type == SfxType.Voice)
+                {
+                    return 1.0F + 0.1F * (random.Next() - 128) / 128;
+                }
+                else
+                {
+                    return 1.0F + 0.05F * (random.Next() - 128) / 128;
+                }
+            }
+            else
+            {
+                return 1.0F;
             }
         }
 
