@@ -387,6 +387,11 @@ namespace ManagedDoom.Audio
 
         public void Reset()
         {
+            if (random != null)
+            {
+                random.Clear();
+            }
+
             for (var i = 0; i < infos.Length; i++)
             {
                 channels[i].Stop();
