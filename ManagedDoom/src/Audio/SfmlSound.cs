@@ -484,13 +484,17 @@ namespace ManagedDoom.Audio
         {
             if (random != null)
             {
-                if (type == SfxType.Voice)
+                if (type == SfxType.Misc)
                 {
-                    return 1.0F + 0.1F * (random.Next() - 128) / 128;
+                    return 1.0F;
+                }
+                else if (type == SfxType.Voice)
+                {
+                    return 1.0F + 0.075F * (random.Next() - 128) / 128;
                 }
                 else
                 {
-                    return 1.0F + 0.05F * (random.Next() - 128) / 128;
+                    return 1.0F + 0.025F * (random.Next() - 128) / 128;
                 }
             }
             else

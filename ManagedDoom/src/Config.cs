@@ -135,7 +135,7 @@ namespace ManagedDoom
 
             audio_soundvolume = 8;
             audio_musicvolume = 8;
-            audio_randompitch = false;
+            audio_randompitch = true;
         }
 
         public Config(string path) : this()
