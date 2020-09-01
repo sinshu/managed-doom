@@ -78,8 +78,8 @@ namespace ManagedDoom
 
                 var dist = currentRange * intercept.Frac;
 
-                // The null checks of the backsector below is necessary to avoid crash in
-                // certain PWADs, which contain two-sided lines with no backsector.
+                // The null check of the backsector below is necessary to avoid crash
+                // in certain PWADs, which contain two-sided lines with no backsector.
                 // These are imported from Chocolate Doom.
 
                 if (line.BackSector == null ||
