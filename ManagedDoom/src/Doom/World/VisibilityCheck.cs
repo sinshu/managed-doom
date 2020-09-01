@@ -108,6 +108,13 @@ namespace ManagedDoom
 					continue;
 				}
 
+				// The check below is imported from Chocolate Doom to
+				// avoid crash due to two-sided lines with no backsector.
+				if (line.BackSector == null)
+				{
+					return false;
+				}
+
 				// Stop because it is not two sided anyway.
 				// Might do this after updating validcount?
 				if ((line.Flags & LineFlags.TwoSided) == 0)
