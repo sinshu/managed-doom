@@ -257,28 +257,37 @@ namespace ManagedDoom
                 new TextBoxMenuItem(48, 113, 72, 125),
                 new TextBoxMenuItem(48, 129, 72, 141));
 
-            MenuDef newGameMenu;
+            help = new HelpScreen(this);
+
             if (app.Options.GameMode == GameMode.Commercial)
             {
-                newGameMenu = skillMenu;
-            }
-            else
-            {
-                newGameMenu = episodeMenu;
-            }
-            main = new SelectableMenu(
+                main = new SelectableMenu(
                 this,
                 "M_DOOM", 94, 2,
                 0,
-                new SimpleMenuItem("M_NGAME", 65, 67, 97, 72, null, newGameMenu),
+                new SimpleMenuItem("M_NGAME", 65, 67, 97, 72, null, skillMenu),
                 new SimpleMenuItem("M_OPTION", 65, 83, 97, 88, null, optionMenu),
                 new SimpleMenuItem("M_LOADG", 65, 99, 97, 104, null, load),
-                new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null, save, () =>
-                    !(app.State == ApplicationState.Game &&
+                new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null, save,
+                    () => !(app.State == ApplicationState.Game &&
                         app.Game.State != GameState.Level)),
                 new SimpleMenuItem("M_QUITG", 65, 131, 97, 136, null, quitConfirm));
-
-            help = new HelpScreen(this);
+            }
+            else
+            {
+                main = new SelectableMenu(
+                this,
+                "M_DOOM", 94, 2,
+                0,
+                new SimpleMenuItem("M_NGAME", 65, 59, 97, 64, null, episodeMenu),
+                new SimpleMenuItem("M_OPTION", 65, 75, 97, 80, null, optionMenu),
+                new SimpleMenuItem("M_LOADG", 65, 91, 97, 96, null, load),
+                new SimpleMenuItem("M_SAVEG", 65, 107, 97, 112, null, save,
+                    () => !(app.State == ApplicationState.Game &&
+                        app.Game.State != GameState.Level)),
+                new SimpleMenuItem("M_RDTHIS", 65, 123, 97, 128, null, help),
+                new SimpleMenuItem("M_QUITG", 65, 139, 97, 144, null, quitConfirm));
+            }
 
             current = main;
             active = false;

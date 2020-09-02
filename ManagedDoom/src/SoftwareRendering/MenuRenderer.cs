@@ -254,10 +254,26 @@ namespace ManagedDoom.SoftwareRendering
 
         private void DrawHelp(HelpScreen help)
         {
-            DrawMenuPatch("HELP", 0, 0);
-
             var skull = help.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
-            DrawMenuPatch(skull, 298, 160);
+
+            if (help.Menu.Options.GameMode == GameMode.Commercial)
+            {
+                DrawMenuPatch("HELP", 0, 0);
+                DrawMenuPatch(skull, 298, 160);
+            }
+            else
+            {
+                if (help.Page == 0)
+                {
+                    DrawMenuPatch("HELP1", 0, 0);
+                    DrawMenuPatch(skull, 298, 170);
+                }
+                else
+                {
+                    DrawMenuPatch("HELP2", 0, 0);
+                    DrawMenuPatch(skull, 248, 180);
+                }
+            }
         }
     }
 }
