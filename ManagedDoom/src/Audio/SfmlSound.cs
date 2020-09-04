@@ -259,7 +259,7 @@ namespace ManagedDoom.Audio
 
                     channel.SoundBuffer = buffers[(int)info.Reserved];
                     SetParam(channel, info);
-                    channel.Pitch = GetPitch(info.Type);
+                    channel.Pitch = GetPitch(info.Type, info.Reserved);
                     channel.Play();
                     info.Playing = info.Reserved;
                     info.Reserved = Sfx.NONE;
@@ -480,11 +480,11 @@ namespace ManagedDoom.Audio
             }
         }
 
-        private float GetPitch(SfxType type)
+        private float GetPitch(SfxType type, Sfx sfx)
         {
             if (random != null)
             {
-                if (type == SfxType.Misc)
+                if (sfx == Sfx.ITEMUP || sfx == Sfx.TINK || sfx == Sfx.RADIO)
                 {
                     return 1.0F;
                 }
