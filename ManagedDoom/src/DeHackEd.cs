@@ -31,6 +31,9 @@ namespace ManagedDoom
         {
             try
             {
+                // Ensure the static members are initialized.
+                DoomInfo.Strings.PRESSKEY.GetHashCode();
+
                 Console.Write("Apply DeHackEd patches: ");
 
                 foreach (var fileName in fileNames)
@@ -83,9 +86,6 @@ namespace ManagedDoom
 
         private static void ProcessBlock(Block type, List<string> data)
         {
-            // Ensure the static members are initialized.
-            DoomInfo.Strings.PRESSKEY.GetHashCode();
-
             switch (type)
             {
                 case Block.Thing:
