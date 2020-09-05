@@ -72,7 +72,7 @@ Managed Doom uses the following libraries.
 
 * [SFML](https://github.com/SFML/SFML), [CSFML](https://github.com/SFML/CSFML) and [SFML.Net](https://github.com/SFML/SFML.Net) by Laurent Gomila ([zlib license](licenses/LICENSE_SFML.txt))
 * [C# Synth](https://archive.codeplex.com/?p=csharpsynthproject) by Alex Veltsistas ([MIT license](licenses/LICENSE_CSharpSynth.txt))
-* [TimGM6mb](https://musescore.org/en/handbook/soundfonts-and-sfz-files) by Tim Brechbill ([GPLv2 license](licenses/LICENSE_TimGM6mb.txt))
+* [TimGM6mb](https://musescore.org/en/handbook/soundfonts-and-sfz-files#gm_soundfonts) by Tim Brechbill ([GPLv2 license](licenses/LICENSE_TimGM6mb.txt))
 
 SFML uses the following libraries.
 
