@@ -34,6 +34,7 @@ namespace ManagedDoom
         public KeyBinding key_use;
         public KeyBinding key_run;
         public KeyBinding key_strafe;
+        public KeyBinding key_unlock;
 
         public int mouse_sensitivity;
         public bool mouse_disableyaxis;
@@ -117,6 +118,11 @@ namespace ManagedDoom
                 {
                     DoomKey.LAlt,
                     DoomKey.RAlt
+                });
+            key_unlock = new KeyBinding(
+                new DoomKey[]
+                {
+                    DoomKey.O,
                 });
 
             mouse_sensitivity = 3;
