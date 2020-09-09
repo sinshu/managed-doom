@@ -39,6 +39,7 @@ namespace ManagedDoom.UserInput
         private int mouseX;
         private int mouseY;
         private bool cursorCentered;
+        private bool mouseUnlocked;
 
         public SfmlUserInput(Config config, RenderWindow window, bool useMouse)
         {
@@ -91,6 +92,7 @@ namespace ManagedDoom.UserInput
             var keyUse = IsPressed(config.key_use);
             var keyRun = IsPressed(config.key_run);
             var keyStrafe = IsPressed(config.key_strafe);
+            var keyUnlock = IsPressed(config.key_unlock);
 
             weaponKeys[0] = Keyboard.IsKeyPressed(Keyboard.Key.Num1);
             weaponKeys[1] = Keyboard.IsKeyPressed(Keyboard.Key.Num2);
@@ -101,6 +103,11 @@ namespace ManagedDoom.UserInput
             weaponKeys[6] = Keyboard.IsKeyPressed(Keyboard.Key.Num7);
 
             cmd.Clear();
+
+            if (mouseUnlocked)
+            {
+                TryRegainFocus();
+            }
 
             var strafe = keyStrafe;
             var speed = keyRun ? 1 : 0;
@@ -182,6 +189,11 @@ namespace ManagedDoom.UserInput
                 cmd.Buttons |= TicCmdButtons.Use;
             }
 
+            if (keyUnlock)
+            {
+                UnlockMouse();
+            }
+
             // Check weapon keys.
             for (var i = 0; i < weaponKeys.Length; i++)
             {
@@ -193,7 +205,7 @@ namespace ManagedDoom.UserInput
                 }
             }
 
-            if (useMouse)
+            if (useMouse && !mouseUnlocked)
             {
                 UpdateMouse();
                 var ms = 0.5F * config.mouse_sensitivity;
@@ -259,6 +271,26 @@ namespace ManagedDoom.UserInput
             cursorCentered = false;
         }
 
+        private void TryRegainFocus()
+        {
+            if (Mouse.IsButtonPressed(Mouse.Button.Left))
+            {
+                window.SetMouseCursorVisible(false);
+                window.SetMouseCursorGrabbed(true);
+                mouseUnlocked = false;
+            }
+        }
+
+        private void UnlockMouse()
+        {
+            if (useMouse)
+            {
+                window.SetMouseCursorVisible(true);
+                window.SetMouseCursorGrabbed(false);
+            }
+            mouseUnlocked = true;
+        }
+
         private void UpdateMouse()
         {
             if (cursorCentered)
@@ -291,11 +323,7 @@ namespace ManagedDoom.UserInput
         {
             Console.WriteLine("Shutdown user input.");
 
-            if (useMouse)
-            {
-                window.SetMouseCursorVisible(true);
-                window.SetMouseCursorGrabbed(false);
-            }
+            UnlockMouse();
         }
 
         public int MaxMouseSensitivity
