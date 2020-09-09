@@ -71,7 +71,9 @@ namespace ManagedDoom
                 "PLUTONIA.WAD",
                 "TNT.WAD",
                 "DOOM.WAD",
-                "DOOM1.WAD"
+                "DOOM1.WAD",
+                "FREEDOOM2.WAD",
+                "FREEDOOM1.WAD"
             };
 
             var exeDirectory = GetExeDirectory();
