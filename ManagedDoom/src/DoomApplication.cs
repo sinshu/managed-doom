@@ -249,10 +249,11 @@ namespace ManagedDoom
                 DoEvents();
                 if (Update() == UpdateResult.Completed)
                 {
-                    config.Save(ConfigUtilities.GetConfigPath());
-                    return;
+                    break;
                 }
             }
+
+            config.Save(ConfigUtilities.GetConfigPath());
         }
 
         public void NewGame(GameSkill skill, int episode, int map)
