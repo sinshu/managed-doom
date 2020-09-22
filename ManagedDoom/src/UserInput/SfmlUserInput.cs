@@ -34,6 +34,7 @@ namespace ManagedDoom.UserInput
         private bool[] weaponKeys;
         private int turnHeld;
 
+        private bool mouseGrabbed;
         private int windowCenterX;
         private int windowCenterY;
         private int mouseX;
@@ -57,17 +58,12 @@ namespace ManagedDoom.UserInput
                 weaponKeys = new bool[7];
                 turnHeld = 0;
 
+                mouseGrabbed = false;
                 windowCenterX = (int)window.Size.X / 2;
                 windowCenterY = (int)window.Size.Y / 2;
                 mouseX = 0;
                 mouseY = 0;
                 cursorCentered = false;
-
-                if (useMouse)
-                {
-                    window.SetMouseCursorGrabbed(true);
-                    window.SetMouseCursorVisible(false);
-                }
 
                 Console.WriteLine("OK");
             }
@@ -193,21 +189,18 @@ namespace ManagedDoom.UserInput
                 }
             }
 
-            if (useMouse)
+            UpdateMouse();
+            var ms = 0.5F * config.mouse_sensitivity;
+            var mx = (int)MathF.Round(ms * mouseX);
+            var my = (int)MathF.Round(ms * mouseY);
+            forward += my;
+            if (strafe)
             {
-                UpdateMouse();
-                var ms = 0.5F * config.mouse_sensitivity;
-                var mx = (int)MathF.Round(ms * mouseX);
-                var my = (int)MathF.Round(ms * mouseY);
-                forward += my;
-                if (strafe)
-                {
-                    side += mx * 2;
-                }
-                else
-                {
-                    cmd.AngleTurn -= (short)(mx * 0x8);
-                }
+                side += mx * 2;
+            }
+            else
+            {
+                cmd.AngleTurn -= (short)(mx * 0x8);
             }
 
             if (forward > PlayerBehavior.MaxMove)
@@ -231,7 +224,7 @@ namespace ManagedDoom.UserInput
             cmd.SideMove += (sbyte)side;
         }
 
-        private static bool IsPressed(KeyBinding keyBinding)
+        private bool IsPressed(KeyBinding keyBinding)
         {
             foreach (var key in keyBinding.Keys)
             {
@@ -241,11 +234,14 @@ namespace ManagedDoom.UserInput
                 }
             }
 
-            foreach (var mouseButton in keyBinding.MouseButtons)
+            if (mouseGrabbed)
             {
-                if (Mouse.IsButtonPressed((Mouse.Button)mouseButton))
+                foreach (var mouseButton in keyBinding.MouseButtons)
                 {
-                    return true;
+                    if (Mouse.IsButtonPressed((Mouse.Button)mouseButton))
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -259,43 +255,73 @@ namespace ManagedDoom.UserInput
             cursorCentered = false;
         }
 
+        public void GrabMouse()
+        {
+            if (useMouse)
+            {
+                window.SetMouseCursorGrabbed(true);
+                window.SetMouseCursorVisible(false);
+                mouseGrabbed = true;
+                mouseX = 0;
+                mouseY = 0;
+                cursorCentered = false;
+            }
+        }
+
+        public void ReleaseMouse()
+        {
+            if (useMouse)
+            {
+                var posX = (int)(0.9 * window.Size.X);
+                var posY = (int)(0.9 * window.Size.Y);
+                Mouse.SetPosition(new Vector2i(posX, posY), window);
+                window.SetMouseCursorGrabbed(false);
+                window.SetMouseCursorVisible(true);
+                mouseGrabbed = false;
+            }
+        }
+
         private void UpdateMouse()
         {
-            if (cursorCentered)
+            if (mouseGrabbed)
             {
-                var current = Mouse.GetPosition(window);
-
-                mouseX = current.X - windowCenterX;
-
-                if (config.mouse_disableyaxis)
+                if (cursorCentered)
                 {
-                    mouseY = 0;
+                    var current = Mouse.GetPosition(window);
+
+                    mouseX = current.X - windowCenterX;
+
+                    if (config.mouse_disableyaxis)
+                    {
+                        mouseY = 0;
+                    }
+                    else
+                    {
+                        mouseY = -(current.Y - windowCenterY);
+                    }
                 }
                 else
                 {
-                    mouseY = -(current.Y - windowCenterY);
+                    mouseX = 0;
+                    mouseY = 0;
                 }
+
+                Mouse.SetPosition(new Vector2i(windowCenterX, windowCenterY), window);
+                var pos = Mouse.GetPosition(window);
+                cursorCentered = (pos.X == windowCenterX && pos.Y == windowCenterY);
             }
             else
             {
                 mouseX = 0;
                 mouseY = 0;
             }
-
-            Mouse.SetPosition(new Vector2i(windowCenterX, windowCenterY), window);
-            var pos = Mouse.GetPosition(window);
-            cursorCentered = (pos.X == windowCenterX && pos.Y == windowCenterY);
         }
 
         public void Dispose()
         {
             Console.WriteLine("Shutdown user input.");
 
-            if (useMouse)
-            {
-                window.SetMouseCursorVisible(true);
-                window.SetMouseCursorGrabbed(false);
-            }
+            ReleaseMouse();
         }
 
         public int MaxMouseSensitivity

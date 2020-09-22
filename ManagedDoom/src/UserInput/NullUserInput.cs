@@ -41,6 +41,14 @@ namespace ManagedDoom.UserInput
         {
         }
 
+        public void GrabMouse()
+        {
+        }
+
+        public void ReleaseMouse()
+        {
+        }
+
         public int MaxMouseSensitivity
         {
             get

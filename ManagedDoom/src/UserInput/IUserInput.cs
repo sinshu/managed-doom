@@ -23,6 +23,8 @@ namespace ManagedDoom.UserInput
     {
         void BuildTicCmd(TicCmd cmd);
         void Reset();
+        void GrabMouse();
+        void ReleaseMouse();
 
         public int MaxMouseSensitivity { get; }
         public int MouseSensitivity { get; set; }

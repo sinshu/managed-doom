@@ -63,6 +63,8 @@ namespace ManagedDoom
         private bool quit;
         private string quitMessage;
 
+        private bool mouseGrabbed;
+
         public DoomApplication(CommandLineArgs args)
         {
             config = new Config(ConfigUtilities.GetConfigPath());
@@ -146,6 +148,8 @@ namespace ManagedDoom
                 {
                     window.SetFramerateLimit(35);
                 }
+
+                mouseGrabbed = false;
             }
             catch (Exception e)
             {
@@ -515,6 +519,8 @@ namespace ManagedDoom
 
             options.Sound.Update();
 
+            CheckMouseState();
+
             return UpdateResult.None;
         }
 
@@ -531,6 +537,40 @@ namespace ManagedDoom
             if (events.Count < 64)
             {
                 events.Add(new DoomEvent(EventType.KeyUp, (DoomKey)e.Code));
+            }
+        }
+
+        private void CheckMouseState()
+        {
+            bool mouseShouldBeGrabbed;
+            if (!window.HasFocus())
+            {
+                mouseShouldBeGrabbed = false;
+            }
+            else if (config.video_fullscreen)
+            {
+                mouseShouldBeGrabbed = true;
+            }
+            else
+            {
+                mouseShouldBeGrabbed = currentState == ApplicationState.Game && !menu.Active;
+            }
+
+            if (mouseGrabbed)
+            {
+                if (!mouseShouldBeGrabbed)
+                {
+                    userInput.ReleaseMouse();
+                    mouseGrabbed = false;
+                }
+            }
+            else
+            {
+                if (mouseShouldBeGrabbed)
+                {
+                    userInput.GrabMouse();
+                    mouseGrabbed = true;
+                }
             }
         }
 
