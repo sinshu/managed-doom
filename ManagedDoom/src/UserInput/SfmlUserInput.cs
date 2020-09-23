@@ -257,7 +257,7 @@ namespace ManagedDoom.UserInput
 
         public void GrabMouse()
         {
-            if (useMouse)
+            if (useMouse && !mouseGrabbed)
             {
                 window.SetMouseCursorGrabbed(true);
                 window.SetMouseCursorVisible(false);
@@ -270,7 +270,7 @@ namespace ManagedDoom.UserInput
 
         public void ReleaseMouse()
         {
-            if (useMouse)
+            if (useMouse && mouseGrabbed)
             {
                 var posX = (int)(0.9 * window.Size.X);
                 var posY = (int)(0.9 * window.Size.Y);
