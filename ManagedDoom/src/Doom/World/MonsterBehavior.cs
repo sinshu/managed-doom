@@ -996,20 +996,16 @@ namespace ManagedDoom
 
         public void FatAttack1(Mobj actor)
         {
-            if (actor.Target == null)
-            {
-                return;
-            }
-
             FaceTarget(actor);
 
             var ta = world.ThingAllocation;
 
             // Change direction to...
             actor.Angle += fatSpread;
-            ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            var target = world.SubstNullMobj(actor.Target);
+            ta.SpawnMissile(actor, target, MobjType.Fatshot);
 
-            var missile = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            var missile = ta.SpawnMissile(actor, target, MobjType.Fatshot);
             missile.Angle += fatSpread;
             var angle = missile.Angle;
             missile.MomX = new Fixed(missile.Info.Speed) * Trig.Cos(angle);
@@ -1018,20 +1014,16 @@ namespace ManagedDoom
 
         public void FatAttack2(Mobj actor)
         {
-            if (actor.Target == null)
-            {
-                return;
-            }
-
             FaceTarget(actor);
 
             var ta = world.ThingAllocation;
 
             // Now here choose opposite deviation.
             actor.Angle -= fatSpread;
-            ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            var target = world.SubstNullMobj(actor.Target);
+            ta.SpawnMissile(actor, target, MobjType.Fatshot);
 
-            var missile = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            var missile = ta.SpawnMissile(actor, target, MobjType.Fatshot);
             missile.Angle -= fatSpread * 2;
             var angle = missile.Angle;
             missile.MomX = new Fixed(missile.Info.Speed) * Trig.Cos(angle);
@@ -1040,22 +1032,19 @@ namespace ManagedDoom
 
         public void FatAttack3(Mobj actor)
         {
-            if (actor.Target == null)
-            {
-                return;
-            }
-
             FaceTarget(actor);
 
             var ta = world.ThingAllocation;
 
-            var missile1 = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            var target = world.SubstNullMobj(actor.Target);
+
+            var missile1 = ta.SpawnMissile(actor, target, MobjType.Fatshot);
             missile1.Angle -= fatSpread / 2;
             var angle1 = missile1.Angle;
             missile1.MomX = new Fixed(missile1.Info.Speed) * Trig.Cos(angle1);
             missile1.MomY = new Fixed(missile1.Info.Speed) * Trig.Sin(angle1);
 
-            var missile2 = ta.SpawnMissile(actor, actor.Target, MobjType.Fatshot);
+            var missile2 = ta.SpawnMissile(actor, target, MobjType.Fatshot);
             missile2.Angle += fatSpread / 2;
             var angle2 = missile2.Angle;
             missile2.MomX = new Fixed(missile2.Info.Speed) * Trig.Cos(angle2);
@@ -1292,8 +1281,10 @@ namespace ManagedDoom
                 return;
             }
 
+            var target = world.SubstNullMobj(actor.Target);
+
             // Don't move it if the vile lost sight.
-            if (!world.VisibilityCheck.CheckSight(actor.Target, dest))
+            if (!world.VisibilityCheck.CheckSight(target, dest))
             {
                 return;
             }

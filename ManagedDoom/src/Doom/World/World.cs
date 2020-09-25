@@ -60,6 +60,10 @@ namespace ManagedDoom
 
         private int displayPlayer;
 
+        // This is for vanilla compatibility.
+        // See SubstNullMobj().
+        private Mobj dummy;
+
         public World(CommonResource resorces, GameOptions options) : this(resorces, options, null)
         {
         }
@@ -142,6 +146,8 @@ namespace ManagedDoom
             validCount = 0;
 
             displayPlayer = options.ConsolePlayer;
+
+            dummy = new Mobj(this);
 
             options.Music.StartMusic(Map.GetMapBgm(options), true);
         }
@@ -301,6 +307,29 @@ namespace ManagedDoom
                 !options.Players[displayPlayer].InGame)
             {
                 displayPlayer = 0;
+            }
+        }
+
+        /// <summary>
+        /// In vanilla Doom, some action functions have possibilities
+        /// to access null pointers.
+        /// This function returns a dummy object if the pointer is null
+        /// so that we can avoid crash.
+        /// This safeguard is imported from Chocolate Doom.
+        /// </summary>
+        public Mobj SubstNullMobj(Mobj mobj)
+        {
+            if (mobj == null)
+            {
+                dummy.X = Fixed.Zero;
+                dummy.Y = Fixed.Zero;
+                dummy.Z = Fixed.Zero;
+                dummy.Flags = 0;
+                return dummy;
+            }
+            else
+            {
+                return mobj;
             }
         }
 

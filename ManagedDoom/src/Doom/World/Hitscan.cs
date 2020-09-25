@@ -334,6 +334,8 @@ namespace ManagedDoom
         /// </summary>
         public Fixed AimLineAttack(Mobj shooter, Angle angle, Fixed range)
         {
+            shooter = world.SubstNullMobj(shooter);
+
             currentShooter = shooter;
             currentShooterZ = shooter.Z + (shooter.Height >> 1) + Fixed.FromInt(8);
             currentRange = range;
