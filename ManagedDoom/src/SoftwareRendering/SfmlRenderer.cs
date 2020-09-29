@@ -113,6 +113,7 @@ namespace ManagedDoom.SoftwareRendering
                 var scaleX = (float)sfmlWindowWidth / screen.Width;
                 var scaleY = (float)sfmlWindowHeight / screen.Height;
                 sfmlSprite.Scale = new Vector2f(scaleY, -scaleX);
+                sfmlSprite.TextureRect = new IntRect(0, 0, screen.Height, screen.Width);
 
                 sfmlStates = new RenderStates(BlendMode.None);
 
