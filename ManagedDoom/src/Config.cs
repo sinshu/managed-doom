@@ -197,6 +197,7 @@ namespace ManagedDoom
                 using (var writer = new StreamWriter(path))
                 {
                     writer.WriteLine(nameof(key_forward) + " = " + key_forward);
+                    writer.WriteLine(nameof(key_backward) + " = " + key_backward);
                     writer.WriteLine(nameof(key_strafeleft) + " = " + key_strafeleft);
                     writer.WriteLine(nameof(key_straferight) + " = " + key_straferight);
                     writer.WriteLine(nameof(key_turnleft) + " = " + key_turnleft);
