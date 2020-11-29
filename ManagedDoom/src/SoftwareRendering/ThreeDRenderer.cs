@@ -16,6 +16,7 @@
 
 
 using System;
+using System.Collections.Generic;
 
 namespace ManagedDoom.SoftwareRendering
 {
@@ -505,6 +506,8 @@ namespace ManagedDoom.SoftwareRendering
         private int visSpriteCount;
         private VisSprite[] visSprites;
 
+        private VisSpriteComparer visSpriteComparer;
+
         private void InitSpriteRendering()
         {
             visSprites = new VisSprite[256];
@@ -512,6 +515,8 @@ namespace ManagedDoom.SoftwareRendering
             {
                 visSprites[i] = new VisSprite();
             }
+
+            visSpriteComparer = new VisSpriteComparer();
         }
 
         private void ClearSpriteRendering()
@@ -2576,18 +2581,7 @@ namespace ManagedDoom.SoftwareRendering
 
         private void RenderSprites()
         {
-            for (var i = 0; i < visSpriteCount - 1; i++)
-            {
-                for (var j = i + 1; j > 0; j--)
-                {
-                    if (visSprites[j - 1].Scale < visSprites[j].Scale)
-                    {
-                        var temp = visSprites[j - 1];
-                        visSprites[j - 1] = visSprites[j];
-                        visSprites[j] = temp;
-                    }
-                }
-            }
+            Array.Sort(visSprites, 0, visSpriteCount, visSpriteComparer);
 
             for (var i = visSpriteCount - 1; i >= 0; i--)
             {
@@ -3026,6 +3020,14 @@ namespace ManagedDoom.SoftwareRendering
             public byte[] ColorMap;
 
             public MobjFlags MobjFlags;
+        }
+
+        private class VisSpriteComparer : IComparer<VisSprite>
+        {
+            public int Compare(VisSprite x, VisSprite y)
+            {
+                return y.Scale.Data - x.Scale.Data;
+            }
         }
     }
 }
