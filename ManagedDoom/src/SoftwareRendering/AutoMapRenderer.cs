@@ -96,9 +96,12 @@ namespace ManagedDoom.SoftwareRendering
         private float maxY;
         private float height;
 
-        private float viewX;
-        private float viewY;
+        private float actualViewX;
+        private float actualViewY;
         private float zoom;
+
+        private float renderViewX;
+        private float renderViewY;
 
         private Patch[] markNumbers;
 
@@ -132,9 +135,14 @@ namespace ManagedDoom.SoftwareRendering
             maxY = am.MaxY.ToFloat();
             height = maxY - minY;
 
-            viewX = am.ViewX.ToFloat();
-            viewY = am.ViewY.ToFloat();
+            actualViewX = am.ViewX.ToFloat();
+            actualViewY = am.ViewY.ToFloat();
             zoom = am.Zoom.ToFloat();
+
+            // This hack aligns the view point to an integer coordinate
+            // so that line shake is reduced when the view point moves.
+            renderViewX = MathF.Round(zoom * ppu * actualViewX) / (zoom * ppu);
+            renderViewY = MathF.Round(zoom * ppu * actualViewY) / (zoom * ppu);
 
             foreach (var line in world.Map.Lines)
             {
@@ -305,15 +313,15 @@ namespace ManagedDoom.SoftwareRendering
 
         private DrawPos ToScreenPos(Fixed x, Fixed y)
         {
-            var posX = zoom * ppu * (x.ToFloat() - viewX) + amWidth / 2;
-            var posY = -zoom * ppu * (y.ToFloat() - viewY) + amHeight / 2;
+            var posX = zoom * ppu * (x.ToFloat() - renderViewX) + amWidth / 2;
+            var posY = -zoom * ppu * (y.ToFloat() - renderViewY) + amHeight / 2;
             return new DrawPos(posX, posY);
         }
 
         private DrawPos ToScreenPos(Vertex v)
         {
-            var posX = zoom * ppu * (v.X.ToFloat() - viewX) + amWidth / 2;
-            var posY = -zoom * ppu * (v.Y.ToFloat() - viewY) + amHeight / 2;
+            var posX = zoom * ppu * (v.X.ToFloat() - renderViewX) + amWidth / 2;
+            var posY = -zoom * ppu * (v.Y.ToFloat() - renderViewY) + amHeight / 2;
             return new DrawPos(posX, posY);
         }
 
