@@ -130,12 +130,20 @@ namespace ManagedDoom
 
         public static Fixed operator /(Fixed a, Fixed b)
         {
-            if ((Math.Abs(a.data) >> 14) >= Math.Abs(b.data))
+            if ((CIntAbs(a.data) >> 14) >= CIntAbs(b.data))
             {
                 return new Fixed((a.data ^ b.data) < 0 ? int.MinValue : int.MaxValue);
             }
 
             return FixedDiv2(a, b);
+        }
+
+        // The Math.Abs method throws an exception if the input value is -2147483648.
+        // Due to this behavior, the visibility check can crash in some maps.
+        // So I implemented another Abs method, which is identical to C's one.
+        private static int CIntAbs(int n)
+        {
+            return n < 0 ? -n : n;
         }
 
         private static Fixed FixedDiv2(Fixed a, Fixed b)
