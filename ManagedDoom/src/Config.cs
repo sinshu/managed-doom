@@ -119,7 +119,7 @@ namespace ManagedDoom
                     DoomKey.RAlt
                 });
 
-            mouse_sensitivity = 3;
+            mouse_sensitivity = 8;
             mouse_disableyaxis = false;
 
             game_alwaysrun = true;

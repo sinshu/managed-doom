@@ -328,7 +328,7 @@ namespace ManagedDoom.UserInput
         {
             get
             {
-                return 9;
+                return 15;
             }
         }
 
