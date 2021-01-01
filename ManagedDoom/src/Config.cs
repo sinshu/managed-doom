@@ -131,7 +131,7 @@ namespace ManagedDoom
             video_highresolution = true;
             video_gamescreensize = 7;
             video_displaymessage = true;
-            video_gammacorrection = 0;
+            video_gammacorrection = 2;
 
             audio_soundvolume = 8;
             audio_musicvolume = 8;
