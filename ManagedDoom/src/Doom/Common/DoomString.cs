@@ -22,7 +22,8 @@ namespace ManagedDoom
 {
     public sealed class DoomString
     {
-        private static Dictionary<string, DoomString> table = new Dictionary<string, DoomString>();
+        private static Dictionary<string, DoomString> valueTable = new Dictionary<string, DoomString>();
+        private static Dictionary<string, DoomString> nameTable = new Dictionary<string, DoomString>();
 
         private string original;
         private string replaced;
@@ -32,10 +33,15 @@ namespace ManagedDoom
             this.original = original;
             replaced = original;
 
-            if (!table.ContainsKey(original))
+            if (!valueTable.ContainsKey(original))
             {
-                table.Add(original, this);
+                valueTable.Add(original, this);
             }
+        }
+
+        public DoomString(string name, string original) : this(original)
+        {
+            nameTable.Add(name, this);
         }
 
         public override string ToString()
@@ -56,12 +62,21 @@ namespace ManagedDoom
             return ds.replaced;
         }
 
-        public static void Replace(string original, string replaced)
+        public static void ReplaceByValue(string original, string replaced)
         {
             DoomString ds;
-            if (table.TryGetValue(original, out ds))
+            if (valueTable.TryGetValue(original, out ds))
             {
                 ds.replaced = replaced;
+            }
+        }
+
+        public static void ReplaceByName(string name, string value)
+        {
+            DoomString ds;
+            if (nameTable.TryGetValue(name, out ds))
+            {
+                ds.replaced = value;
             }
         }
     }
