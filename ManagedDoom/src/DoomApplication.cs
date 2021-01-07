@@ -90,6 +90,8 @@ namespace ManagedDoom
 
                 resource = new CommonResource(GetWadPaths(args));
 
+                DeHackEd.ReadDeHackEdLump(resource.Wad);
+
                 renderer = new SfmlRenderer(config, window, resource);
 
                 if (!args.nosound.Present && !args.nosfx.Present)

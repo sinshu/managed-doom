@@ -35,7 +35,7 @@ namespace ManagedDoom
                 // Ensure the static members are initialized.
                 DoomInfo.Strings.PRESSKEY.GetHashCode();
 
-                Console.Write("Apply DeHackEd patches: ");
+                Console.Write("Load DeHackEd patches: ");
 
                 foreach (var fileName in fileNames)
                 {
@@ -49,6 +49,43 @@ namespace ManagedDoom
             {
                 Console.WriteLine("Failed");
                 throw new Exception("Failed to apply DeHackEd patch: " + lastFileName, e);
+            }
+        }
+
+        public static void ReadDeHackEdLump(Wad wad)
+        {
+            var lump = wad.GetLumpNumber("DEHACKED");
+
+            if (lump != -1)
+            {
+                // Ensure the static members are initialized.
+                DoomInfo.Strings.PRESSKEY.GetHashCode();
+
+                try
+                {
+                    Console.Write("Load DeHackEd patch from WAD: ");
+
+                    ProcessLines(ReadLines(wad.ReadLump(lump)));
+
+                    Console.WriteLine("OK");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Failed");
+                    throw new Exception("Failed to apply DeHackEd patch!", e);
+                }
+            }
+        }
+
+        private static IEnumerable<string> ReadLines(byte[] data)
+        {
+            using (var ms = new MemoryStream(data))
+            using (var sr = new StreamReader(ms))
+            {
+                for (var line = sr.ReadLine(); line != null; line = sr.ReadLine())
+                {
+                    yield return line;
+                }
             }
         }
 

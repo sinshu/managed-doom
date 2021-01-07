@@ -36,7 +36,7 @@ namespace ManagedDoom
         {
             try
             {
-                Console.Write("Open wad files: ");
+                Console.Write("Open WAD files: ");
 
                 names = new List<string>();
                 streams = new List<Stream>();
@@ -156,7 +156,7 @@ namespace ManagedDoom
 
         public void Dispose()
         {
-            Console.WriteLine("Close wad files.");
+            Console.WriteLine("Close WAD files.");
 
             foreach (var stream in streams)
             {
