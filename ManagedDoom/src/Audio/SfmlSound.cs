@@ -72,7 +72,7 @@ namespace ManagedDoom.Audio
 
                 for (var i = 0; i < DoomInfo.SfxNames.Length; i++)
                 {
-                    var name = "DS" + DoomInfo.SfxNames[i];
+                    var name = "DS" + DoomInfo.SfxNames[i].ToString().ToUpper();
                     var lump = wad.GetLumpNumber(name);
                     if (lump == -1)
                     {

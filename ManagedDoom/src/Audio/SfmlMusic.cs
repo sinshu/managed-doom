@@ -63,7 +63,7 @@ namespace ManagedDoom.Audio
                 return;
             }
 
-            var lump = "D_" + DoomInfo.BgmNames[(int)bgm];
+            var lump = "D_" + DoomInfo.BgmNames[(int)bgm].ToString().ToUpper();
             var data = wad.ReadLump(lump);
             var decoder = ReadData(data, loop);
             stream.SetDecoder(decoder);
