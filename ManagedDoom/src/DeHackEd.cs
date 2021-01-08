@@ -172,6 +172,9 @@ namespace ManagedDoom
                     case Block.BexStrings:
                         ProcessBexStringsBlock(data);
                         break;
+                    case Block.BexPars:
+                        ProcessBexParsBlock(data);
+                        break;
                 }
             }
             catch (Exception e)
@@ -389,6 +392,41 @@ namespace ManagedDoom
             }
         }
 
+        private static void ProcessBexParsBlock(List<string> data)
+        {
+            foreach (var line in data.Skip(1))
+            {
+                var split = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                if (split.Length >= 3 && split[0] == "par")
+                {
+                    var parsed = new List<int>();
+                    foreach (var value in split.Skip(1))
+                    {
+                        int result;
+                        if (int.TryParse(value, out result))
+                        {
+                            parsed.Add(result);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    if (parsed.Count == 2)
+                    {
+                        DoomInfo.ParTimes.Doom2[parsed[0] - 1] = parsed[1];
+                    }
+
+                    if (parsed.Count >= 3)
+                    {
+                        DoomInfo.ParTimes.Doom1[parsed[0] - 1][parsed[1] - 1] = parsed[2];
+                    }
+                }
+            }
+        }
+
         private static Block GetBlockType(string[] split)
         {
             if (IsThingBlockStart(split))
@@ -434,6 +472,10 @@ namespace ManagedDoom
             else if (IsBexStringsBlockStart(split))
             {
                 return Block.BexStrings;
+            }
+            else if (IsBexParsBlockStart(split))
+            {
+                return Block.BexPars;
             }
             else
             {
@@ -653,6 +695,18 @@ namespace ManagedDoom
             }
         }
 
+        private static bool IsBexParsBlockStart(string[] split)
+        {
+            if (split[0] == "[PARS]")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private static bool IsNumber(string value)
         {
             foreach (var ch in value)
@@ -710,7 +764,8 @@ namespace ManagedDoom
             Misc,
             Text,
             Sprite,
-            BexStrings
+            BexStrings,
+            BexPars
         }
     }
 }
