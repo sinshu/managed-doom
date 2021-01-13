@@ -108,7 +108,7 @@ namespace ManagedDoom
             {
                 if (patchCount[x] == 0)
                 {
-                    throw new Exception();
+                    columns[x] = Array.Empty<Column>();
                 }
 
                 if (patchCount[x] >= 2)
