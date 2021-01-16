@@ -21,6 +21,6 @@ namespace ManagedDoom
 {
     public static class ApplicationInfo
     {
-        public static readonly string Title = "Managed Doom v1.1d";
+        public static readonly string Title = "Managed Doom v1.1e";
     }
 }
