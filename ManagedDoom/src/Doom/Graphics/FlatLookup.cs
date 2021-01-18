@@ -73,7 +73,7 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    throw new Exception("Faild to read flats.");
+                    throw new Exception("Failed to read flats.");
                 }
             }
             else
