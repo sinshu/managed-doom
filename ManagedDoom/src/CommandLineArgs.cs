@@ -29,6 +29,7 @@ namespace ManagedDoom
         public readonly Arg<string[]> deh;
 
         public readonly Arg<Tuple<int, int>> warp;
+        public readonly Arg<int> episode;
         public readonly Arg<int> skill;
 
         public readonly Arg deathmatch;
@@ -47,6 +48,8 @@ namespace ManagedDoom
         public readonly Arg nosfx;
         public readonly Arg nomusic;
 
+        public readonly Arg nodeh;
+
         public CommandLineArgs(string[] args)
         {
             iwad = GetString(args, "-iwad");
@@ -54,6 +57,7 @@ namespace ManagedDoom
             deh = Check_deh(args);
 
             warp = Check_warp(args);
+            episode = GetInt(args, "-episode");
             skill = GetInt(args, "-skill");
 
             deathmatch = new Arg(args.Contains("-deathmatch"));
@@ -71,6 +75,8 @@ namespace ManagedDoom
             nosound = new Arg(args.Contains("-nosound"));
             nosfx = new Arg(args.Contains("-nosfx"));
             nomusic = new Arg(args.Contains("-nomusic"));
+
+            nodeh = new Arg(args.Contains("-nodeh"));
         }
 
         private static Arg<string[]> Check_file(string[] args)
