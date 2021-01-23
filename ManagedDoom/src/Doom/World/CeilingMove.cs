@@ -136,6 +136,7 @@ namespace ManagedDoom
 								if (type == CeilingMoveType.SilentCrushAndRaise)
 								{
 									world.StartSound(sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
+									speed = SectorAction.CeilingSpeed;
 								}
 								if (type == CeilingMoveType.CrushAndRaise)
 								{

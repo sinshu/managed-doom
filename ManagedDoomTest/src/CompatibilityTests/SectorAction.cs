@@ -110,5 +110,41 @@ namespace ManagedDoomTest.CompatibilityTests
                 Assert.AreEqual(0x2fb8dd00u, (uint)aggSectorHash);
             }
         }
+
+        [TestMethod]
+        public void SilentCrusherTest()
+        {
+            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\silent_crusher_test.wad"))
+            {
+                var demo = new Demo(@"data\silent_crusher_test.lmp");
+                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+                var game = new DoomGame(resource, demo.Options);
+                game.DeferedInitNew();
+
+                var lastMobjHash = 0;
+                var aggMobjHash = 0;
+                var lastSectorHash = 0;
+                var aggSectorHash = 0;
+
+                while (true)
+                {
+                    if (!demo.ReadCmd(cmds))
+                    {
+                        break;
+                    }
+
+                    game.Update(cmds);
+                    lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    lastSectorHash = DoomDebug.GetSectorHash(game.World);
+                    aggSectorHash = DoomDebug.CombineHash(aggSectorHash, lastSectorHash);
+                }
+
+                Assert.AreEqual(0xee31a164u, (uint)lastMobjHash);
+                Assert.AreEqual(0x1f3fc7b4u, (uint)aggMobjHash);
+                Assert.AreEqual(0x6d6a1f20u, (uint)lastSectorHash);
+                Assert.AreEqual(0x34b4f740u, (uint)aggSectorHash);
+            }
+        }
     }
 }
