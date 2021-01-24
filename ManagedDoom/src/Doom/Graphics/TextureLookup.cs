@@ -74,13 +74,13 @@ namespace ManagedDoom
                     {
                         var offset = BitConverter.ToInt32(data, 4 + 4 * i);
                         var texture = Texture.FromData(data, offset, patches);
-                        nameToNumber.Add(texture.Name, textures.Count);
+                        nameToNumber.TryAdd(texture.Name, textures.Count);
                         textures.Add(texture);
-                        nameToTexture.Add(texture.Name, texture);
+                        nameToTexture.TryAdd(texture.Name, texture);
                     }
                 }
 
-                Console.WriteLine("OK (" + nameToTexture.Count + " textures)");
+                Console.WriteLine("OK (" + textures.Count + " textures)");
             }
             catch (Exception e)
             {
@@ -111,9 +111,9 @@ namespace ManagedDoom
                     var name = Texture.GetName(data, offset);
                     var height = Texture.GetHeight(data, offset);
                     var texture = Dummy.GetTexture(height);
-                    nameToNumber.Add(name, textures.Count);
+                    nameToNumber.TryAdd(name, textures.Count);
                     textures.Add(texture);
-                    nameToTexture.Add(name, texture);
+                    nameToTexture.TryAdd(name, texture);
                 }
             }
         }
