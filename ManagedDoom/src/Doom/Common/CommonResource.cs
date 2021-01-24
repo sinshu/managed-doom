@@ -34,11 +34,17 @@ namespace ManagedDoom
         {
         }
 
-        public CommonResource(params string[] wadPaths)
+        public CommonResource(string[] wadPaths, bool loadDehLump)
         {
             try
             {
                 wad = new Wad(wadPaths);
+
+                if (loadDehLump)
+                {
+                    DeHackEd.ReadDeHackEdLump(wad);
+                }
+
                 palette = new Palette(wad);
                 colorMap = new ColorMap(wad);
                 textures = new TextureLookup(wad);

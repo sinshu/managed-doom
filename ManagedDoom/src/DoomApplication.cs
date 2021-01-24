@@ -88,12 +88,7 @@ namespace ManagedDoom
                     DeHackEd.ReadFiles(args.deh.Value);
                 }
 
-                resource = new CommonResource(GetWadPaths(args));
-
-                if (!args.nodeh.Present)
-                {
-                    DeHackEd.ReadDeHackEdLump(resource.Wad);
-                }
+                resource = new CommonResource(GetWadPaths(args), !args.nodeh.Present);
 
                 renderer = new SfmlRenderer(config, window, resource);
 
