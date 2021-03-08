@@ -317,11 +317,6 @@ namespace ManagedDoom.Audio
                 priority = amplitudes[(int)sfx] * GetDistanceDecay(dist) * volume;
             }
 
-            if (priority < 0.001F)
-            {
-                return;
-            }
-
             for (var i = 0; i < infos.Length; i++)
             {
                 var info = infos[i];
