@@ -20,9 +20,7 @@ using System.IO;
 using System.Runtime.ExceptionServices;
 using SFML.Audio;
 using SFML.System;
-using AudioSynthesis.Midi;
-using AudioSynthesis.Sequencer;
-using AudioSynthesis.Synthesis;
+using MeltySynth;
 
 namespace ManagedDoom.Audio
 {
@@ -145,7 +143,9 @@ namespace ManagedDoom.Audio
             private Config config;
 
             private Synthesizer synthesizer;
-            private int synthBufferLength;
+            private float[] left;
+            private float[] right;
+
             private int stepCount;
             private int batchLength;
 
@@ -161,14 +161,17 @@ namespace ManagedDoom.Audio
 
                 config.audio_musicvolume = Math.Clamp(config.audio_musicvolume, 0, parent.MaxVolume);
 
-                synthesizer = new Synthesizer(MusDecoder.SampleRate, 2, MusDecoder.BufferLength, 1);
-                synthesizer.LoadBank(sfPath);
-                synthBufferLength = synthesizer.sampleBuffer.Length;
+                var settings = new SynthesizerSettings();
+                settings.SampleRate = MusDecoder.SampleRate;
+                settings.BlockSize = MusDecoder.BufferLength;
+                synthesizer = new Synthesizer(sfPath, settings);
+                left = new float[synthesizer.BlockSize];
+                right = new float[synthesizer.BlockSize];
 
-                var synthBufferDuration = (double)(synthBufferLength / 2) / MusDecoder.SampleRate;
-                stepCount = (int)Math.Ceiling(0.02 / synthBufferDuration);
-                batchLength = synthBufferLength * stepCount;
-                batch = new short[batchLength];
+                var blockDuration = (double)synthesizer.BlockSize / MusDecoder.SampleRate;
+                stepCount = (int)Math.Ceiling(0.02 / blockDuration);
+                batchLength = synthesizer.BlockSize * stepCount;
+                batch = new short[2 * batchLength];
 
                 Initialize(2, (uint)MusDecoder.SampleRate);
             }
@@ -188,36 +191,41 @@ namespace ManagedDoom.Audio
                 if (reserved != current)
                 {
                     synthesizer.NoteOffAll(true);
-                    synthesizer.ResetSynthControls();
+                    synthesizer.Reset();
                     current = reserved;
                 }
 
-                var a = 32768 * (6.0F * config.audio_musicvolume / parent.MaxVolume);
-
-                //
-                // Due to a design error, this implementation makes the music
-                // playback speed a bit slower.
-                // The slowdown is around 1 sec per minute, so I hope no one
-                // will notice.
-                //
+                var a = 32768 * (3.0F * config.audio_musicvolume / parent.MaxVolume);
 
                 var t = 0;
                 for (var i = 0; i < stepCount; i++)
                 {
-                    current.FillBuffer(synthesizer);
-                    var buffer = synthesizer.sampleBuffer;
-                    for (var j = 0; j < buffer.Length; j++)
+                    current.ProcessMidiEvents(synthesizer);
+                    synthesizer.Render(left, right);
+                    for (var j = 0; j < left.Length; j++)
                     {
-                        var sample = (int)(a * buffer[j]);
-                        if (sample < short.MinValue)
+                        var sampleLeft = (int)(a * left[j]);
+                        if (sampleLeft < short.MinValue)
                         {
-                            sample = short.MinValue;
+                            sampleLeft = short.MinValue;
                         }
-                        else if (sample > short.MaxValue)
+                        else if (sampleLeft > short.MaxValue)
                         {
-                            sample = short.MaxValue;
+                            sampleLeft = short.MaxValue;
                         }
-                        batch[t++] = (short)sample;
+
+                        var sampleRight = (int)(a * right[j]);
+                        if (sampleRight < short.MinValue)
+                        {
+                            sampleRight = short.MinValue;
+                        }
+                        else if (sampleRight > short.MaxValue)
+                        {
+                            sampleRight = short.MaxValue;
+                        }
+
+                        batch[t++] = (short)sampleLeft;
+                        batch[t++] = (short)sampleRight;
                     }
                 }
 
@@ -235,7 +243,7 @@ namespace ManagedDoom.Audio
 
         private interface IDecoder
         {
-            void FillBuffer(Synthesizer synthesizer);
+            void ProcessMidiEvents(Synthesizer synthesizer);
         }
 
 
@@ -311,7 +319,7 @@ namespace ManagedDoom.Audio
                 }
             }
 
-            public void FillBuffer(Synthesizer synthesizer)
+            public void ProcessMidiEvents(Synthesizer synthesizer)
             {
                 if (delay > 0)
                 {
@@ -325,7 +333,7 @@ namespace ManagedDoom.Audio
 
                     if (delay == -1)
                     {
-                        synthesizer.NoteOffAll(true);
+                        synthesizer.NoteOffAll(false);
 
                         if (loop)
                         {
@@ -333,8 +341,6 @@ namespace ManagedDoom.Audio
                         }
                     }
                 }
-
-                synthesizer.GetNext();
             }
 
             private void Reset()
@@ -505,11 +511,11 @@ namespace ManagedDoom.Audio
                             switch (me.Data1)
                             {
                                 case 11: // ALL NOTES OFF
-                                    synthesizer.NoteOffAll(true);
+                                    synthesizer.NoteOffAll(me.Channel, false);
                                     break;
 
                                 case 14: // RESET ALL CONTROLS
-                                    synthesizer.ResetSynthControls();
+                                    synthesizer.ResetAllControllers(me.Channel);
                                     break;
                             }
                             break;
@@ -594,17 +600,15 @@ namespace ManagedDoom.Audio
                 this.loop = loop;
             }
 
-            public void FillBuffer(Synthesizer synthesizer)
+            public void ProcessMidiEvents(Synthesizer synthesizer)
             {
                 if (sequencer == null)
                 {
                     sequencer = new MidiFileSequencer(synthesizer);
-                    sequencer.LoadMidi(midi);
-                    sequencer.Play();
+                    sequencer.Play(midi, loop);
                 }
 
-                sequencer.FillMidiEventQueue(loop);
-                synthesizer.GetNext();
+                sequencer.ProcessEvents();
             }
         }
     }

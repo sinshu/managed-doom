@@ -414,12 +414,15 @@ namespace ManagedDoom
                         }
                     }
 
-                    if (parsed.Count == 2)
+                    if (parsed.Count == 2 &&
+                        parsed[0] <= DoomInfo.ParTimes.Doom2.Count)
                     {
                         DoomInfo.ParTimes.Doom2[parsed[0] - 1] = parsed[1];
                     }
 
-                    if (parsed.Count >= 3)
+                    if (parsed.Count >= 3 &&
+                        parsed[0] <= DoomInfo.ParTimes.Doom1.Count &&
+                        parsed[1] <= DoomInfo.ParTimes.Doom1[parsed[0] - 1].Count)
                     {
                         DoomInfo.ParTimes.Doom1[parsed[0] - 1][parsed[1] - 1] = parsed[2];
                     }

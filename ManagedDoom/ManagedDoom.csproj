@@ -7,11 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MeltySynth" Version="0.9.1" />
     <PackageReference Include="SFML.Net" Version="2.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="src\Audio\CSharpSynth\" />
   </ItemGroup>
 
 </Project>
