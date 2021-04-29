@@ -161,8 +161,7 @@ namespace ManagedDoom.Audio
 
                 config.audio_musicvolume = Math.Clamp(config.audio_musicvolume, 0, parent.MaxVolume);
 
-                var settings = new SynthesizerSettings();
-                settings.SampleRate = MusDecoder.SampleRate;
+                var settings = new SynthesizerSettings(MusDecoder.SampleRate);
                 settings.BlockSize = MusDecoder.BufferLength;
                 synthesizer = new Synthesizer(sfPath, settings);
                 left = new float[synthesizer.BlockSize];
