@@ -189,8 +189,11 @@ namespace ManagedDoom.Audio
             {
                 if (reserved != current)
                 {
-                    synthesizer.NoteOffAll(true);
-                    synthesizer.Reset();
+                    synthesizer.NoteOffAll(false);
+                    for (var ch = 0; ch < synthesizer.ChannelCount; ch++)
+                    {
+                        synthesizer.ResetAllControllers(ch);
+                    }
                     current = reserved;
                 }
 
