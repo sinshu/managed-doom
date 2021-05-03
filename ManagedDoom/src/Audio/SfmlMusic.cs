@@ -189,15 +189,11 @@ namespace ManagedDoom.Audio
             {
                 if (reserved != current)
                 {
-                    synthesizer.NoteOffAll(false);
-                    for (var ch = 0; ch < synthesizer.ChannelCount; ch++)
-                    {
-                        synthesizer.ResetAllControllers(ch);
-                    }
+                    synthesizer.Reset();
                     current = reserved;
                 }
 
-                var a = 32768 * (3.0F * config.audio_musicvolume / parent.MaxVolume);
+                var a = 32768 * (2.0F * config.audio_musicvolume / parent.MaxVolume);
 
                 var t = 0;
                 for (var i = 0; i < stepCount; i++)
