@@ -51,6 +51,7 @@ namespace ManagedDoom
         public int audio_soundvolume;
         public int audio_musicvolume;
         public bool audio_randompitch;
+        public string audio_soundfont;
 
         // Default settings.
         public Config()
@@ -136,6 +137,7 @@ namespace ManagedDoom
             audio_soundvolume = 8;
             audio_musicvolume = 8;
             audio_randompitch = true;
+            audio_soundfont = "TimGM6mb.sf2";
         }
 
         public Config(string path) : this()
@@ -181,6 +183,7 @@ namespace ManagedDoom
                 audio_soundvolume = GetInt(dic, nameof(audio_soundvolume), audio_soundvolume);
                 audio_musicvolume = GetInt(dic, nameof(audio_musicvolume), audio_musicvolume);
                 audio_randompitch = GetBool(dic, nameof(audio_randompitch), audio_randompitch);
+                audio_soundfont = GetString(dic, nameof(audio_soundfont), audio_soundfont);
 
                 Console.WriteLine("OK");
             }
@@ -223,6 +226,7 @@ namespace ManagedDoom
                     writer.WriteLine(nameof(audio_soundvolume) + " = " + audio_soundvolume);
                     writer.WriteLine(nameof(audio_musicvolume) + " = " + audio_musicvolume);
                     writer.WriteLine(nameof(audio_randompitch) + " = " + BoolToString(audio_randompitch));
+                    writer.WriteLine(nameof(audio_soundfont) + " = " + audio_soundfont);
                 }
             }
             catch
@@ -240,6 +244,17 @@ namespace ManagedDoom
                 {
                     return value;
                 }
+            }
+
+            return defaultValue;
+        }
+
+        private static string GetString(Dictionary<string, string> dic, string name, string defaultValue)
+        {
+            string stringValue;
+            if (dic.TryGetValue(name, out stringValue))
+            {
+                return stringValue;
             }
 
             return defaultValue;

@@ -101,13 +101,14 @@ namespace ManagedDoom
 
         public static SfmlMusic GetSfmlMusicInstance(Config config, Wad wad)
         {
-            var sfPath = Path.Combine(GetExeDirectory(), "TimGM6mb.sf2");
+            var sfPath = Path.Combine(GetExeDirectory(), config.audio_soundfont);
             if (File.Exists(sfPath))
             {
                 return new SfmlMusic(config, wad, sfPath);
             }
             else
             {
+                Console.WriteLine("SoundFont '" + config.audio_soundfont + "' was not found!");
                 return null;
             }
         }
