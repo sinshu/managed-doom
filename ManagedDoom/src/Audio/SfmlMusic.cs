@@ -549,6 +549,14 @@ namespace ManagedDoom.Audio
                                     synthesizer.ProcessMidiMessage(me.Channel, 0xB0, 0x0B, me.Data2);
                                     break;
 
+                                case 6: // REVERB
+                                    synthesizer.ProcessMidiMessage(me.Channel, 0xB0, 0x5B, me.Data2);
+                                    break;
+
+                                case 7: // CHORUS
+                                    synthesizer.ProcessMidiMessage(me.Channel, 0xB0, 0x5D, me.Data2);
+                                    break;
+
                                 case 8: // PEDAL
                                     synthesizer.ProcessMidiMessage(me.Channel, 0xB0, 0x40, me.Data2);
                                     break;
