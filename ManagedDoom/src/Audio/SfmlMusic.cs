@@ -386,9 +386,14 @@ namespace ManagedDoom.Audio
             private ReadResult ReadSingleEvent()
             {
                 var channelNumber = data[p] & 0xF;
+
                 if (channelNumber == 15)
                 {
                     channelNumber = 9;
+                }
+                else if (channelNumber >= 9)
+                {
+                    channelNumber++;
                 }
 
                 var eventType = (data[p] & 0x70) >> 4;
@@ -449,7 +454,7 @@ namespace ManagedDoom.Audio
 
                     case 3: // SYSTEM EVENT
                         me.Type = 3;
-                        me.Channel = -1;
+                        me.Channel = channelNumber;
 
                         var systemEvent = data[p++];
                         me.Data1 = systemEvent;
@@ -522,10 +527,6 @@ namespace ManagedDoom.Audio
                             switch (me.Data1)
                             {
                                 case 0: // PROGRAM CHANGE
-                                    if (me.Channel == 9)
-                                    {
-                                        break;
-                                    }
                                     synthesizer.ProcessMidiMessage(me.Channel, 0xC0, me.Data2, 0);
                                     break;
 
