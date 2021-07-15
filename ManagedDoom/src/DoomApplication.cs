@@ -404,6 +404,7 @@ namespace ManagedDoom
 
                 case DoomKey.Add:
                 case DoomKey.Quote:
+                case DoomKey.Equal:
                     if (currentState == ApplicationState.Game &&
                         game.State == GameState.Level &&
                         game.World.AutoMap.Visible)
@@ -419,6 +420,7 @@ namespace ManagedDoom
 
                 case DoomKey.Subtract:
                 case DoomKey.Hyphen:
+                case DoomKey.Semicolon:
                     if (currentState == ApplicationState.Game &&
                         game.State == GameState.Level &&
                         game.World.AutoMap.Visible)
