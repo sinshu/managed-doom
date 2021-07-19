@@ -168,7 +168,7 @@ namespace ManagedDoom.Audio
                 right = new float[synthesizer.BlockSize];
 
                 var blockDuration = (double)synthesizer.BlockSize / MusDecoder.SampleRate;
-                stepCount = (int)Math.Ceiling(0.02 / blockDuration);
+                stepCount = (int)Math.Ceiling(0.05 / blockDuration);
                 batchLength = synthesizer.BlockSize * stepCount;
                 batch = new short[2 * batchLength];
 
