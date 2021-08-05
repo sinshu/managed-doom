@@ -143,16 +143,14 @@ namespace ManagedDoom.Audio
             private Config config;
 
             private Synthesizer synthesizer;
+
+            private int batchLength;
             private float[] left;
             private float[] right;
-
-            private int stepCount;
-            private int batchLength;
+            private short[] batch;
 
             private IDecoder current;
             private IDecoder reserved;
-
-            private short[] batch;
 
             public MusStream(SfmlMusic parent, Config config, string sfPath)
             {
@@ -162,14 +160,12 @@ namespace ManagedDoom.Audio
                 config.audio_musicvolume = Math.Clamp(config.audio_musicvolume, 0, parent.MaxVolume);
 
                 var settings = new SynthesizerSettings(MusDecoder.SampleRate);
-                settings.BlockSize = MusDecoder.BufferLength;
+                settings.BlockSize = MusDecoder.BlockLength;
                 synthesizer = new Synthesizer(sfPath, settings);
-                left = new float[synthesizer.BlockSize];
-                right = new float[synthesizer.BlockSize];
 
-                var blockDuration = (double)synthesizer.BlockSize / MusDecoder.SampleRate;
-                stepCount = (int)Math.Ceiling(0.05 / blockDuration);
-                batchLength = synthesizer.BlockSize * stepCount;
+                batchLength = (int)Math.Round(0.05 * MusDecoder.SampleRate);
+                left = new float[batchLength];
+                right = new float[batchLength];
                 batch = new short[2 * batchLength];
 
                 Initialize(2, (uint)MusDecoder.SampleRate);
@@ -195,36 +191,34 @@ namespace ManagedDoom.Audio
 
                 var a = 32768 * (2.0F * config.audio_musicvolume / parent.MaxVolume);
 
-                var t = 0;
-                for (var i = 0; i < stepCount; i++)
+                current.RenderWaveform(synthesizer, left, right);
+
+                var pos = 0;
+
+                for (var t = 0; t < batchLength; t++)
                 {
-                    current.ProcessMidiEvents(synthesizer);
-                    synthesizer.Render(left, right);
-                    for (var j = 0; j < left.Length; j++)
+                    var sampleLeft = (int)(a * left[t]);
+                    if (sampleLeft < short.MinValue)
                     {
-                        var sampleLeft = (int)(a * left[j]);
-                        if (sampleLeft < short.MinValue)
-                        {
-                            sampleLeft = short.MinValue;
-                        }
-                        else if (sampleLeft > short.MaxValue)
-                        {
-                            sampleLeft = short.MaxValue;
-                        }
-
-                        var sampleRight = (int)(a * right[j]);
-                        if (sampleRight < short.MinValue)
-                        {
-                            sampleRight = short.MinValue;
-                        }
-                        else if (sampleRight > short.MaxValue)
-                        {
-                            sampleRight = short.MaxValue;
-                        }
-
-                        batch[t++] = (short)sampleLeft;
-                        batch[t++] = (short)sampleRight;
+                        sampleLeft = short.MinValue;
                     }
+                    else if (sampleLeft > short.MaxValue)
+                    {
+                        sampleLeft = short.MaxValue;
+                    }
+
+                    var sampleRight = (int)(a * right[t]);
+                    if (sampleRight < short.MinValue)
+                    {
+                        sampleRight = short.MinValue;
+                    }
+                    else if (sampleRight > short.MaxValue)
+                    {
+                        sampleRight = short.MaxValue;
+                    }
+
+                    batch[pos++] = (short)sampleLeft;
+                    batch[pos++] = (short)sampleRight;
                 }
 
                 samples = batch;
@@ -241,7 +235,7 @@ namespace ManagedDoom.Audio
 
         private interface IDecoder
         {
-            void ProcessMidiEvents(Synthesizer synthesizer);
+            void RenderWaveform(Synthesizer synthesizer, Span<float> left, Span<float> right);
         }
 
 
@@ -249,7 +243,7 @@ namespace ManagedDoom.Audio
         private class MusDecoder : IDecoder
         {
             public static readonly int SampleRate = 44100;
-            public static readonly int BufferLength = SampleRate / 140;
+            public static readonly int BlockLength = SampleRate / 140;
 
             public static readonly byte[] MusHeader = new byte[]
             {
@@ -275,6 +269,8 @@ namespace ManagedDoom.Audio
             private int[] lastVolume;
             private int p;
             private int delay;
+
+            private int blockWrote;
 
             public MusDecoder(byte[] data, bool loop)
             {
@@ -304,6 +300,8 @@ namespace ManagedDoom.Audio
                 lastVolume = new int[16];
 
                 Reset();
+
+                blockWrote = BlockLength;
             }
 
             private static void CheckHeader(byte[] data)
@@ -317,7 +315,29 @@ namespace ManagedDoom.Audio
                 }
             }
 
-            public void ProcessMidiEvents(Synthesizer synthesizer)
+            public void RenderWaveform(Synthesizer synthesizer, Span<float> left, Span<float> right)
+            {
+                var wrote = 0;
+                while (wrote < left.Length)
+                {
+                    if (blockWrote == synthesizer.BlockSize)
+                    {
+                        ProcessMidiEvents(synthesizer);
+                        blockWrote = 0;
+                    }
+
+                    var srcRem = synthesizer.BlockSize - blockWrote;
+                    var dstRem = left.Length - wrote;
+                    var rem = Math.Min(srcRem, dstRem);
+
+                    synthesizer.Render(left.Slice(wrote, rem), right.Slice(wrote, rem));
+
+                    blockWrote += rem;
+                    wrote += rem;
+                }
+            }
+
+            private void ProcessMidiEvents(Synthesizer synthesizer)
             {
                 if (delay > 0)
                 {
@@ -607,7 +627,7 @@ namespace ManagedDoom.Audio
                 this.loop = loop;
             }
 
-            public void ProcessMidiEvents(Synthesizer synthesizer)
+            public void RenderWaveform(Synthesizer synthesizer, Span<float> left, Span<float> right)
             {
                 if (sequencer == null)
                 {
@@ -615,7 +635,7 @@ namespace ManagedDoom.Audio
                     sequencer.Play(midi, loop);
                 }
 
-                sequencer.ProcessEvents();
+                sequencer.Render(left, right);
             }
         }
     }
