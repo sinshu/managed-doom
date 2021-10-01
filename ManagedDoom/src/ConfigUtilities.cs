@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using ManagedDoom.Audio;
 using SFML.Window;
 
@@ -25,6 +26,17 @@ namespace ManagedDoom
 {
     public static class ConfigUtilities
     {
+        private static readonly string[] iwadNames = new string[]
+        {
+            "DOOM2.WAD",
+            "PLUTONIA.WAD",
+            "TNT.WAD",
+            "DOOM.WAD",
+            "DOOM1.WAD",
+            "FREEDOOM2.WAD",
+            "FREEDOOM1.WAD"
+        };
+
         public static string GetExeDirectory()
         {
             return Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
@@ -65,19 +77,8 @@ namespace ManagedDoom
 
         public static string GetDefaultIwadPath()
         {
-            var names = new string[]
-            {
-                "DOOM2.WAD",
-                "PLUTONIA.WAD",
-                "TNT.WAD",
-                "DOOM.WAD",
-                "DOOM1.WAD",
-                "FREEDOOM2.WAD",
-                "FREEDOOM1.WAD"
-            };
-
             var exeDirectory = GetExeDirectory();
-            foreach (var name in names)
+            foreach (var name in iwadNames)
             {
                 var path = Path.Combine(exeDirectory, name);
                 if (File.Exists(path))
@@ -87,7 +88,7 @@ namespace ManagedDoom
             }
 
             var currentDirectory = Directory.GetCurrentDirectory();
-            foreach (var name in names)
+            foreach (var name in iwadNames)
             {
                 var path = Path.Combine(currentDirectory, name);
                 if (File.Exists(path))
@@ -97,6 +98,12 @@ namespace ManagedDoom
             }
 
             throw new Exception("No IWAD was found!");
+        }
+
+        public static bool IsIwad(string path)
+        {
+            var name = Path.GetFileName(path).ToUpper();
+            return iwadNames.Contains(name);
         }
 
         public static SfmlMusic GetSfmlMusicInstance(Config config, Wad wad)

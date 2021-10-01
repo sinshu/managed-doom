@@ -77,26 +77,58 @@ namespace ManagedDoom
             nomusic = new Arg(args.Contains("-nomusic"));
 
             nodeh = new Arg(args.Contains("-nodeh"));
+
+            // Check for drag & drop.
+            if (args.Length > 0 && args.All(arg => arg.FirstOrDefault() != '-'))
+            {
+                string iwadPath = null;
+                var pwadPaths = new List<string>();
+                var dehPaths = new List<string>();
+
+                foreach (var path in args)
+                {
+                    var extension = Path.GetExtension(path).ToLower();
+
+                    if (extension == ".wad")
+                    {
+                        if (ConfigUtilities.IsIwad(path))
+                        {
+                            iwadPath = path;
+                        }
+                        else
+                        {
+                            pwadPaths.Add(path);
+                        }
+                    }
+                    else if (extension == ".deh")
+                    {
+                        dehPaths.Add(path);
+                    }
+                }
+
+                if (iwadPath != null)
+                {
+                    iwad = new Arg<string>(iwadPath);
+                }
+
+                if (pwadPaths.Count > 0)
+                {
+                    file = new Arg<string[]>(pwadPaths.ToArray());
+                }
+
+                if (dehPaths.Count > 0)
+                {
+                    deh = new Arg<string[]>(dehPaths.ToArray());
+                }
+            }
         }
 
         private static Arg<string[]> Check_file(string[] args)
         {
-            // PWAD file paths can be specified without "-file" option for drag & drop support.
-            if (args.Length > 0 && args.All(arg => arg.FirstOrDefault() != '-'))
+            var values = GetValues(args, "-file");
+            if (values.Length >= 1)
             {
-                var values = args.Where(arg => Path.GetExtension(arg).ToLower() == ".wad").ToArray();
-                if (values.Length >= 1)
-                {
-                    return new Arg<string[]>(values);
-                }
-            }
-            else
-            {
-                var values = GetValues(args, "-file");
-                if (values.Length >= 1)
-                {
-                    return new Arg<string[]>(values);
-                }
+                return new Arg<string[]>(values);
             }
 
             return new Arg<string[]>();
@@ -104,22 +136,10 @@ namespace ManagedDoom
 
         private static Arg<string[]> Check_deh(string[] args)
         {
-            // DEH file paths can be specified without "-deh" option for drag & drop support.
-            if (args.Length > 0 && args.All(arg => arg.FirstOrDefault() != '-'))
+            var values = GetValues(args, "-deh");
+            if (values.Length >= 1)
             {
-                var values = args.Where(arg => Path.GetExtension(arg).ToLower() == ".deh").ToArray();
-                if (values.Length >= 1)
-                {
-                    return new Arg<string[]>(values);
-                }
-            }
-            else
-            {
-                var values = GetValues(args, "-deh");
-                if (values.Length >= 1)
-                {
-                    return new Arg<string[]>(values);
-                }
+                return new Arg<string[]>(values);
             }
 
             return new Arg<string[]>();
