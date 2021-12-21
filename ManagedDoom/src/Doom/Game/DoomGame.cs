@@ -22,7 +22,7 @@ namespace ManagedDoom
 {
 	public sealed class DoomGame
 	{
-		private CommonResource resource;
+		private GameData resource;
 		private GameOptions options;
 
 		private GameAction gameAction;
@@ -41,7 +41,7 @@ namespace ManagedDoom
 		private int saveGameSlotNumber;
 		private string saveGameDescription;
 
-		public DoomGame(CommonResource resource, GameOptions options)
+		public DoomGame(GameData resource, GameOptions options)
 		{
 			this.resource = resource;
 			this.options = options;

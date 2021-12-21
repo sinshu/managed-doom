@@ -32,7 +32,7 @@ namespace ManagedDoom
 
         private RenderWindow window;
 
-        private CommonResource resource;
+        private GameData resource;
         private SfmlRenderer renderer;
         private SfmlSound sound;
         private SfmlMusic music;
@@ -88,7 +88,7 @@ namespace ManagedDoom
                     DeHackEd.ReadFiles(args.deh.Value);
                 }
 
-                resource = new CommonResource(GetWadPaths(args), !args.nodeh.Present);
+                resource = new GameData(GetWadPaths(args), !args.nodeh.Present);
 
                 renderer = new SfmlRenderer(config, window, resource);
 

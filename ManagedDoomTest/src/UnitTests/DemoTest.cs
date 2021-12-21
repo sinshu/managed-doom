@@ -12,7 +12,7 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void Doom2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2))
             {
                 {
                     var demo = new Demo(resource.Wad.ReadLump("DEMO1"));

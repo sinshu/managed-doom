@@ -30,7 +30,7 @@ namespace ManagedDoom
         private Stopwatch stopwatch;
         private int frameCount;
 
-        public DemoPlayback(CommonResource resource, GameOptions options, string demoName)
+        public DemoPlayback(GameData resource, GameOptions options, string demoName)
         {
             if (File.Exists(demoName))
             {

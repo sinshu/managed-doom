@@ -172,7 +172,7 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void PointInSubsectorE1M1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var resource = GameData.CreateDummy(WadPath.Doom1))
             {
                 var options = new GameOptions();
                 var world = new World(resource, options);
@@ -224,7 +224,7 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void PointInSubsectorMap01()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
                 var world = new World(resource, options);

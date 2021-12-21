@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Altdeath()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(@"data\altdeath_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();

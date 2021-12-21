@@ -22,15 +22,15 @@ namespace ManagedDoom.SoftwareRendering
     public sealed class FinaleRenderer
     {
         private Wad wad;
-        private FlatLookup flats;
-        private SpriteLookup sprites;
+        private IFlatLookup flats;
+        private ISpriteLookup sprites;
 
         private DrawScreen screen;
         private int scale;
 
         private PatchCache cache;
 
-        public FinaleRenderer(CommonResource resource, DrawScreen screen)
+        public FinaleRenderer(GameData resource, DrawScreen screen)
         {
             wad = resource.Wad;
             flats = resource.Flats;

@@ -22,7 +22,7 @@ using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
-    public sealed class FlatLookup : IReadOnlyList<Flat>
+    public sealed class FlatLookup : IFlatLookup
     {
         private Flat[] flats;
 
@@ -32,53 +32,42 @@ namespace ManagedDoom
         private int skyFlatNumber;
         private Flat skyFlat;
 
-        public FlatLookup(Wad wad) : this(wad, false)
+        public FlatLookup(Wad wad)
         {
-        }
+            var fStartCount = CountLump(wad, "F_START");
+            var fEndCount = CountLump(wad, "F_END");
+            var ffStartCount = CountLump(wad, "FF_START");
+            var ffEndCount = CountLump(wad, "FF_END");
 
-        public FlatLookup(Wad wad, bool useDummy)
-        {
-            if (!useDummy)
+            // Usual case.
+            var standard =
+                fStartCount == 1 &&
+                fEndCount == 1 &&
+                ffStartCount == 0 &&
+                ffEndCount == 0;
+
+            // A trick to add custom flats is used.
+            // https://www.doomworld.com/tutorials/fx2.php
+            var customFlatTrick =
+                fStartCount == 1 &&
+                fEndCount >= 2;
+
+            // Need deutex to add flats.
+            var deutexMerge =
+                fStartCount + ffStartCount >= 2 &&
+                fEndCount + ffEndCount >= 2;
+
+            if (standard || customFlatTrick)
             {
-                var fStartCount = CountLump(wad, "F_START");
-                var fEndCount = CountLump(wad, "F_END");
-                var ffStartCount = CountLump(wad, "FF_START");
-                var ffEndCount = CountLump(wad, "FF_END");
-
-                // Usual case.
-                var standard =
-                    fStartCount == 1 &&
-                    fEndCount == 1 &&
-                    ffStartCount == 0 &&
-                    ffEndCount == 0;
-
-                // A trick to add custom flats is used.
-                // https://www.doomworld.com/tutorials/fx2.php
-                var customFlatTrick =
-                    fStartCount == 1 &&
-                    fEndCount >= 2;
-
-                // Need deutex to add flats.
-                var deutexMerge =
-                    fStartCount + ffStartCount >= 2 &&
-                    fEndCount + ffEndCount >= 2;
-
-                if (standard || customFlatTrick)
-                {
-                    InitStandard(wad);
-                }
-                else if (deutexMerge)
-                {
-                    InitDeuTexMerge(wad);
-                }
-                else
-                {
-                    throw new Exception("Failed to read flats.");
-                }
+                InitStandard(wad);
+            }
+            else if (deutexMerge)
+            {
+                InitDeuTexMerge(wad);
             }
             else
             {
-                InitDummy(wad);
+                throw new Exception("Failed to read flats.");
             }
         }
 
@@ -130,7 +119,7 @@ namespace ManagedDoom
             try
             {
                 Console.Write("Load flats: ");
-                
+
                 var allFlats = new List<int>();
                 var flatZone = false;
                 for (var lump = 0; lump < wad.LumpInfos.Count; lump++)
@@ -201,37 +190,6 @@ namespace ManagedDoom
                 Console.WriteLine("Failed");
                 ExceptionDispatchInfo.Throw(e);
             }
-        }
-
-        private void InitDummy(Wad wad)
-        {
-            var firstFlat = wad.GetLumpNumber("F_START") + 1;
-            var lastFlat = wad.GetLumpNumber("F_END") - 1;
-            var count = lastFlat - firstFlat + 1;
-
-            flats = new Flat[count];
-
-            nameToFlat = new Dictionary<string, Flat>();
-            nameToNumber = new Dictionary<string, int>();
-
-            for (var lump = firstFlat; lump <= lastFlat; lump++)
-            {
-                if (wad.GetLumpSize(lump) != 4096)
-                {
-                    continue;
-                }
-
-                var number = lump - firstFlat;
-                var name = wad.LumpInfos[lump].Name;
-                var flat = name != "F_SKY1" ? Dummy.GetFlat() : Dummy.GetSkyFlat();
-
-                flats[number] = flat;
-                nameToFlat[name] = flat;
-                nameToNumber[name] = number;
-            }
-
-            skyFlatNumber = nameToNumber["F_SKY1"];
-            skyFlat = nameToFlat["F_SKY1"];
         }
 
         public int GetNumber(string name)

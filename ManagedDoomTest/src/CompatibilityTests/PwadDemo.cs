@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void RequiemDemo1_Final2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.Requiem))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, WadPath.Requiem))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 demo.Options.GameVersion = GameVersion.Final2;
@@ -50,7 +50,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void RequiemDemo2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.Requiem))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, WadPath.Requiem))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 demo.Options.Players[0].PlayerState = PlayerState.Reborn;
@@ -88,7 +88,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void RequiemDemo3()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.Requiem))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, WadPath.Requiem))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -125,7 +125,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void TntBloodDemo1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.TntBlood))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, WadPath.TntBlood))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -161,7 +161,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void TntBloodDemo2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.TntBlood))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, WadPath.TntBlood))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -197,7 +197,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void TntBloodDemo3()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.TntBlood))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, WadPath.TntBlood))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -233,7 +233,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void MementoMoriDemo1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.MementoMori))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, WadPath.MementoMori))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -269,7 +269,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void MementoMoriDemo2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.MementoMori))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, WadPath.MementoMori))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -305,7 +305,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void MementoMoriDemo3()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, WadPath.MementoMori))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, WadPath.MementoMori))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();

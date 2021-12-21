@@ -20,7 +20,7 @@ using System.Collections.Generic;
 
 namespace ManagedDoom
 {
-    public static class Dummy
+    public static class DummyData
     {
         private static Patch dummyPatch;
 

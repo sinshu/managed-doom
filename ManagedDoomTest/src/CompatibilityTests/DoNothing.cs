@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void E1M1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var resource = GameData.CreateDummy(WadPath.Doom1))
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
@@ -45,7 +45,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Map01()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
@@ -73,7 +73,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Map11Nomonsters()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Medium;

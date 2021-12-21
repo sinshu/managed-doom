@@ -73,7 +73,7 @@ namespace ManagedDoom.SoftwareRendering
         private int wipeHeight;
         private byte[] wipeBuffer;
 
-        public SfmlRenderer(Config config, RenderWindow window, CommonResource resource)
+        public SfmlRenderer(Config config, RenderWindow window, GameData resource)
         {
             try
             {

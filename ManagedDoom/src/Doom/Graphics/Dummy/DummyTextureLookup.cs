@@ -1,27 +1,10 @@
-﻿//
-// Copyright (C) 1993-1996 Id Software, Inc.
-// Copyright (C) 2019-2020 Nobuaki Tanaka
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-
-
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace ManagedDoom
 {
-    public sealed class TextureLookup : ITextureLookup
+    public class DummyTextureLookup : ITextureLookup
     {
         private List<Texture> textures;
         private Dictionary<string, Texture> nameToTexture;
@@ -29,11 +12,7 @@ namespace ManagedDoom
 
         private int[] switchList;
 
-        public TextureLookup(Wad wad) : this(wad, false)
-        {
-        }
-
-        public TextureLookup(Wad wad, bool useDummy)
+        public DummyTextureLookup(Wad wad)
         {
             InitLookup(wad);
             InitSwitchList();
@@ -44,8 +23,6 @@ namespace ManagedDoom
             textures = new List<Texture>();
             nameToTexture = new Dictionary<string, Texture>();
             nameToNumber = new Dictionary<string, int>();
-
-            var patches = LoadPatches(wad);
 
             for (var n = 1; n <= 2; n++)
             {
@@ -60,10 +37,12 @@ namespace ManagedDoom
                 for (var i = 0; i < count; i++)
                 {
                     var offset = BitConverter.ToInt32(data, 4 + 4 * i);
-                    var texture = Texture.FromData(data, offset, patches);
-                    nameToNumber.TryAdd(texture.Name, textures.Count);
+                    var name = Texture.GetName(data, offset);
+                    var height = Texture.GetHeight(data, offset);
+                    var texture = DummyData.GetTexture(height);
+                    nameToNumber.TryAdd(name, textures.Count);
                     textures.Add(texture);
-                    nameToTexture.TryAdd(texture.Name, texture);
+                    nameToTexture.TryAdd(name, texture);
                 }
             }
         }
@@ -100,38 +79,6 @@ namespace ManagedDoom
             {
                 return -1;
             }
-        }
-
-        private static Patch[] LoadPatches(Wad wad)
-        {
-            var patchNames = LoadPatchNames(wad);
-            var patches = new Patch[patchNames.Length];
-            for (var i = 0; i < patches.Length; i++)
-            {
-                var name = patchNames[i];
-
-                // This check is necessary to avoid crash in DOOM1.WAD.
-                if (wad.GetLumpNumber(name) == -1)
-                {
-                    continue;
-                }
-
-                var data = wad.ReadLump(name);
-                patches[i] = Patch.FromData(name, data);
-            }
-            return patches;
-        }
-
-        private static string[] LoadPatchNames(Wad wad)
-        {
-            var data = wad.ReadLump("PNAMES");
-            var count = BitConverter.ToInt32(data, 0);
-            var names = new string[count];
-            for (var i = 0; i < names.Length; i++)
-            {
-                names[i] = DoomInterop.ToString(data, 4 + 8 * i, 8);
-            }
-            return names;
         }
 
         public IEnumerator<Texture> GetEnumerator()

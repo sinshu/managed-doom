@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void NightmareTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(@"data\nightmare_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -42,7 +42,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void BarrelTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\barrel_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\barrel_test.wad"))
             {
                 var demo = new Demo(@"data\barrel_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -72,7 +72,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ZombiemanTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\zombieman_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\zombieman_test.wad"))
             {
                 var demo = new Demo(@"data\zombieman_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -102,7 +102,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ZombiemanTest2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\zombieman_test2.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\zombieman_test2.wad"))
             {
                 var demo = new Demo(@"data\zombieman_test2.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -132,7 +132,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ShotgunguyTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\shotgunguy_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\shotgunguy_test.wad"))
             {
                 var demo = new Demo(@"data\shotgunguy_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -162,7 +162,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ChaingunguyTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\chaingunguy_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\chaingunguy_test.wad"))
             {
                 var demo = new Demo(@"data\chaingunguy_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -192,7 +192,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ImpTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\imp_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\imp_test.wad"))
             {
                 var demo = new Demo(@"data\imp_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -222,7 +222,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void FastImpTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\imp_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\imp_test.wad"))
             {
                 var demo = new Demo(@"data\fast_imp_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -252,7 +252,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void DemonTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\demon_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\demon_test.wad"))
             {
                 var demo = new Demo(@"data\demon_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -282,7 +282,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void FastDemonTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\demon_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\demon_test.wad"))
             {
                 var demo = new Demo(@"data\fast_demon_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -312,7 +312,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void LostSoulTest_Final2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\lostsoul_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\lostsoul_test.wad"))
             {
                 var demo = new Demo(@"data\lostsoul_test_final2.lmp");
                 demo.Options.GameVersion = GameVersion.Final2;
@@ -343,7 +343,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void CacoDemonTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\cacodemon_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\cacodemon_test.wad"))
             {
                 var demo = new Demo(@"data\cacodemon_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -373,7 +373,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void FastCacoDemonTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\cacodemon_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\cacodemon_test.wad"))
             {
                 var demo = new Demo(@"data\fast_cacodemon_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -403,7 +403,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void BaronTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\baron_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\baron_test.wad"))
             {
                 var demo = new Demo(@"data\baron_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -433,7 +433,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void FastBaronTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\baron_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\baron_test.wad"))
             {
                 var demo = new Demo(@"data\fast_baron_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -463,7 +463,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void RevenantTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\revenant_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\revenant_test.wad"))
             {
                 var demo = new Demo(@"data\revenant_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -493,7 +493,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void FatsoTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\fatso_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\fatso_test.wad"))
             {
                 var demo = new Demo(@"data\fatso_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -523,7 +523,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ArachnotronTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\arachnotron_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\arachnotron_test.wad"))
             {
                 var demo = new Demo(@"data\arachnotron_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -553,7 +553,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void PainElementalTest_Final2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\painelemental_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\painelemental_test.wad"))
             {
                 var demo = new Demo(@"data\painelemental_test_final2.lmp");
                 demo.Options.GameVersion = GameVersion.Final2;
@@ -584,7 +584,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ArchvileTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\archvile_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\archvile_test.wad"))
             {
                 var demo = new Demo(@"data\archvile_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -614,7 +614,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void TelefragTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\telefrag_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\telefrag_test.wad"))
             {
                 var demo = new Demo(@"data\telefrag_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();

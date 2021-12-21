@@ -14,7 +14,7 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void LoadE1M1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var resource = GameData.CreateDummy(WadPath.Doom1))
             {
                 var options = new GameOptions();
                 var world = new World(resource, options);
@@ -62,7 +62,7 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void LoadMap01()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
                 var world = new World(resource, options);

@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void TeleporterTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\teleporter_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\teleporter_test.wad"))
             {
                 var demo = new Demo(@"data\teleporter_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -42,7 +42,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void LocalDoorTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\localdoor_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\localdoor_test.wad"))
             {
                 var demo = new Demo(@"data\localdoor_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -78,7 +78,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void PlatformTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\platform_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\platform_test.wad"))
             {
                 var demo = new Demo(@"data\platform_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -114,7 +114,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void SilentCrusherTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\silent_crusher_test.wad"))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2, @"data\silent_crusher_test.wad"))
             {
                 var demo = new Demo(@"data\silent_crusher_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();

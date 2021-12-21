@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom1SharewareDemo1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1Shareware))
+            using (var resource = GameData.CreateDummy(WadPath.Doom1Shareware))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -48,7 +48,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom1SharewareDemo2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1Shareware))
+            using (var resource = GameData.CreateDummy(WadPath.Doom1Shareware))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -84,7 +84,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom1SharewareDemo3()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1Shareware))
+            using (var resource = GameData.CreateDummy(WadPath.Doom1Shareware))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -120,7 +120,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom1Demo1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var resource = GameData.CreateDummy(WadPath.Doom1))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -156,7 +156,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom1Demo2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var resource = GameData.CreateDummy(WadPath.Doom1))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -192,7 +192,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom1Demo3()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var resource = GameData.CreateDummy(WadPath.Doom1))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -228,7 +228,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom1Demo4()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var resource = GameData.CreateDummy(WadPath.Doom1))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO4"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -264,7 +264,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom2Demo1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -300,7 +300,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom2Demo2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -336,7 +336,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Doom2Demo3_Final2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var resource = GameData.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 demo.Options.GameVersion = GameVersion.Final2;
@@ -373,7 +373,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void TntDemo1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Tnt))
+            using (var resource = GameData.CreateDummy(WadPath.Tnt))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -409,7 +409,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void TntDemo2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Tnt))
+            using (var resource = GameData.CreateDummy(WadPath.Tnt))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -445,7 +445,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void TntDemo3()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Tnt))
+            using (var resource = GameData.CreateDummy(WadPath.Tnt))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -481,7 +481,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void PlutoniaDemo1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Plutonia))
+            using (var resource = GameData.CreateDummy(WadPath.Plutonia))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -517,7 +517,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void PlutoniaDemo2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Plutonia))
+            using (var resource = GameData.CreateDummy(WadPath.Plutonia))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
@@ -553,7 +553,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void PlutoniaDemo3_Final2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Plutonia))
+            using (var resource = GameData.CreateDummy(WadPath.Plutonia))
             {
                 var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
                 demo.Options.GameVersion = GameVersion.Final2;

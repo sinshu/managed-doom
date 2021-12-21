@@ -21,7 +21,7 @@ namespace ManagedDoom
 {
     public sealed class OpeningSequence
     {
-        private CommonResource resource;
+        private GameData resource;
         private GameOptions options;
 
         private OpeningSequenceState state;
@@ -38,7 +38,7 @@ namespace ManagedDoom
 
         private bool reset;
 
-        public OpeningSequence(CommonResource resource, GameOptions options)
+        public OpeningSequence(GameData resource, GameOptions options)
         {
             this.resource = resource;
             this.options = options;

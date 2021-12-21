@@ -21,15 +21,11 @@ using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
-    public sealed class SpriteLookup
+    public sealed class SpriteLookup : ISpriteLookup
     {
         private SpriteDef[] spriteDefs;
 
-        public SpriteLookup(Wad wad) : this(wad, false)
-        {
-        }
-
-        public SpriteLookup(Wad wad, bool useDummy)
+        public SpriteLookup(Wad wad)
         {
             try
             {
@@ -69,7 +65,7 @@ namespace ManagedDoom
                             {
                                 if (list[frame].Patches[i] == null)
                                 {
-                                    list[frame].Patches[i] = CachedRead(lump, wad, cache, useDummy);
+                                    list[frame].Patches[i] = CachedRead(lump, wad, cache);
                                     list[frame].Flip[i] = false;
                                 }
                             }
@@ -78,7 +74,7 @@ namespace ManagedDoom
                         {
                             if (list[frame].Patches[rotation - 1] == null)
                             {
-                                list[frame].Patches[rotation - 1] = CachedRead(lump, wad, cache, useDummy);
+                                list[frame].Patches[rotation - 1] = CachedRead(lump, wad, cache);
                                 list[frame].Flip[rotation - 1] = false;
                             }
                         }
@@ -100,7 +96,7 @@ namespace ManagedDoom
                             {
                                 if (list[frame].Patches[i] == null)
                                 {
-                                    list[frame].Patches[i] = CachedRead(lump, wad, cache, useDummy);
+                                    list[frame].Patches[i] = CachedRead(lump, wad, cache);
                                     list[frame].Flip[i] = true;
                                 }
                             }
@@ -109,7 +105,7 @@ namespace ManagedDoom
                         {
                             if (list[frame].Patches[rotation - 1] == null)
                             {
-                                list[frame].Patches[rotation - 1] = CachedRead(lump, wad, cache, useDummy);
+                                list[frame].Patches[rotation - 1] = CachedRead(lump, wad, cache);
                                 list[frame].Flip[rotation - 1] = true;
                             }
                         }
@@ -174,13 +170,8 @@ namespace ManagedDoom
             }
         }
 
-        private static Patch CachedRead(int lump, Wad wad, Dictionary<int, Patch> cache, bool useDummy)
+        private static Patch CachedRead(int lump, Wad wad, Dictionary<int, Patch> cache)
         {
-            if (useDummy)
-            {
-                return Dummy.GetPatch();
-            }
-
             if (!cache.ContainsKey(lump))
             {
                 var name = wad.LumpInfos[lump].Name;
@@ -189,6 +180,15 @@ namespace ManagedDoom
 
             return cache[lump];
         }
+
+        public SpriteDef this[Sprite sprite]
+        {
+            get
+            {
+                return spriteDefs[(int)sprite];
+            }
+        }
+
 
 
         private class SpriteInfo
@@ -224,14 +224,6 @@ namespace ManagedDoom
                 }
 
                 return false;
-            }
-        }
-
-        public SpriteDef this[Sprite sprite]
-        {
-            get
-            {
-                return spriteDefs[(int)sprite];
             }
         }
     }
