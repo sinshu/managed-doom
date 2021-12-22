@@ -20,11 +20,8 @@ using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using SFML.Graphics;
 using SFML.Window;
-using ManagedDoom.SoftwareRendering;
-using ManagedDoom.Audio;
-using ManagedDoom.UserInput;
 
-namespace ManagedDoom
+namespace ManagedDoom.SFML
 {
     public sealed class SfmlDoom : IDisposable
     {
@@ -104,7 +101,7 @@ namespace ManagedDoom
             }
             else
             {
-                wadPaths.Add(SfmlConfigUtilities.GetDefaultIwadPath());
+                wadPaths.Add(ConfigUtilities.GetDefaultIwadPath());
             }
 
             if (args.file.Present)
@@ -132,7 +129,7 @@ namespace ManagedDoom
                 video.Render(doom);
             }
 
-            config.Save(SfmlConfigUtilities.GetConfigPath());
+            config.Save(ConfigUtilities.GetConfigPath());
         }
 
         private void KeyPressed(object sender, KeyEventArgs e)

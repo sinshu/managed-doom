@@ -17,11 +17,11 @@
 
 using System;
 using System.Runtime.ExceptionServices;
-using System.Runtime.InteropServices;
 using SFML.Graphics;
 using SFML.System;
+using ManagedDoom.Video;
 
-namespace ManagedDoom.SoftwareRendering
+namespace ManagedDoom.SFML
 {
     public sealed class SfmlVideo : IVideo, IDisposable
     {
@@ -36,9 +36,9 @@ namespace ManagedDoom.SoftwareRendering
         private int textureHeight;
 
         private byte[] textureData;
-        private SFML.Graphics.Texture texture;
-        private SFML.Graphics.Sprite sprite;
-        private SFML.Graphics.RenderStates renderStates;
+        private global::SFML.Graphics.Texture texture;
+        private global::SFML.Graphics.Sprite sprite;
+        private global::SFML.Graphics.RenderStates renderStates;
 
         public SfmlVideo(Config config, GameContent content, RenderWindow window)
         {
@@ -69,8 +69,8 @@ namespace ManagedDoom.SoftwareRendering
 
                 textureData = new byte[4 * renderer.Width * renderer.Height];
 
-                texture = new SFML.Graphics.Texture((uint)textureWidth, (uint)textureHeight);
-                sprite = new SFML.Graphics.Sprite(texture);
+                texture = new global::SFML.Graphics.Texture((uint)textureWidth, (uint)textureHeight);
+                sprite = new global::SFML.Graphics.Sprite(texture);
 
                 sprite.Position = new Vector2f(0, 0);
                 sprite.Rotation = 90;

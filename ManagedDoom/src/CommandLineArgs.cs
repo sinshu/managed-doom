@@ -91,7 +91,7 @@ namespace ManagedDoom
 
                     if (extension == ".wad")
                     {
-                        if (SfmlConfigUtilities.IsIwad(path))
+                        if (ConfigUtilities.IsIwad(path))
                         {
                             iwadPath = path;
                         }

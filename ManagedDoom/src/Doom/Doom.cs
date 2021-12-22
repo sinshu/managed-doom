@@ -18,7 +18,7 @@
 using System;
 using System.Collections.Generic;
 using ManagedDoom.Audio;
-using ManagedDoom.SoftwareRendering;
+using ManagedDoom.Video;
 using ManagedDoom.UserInput;
 
 namespace ManagedDoom

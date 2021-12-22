@@ -18,7 +18,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ManagedDoom.SoftwareRendering
+namespace ManagedDoom.Video
 {
     public sealed class DrawScreen
     {

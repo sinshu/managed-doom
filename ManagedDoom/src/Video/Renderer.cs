@@ -18,7 +18,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace ManagedDoom.SoftwareRendering
+namespace ManagedDoom.Video
 {
     public sealed class Renderer
     {
@@ -366,7 +366,5 @@ namespace ManagedDoom.SoftwareRendering
                 palette.ResetColors(gammaCorrectionParameters[config.video_gammacorrection]);
             }
         }
-
-        public ThreeDRenderer ThreeD;
     }
 }

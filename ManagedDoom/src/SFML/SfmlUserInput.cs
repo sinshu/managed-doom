@@ -20,8 +20,9 @@ using System.Runtime.ExceptionServices;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using ManagedDoom.UserInput;
 
-namespace ManagedDoom.UserInput
+namespace ManagedDoom.SFML
 {
     public sealed class SfmlUserInput : IUserInput, IDisposable
     {

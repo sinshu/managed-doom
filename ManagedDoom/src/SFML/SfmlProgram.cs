@@ -17,7 +17,7 @@
 
 using System;
 
-namespace ManagedDoom
+namespace ManagedDoom.SFML
 {
     public static class SfmlProgram
     {

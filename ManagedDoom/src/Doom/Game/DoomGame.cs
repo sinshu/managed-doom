@@ -313,7 +313,7 @@ namespace ManagedDoom
 		{
 			gameAction = GameAction.Nothing;
 
-			var directory = SfmlConfigUtilities.GetExeDirectory();
+			var directory = ConfigUtilities.GetExeDirectory();
 			var path = Path.Combine(directory, "doomsav" + loadGameSlotNumber + ".dsg");
 			SaveAndLoad.Load(this, path);
 		}
@@ -322,7 +322,7 @@ namespace ManagedDoom
 		{
 			gameAction = GameAction.Nothing;
 
-			var directory = SfmlConfigUtilities.GetExeDirectory();
+			var directory = ConfigUtilities.GetExeDirectory();
 			var path = Path.Combine(directory, "doomsav" + saveGameSlotNumber + ".dsg");
 			SaveAndLoad.Save(this, saveGameDescription, path);
 			world.ConsolePlayer.SendMessage(DoomInfo.Strings.GGSAVED);

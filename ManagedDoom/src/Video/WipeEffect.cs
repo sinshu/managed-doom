@@ -17,7 +17,7 @@
 
 using System;
 
-namespace ManagedDoom.SoftwareRendering
+namespace ManagedDoom.Video
 {
     public sealed class WipeEffect
     {

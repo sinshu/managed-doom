@@ -16,7 +16,7 @@
 
 
 using System;
-using ManagedDoom.SoftwareRendering;
+using ManagedDoom.Video;
 using ManagedDoom.Audio;
 using ManagedDoom.UserInput;
 
@@ -47,7 +47,7 @@ namespace ManagedDoom
 
         private DoomRandom random;
 
-        private IVideo renderer;
+        private IVideo video;
         private ISound sound;
         private IMusic music;
         private IUserInput userInput;
@@ -82,7 +82,7 @@ namespace ManagedDoom
 
             random = new DoomRandom();
 
-            renderer = null;
+            video = NullVideo.GetInstance();
             sound = NullSound.GetInstance();
             music = NullMusic.GetInstance();
             userInput = NullUserInput.GetInstance();
@@ -183,59 +183,26 @@ namespace ManagedDoom
 
         public IVideo Renderer
         {
-            get => renderer;
-            set => renderer = value;
+            get => video;
+            set => video = value;
         }
 
         public ISound Sound
         {
             get => sound;
-
-            set
-            {
-                if (value != null)
-                {
-                    sound = value;
-                }
-                else
-                {
-                    sound = NullSound.GetInstance();
-                }
-            }
+            set => sound = value;
         }
 
         public IMusic Music
         {
             get => music;
-
-            set
-            {
-                if (value != null)
-                {
-                    music = value;
-                }
-                else
-                {
-                    music = NullMusic.GetInstance();
-                }
-            }
+            set => music = value;
         }
 
         public IUserInput UserInput
         {
             get => userInput;
-
-            set
-            {
-                if (value != null)
-                {
-                    userInput = value;
-                }
-                else
-                {
-                    userInput = NullUserInput.GetInstance();
-                }
-            }
+            set => userInput = value;
         }
     }
 }

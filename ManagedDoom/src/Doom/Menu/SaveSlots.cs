@@ -31,7 +31,7 @@ namespace ManagedDoom
         {
             slots = new string[slotCount];
 
-            var directory = SfmlConfigUtilities.GetExeDirectory();
+            var directory = ConfigUtilities.GetExeDirectory();
             var buffer = new byte[descriptionSize];
             for (var i = 0; i < slots.Length; i++)
             {
