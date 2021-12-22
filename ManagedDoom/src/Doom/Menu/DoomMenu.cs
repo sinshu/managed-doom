@@ -21,7 +21,7 @@ namespace ManagedDoom
 {
     public sealed class DoomMenu
     {
-        private DoomApplication app;
+        private Doom app;
         private GameOptions options;
 
         private SelectableMenu main;
@@ -49,7 +49,7 @@ namespace ManagedDoom
 
         private SaveSlots saveSlots;
 
-        public DoomMenu(DoomApplication app)
+        public DoomMenu(Doom app)
         {
             this.app = app;
             options = app.Options;
@@ -476,7 +476,7 @@ namespace ManagedDoom
             StartSound(Sfx.SWTCHN);
         }
 
-        public DoomApplication Application => app;
+        public Doom Application => app;
         public GameOptions Options => app.Options;
         public MenuDef Current => current;
         public bool Active => active;

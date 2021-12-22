@@ -21,6 +21,9 @@ namespace ManagedDoom.SoftwareRendering
 {
     public interface IRenderer
     {
+        public bool HasFocus();
+        public void InitializeWipe();
+
         public int MaxWindowSize { get; }
         public int WindowSize { get; set; }
 
@@ -28,5 +31,8 @@ namespace ManagedDoom.SoftwareRendering
 
         public int MaxGammaCorrectionLevel { get; }
         public int GammaCorrectionLevel { get; set; }
+
+        public int WipeBandCount { get; }
+        public int WipeHeight { get; }
     }
 }

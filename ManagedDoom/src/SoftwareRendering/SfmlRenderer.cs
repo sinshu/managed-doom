@@ -145,7 +145,7 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        public void RenderApplication(DoomApplication app)
+        public void RenderApplication(Doom app)
         {
             if (app.State == ApplicationState.Opening)
             {
@@ -176,7 +176,7 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        public void RenderMenu(DoomApplication app)
+        public void RenderMenu(Doom app)
         {
             if (app.Menu.Active)
             {
@@ -228,7 +228,7 @@ namespace ManagedDoom.SoftwareRendering
             }
         }
 
-        public void Render(DoomApplication app)
+        public void Render(Doom app)
         {
             RenderApplication(app);
             RenderMenu(app);
@@ -254,7 +254,7 @@ namespace ManagedDoom.SoftwareRendering
             Display(colors);
         }
 
-        public void RenderWipe(DoomApplication app, WipeEffect wipe)
+        public void RenderWipe(Doom app, WipeEffect wipe)
         {
             RenderApplication(app);
 
@@ -282,6 +282,11 @@ namespace ManagedDoom.SoftwareRendering
             RenderMenu(app);
 
             Display(palette[0]);
+        }
+
+        public bool HasFocus()
+        {
+            return sfmlWindow.HasFocus();
         }
 
         public void InitializeWipe()
