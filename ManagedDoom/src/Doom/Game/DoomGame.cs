@@ -596,7 +596,6 @@ namespace ManagedDoom
 
 
 		public GameOptions Options => options;
-		public Player[] Players => options.Players;
 		public GameState State => gameState;
 		public int GameTic => gameTic;
 		public World World => world;
