@@ -29,7 +29,6 @@ namespace ManagedDoom
 		private GameState gameState;
 
 		private int gameTic;
-		private DoomRandom random;
 
 		private World world;
 		private Intermission intermission;
@@ -49,7 +48,6 @@ namespace ManagedDoom
 			gameAction = GameAction.Nothing;
 
 			gameTic = 0;
-			random = new DoomRandom();
 		}
 
 
@@ -519,7 +517,7 @@ namespace ManagedDoom
 				map = Math.Clamp(map, 1, 9);
 			}
 
-			random.Clear();
+			options.Random.Clear();
 
 			// Force players to be initialized upon first level load.
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -601,7 +599,6 @@ namespace ManagedDoom
 		public Player[] Players => options.Players;
 		public GameState State => gameState;
 		public int GameTic => gameTic;
-		public DoomRandom Random => random;
 		public World World => world;
 		public Intermission Intermission => intermission;
 		public Finale Finale => finale;

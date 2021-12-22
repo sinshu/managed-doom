@@ -72,15 +72,7 @@ namespace ManagedDoom
         {
             this.options = options;
             this.game = game;
-
-            if (game != null)
-            {
-                random = game.Random;
-            }
-            else
-            {
-                random = new DoomRandom();
-            }
+            this.random = options.Random;
 
             map = new Map(resorces, this);
 

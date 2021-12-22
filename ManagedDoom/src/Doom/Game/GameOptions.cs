@@ -45,6 +45,8 @@ namespace ManagedDoom
 
         private IntermissionInfo intermissionInfo;
 
+        private DoomRandom random;
+
         private IRenderer renderer;
         private ISound sound;
         private IMusic music;
@@ -77,6 +79,8 @@ namespace ManagedDoom
             noMonsters = false;
 
             intermissionInfo = new IntermissionInfo();
+
+            random = new DoomRandom();
 
             renderer = null;
             sound = NullSound.GetInstance();
@@ -170,6 +174,11 @@ namespace ManagedDoom
         public IntermissionInfo IntermissionInfo
         {
             get => intermissionInfo;
+        }
+
+        public DoomRandom Random
+        {
+            get => random;
         }
 
         public IRenderer Renderer
