@@ -86,9 +86,9 @@ namespace ManagedDoom
             options.GameVersion = content.Wad.GameVersion;
             options.GameMode = content.Wad.GameMode;
             options.MissionPack = content.Wad.MissionPack;
-            options.Renderer = renderer;
-            options.Sound = sound;
-            options.Music = music;
+            options.Renderer = renderer ?? NullVideo.GetInstance();
+            options.Sound = sound ?? NullSound.GetInstance();
+            options.Music = music ?? NullMusic.GetInstance();
             options.UserInput = userInput;
 
             menu = new DoomMenu(this);
