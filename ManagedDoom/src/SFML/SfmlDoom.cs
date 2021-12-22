@@ -57,7 +57,7 @@ namespace ManagedDoom.SFML
                 window.Clear(new Color(64, 64, 64));
                 window.Display();
 
-                content = new GameContent(GetWadPaths(args));
+                content = new GameContent(ConfigUtilities.GetWadPaths(args));
 
                 video = new SfmlVideo(config, content, window);
 
@@ -89,30 +89,6 @@ namespace ManagedDoom.SFML
                 Dispose();
                 ExceptionDispatchInfo.Throw(e);
             }
-        }
-
-        private string[] GetWadPaths(CommandLineArgs args)
-        {
-            var wadPaths = new List<string>();
-
-            if (args.iwad.Present)
-            {
-                wadPaths.Add(args.iwad.Value);
-            }
-            else
-            {
-                wadPaths.Add(ConfigUtilities.GetDefaultIwadPath());
-            }
-
-            if (args.file.Present)
-            {
-                foreach (var path in args.file.Value)
-                {
-                    wadPaths.Add(path);
-                }
-            }
-
-            return wadPaths.ToArray();
         }
 
         public void Run()

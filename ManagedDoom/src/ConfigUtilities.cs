@@ -16,6 +16,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -74,6 +75,30 @@ namespace ManagedDoom
         {
             var name = Path.GetFileName(path).ToUpper();
             return iwadNames.Contains(name);
+        }
+
+        public static string[] GetWadPaths(CommandLineArgs args)
+        {
+            var wadPaths = new List<string>();
+
+            if (args.iwad.Present)
+            {
+                wadPaths.Add(args.iwad.Value);
+            }
+            else
+            {
+                wadPaths.Add(ConfigUtilities.GetDefaultIwadPath());
+            }
+
+            if (args.file.Present)
+            {
+                foreach (var path in args.file.Value)
+                {
+                    wadPaths.Add(path);
+                }
+            }
+
+            return wadPaths.ToArray();
         }
     }
 }
