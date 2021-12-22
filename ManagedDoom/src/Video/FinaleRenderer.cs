@@ -30,11 +30,11 @@ namespace ManagedDoom.SoftwareRendering
 
         private PatchCache cache;
 
-        public FinaleRenderer(GameData resource, DrawScreen screen)
+        public FinaleRenderer(GameContent content, DrawScreen screen)
         {
-            wad = resource.Wad;
-            flats = resource.Flats;
-            sprites = resource.Sprites;
+            wad = content.Wad;
+            flats = content.Flats;
+            sprites = content.Sprites;
 
             this.screen = screen;
             scale = screen.Width / 320;

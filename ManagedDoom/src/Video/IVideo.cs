@@ -17,13 +17,23 @@
 
 using System;
 
-namespace ManagedDoom
+namespace ManagedDoom.SoftwareRendering
 {
-    public enum ApplicationState
+    public interface IVideo
     {
-        None,
-        Opening,
-        DemoPlayback,
-        Game
+        public void Render(Doom doom);
+        public void InitializeWipe();
+        public bool HasFocus();
+
+        public int MaxWindowSize { get; }
+        public int WindowSize { get; set; }
+
+        public bool DisplayMessage { get; set; }
+
+        public int MaxGammaCorrectionLevel { get; }
+        public int GammaCorrectionLevel { get; set; }
+
+        public int WipeBandCount { get; }
+        public int WipeHeight { get; }
     }
 }

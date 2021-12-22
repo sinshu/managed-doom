@@ -21,7 +21,7 @@ namespace ManagedDoom
 {
     public sealed class OpeningSequence
     {
-        private GameData resource;
+        private GameContent content;
         private GameOptions options;
 
         private OpeningSequenceState state;
@@ -38,9 +38,9 @@ namespace ManagedDoom
 
         private bool reset;
 
-        public OpeningSequence(GameData resource, GameOptions options)
+        public OpeningSequence(GameContent content, GameOptions options)
         {
-            this.resource = resource;
+            this.content = content;
             this.options = options;
 
             cmds = new TicCmd[Player.MaxPlayerCount];
@@ -159,7 +159,7 @@ namespace ManagedDoom
                 case 5:
                     if (!demo.ReadCmd(cmds))
                     {
-                        if (resource.Wad.GetLumpNumber("DEMO4") == -1)
+                        if (content.Wad.GetLumpNumber("DEMO4") == -1)
                         {
                             nextStage = 0;
                         }
@@ -244,7 +244,7 @@ namespace ManagedDoom
         {
             state = OpeningSequenceState.Demo;
 
-            demo = new Demo(resource.Wad.ReadLump(lump));
+            demo = new Demo(content.Wad.ReadLump(lump));
             demo.Options.GameVersion = options.GameVersion;
             demo.Options.GameMode = options.GameMode;
             demo.Options.MissionPack = options.MissionPack;
@@ -252,7 +252,7 @@ namespace ManagedDoom
             demo.Options.Sound = options.Sound;
             demo.Options.Music = options.Music;
 
-            game = new DoomGame(resource, demo.Options);
+            game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
         }
 

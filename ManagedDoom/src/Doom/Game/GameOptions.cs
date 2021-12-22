@@ -47,7 +47,7 @@ namespace ManagedDoom
 
         private DoomRandom random;
 
-        private IRenderer renderer;
+        private IVideo renderer;
         private ISound sound;
         private IMusic music;
         private IUserInput userInput;
@@ -181,7 +181,7 @@ namespace ManagedDoom
             get => random;
         }
 
-        public IRenderer Renderer
+        public IVideo Renderer
         {
             get => renderer;
             set => renderer = value;

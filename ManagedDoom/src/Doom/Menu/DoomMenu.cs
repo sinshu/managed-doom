@@ -21,8 +21,7 @@ namespace ManagedDoom
 {
     public sealed class DoomMenu
     {
-        private Doom app;
-        private GameOptions options;
+        private Doom doom;
 
         private SelectableMenu main;
         private SelectableMenu episodeMenu;
@@ -49,10 +48,9 @@ namespace ManagedDoom
 
         private SaveSlots saveSlots;
 
-        public DoomMenu(Doom app)
+        public DoomMenu(Doom doom)
         {
-            this.app = app;
-            options = app.Options;
+            this.doom = doom;
 
             thisIsShareware = new PressAnyKey(
                 this,
@@ -67,16 +65,16 @@ namespace ManagedDoom
             nightmareConfirm = new YesNoConfirm(
                 this,
                 DoomInfo.Strings.NIGHTMARE,
-                () => app.NewGame(GameSkill.Nightmare, selectedEpisode, 1));
+                () => doom.NewGame(GameSkill.Nightmare, selectedEpisode, 1));
 
             endGameConfirm = new YesNoConfirm(
                 this,
                 DoomInfo.Strings.ENDGAME,
-                () => app.EndGame());
+                () => doom.EndGame());
 
             quitConfirm = new QuitConfirm(
                 this,
-                app);
+                doom);
 
             skillMenu = new SelectableMenu(
                 this,
@@ -86,22 +84,22 @@ namespace ManagedDoom
 
                 new SimpleMenuItem(
                     "M_JKILL", 16, 58, 48, 63,
-                    () => app.NewGame(GameSkill.Baby, selectedEpisode, 1),
+                    () => doom.NewGame(GameSkill.Baby, selectedEpisode, 1),
                     null),
 
                 new SimpleMenuItem(
                     "M_ROUGH", 16, 74, 48, 79,
-                    () => app.NewGame(GameSkill.Easy, selectedEpisode, 1),
+                    () => doom.NewGame(GameSkill.Easy, selectedEpisode, 1),
                     null),
 
                 new SimpleMenuItem(
                     "M_HURT", 16, 90, 48, 95,
-                    () => app.NewGame(GameSkill.Medium, selectedEpisode, 1),
+                    () => doom.NewGame(GameSkill.Medium, selectedEpisode, 1),
                     null),
 
                 new SimpleMenuItem(
                     "M_ULTRA", 16, 106, 48, 111,
-                    () => app.NewGame(GameSkill.Hard, selectedEpisode, 1),
+                    () => doom.NewGame(GameSkill.Hard, selectedEpisode, 1),
                     null),
 
                 new SimpleMenuItem(
@@ -109,7 +107,7 @@ namespace ManagedDoom
                     null,
                     nightmareConfirm));
 
-            if (app.Options.GameMode == GameMode.Retail)
+            if (doom.Options.GameMode == GameMode.Retail)
             {
                 episodeMenu = new SelectableMenu(
                     this,
@@ -138,7 +136,7 @@ namespace ManagedDoom
             }
             else
             {
-                if (app.Options.GameMode == GameMode.Shareware)
+                if (doom.Options.GameMode == GameMode.Shareware)
                 {
                     episodeMenu = new SelectableMenu(
                         this,
@@ -182,8 +180,8 @@ namespace ManagedDoom
                 }
             }
 
-            var sound = options.Sound;
-            var music = options.Music;
+            var sound = doom.Options.Sound;
+            var music = doom.Options.Music;
             volume = new SelectableMenu(
                 this,
                 "M_SVOL", 60, 38,
@@ -200,8 +198,8 @@ namespace ManagedDoom
                     () => music.Volume,
                     vol => music.Volume = vol));
 
-            var renderer = options.Renderer;
-            var userInput = options.UserInput;
+            var renderer = doom.Options.Renderer;
+            var userInput = doom.Options.UserInput;
             optionMenu = new SelectableMenu(
                 this,
                 "M_OPTTTL", 108, 15,
@@ -211,7 +209,7 @@ namespace ManagedDoom
                     "M_ENDGAM", 28, 32, 60, 37,
                     null,
                     endGameConfirm,
-                    () => app.State == ApplicationState.Game),
+                    () => doom.State == DoomState.Game),
 
                 new ToggleMenuItem(
                     "M_MESSG", 28, 48, 60, 53, "M_MSGON", "M_MSGOFF", 180,
@@ -259,7 +257,7 @@ namespace ManagedDoom
 
             help = new HelpScreen(this);
 
-            if (app.Options.GameMode == GameMode.Commercial)
+            if (doom.Options.GameMode == GameMode.Commercial)
             {
                 main = new SelectableMenu(
                 this,
@@ -269,8 +267,8 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_OPTION", 65, 83, 97, 88, null, optionMenu),
                 new SimpleMenuItem("M_LOADG", 65, 99, 97, 104, null, load),
                 new SimpleMenuItem("M_SAVEG", 65, 115, 97, 120, null, save,
-                    () => !(app.State == ApplicationState.Game &&
-                        app.Game.State != GameState.Level)),
+                    () => !(doom.State == DoomState.Game &&
+                        doom.Game.State != GameState.Level)),
                 new SimpleMenuItem("M_QUITG", 65, 131, 97, 136, null, quitConfirm));
             }
             else
@@ -283,8 +281,8 @@ namespace ManagedDoom
                 new SimpleMenuItem("M_OPTION", 65, 75, 97, 80, null, optionMenu),
                 new SimpleMenuItem("M_LOADG", 65, 91, 97, 96, null, load),
                 new SimpleMenuItem("M_SAVEG", 65, 107, 97, 112, null, save,
-                    () => !(app.State == ApplicationState.Game &&
-                        app.Game.State != GameState.Level)),
+                    () => !(doom.State == DoomState.Game &&
+                        doom.Game.State != GameState.Level)),
                 new SimpleMenuItem("M_RDTHIS", 65, 123, 97, 128, null, help),
                 new SimpleMenuItem("M_QUITG", 65, 139, 97, 144, null, quitConfirm));
             }
@@ -325,7 +323,7 @@ namespace ManagedDoom
                     return true;
                 }
 
-                if (e.Type == EventType.KeyDown && app.State == ApplicationState.Opening)
+                if (e.Type == EventType.KeyDown && doom.State == DoomState.Opening)
                 {
                     if (e.Key == DoomKey.Enter ||
                         e.Key == DoomKey.Space ||
@@ -353,9 +351,9 @@ namespace ManagedDoom
                 current.Update();
             }
 
-            if (active && !app.Options.NetGame)
+            if (active && !doom.Options.NetGame)
             {
-                app.PauseGame();
+                doom.PauseGame();
             }
         }
 
@@ -374,15 +372,15 @@ namespace ManagedDoom
         {
             active = false;
 
-            if (!app.Options.NetGame)
+            if (!doom.Options.NetGame)
             {
-                app.ResumeGame();
+                doom.ResumeGame();
             }
         }
 
         public void StartSound(Sfx sfx)
         {
-            options.Sound.StartSound(sfx);
+            doom.Options.Sound.StartSound(sfx);
         }
 
         public void NotifySaveFailed()
@@ -476,8 +474,8 @@ namespace ManagedDoom
             StartSound(Sfx.SWTCHN);
         }
 
-        public Doom Application => app;
-        public GameOptions Options => app.Options;
+        public Doom Doom => doom;
+        public GameOptions Options => doom.Options;
         public MenuDef Current => current;
         public bool Active => active;
         public int Tics => tics;

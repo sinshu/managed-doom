@@ -22,7 +22,7 @@ namespace ManagedDoom
 {
 	public sealed class DoomGame
 	{
-		private GameData resource;
+		private GameContent content;
 		private GameOptions options;
 
 		private GameAction gameAction;
@@ -40,9 +40,9 @@ namespace ManagedDoom
 		private int saveGameSlotNumber;
 		private string saveGameDescription;
 
-		public DoomGame(GameData resource, GameOptions options)
+		public DoomGame(GameContent content, GameOptions options)
 		{
-			this.resource = resource;
+			this.content = content;
 			this.options = options;
 
 			gameAction = GameAction.Nothing;
@@ -297,7 +297,7 @@ namespace ManagedDoom
 
 			options.Sound.Reset();
 
-			world = new World(resource, options, this);
+			world = new World(content, options, this);
 
 			options.UserInput.Reset();
 		}
@@ -313,7 +313,7 @@ namespace ManagedDoom
 		{
 			gameAction = GameAction.Nothing;
 
-			var directory = ConfigUtilities.GetExeDirectory();
+			var directory = SfmlConfigUtilities.GetExeDirectory();
 			var path = Path.Combine(directory, "doomsav" + loadGameSlotNumber + ".dsg");
 			SaveAndLoad.Load(this, path);
 		}
@@ -322,7 +322,7 @@ namespace ManagedDoom
 		{
 			gameAction = GameAction.Nothing;
 
-			var directory = ConfigUtilities.GetExeDirectory();
+			var directory = SfmlConfigUtilities.GetExeDirectory();
 			var path = Path.Combine(directory, "doomsav" + saveGameSlotNumber + ".dsg");
 			SaveAndLoad.Save(this, saveGameDescription, path);
 			world.ConsolePlayer.SendMessage(DoomInfo.Strings.GGSAVED);

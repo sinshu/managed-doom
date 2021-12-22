@@ -44,7 +44,7 @@ namespace ManagedDoom
 
         private string title;
 
-        public Map(GameData resorces, World world)
+        public Map(GameContent resorces, World world)
             : this(resorces.Wad, resorces.Textures, resorces.Flats, resorces.Animation, world)
         {
         }

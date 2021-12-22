@@ -19,7 +19,7 @@ using System;
 
 namespace ManagedDoom
 {
-    public static class Program
+    public static class SfmlProgram
     {
         public static void Main(string[] args)
         {
@@ -32,7 +32,7 @@ namespace ManagedDoom
             {
                 string quitMessage = null;
 
-                using (var app = new DoomApplication(new CommandLineArgs(args)))
+                using (var app = new SfmlDoom(new CommandLineArgs(args)))
                 {
                     app.Run();
                     quitMessage = app.QuitMessage;

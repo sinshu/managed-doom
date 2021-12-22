@@ -19,7 +19,7 @@ using System;
 
 namespace ManagedDoom
 {
-    public sealed class GameData : IDisposable
+    public sealed class GameContent : IDisposable
     {
         private Wad wad;
         private Palette palette;
@@ -29,19 +29,13 @@ namespace ManagedDoom
         private ISpriteLookup sprites;
         private TextureAnimation animation;
 
-        private GameData()
+        private GameContent()
         {
         }
 
-        public GameData(string[] wadPaths, bool loadDehLump)
+        public GameContent(string[] wadPaths)
         {
             wad = new Wad(wadPaths);
-
-            if (loadDehLump)
-            {
-                DeHackEd.ReadDeHackEdLump(wad);
-            }
-
             palette = new Palette(wad);
             colorMap = new ColorMap(wad);
             textures = new TextureLookup(wad);
@@ -50,19 +44,19 @@ namespace ManagedDoom
             animation = new TextureAnimation(textures, flats);
         }
 
-        public static GameData CreateDummy(params string[] wadPaths)
+        public static GameContent CreateDummy(params string[] wadPaths)
         {
-            var gd = new GameData();
+            var gc = new GameContent();
 
-            gd.wad = new Wad(wadPaths);
-            gd.palette = new Palette(gd.wad);
-            gd.colorMap = new ColorMap(gd.wad);
-            gd.textures = new DummyTextureLookup(gd.wad);
-            gd.flats = new DummyFlatLookup(gd.wad);
-            gd.sprites = new DummySpriteLookup(gd.wad);
-            gd.animation = new TextureAnimation(gd.textures, gd.flats);
+            gc.wad = new Wad(wadPaths);
+            gc.palette = new Palette(gc.wad);
+            gc.colorMap = new ColorMap(gc.wad);
+            gc.textures = new DummyTextureLookup(gc.wad);
+            gc.flats = new DummyFlatLookup(gc.wad);
+            gc.sprites = new DummySpriteLookup(gc.wad);
+            gc.animation = new TextureAnimation(gc.textures, gc.flats);
 
-            return gd;
+            return gc;
         }
 
         public void Dispose()

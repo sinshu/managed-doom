@@ -26,24 +26,24 @@ using ManagedDoom.UserInput;
 
 namespace ManagedDoom
 {
-    public sealed class DoomApplication : IDisposable
+    public sealed class SfmlDoom : IDisposable
     {
         private Config config;
 
         private RenderWindow window;
 
-        private GameData resource;
+        private GameContent content;
 
-        private SfmlRenderer renderer;
+        private SfmlVideo video;
         private SfmlSound sound;
         private SfmlMusic music;
         private SfmlUserInput userInput;
 
         private Doom doom;
 
-        public DoomApplication(CommandLineArgs args)
+        public SfmlDoom(CommandLineArgs args)
         {
-            config = new Config(ConfigUtilities.GetConfigPath());
+            config = SfmlConfigUtilities.GetConfig();
 
             try
             {
@@ -55,22 +55,23 @@ namespace ManagedDoom
                 {
                     style = Styles.Fullscreen;
                 }
+
                 window = new RenderWindow(videoMode, ApplicationInfo.Title, style);
                 window.Clear(new Color(64, 64, 64));
                 window.Display();
 
-                resource = new GameData(GetWadPaths(args), !args.nodeh.Present);
+                content = new GameContent(GetWadPaths(args));
 
-                renderer = new SfmlRenderer(config, window, resource);
+                video = new SfmlVideo(config, content, window);
 
                 if (!args.nosound.Present && !args.nosfx.Present)
                 {
-                    sound = new SfmlSound(config, resource.Wad);
+                    sound = new SfmlSound(config, content.Wad);
                 }
 
                 if (!args.nosound.Present && !args.nomusic.Present)
                 {
-                    music = ConfigUtilities.GetSfmlMusicInstance(config, resource.Wad);
+                    music = SfmlConfigUtilities.GetSfmlMusicInstance(config, content.Wad);
                 }
 
                 userInput = new SfmlUserInput(config, window, !args.nomouse.Present);
@@ -84,7 +85,7 @@ namespace ManagedDoom
                     window.SetFramerateLimit(35);
                 }
 
-                doom = new Doom(args, config, resource, renderer, sound, music, userInput);
+                doom = new Doom(args, config, content, video, sound, music, userInput);
             }
             catch (Exception e)
             {
@@ -103,7 +104,7 @@ namespace ManagedDoom
             }
             else
             {
-                wadPaths.Add(ConfigUtilities.GetDefaultIwadPath());
+                wadPaths.Add(SfmlConfigUtilities.GetDefaultIwadPath());
             }
 
             if (args.file.Present)
@@ -122,15 +123,16 @@ namespace ManagedDoom
             while (window.IsOpen)
             {
                 window.DispatchEvents();
+
                 if (doom.Update() == UpdateResult.Completed)
                 {
                     break;
                 }
 
-                renderer.Render(doom);
+                video.Render(doom);
             }
 
-            config.Save(ConfigUtilities.GetConfigPath());
+            config.Save(SfmlConfigUtilities.GetConfigPath());
         }
 
         private void KeyPressed(object sender, KeyEventArgs e)
@@ -163,16 +165,16 @@ namespace ManagedDoom
                 sound = null;
             }
 
-            if (renderer != null)
+            if (video != null)
             {
-                renderer.Dispose();
-                renderer = null;
+                video.Dispose();
+                video = null;
             }
 
-            if (resource != null)
+            if (content != null)
             {
-                resource.Dispose();
-                resource = null;
+                content.Dispose();
+                content = null;
             }
 
             if (window != null)

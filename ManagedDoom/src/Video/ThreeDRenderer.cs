@@ -37,12 +37,12 @@ namespace ManagedDoom.SoftwareRendering
 
         private int windowSize;
 
-        public ThreeDRenderer(GameData resource, DrawScreen screen, int windowSize)
+        public ThreeDRenderer(GameContent content, DrawScreen screen, int windowSize)
         {
-            colorMap = resource.ColorMap;
-            textures = resource.Textures;
-            flats = resource.Flats;
-            sprites = resource.Sprites;
+            colorMap = content.ColorMap;
+            textures = content.Textures;
+            flats = content.Flats;
+            sprites = content.Sprites;
 
             this.screen = screen;
             screenWidth = screen.Width;
@@ -61,7 +61,7 @@ namespace ManagedDoom.SoftwareRendering
             InitWeaponRendering();
             InitFuzzEffect();
             InitColorTranslation();
-            InitWindowBorder(resource.Wad);
+            InitWindowBorder(content.Wad);
 
             SetWindowSize(windowSize);
         }

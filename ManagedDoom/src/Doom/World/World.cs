@@ -64,11 +64,11 @@ namespace ManagedDoom
         // See SubstNullMobj().
         private Mobj dummy;
 
-        public World(GameData resorces, GameOptions options) : this(resorces, options, null)
+        public World(GameContent resorces, GameOptions options) : this(resorces, options, null)
         {
         }
 
-        public World(GameData resorces, GameOptions options, DoomGame game)
+        public World(GameContent resorces, GameOptions options, DoomGame game)
         {
             this.options = options;
             this.game = game;

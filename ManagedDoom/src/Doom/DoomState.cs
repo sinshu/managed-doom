@@ -17,22 +17,13 @@
 
 using System;
 
-namespace ManagedDoom.SoftwareRendering
+namespace ManagedDoom
 {
-    public interface IRenderer
+    public enum DoomState
     {
-        public bool HasFocus();
-        public void InitializeWipe();
-
-        public int MaxWindowSize { get; }
-        public int WindowSize { get; set; }
-
-        public bool DisplayMessage { get; set; }
-
-        public int MaxGammaCorrectionLevel { get; }
-        public int GammaCorrectionLevel { get; set; }
-
-        public int WipeBandCount { get; }
-        public int WipeHeight { get; }
+        None,
+        Opening,
+        DemoPlayback,
+        Game
     }
 }

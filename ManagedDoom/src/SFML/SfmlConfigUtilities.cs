@@ -24,7 +24,7 @@ using SFML.Window;
 
 namespace ManagedDoom
 {
-    public static class ConfigUtilities
+    public static class SfmlConfigUtilities
     {
         private static readonly string[] iwadNames = new string[]
         {
@@ -36,6 +36,20 @@ namespace ManagedDoom
             "FREEDOOM2.WAD",
             "FREEDOOM1.WAD"
         };
+
+        public static Config GetConfig()
+        {
+            var config = new Config(GetConfigPath());
+
+            if (!config.IsRestoredFromFile)
+            {
+                var vm = GetDefaultVideoMode();
+                config.video_screenwidth = (int)vm.Width;
+                config.video_screenheight = (int)vm.Height;
+            }
+
+            return config;
+        }
 
         public static string GetExeDirectory()
         {
