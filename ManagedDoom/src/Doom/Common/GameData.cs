@@ -57,9 +57,9 @@ namespace ManagedDoom
             gd.wad = new Wad(wadPaths);
             gd.palette = new Palette(gd.wad);
             gd.colorMap = new ColorMap(gd.wad);
-            gd.textures = new TextureLookup(gd.wad);
-            gd.flats = new FlatLookup(gd.wad);
-            gd.sprites = new SpriteLookup(gd.wad);
+            gd.textures = new DummyTextureLookup(gd.wad);
+            gd.flats = new DummyFlatLookup(gd.wad);
+            gd.sprites = new DummySpriteLookup(gd.wad);
             gd.animation = new TextureAnimation(gd.textures, gd.flats);
 
             return gd;

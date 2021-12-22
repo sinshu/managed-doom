@@ -84,19 +84,6 @@ namespace ManagedDoom
             return flats.GetEnumerator();
         }
 
-        private static int CountLump(Wad wad, string name)
-        {
-            var count = 0;
-            foreach (var lump in wad.LumpInfos)
-            {
-                if (lump.Name == name)
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
-
         public int Count => flats.Length;
         public Flat this[int num] => flats[num];
         public Flat this[string name] => nameToFlat[name];
