@@ -15,7 +15,6 @@
 
 
 
-using SFML.System;
 using System;
 using System.Collections.Generic;
 
@@ -47,13 +46,13 @@ namespace ManagedDoom
             Sfx.SGTATK
         };
 
-        private DoomApplication app;
+        private Doom app;
         private DoomRandom random;
         private string[] text;
 
         private int endCount;
 
-        public QuitConfirm(DoomMenu menu, DoomApplication app) : base(menu)
+        public QuitConfirm(DoomMenu menu, Doom app) : base(menu)
         {
             this.app = app;
             random = new DoomRandom(DateTime.Now.Millisecond);

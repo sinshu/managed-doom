@@ -54,8 +54,8 @@ namespace ManagedDoom
 
         public override void Open()
         {
-            if (Menu.Application.State != ApplicationState.Game ||
-                Menu.Application.Game.State != GameState.Level)
+            if (Menu.Doom.State != DoomState.Game ||
+                Menu.Doom.Game.State != GameState.Level)
             {
                 Menu.NotifySaveFailed();
                 return;
@@ -145,7 +145,7 @@ namespace ManagedDoom
         public void DoSave(int slotNumber)
         {
             Menu.SaveSlots[slotNumber] = new string(items[slotNumber].Text.ToArray());
-            if (Menu.Application.SaveGame(slotNumber, Menu.SaveSlots[slotNumber]))
+            if (Menu.Doom.SaveGame(slotNumber, Menu.SaveSlots[slotNumber]))
             {
                 Menu.Close();
                 lastSaveSlot = slotNumber;

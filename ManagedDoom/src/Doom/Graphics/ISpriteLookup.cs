@@ -16,17 +16,12 @@
 
 
 using System;
+using System.Collections.Generic;
 
-namespace ManagedDoom.SoftwareRendering
+namespace ManagedDoom
 {
-    public interface IRenderer
+    public interface ISpriteLookup
     {
-        public int MaxWindowSize { get; }
-        public int WindowSize { get; set; }
-
-        public bool DisplayMessage { get; set; }
-
-        public int MaxGammaCorrectionLevel { get; }
-        public int GammaCorrectionLevel { get; set; }
+        public SpriteDef this[Sprite sprite] { get; }
     }
 }

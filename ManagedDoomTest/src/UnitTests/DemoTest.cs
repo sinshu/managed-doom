@@ -12,10 +12,10 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void Doom2()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2))
             {
                 {
-                    var demo = new Demo(resource.Wad.ReadLump("DEMO1"));
+                    var demo = new Demo(content.Wad.ReadLump("DEMO1"));
                     Assert.AreEqual(11, demo.Options.Map);
                     Assert.AreEqual(0, demo.Options.ConsolePlayer);
                     Assert.AreEqual(true, demo.Options.Players[0].InGame);
@@ -25,7 +25,7 @@ namespace ManagedDoomTest.UnitTests
                 }
 
                 {
-                    var demo = new Demo(resource.Wad.ReadLump("DEMO2"));
+                    var demo = new Demo(content.Wad.ReadLump("DEMO2"));
                     Assert.AreEqual(5, demo.Options.Map);
                     Assert.AreEqual(0, demo.Options.ConsolePlayer);
                     Assert.AreEqual(true, demo.Options.Players[0].InGame);
@@ -35,7 +35,7 @@ namespace ManagedDoomTest.UnitTests
                 }
 
                 {
-                    var demo = new Demo(resource.Wad.ReadLump("DEMO3"));
+                    var demo = new Demo(content.Wad.ReadLump("DEMO3"));
                     Assert.AreEqual(26, demo.Options.Map);
                     Assert.AreEqual(0, demo.Options.ConsolePlayer);
                     Assert.AreEqual(true, demo.Options.Players[0].InGame);

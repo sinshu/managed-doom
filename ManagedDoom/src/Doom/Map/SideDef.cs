@@ -46,7 +46,7 @@ namespace ManagedDoom
             this.sector = sector;
         }
 
-        public static SideDef FromData(byte[] data, int offset, TextureLookup textures, Sector[] sectors)
+        public static SideDef FromData(byte[] data, int offset, ITextureLookup textures, Sector[] sectors)
         {
             var textureOffset = BitConverter.ToInt16(data, offset);
             var rowOffset = BitConverter.ToInt16(data, offset + 2);
@@ -64,7 +64,7 @@ namespace ManagedDoom
                 sectorNum != -1 ? sectors[sectorNum] : null);
         }
 
-        public static SideDef[] FromWad(Wad wad, int lump, TextureLookup textures, Sector[] sectors)
+        public static SideDef[] FromWad(Wad wad, int lump, ITextureLookup textures, Sector[] sectors)
         {
             var length = wad.GetLumpSize(lump);
             if (length % dataSize != 0)

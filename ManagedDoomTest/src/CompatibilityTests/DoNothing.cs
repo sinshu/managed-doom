@@ -12,7 +12,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void E1M1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var content = GameContent.CreateDummy(WadPath.Doom1))
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
@@ -21,7 +21,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 options.Players[0].InGame = true;
 
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, options);
+                var game = new DoomGame(content, options);
                 game.DeferedInitNew();
 
                 var tics = 350;
@@ -45,7 +45,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Map01()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Hard;
@@ -53,7 +53,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 options.Players[0].InGame = true;
 
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, options);
+                var game = new DoomGame(content, options);
                 game.DeferedInitNew();
 
                 var tics = 350;
@@ -73,7 +73,7 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Map11Nomonsters()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
                 options.Skill = GameSkill.Medium;
@@ -82,7 +82,7 @@ namespace ManagedDoomTest.CompatibilityTests
                 options.Players[0].InGame = true;
 
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, options);
+                var game = new DoomGame(content, options);
                 game.DeferedInitNew();
 
                 var tics = 350;

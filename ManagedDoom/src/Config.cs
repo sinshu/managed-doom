@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace ManagedDoom
 {
@@ -52,6 +51,8 @@ namespace ManagedDoom
         public int audio_musicvolume;
         public bool audio_randompitch;
         public string audio_soundfont;
+
+        private bool isRestoredFromFile;
 
         // Default settings.
         public Config()
@@ -125,9 +126,8 @@ namespace ManagedDoom
 
             game_alwaysrun = true;
 
-            var vm = ConfigUtilities.GetDefaultVideoMode();
-            video_screenwidth = (int)vm.Width;
-            video_screenheight = (int)vm.Height;
+            video_screenwidth = 640;
+            video_screenheight = 400;
             video_fullscreen = false;
             video_highresolution = true;
             video_gamescreensize = 7;
@@ -138,6 +138,8 @@ namespace ManagedDoom
             audio_musicvolume = 8;
             audio_randompitch = true;
             audio_soundfont = "TimGM6mb.sf2";
+
+            isRestoredFromFile = false;
         }
 
         public Config(string path) : this()
@@ -184,6 +186,8 @@ namespace ManagedDoom
                 audio_musicvolume = GetInt(dic, nameof(audio_musicvolume), audio_musicvolume);
                 audio_randompitch = GetBool(dic, nameof(audio_randompitch), audio_randompitch);
                 audio_soundfont = GetString(dic, nameof(audio_soundfont), audio_soundfont);
+
+                isRestoredFromFile = true;
 
                 Console.WriteLine("OK");
             }
@@ -293,5 +297,7 @@ namespace ManagedDoom
         {
             return value ? "true" : "false";
         }
+
+        public bool IsRestoredFromFile => isRestoredFromFile;
     }
 }

@@ -19,8 +19,9 @@ using System;
 using System.Runtime.ExceptionServices;
 using SFML.Audio;
 using SFML.System;
+using ManagedDoom.Audio;
 
-namespace ManagedDoom.Audio
+namespace ManagedDoom.SFML
 {
     public sealed class SfmlSound : ISound, IDisposable
     {

@@ -14,11 +14,11 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void LoadE1M1()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var content = GameContent.CreateDummy(WadPath.Doom1))
             {
                 var options = new GameOptions();
-                var world = new World(resource, options);
-                var map = new Map(resource, world);
+                var world = new World(content, options);
+                var map = new Map(content, world);
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());
                 var mapMaxX = map.Lines.Max(line => Fixed.Max(line.Vertex1.X, line.Vertex2.X).ToDouble());
@@ -62,11 +62,11 @@ namespace ManagedDoomTest.UnitTests
         [TestMethod]
         public void LoadMap01()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
-                var world = new World(resource, options);
-                var map = new Map(resource, world);
+                var world = new World(content, options);
+                var map = new Map(content, world);
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());
                 var mapMaxX = map.Lines.Max(line => Fixed.Max(line.Vertex1.X, line.Vertex2.X).ToDouble());

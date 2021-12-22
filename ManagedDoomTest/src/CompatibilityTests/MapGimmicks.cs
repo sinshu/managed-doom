@@ -12,12 +12,12 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void E1M2Donut()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var content = GameContent.CreateDummy(WadPath.Doom1))
             {
                 var demo = new Demo(@"demos\e1m2_donut_test.lmp");
-                demo.Options.GameMode = resource.Wad.GameMode;
+                demo.Options.GameMode = content.Wad.GameMode;
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastMobjHash = 0;
@@ -49,12 +49,12 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void E1M8Boss()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom1))
+            using (var content = GameContent.CreateDummy(WadPath.Doom1))
             {
                 var demo = new Demo(@"demos\e1m8_boss_test.lmp");
-                demo.Options.GameMode = resource.Wad.GameMode;
+                demo.Options.GameMode = content.Wad.GameMode;
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastMobjHash = 0;
@@ -86,11 +86,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Map06Crusher()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(@"demos\map06_crusher_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastMobjHash = 0;
@@ -122,11 +122,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Map07Boss()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(@"demos\map07_boss_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastMobjHash = 0;
@@ -158,11 +158,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Map30Brain()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(@"demos\map30_brain_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastMobjHash = 0;
@@ -194,11 +194,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void Map32Keen()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2))
             {
                 var demo = new Demo(@"demos\map32_keen_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastMobjHash = 0;

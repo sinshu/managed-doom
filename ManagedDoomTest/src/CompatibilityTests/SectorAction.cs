@@ -12,11 +12,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void TeleporterTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\teleporter_test.wad"))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2, @"data\teleporter_test.wad"))
             {
                 var demo = new Demo(@"data\teleporter_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastMobjHash = 0;
@@ -42,11 +42,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void LocalDoorTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\localdoor_test.wad"))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2, @"data\localdoor_test.wad"))
             {
                 var demo = new Demo(@"data\localdoor_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastMobjHash = 0;
@@ -78,11 +78,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void PlatformTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\platform_test.wad"))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2, @"data\platform_test.wad"))
             {
                 var demo = new Demo(@"data\platform_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastMobjHash = 0;
@@ -114,11 +114,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void SilentCrusherTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\silent_crusher_test.wad"))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2, @"data\silent_crusher_test.wad"))
             {
                 var demo = new Demo(@"data\silent_crusher_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastMobjHash = 0;

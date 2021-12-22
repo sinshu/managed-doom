@@ -77,7 +77,7 @@ namespace ManagedDoom
             this.tag = tag;
         }
 
-        public static Sector FromData(byte[] data, int offset, int number, FlatLookup flats)
+        public static Sector FromData(byte[] data, int offset, int number, IFlatLookup flats)
         {
             var floorHeight = BitConverter.ToInt16(data, offset);
             var ceilingHeight = BitConverter.ToInt16(data, offset + 2);
@@ -98,7 +98,7 @@ namespace ManagedDoom
                 tag);
         }
 
-        public static Sector[] FromWad(Wad wad, int lump, FlatLookup flats)
+        public static Sector[] FromWad(Wad wad, int lump, IFlatLookup flats)
         {
             var length = wad.GetLumpSize(lump);
             if (length % dataSize != 0)

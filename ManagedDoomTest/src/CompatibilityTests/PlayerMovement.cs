@@ -12,11 +12,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void PlayerMovementTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\player_movement_test.wad"))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2, @"data\player_movement_test.wad"))
             {
                 var demo = new Demo(@"data\player_movement_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastHash = 0;
@@ -42,11 +42,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void ThingCollisionTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\thing_collision_test.wad"))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2, @"data\thing_collision_test.wad"))
             {
                 var demo = new Demo(@"data\thing_collision_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastHash = 0;
@@ -72,11 +72,11 @@ namespace ManagedDoomTest.CompatibilityTests
         [TestMethod]
         public void AutoAimTest()
         {
-            using (var resource = CommonResource.CreateDummy(WadPath.Doom2, @"data\autoaim_test.wad"))
+            using (var content = GameContent.CreateDummy(WadPath.Doom2, @"data\autoaim_test.wad"))
             {
                 var demo = new Demo(@"data\autoaim_test.lmp");
                 var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(resource, demo.Options);
+                var game = new DoomGame(content, demo.Options);
                 game.DeferedInitNew();
 
                 var lastHash = 0;

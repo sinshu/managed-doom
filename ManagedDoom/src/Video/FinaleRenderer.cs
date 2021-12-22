@@ -17,24 +17,24 @@
 
 using System;
 
-namespace ManagedDoom.SoftwareRendering
+namespace ManagedDoom.Video
 {
     public sealed class FinaleRenderer
     {
         private Wad wad;
-        private FlatLookup flats;
-        private SpriteLookup sprites;
+        private IFlatLookup flats;
+        private ISpriteLookup sprites;
 
         private DrawScreen screen;
         private int scale;
 
         private PatchCache cache;
 
-        public FinaleRenderer(CommonResource resource, DrawScreen screen)
+        public FinaleRenderer(GameContent content, DrawScreen screen)
         {
-            wad = resource.Wad;
-            flats = resource.Flats;
-            sprites = resource.Sprites;
+            wad = content.Wad;
+            flats = content.Flats;
+            sprites = content.Sprites;
 
             this.screen = screen;
             scale = screen.Width / 320;

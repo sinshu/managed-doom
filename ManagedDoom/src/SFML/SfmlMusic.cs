@@ -21,8 +21,9 @@ using System.Runtime.ExceptionServices;
 using SFML.Audio;
 using SFML.System;
 using MeltySynth;
+using ManagedDoom.Audio;
 
-namespace ManagedDoom.Audio
+namespace ManagedDoom.SFML
 {
     public sealed class SfmlMusic : IMusic, IDisposable
     {

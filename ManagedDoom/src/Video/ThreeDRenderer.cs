@@ -18,16 +18,16 @@
 using System;
 using System.Collections.Generic;
 
-namespace ManagedDoom.SoftwareRendering
+namespace ManagedDoom.Video
 {
     public sealed class ThreeDRenderer
     {
         public static readonly int MaxScreenSize = 9;
 
         private ColorMap colorMap;
-        private TextureLookup textures;
-        private FlatLookup flats;
-        private SpriteLookup sprites;
+        private ITextureLookup textures;
+        private IFlatLookup flats;
+        private ISpriteLookup sprites;
 
         private DrawScreen screen;
         private int screenWidth;
@@ -37,12 +37,12 @@ namespace ManagedDoom.SoftwareRendering
 
         private int windowSize;
 
-        public ThreeDRenderer(CommonResource resource, DrawScreen screen, int windowSize)
+        public ThreeDRenderer(GameContent content, DrawScreen screen, int windowSize)
         {
-            colorMap = resource.ColorMap;
-            textures = resource.Textures;
-            flats = resource.Flats;
-            sprites = resource.Sprites;
+            colorMap = content.ColorMap;
+            textures = content.Textures;
+            flats = content.Flats;
+            sprites = content.Sprites;
 
             this.screen = screen;
             screenWidth = screen.Width;
@@ -61,7 +61,7 @@ namespace ManagedDoom.SoftwareRendering
             InitWeaponRendering();
             InitFuzzEffect();
             InitColorTranslation();
-            InitWindowBorder(resource.Wad);
+            InitWindowBorder(content.Wad);
 
             SetWindowSize(windowSize);
         }

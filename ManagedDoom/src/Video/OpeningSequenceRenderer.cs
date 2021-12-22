@@ -17,16 +17,16 @@
 
 using System;
 
-namespace ManagedDoom.SoftwareRendering
+namespace ManagedDoom.Video
 {
     public class OpeningSequenceRenderer
     {
         private DrawScreen screen;
-        private SfmlRenderer parent;
+        private Renderer parent;
 
         private PatchCache cache;
 
-        public OpeningSequenceRenderer(Wad wad, DrawScreen screen, SfmlRenderer parent)
+        public OpeningSequenceRenderer(Wad wad, DrawScreen screen, Renderer parent)
         {
             this.screen = screen;
             this.parent = parent;
@@ -43,9 +43,11 @@ namespace ManagedDoom.SoftwareRendering
                 case OpeningSequenceState.Title:
                     screen.DrawPatch(cache["TITLEPIC"], 0, 0, scale);
                     break;
+
                 case OpeningSequenceState.Demo:
                     parent.RenderGame(sequence.DemoGame);
                     break;
+
                 case OpeningSequenceState.Credit:
                     screen.DrawPatch(cache["CREDIT"], 0, 0, scale);
                     break;

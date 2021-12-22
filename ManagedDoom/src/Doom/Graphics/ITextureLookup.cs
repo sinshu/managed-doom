@@ -16,14 +16,14 @@
 
 
 using System;
+using System.Collections.Generic;
 
 namespace ManagedDoom
 {
-    public enum ApplicationState
+    public interface ITextureLookup : IReadOnlyList<Texture>
     {
-        None,
-        Opening,
-        DemoPlayback,
-        Game
+        int GetNumber(string name);
+        Texture this[string name] { get; }
+        public int[] SwitchList { get; }
     }
 }

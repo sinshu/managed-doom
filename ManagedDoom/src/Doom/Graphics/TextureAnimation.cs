@@ -25,7 +25,7 @@ namespace ManagedDoom
     {
         private TextureAnimationInfo[] animations;
 
-        public TextureAnimation(TextureLookup textures, FlatLookup flats)
+        public TextureAnimation(ITextureLookup textures, IFlatLookup flats)
         {
             try
             {

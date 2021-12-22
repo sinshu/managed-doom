@@ -14,8 +14,8 @@ namespace ManagedDoomTest.UnitTests
         {
             using (var wad = new Wad(WadPath.Doom1))
             {
-                var flats = new FlatLookup(wad, true);
-                var textures = new TextureLookup(wad, true);
+                var flats = new DummyFlatLookup(wad);
+                var textures = new DummyTextureLookup(wad);
                 var map = wad.GetLumpNumber("E1M1");
                 var vertices = Vertex.FromWad(wad, map + 4);
                 var sectors = Sector.FromWad(wad, map + 8, flats);
@@ -101,8 +101,8 @@ namespace ManagedDoomTest.UnitTests
         {
             using (var wad = new Wad(WadPath.Doom2))
             {
-                var flats = new FlatLookup(wad, true);
-                var textures = new TextureLookup(wad, true);
+                var flats = new DummyFlatLookup(wad);
+                var textures = new DummyTextureLookup(wad);
                 var map = wad.GetLumpNumber("MAP01");
                 var vertices = Vertex.FromWad(wad, map + 4);
                 var sectors = Sector.FromWad(wad, map + 8, flats);

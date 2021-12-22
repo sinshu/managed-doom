@@ -64,23 +64,15 @@ namespace ManagedDoom
         // See SubstNullMobj().
         private Mobj dummy;
 
-        public World(CommonResource resorces, GameOptions options) : this(resorces, options, null)
+        public World(GameContent resorces, GameOptions options) : this(resorces, options, null)
         {
         }
 
-        public World(CommonResource resorces, GameOptions options, DoomGame game)
+        public World(GameContent resorces, GameOptions options, DoomGame game)
         {
             this.options = options;
             this.game = game;
-
-            if (game != null)
-            {
-                random = game.Random;
-            }
-            else
-            {
-                random = new DoomRandom();
-            }
+            this.random = options.Random;
 
             map = new Map(resorces, this);
 

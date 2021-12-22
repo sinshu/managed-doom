@@ -22,14 +22,13 @@ namespace ManagedDoom
 {
 	public sealed class DoomGame
 	{
-		private CommonResource resource;
+		private GameContent content;
 		private GameOptions options;
 
 		private GameAction gameAction;
 		private GameState gameState;
 
 		private int gameTic;
-		private DoomRandom random;
 
 		private World world;
 		private Intermission intermission;
@@ -41,15 +40,14 @@ namespace ManagedDoom
 		private int saveGameSlotNumber;
 		private string saveGameDescription;
 
-		public DoomGame(CommonResource resource, GameOptions options)
+		public DoomGame(GameContent content, GameOptions options)
 		{
-			this.resource = resource;
+			this.content = content;
 			this.options = options;
 
 			gameAction = GameAction.Nothing;
 
 			gameTic = 0;
-			random = new DoomRandom();
 		}
 
 
@@ -299,7 +297,7 @@ namespace ManagedDoom
 
 			options.Sound.Reset();
 
-			world = new World(resource, options, this);
+			world = new World(content, options, this);
 
 			options.UserInput.Reset();
 		}
@@ -495,31 +493,31 @@ namespace ManagedDoom
 
 		public void InitNew(GameSkill skill, int episode, int map)
 		{
-			skill = (GameSkill)Math.Clamp((int)skill, (int)GameSkill.Baby, (int)GameSkill.Nightmare);
+			options.Skill = (GameSkill)Math.Clamp((int)skill, (int)GameSkill.Baby, (int)GameSkill.Nightmare);
 
 			if (options.GameMode == GameMode.Retail)
 			{
-				episode = Math.Clamp(episode, 1, 4);
+				options.Episode = Math.Clamp(episode, 1, 4);
 			}
 			else if (options.GameMode == GameMode.Shareware)
 			{
-				episode = 1;
+				options.Episode = 1;
 			}
 			else
 			{
-				episode = Math.Clamp(episode, 1, 3);
+				options.Episode = Math.Clamp(episode, 1, 4);
 			}
 
 			if (options.GameMode == GameMode.Commercial)
 			{
-				map = Math.Clamp(map, 1, 32);
+				options.Map = Math.Clamp(map, 1, 32);
 			}
 			else
 			{
-				map = Math.Clamp(map, 1, 9);
+				options.Map = Math.Clamp(map, 1, 9);
 			}
 
-			random.Clear();
+			options.Random.Clear();
 
 			// Force players to be initialized upon first level load.
 			for (var i = 0; i < Player.MaxPlayerCount; i++)
@@ -598,10 +596,8 @@ namespace ManagedDoom
 
 
 		public GameOptions Options => options;
-		public Player[] Players => options.Players;
 		public GameState State => gameState;
 		public int GameTic => gameTic;
-		public DoomRandom Random => random;
 		public World World => world;
 		public Intermission Intermission => intermission;
 		public Finale Finale => finale;

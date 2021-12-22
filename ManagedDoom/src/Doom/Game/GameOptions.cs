@@ -16,7 +16,7 @@
 
 
 using System;
-using ManagedDoom.SoftwareRendering;
+using ManagedDoom.Video;
 using ManagedDoom.Audio;
 using ManagedDoom.UserInput;
 
@@ -45,7 +45,9 @@ namespace ManagedDoom
 
         private IntermissionInfo intermissionInfo;
 
-        private IRenderer renderer;
+        private DoomRandom random;
+
+        private IVideo video;
         private ISound sound;
         private IMusic music;
         private IUserInput userInput;
@@ -78,7 +80,9 @@ namespace ManagedDoom
 
             intermissionInfo = new IntermissionInfo();
 
-            renderer = null;
+            random = new DoomRandom();
+
+            video = NullVideo.GetInstance();
             sound = NullSound.GetInstance();
             music = NullMusic.GetInstance();
             userInput = NullUserInput.GetInstance();
@@ -172,61 +176,33 @@ namespace ManagedDoom
             get => intermissionInfo;
         }
 
-        public IRenderer Renderer
+        public DoomRandom Random
         {
-            get => renderer;
-            set => renderer = value;
+            get => random;
+        }
+
+        public IVideo Renderer
+        {
+            get => video;
+            set => video = value;
         }
 
         public ISound Sound
         {
             get => sound;
-
-            set
-            {
-                if (value != null)
-                {
-                    sound = value;
-                }
-                else
-                {
-                    sound = NullSound.GetInstance();
-                }
-            }
+            set => sound = value;
         }
 
         public IMusic Music
         {
             get => music;
-
-            set
-            {
-                if (value != null)
-                {
-                    music = value;
-                }
-                else
-                {
-                    music = NullMusic.GetInstance();
-                }
-            }
+            set => music = value;
         }
 
         public IUserInput UserInput
         {
             get => userInput;
-
-            set
-            {
-                if (value != null)
-                {
-                    userInput = value;
-                }
-                else
-                {
-                    userInput = NullUserInput.GetInstance();
-                }
-            }
+            set => userInput = value;
         }
     }
 }

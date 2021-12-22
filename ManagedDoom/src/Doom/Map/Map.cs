@@ -23,8 +23,8 @@ namespace ManagedDoom
 {
     public sealed class Map
     {
-        private TextureLookup textures;
-        private FlatLookup flats;
+        private ITextureLookup textures;
+        private IFlatLookup flats;
         private TextureAnimation animation;
 
         private World world;
@@ -44,12 +44,12 @@ namespace ManagedDoom
 
         private string title;
 
-        public Map(CommonResource resorces, World world)
+        public Map(GameContent resorces, World world)
             : this(resorces.Wad, resorces.Textures, resorces.Flats, resorces.Animation, world)
         {
         }
 
-        public Map(Wad wad, TextureLookup textures, FlatLookup flats, TextureAnimation animation, World world)
+        public Map(Wad wad, ITextureLookup textures, IFlatLookup flats, TextureAnimation animation, World world)
         {
             try
             {
@@ -217,8 +217,8 @@ namespace ManagedDoom
             }
         }
 
-        public TextureLookup Textures => textures;
-        public FlatLookup Flats => flats;
+        public ITextureLookup Textures => textures;
+        public IFlatLookup Flats => flats;
         public TextureAnimation Animation => animation;
 
         public Vertex[] Vertices => vertices;
