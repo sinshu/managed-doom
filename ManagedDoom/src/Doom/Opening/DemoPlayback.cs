@@ -53,7 +53,7 @@ namespace ManagedDoom
             demo.Options.GameVersion = options.GameVersion;
             demo.Options.GameMode = options.GameMode;
             demo.Options.MissionPack = options.MissionPack;
-            demo.Options.Renderer = options.Renderer;
+            demo.Options.Video = options.Video;
             demo.Options.Sound = options.Sound;
             demo.Options.Music = options.Music;
 

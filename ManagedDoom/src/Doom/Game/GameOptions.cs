@@ -181,7 +181,7 @@ namespace ManagedDoom
             get => random;
         }
 
-        public IVideo Renderer
+        public IVideo Video
         {
             get => video;
             set => video = value;

@@ -198,7 +198,7 @@ namespace ManagedDoom
                     () => music.Volume,
                     vol => music.Volume = vol));
 
-            var renderer = doom.Options.Renderer;
+            var video = doom.Options.Video;
             var userInput = doom.Options.UserInput;
             optionMenu = new SelectableMenu(
                 this,
@@ -213,14 +213,14 @@ namespace ManagedDoom
 
                 new ToggleMenuItem(
                     "M_MESSG", 28, 48, 60, 53, "M_MSGON", "M_MSGOFF", 180,
-                    () => renderer.DisplayMessage ? 0 : 1,
-                    value => renderer.DisplayMessage = value == 0),
+                    () => video.DisplayMessage ? 0 : 1,
+                    value => video.DisplayMessage = value == 0),
 
                 new SliderMenuItem(
                     "M_SCRNSZ", 28, 80 - 16, 60, 85 - 16,
-                    renderer.MaxWindowSize + 1,
-                    () => renderer.WindowSize,
-                    size => renderer.WindowSize = size),
+                    video.MaxWindowSize + 1,
+                    () => video.WindowSize,
+                    size => video.WindowSize = size),
 
                 new SliderMenuItem(
                     "M_MSENS", 28, 112 - 16, 60, 117 - 16,

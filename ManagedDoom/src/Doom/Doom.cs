@@ -28,7 +28,7 @@ namespace ManagedDoom
         private CommandLineArgs args;
         private Config config;
         private GameContent content;
-        private IVideo renderer;
+        private IVideo video;
         private ISound sound;
         private IMusic music;
         private IUserInput userInput;
@@ -60,12 +60,17 @@ namespace ManagedDoom
 
         private bool mouseGrabbed;
 
-        public Doom(CommandLineArgs args, Config config, GameContent content, IVideo renderer, ISound sound, IMusic music, IUserInput userInput)
+        public Doom(CommandLineArgs args, Config config, GameContent content, IVideo video, ISound sound, IMusic music, IUserInput userInput)
         {
+            video = video ?? NullVideo.GetInstance();
+            sound = sound ?? NullSound.GetInstance();
+            music = music ?? NullMusic.GetInstance();
+            userInput = userInput ?? NullUserInput.GetInstance();
+
             this.args = args;
             this.config = config;
             this.content = content;
-            this.renderer = renderer;
+            this.video = video;
             this.sound = sound;
             this.music = music;
             this.userInput = userInput;
@@ -86,9 +91,9 @@ namespace ManagedDoom
             options.GameVersion = content.Wad.GameVersion;
             options.GameMode = content.Wad.GameMode;
             options.MissionPack = content.Wad.MissionPack;
-            options.Renderer = renderer ?? NullVideo.GetInstance();
-            options.Sound = sound ?? NullSound.GetInstance();
-            options.Music = music ?? NullMusic.GetInstance();
+            options.Video = video;
+            options.Sound = sound;
+            options.Music = music;
             options.UserInput = userInput;
 
             menu = new DoomMenu(this);
@@ -102,7 +107,7 @@ namespace ManagedDoom
             }
             game = new DoomGame(content, options);
 
-            wipeEffect = new WipeEffect(renderer.WipeBandCount, renderer.WipeHeight);
+            wipeEffect = new WipeEffect(video.WipeBandCount, video.WipeHeight);
             wiping = false;
 
             currentState = DoomState.None;
@@ -276,11 +281,11 @@ namespace ManagedDoom
                     return true;
 
                 case DoomKey.F8:
-                    renderer.DisplayMessage = !renderer.DisplayMessage;
+                    video.DisplayMessage = !video.DisplayMessage;
                     if (currentState == DoomState.Game && game.State == GameState.Level)
                     {
                         string msg;
-                        if (renderer.DisplayMessage)
+                        if (video.DisplayMessage)
                         {
                             msg = DoomInfo.Strings.MSGON;
                         }
@@ -302,13 +307,13 @@ namespace ManagedDoom
                     return true;
 
                 case DoomKey.F11:
-                    var gcl = renderer.GammaCorrectionLevel;
+                    var gcl = video.GammaCorrectionLevel;
                     gcl++;
-                    if (gcl > renderer.MaxGammaCorrectionLevel)
+                    if (gcl > video.MaxGammaCorrectionLevel)
                     {
                         gcl = 0;
                     }
-                    renderer.GammaCorrectionLevel = gcl;
+                    video.GammaCorrectionLevel = gcl;
                     if (currentState == DoomState.Game && game.State == GameState.Level)
                     {
                         string msg;
@@ -335,7 +340,7 @@ namespace ManagedDoom
                     }
                     else
                     {
-                        renderer.WindowSize = Math.Min(renderer.WindowSize + 1, renderer.MaxWindowSize);
+                        video.WindowSize = Math.Min(video.WindowSize + 1, video.MaxWindowSize);
                         sound.StartSound(Sfx.STNMOV);
                         return true;
                     }
@@ -351,7 +356,7 @@ namespace ManagedDoom
                     }
                     else
                     {
-                        renderer.WindowSize = Math.Max(renderer.WindowSize - 1, 0);
+                        video.WindowSize = Math.Max(video.WindowSize - 1, 0);
                         sound.StartSound(Sfx.STNMOV);
                         return true;
                     }
@@ -455,7 +460,7 @@ namespace ManagedDoom
         private void CheckMouseState()
         {
             bool mouseShouldBeGrabbed;
-            if (!renderer.HasFocus())
+            if (!video.HasFocus())
             {
                 mouseShouldBeGrabbed = false;
             }
@@ -489,7 +494,7 @@ namespace ManagedDoom
         private void StartWipe()
         {
             wipeEffect.Start();
-            renderer.InitializeWipe();
+            video.InitializeWipe();
             wiping = true;
         }
 

@@ -44,7 +44,7 @@ namespace ManagedDoom.SFML
         {
             try
             {
-                Console.Write("Initialize renderer: ");
+                Console.Write("Initialize video: ");
 
                 renderer = new Renderer(config, content);
 
