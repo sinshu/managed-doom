@@ -35,6 +35,7 @@ namespace ManagedDoom.UserInput
 
         public void BuildTicCmd(TicCmd cmd)
         {
+            cmd.Clear();
         }
 
         public void Reset()
