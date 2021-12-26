@@ -11,6 +11,7 @@ namespace ManagedDoom.Raylib_CsLo
         private GameContent content;
 
         private RaylibVideo video;
+        private RaylibSound sound;
         private RaylibUserInput userInput;
 
         private Doom doom;
@@ -25,13 +26,16 @@ namespace ManagedDoom.Raylib_CsLo
             int windowHeight = 2 * 400;
 
             Raylib.InitWindow(windowWidth, windowHeight, "Raylib-CsLo Doom");
+            Raylib.InitAudioDevice();
+
             Raylib.SetExitKey(KeyboardKey.KEY_NULL);
             Raylib.SetTargetFPS(35);
 
             video = new RaylibVideo(config, content);
+            sound = new RaylibSound(config, content.Wad);
             userInput = new RaylibUserInput(config, !args.nomouse.Present);
 
-            doom = new Doom(args, config, content, video, null, null, userInput);
+            doom = new Doom(args, config, content, video, sound, null, userInput);
         }
 
         public void Run()
@@ -68,6 +72,12 @@ namespace ManagedDoom.Raylib_CsLo
             {
                 userInput.Dispose();
                 userInput = null;
+            }
+
+            if (sound != null)
+            {
+                sound.Dispose();
+                sound = null;
             }
 
             if (video != null)
