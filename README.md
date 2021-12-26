@@ -1,3 +1,16 @@
+# Raylib-CsLo Doom
+
+This is an experimental port of Managed Doom to Raylib-CsLo.
+
+## Known issues
+
+* Fullscreen does not work.
+* Audio is incomplete.
+
+Below is the original readme.
+
+---
+
 # Managed Doom
 
 ![Doom II MAP01 screenshot](screenshots/doom2-map01.png)
