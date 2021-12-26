@@ -11,6 +11,7 @@ namespace ManagedDoom.Raylib_CsLo
         private GameContent content;
 
         private RaylibVideo video;
+        private RaylibUserInput userInput;
 
         private Doom doom;
 
@@ -24,25 +25,57 @@ namespace ManagedDoom.Raylib_CsLo
             int windowHeight = 2 * 400;
 
             Raylib.InitWindow(windowWidth, windowHeight, "Raylib-CsLo Doom");
-
+            Raylib.SetExitKey(KeyboardKey.KEY_NULL);
             Raylib.SetTargetFPS(35);
 
             video = new RaylibVideo(config, content);
+            userInput = new RaylibUserInput(config, !args.nomouse.Present);
 
-            doom = new Doom(args, config, content, video, null, null, null);
+            doom = new Doom(args, config, content, video, null, null, userInput);
         }
 
         public void Run()
         {
             while (!Raylib.WindowShouldClose())
             {
-                doom.Update();
+                for (var i = 0; i <= (int)KeyboardKey.KEY_KB_MENU; i++)
+                {
+                    var key = (KeyboardKey)i;
+
+                    if (Raylib.IsKeyPressed(key))
+                    {
+                        doom.PostEvent(new DoomEvent(EventType.KeyDown, RaylibUserInput.RayToDoom(key)));
+                    }
+
+                    if (Raylib.IsKeyReleased(key))
+                    {
+                        doom.PostEvent(new DoomEvent(EventType.KeyUp, RaylibUserInput.RayToDoom(key)));
+                    }
+                }
+
+                if (doom.Update() == UpdateResult.Completed)
+                {
+                    break;
+                }
+
                 video.Render(doom);
             }
         }
 
         public void Dispose()
         {
+            if (userInput != null)
+            {
+                userInput.Dispose();
+                userInput = null;
+            }
+
+            if (video != null)
+            {
+                video.Dispose();
+                video = null;
+            }
+
             Raylib.CloseWindow();
         }
 
