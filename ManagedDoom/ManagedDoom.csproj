@@ -6,9 +6,17 @@
     <AssemblyName>managed-doom</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="MeltySynth" Version="2.1.0" />
-    <PackageReference Include="SFML.Net" Version="2.5.0" />
+    <PackageReference Include="Raylib-CsLo" Version="4.0.0-rc.5.0" />
   </ItemGroup>
 
 </Project>

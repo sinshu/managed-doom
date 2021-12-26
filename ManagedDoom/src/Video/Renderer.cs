@@ -175,7 +175,7 @@ namespace ManagedDoom.Video
             }
         }
 
-        public void Render(Doom doom, byte[] destination)
+        public void Render(Doom doom, Span<byte> destination)
         {
             if (doom.Wiping)
             {
@@ -207,7 +207,7 @@ namespace ManagedDoom.Video
             WriteData(colors, destination);
         }
 
-        private void RenderWipe(Doom doom, byte[] destination)
+        private void RenderWipe(Doom doom, Span<byte> destination)
         {
             RenderDoom(doom);
 
@@ -243,7 +243,7 @@ namespace ManagedDoom.Video
             Array.Copy(screen.Data, wipeBuffer, screen.Data.Length);
         }
 
-        private void WriteData(uint[] colors, byte[] destination)
+        private void WriteData(uint[] colors, Span<byte> destination)
         {
             var screenData = screen.Data;
             var p = MemoryMarshal.Cast<byte, uint>(destination);
