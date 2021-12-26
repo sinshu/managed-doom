@@ -12,6 +12,7 @@ namespace ManagedDoom.Raylib_CsLo
 
         private RaylibVideo video;
         private RaylibSound sound;
+        private RaylibMusic music;
         private RaylibUserInput userInput;
 
         private Doom doom;
@@ -28,14 +29,18 @@ namespace ManagedDoom.Raylib_CsLo
             Raylib.InitWindow(windowWidth, windowHeight, "Raylib-CsLo Doom");
             Raylib.InitAudioDevice();
 
+            var audioBufferSize = 4096;
+            Raylib.SetAudioStreamBufferSizeDefault(audioBufferSize);
+
             Raylib.SetExitKey(KeyboardKey.KEY_NULL);
             Raylib.SetTargetFPS(35);
 
             video = new RaylibVideo(config, content);
             sound = new RaylibSound(config, content.Wad);
+            music = RaylibConfigUtilities.GetMusicInstance(config, content.Wad, audioBufferSize);
             userInput = new RaylibUserInput(config, !args.nomouse.Present);
 
-            doom = new Doom(args, config, content, video, sound, null, userInput);
+            doom = new Doom(args, config, content, video, sound, music, userInput);
         }
 
         public void Run()
@@ -57,6 +62,8 @@ namespace ManagedDoom.Raylib_CsLo
                     }
                 }
 
+                music.Update();
+
                 if (doom.Update() == UpdateResult.Completed)
                 {
                     break;
@@ -72,6 +79,12 @@ namespace ManagedDoom.Raylib_CsLo
             {
                 userInput.Dispose();
                 userInput = null;
+            }
+
+            if (music != null)
+            {
+                music.Dispose();
+                music = null;
             }
 
             if (sound != null)
