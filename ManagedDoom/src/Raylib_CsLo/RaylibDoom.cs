@@ -62,17 +62,17 @@ namespace ManagedDoom.Raylib_CsLo
                     }
                 }
 
-                if (music != null)
-                {
-                    music.Update();
-                }
-
                 if (doom.Update() == UpdateResult.Completed)
                 {
                     break;
                 }
 
                 video.Render(doom);
+
+                if (music != null)
+                {
+                    music.Update();
+                }
             }
         }
 
