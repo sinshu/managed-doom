@@ -62,7 +62,10 @@ namespace ManagedDoom.Raylib_CsLo
                     }
                 }
 
-                music.Update();
+                if (music != null)
+                {
+                    music.Update();
+                }
 
                 if (doom.Update() == UpdateResult.Completed)
                 {
