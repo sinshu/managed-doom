@@ -51,6 +51,7 @@ namespace ManagedDoom
         public int audio_musicvolume;
         public bool audio_randompitch;
         public string audio_soundfont;
+        public bool audio_musiceffect;
 
         private bool isRestoredFromFile;
 
@@ -138,6 +139,7 @@ namespace ManagedDoom
             audio_musicvolume = 8;
             audio_randompitch = true;
             audio_soundfont = "TimGM6mb.sf2";
+            audio_musiceffect = true;
 
             isRestoredFromFile = false;
         }
@@ -186,6 +188,7 @@ namespace ManagedDoom
                 audio_musicvolume = GetInt(dic, nameof(audio_musicvolume), audio_musicvolume);
                 audio_randompitch = GetBool(dic, nameof(audio_randompitch), audio_randompitch);
                 audio_soundfont = GetString(dic, nameof(audio_soundfont), audio_soundfont);
+                audio_musiceffect = GetBool(dic, nameof(audio_musiceffect), audio_musiceffect);
 
                 isRestoredFromFile = true;
 
@@ -231,6 +234,7 @@ namespace ManagedDoom
                     writer.WriteLine(nameof(audio_musicvolume) + " = " + audio_musicvolume);
                     writer.WriteLine(nameof(audio_randompitch) + " = " + BoolToString(audio_randompitch));
                     writer.WriteLine(nameof(audio_soundfont) + " = " + audio_soundfont);
+                    writer.WriteLine(nameof(audio_musiceffect) + " = " + BoolToString(audio_musiceffect));
                 }
             }
             catch

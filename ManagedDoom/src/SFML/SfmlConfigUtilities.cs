@@ -65,7 +65,7 @@ namespace ManagedDoom.SFML
             return new VideoMode((uint)currentWidth, (uint)currentHeight);
         }
 
-        public static SfmlMusic GetSfmlMusicInstance(Config config, Wad wad)
+        public static SfmlMusic GetMusicInstance(Config config, Wad wad)
         {
             var sfPath = Path.Combine(ConfigUtilities.GetExeDirectory(), config.audio_soundfont);
             if (File.Exists(sfPath))

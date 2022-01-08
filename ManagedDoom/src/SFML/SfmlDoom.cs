@@ -68,7 +68,7 @@ namespace ManagedDoom.SFML
 
                 if (!args.nosound.Present && !args.nomusic.Present)
                 {
-                    music = SfmlConfigUtilities.GetSfmlMusicInstance(config, content.Wad);
+                    music = SfmlConfigUtilities.GetMusicInstance(config, content.Wad);
                 }
 
                 userInput = new SfmlUserInput(config, window, !args.nomouse.Present);

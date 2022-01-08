@@ -162,6 +162,7 @@ namespace ManagedDoom.SFML
 
                 var settings = new SynthesizerSettings(MusDecoder.SampleRate);
                 settings.BlockSize = MusDecoder.BlockLength;
+                settings.EnableReverbAndChorus = config.audio_musiceffect;
                 synthesizer = new Synthesizer(sfPath, settings);
 
                 batchLength = (int)Math.Round(0.05 * MusDecoder.SampleRate);
