@@ -22,25 +22,25 @@ namespace ManagedDoom
 {
     public sealed class Cheat
     {
-        private static Tuple<string, Action<Cheat, string>>[] list = new Tuple<string, Action<Cheat, string>>[]
+        private static CheatInfo[] list = new CheatInfo[]
         {
-            Tuple.Create("idfa", (Action<Cheat, string>)((cheat, typed) => cheat.FullAmmo())),
-            Tuple.Create("idkfa", (Action<Cheat, string>)((cheat, typed) => cheat.FullAmmoAndKeys())),
-            Tuple.Create("iddqd", (Action<Cheat, string>)((cheat, typed) => cheat.GodMode())),
-            Tuple.Create("idclip", (Action<Cheat, string>)((cheat, typed) => cheat.NoClip())),
-            Tuple.Create("idspispopd", (Action<Cheat, string>)((cheat, typed) => cheat.NoClip())),
-            Tuple.Create("iddt", (Action<Cheat, string>)((cheat, typed) => cheat.FullMap())),
-            Tuple.Create("idbehold", (Action<Cheat, string>)((cheat, typed) => cheat.ShowPowerUpList())),
-            Tuple.Create("idbehold?", (Action<Cheat, string>)((cheat, typed) => cheat.DoPowerUp(typed))),
-            Tuple.Create("idchoppers", (Action<Cheat, string>)((cheat, typed) => cheat.GiveChainsaw())),
-            Tuple.Create("tntem", (Action<Cheat, string>)((cheat, typed) => cheat.KillMonsters())),
-            Tuple.Create("killem", (Action<Cheat, string>)((cheat, typed) => cheat.KillMonsters())),
-            Tuple.Create("fhhall", (Action<Cheat, string>)((cheat, typed) => cheat.KillMonsters())),
-            Tuple.Create("idclev??", (Action<Cheat, string>)((cheat, typed) => cheat.ChangeLevel(typed))),
-            Tuple.Create("idmus??", (Action<Cheat, string>)((cheat, typed) => cheat.ChangeMusic(typed)))
+            new CheatInfo("idfa", (cheat, typed) => cheat.FullAmmo(), false),
+            new CheatInfo("idkfa", (cheat, typed) => cheat.FullAmmoAndKeys(), false),
+            new CheatInfo("iddqd", (cheat, typed) => cheat.GodMode(), false),
+            new CheatInfo("idclip", (cheat, typed) => cheat.NoClip(), false),
+            new CheatInfo("idspispopd", (cheat, typed) => cheat.NoClip(), false),
+            new CheatInfo("iddt", (cheat, typed) => cheat.FullMap(), true),
+            new CheatInfo("idbehold", (cheat, typed) => cheat.ShowPowerUpList(), false),
+            new CheatInfo("idbehold?", (cheat, typed) => cheat.DoPowerUp(typed), false),
+            new CheatInfo("idchoppers", (cheat, typed) => cheat.GiveChainsaw(), false),
+            new CheatInfo("tntem", (cheat, typed) => cheat.KillMonsters(), false),
+            new CheatInfo("killem", (cheat, typed) => cheat.KillMonsters(), false),
+            new CheatInfo("fhhall", (cheat, typed) => cheat.KillMonsters(), false),
+            new CheatInfo("idclev??", (cheat, typed) => cheat.ChangeLevel(typed), true),
+            new CheatInfo("idmus??", (cheat, typed) => cheat.ChangeMusic(typed), false)
         };
 
-        private static readonly int maxLength = list.Max(tuple => tuple.Item1.Length);
+        private static readonly int maxCodeLength = list.Max(info => info.Code.Length);
 
         private World world;
 
@@ -51,7 +51,7 @@ namespace ManagedDoom
         {
             this.world = world;
 
-            buffer = new char[maxLength];
+            buffer = new char[maxCodeLength];
             p = 0;
         }
 
@@ -73,7 +73,7 @@ namespace ManagedDoom
         {
             for (var i = 0; i < list.Length; i++)
             {
-                var code = list[i].Item1;
+                var code = list[i].Code;
                 var q = p;
                 int j;
                 for (j = 0; j < code.Length; j++)
@@ -105,7 +105,11 @@ namespace ManagedDoom
                         }
                         typed[k] = buffer[q];
                     }
-                    list[i].Item2(this, new string(typed));
+
+                    if (world.Options.Skill != GameSkill.Nightmare || list[i].AvailableOnNightmare)
+                    {
+                        list[i].Action(this, new string(typed));
+                    }
                 }
             }
         }
@@ -403,6 +407,22 @@ namespace ManagedDoom
             }
             world.Options.Music.StartMusic(Map.GetMapBgm(options), true);
             world.ConsolePlayer.SendMessage(DoomInfo.Strings.STSTR_MUS);
+        }
+
+
+
+        private class CheatInfo
+        {
+            public readonly string Code;
+            public readonly Action<Cheat, string> Action;
+            public readonly bool AvailableOnNightmare;
+
+            public CheatInfo(string code, Action<Cheat, string> action, bool availableOnNightmare)
+            {
+                Code = code;
+                Action = action;
+                AvailableOnNightmare = availableOnNightmare;
+            }
         }
     }
 }
