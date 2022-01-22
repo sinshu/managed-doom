@@ -75,16 +75,6 @@ namespace ManagedDoom
             this.music = music;
             this.userInput = userInput;
 
-            if (args.deh.Present)
-            {
-                DeHackEd.ReadFiles(args.deh.Value);
-            }
-
-            if (!args.nodeh.Present)
-            {
-                DeHackEd.ReadDeHackEdLump(content.Wad);
-            }
-
             events = new List<DoomEvent>();
 
             options = new GameOptions();

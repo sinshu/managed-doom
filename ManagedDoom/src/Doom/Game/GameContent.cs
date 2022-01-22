@@ -33,9 +33,12 @@ namespace ManagedDoom
         {
         }
 
-        public GameContent(string[] wadPaths)
+        public GameContent(CommandLineArgs args)
         {
-            wad = new Wad(wadPaths);
+            wad = new Wad(ConfigUtilities.GetWadPaths(args));
+
+            DeHackEd.Initialize(args, wad);
+
             palette = new Palette(wad);
             colorMap = new ColorMap(wad);
             textures = new TextureLookup(wad);

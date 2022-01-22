@@ -57,7 +57,7 @@ namespace ManagedDoom.SFML
                 window.Clear(new Color(64, 64, 64));
                 window.Display();
 
-                content = new GameContent(ConfigUtilities.GetWadPaths(args));
+                content = new GameContent(args);
 
                 video = new SfmlVideo(config, content, window);
 

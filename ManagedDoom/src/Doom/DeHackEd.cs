@@ -27,7 +27,20 @@ namespace ManagedDoom
     {
         private static Tuple<Action<World, Player, PlayerSpriteDef>, Action<World, Mobj>>[] sourcePointerTable;
 
-        public static void ReadFiles(params string[] fileNames)
+        public static void Initialize(CommandLineArgs args, Wad wad)
+        {
+            if (args.deh.Present)
+            {
+                ReadFiles(args.deh.Value);
+            }
+
+            if (!args.nodeh.Present)
+            {
+                ReadDeHackEdLump(wad);
+            }
+        }
+
+        private static void ReadFiles(params string[] fileNames)
         {
             string lastFileName = null;
             try
@@ -52,7 +65,7 @@ namespace ManagedDoom
             }
         }
 
-        public static void ReadDeHackEdLump(Wad wad)
+        private static void ReadDeHackEdLump(Wad wad)
         {
             var lump = wad.GetLumpNumber("DEHACKED");
 
