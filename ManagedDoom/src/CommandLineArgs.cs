@@ -37,6 +37,7 @@ namespace ManagedDoom
         public readonly Arg fast;
         public readonly Arg respawn;
         public readonly Arg nomonsters;
+        public readonly Arg solonet;
 
         public readonly Arg<string> playdemo;
         public readonly Arg<string> timedemo;
@@ -65,6 +66,7 @@ namespace ManagedDoom
             fast = new Arg(args.Contains("-fast"));
             respawn = new Arg(args.Contains("-respawn"));
             nomonsters = new Arg(args.Contains("-nomonsters"));
+            solonet = new Arg(args.Contains("-solo-net"));
 
             playdemo = GetString(args, "-playdemo");
             timedemo = GetString(args, "-timedemo");

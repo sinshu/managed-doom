@@ -30,7 +30,7 @@ namespace ManagedDoom
         private Stopwatch stopwatch;
         private int frameCount;
 
-        public DemoPlayback(GameContent content, GameOptions options, string demoName)
+        public DemoPlayback(CommandLineArgs args, GameContent content, GameOptions options, string demoName)
         {
             if (File.Exists(demoName))
             {
@@ -56,6 +56,11 @@ namespace ManagedDoom
             demo.Options.Video = options.Video;
             demo.Options.Sound = options.Sound;
             demo.Options.Music = options.Music;
+
+            if (args.solonet.Present)
+            {
+                demo.Options.NetGame = true;
+            }
 
             cmds = new TicCmd[Player.MaxPlayerCount];
             for (var i = 0; i < Player.MaxPlayerCount; i++)

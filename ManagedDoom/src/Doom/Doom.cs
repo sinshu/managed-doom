@@ -77,10 +77,7 @@ namespace ManagedDoom
 
             events = new List<DoomEvent>();
 
-            options = new GameOptions();
-            options.GameVersion = content.Wad.GameVersion;
-            options.GameMode = content.Wad.GameMode;
-            options.MissionPack = content.Wad.MissionPack;
+            options = new GameOptions(args, content);
             options.Video = video;
             options.Sound = sound;
             options.Music = music;
@@ -170,13 +167,13 @@ namespace ManagedDoom
             if (args.playdemo.Present)
             {
                 nextState = DoomState.DemoPlayback;
-                demoPlayback = new DemoPlayback(content, options, args.playdemo.Value);
+                demoPlayback = new DemoPlayback(args, content, options, args.playdemo.Value);
             }
 
             if (args.timedemo.Present)
             {
                 nextState = DoomState.DemoPlayback;
-                demoPlayback = new DemoPlayback(content, options, args.timedemo.Value);
+                demoPlayback = new DemoPlayback(args, content, options, args.timedemo.Value);
             }
         }
 
