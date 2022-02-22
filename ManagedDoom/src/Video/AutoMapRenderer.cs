@@ -85,8 +85,9 @@ namespace ManagedDoom.Video
         private DrawScreen screen;
 
         private int scale;
-        private int amWidth;
-        private int amHeight;
+        public static AutoMapRenderer instance;
+        public int amWidth;
+        public int amHeight;
         private float ppu;
 
         private float minX;
@@ -119,6 +120,7 @@ namespace ManagedDoom.Video
             {
                 markNumbers[i] = Patch.FromWad(wad, "AMMNUM" + i);
             }
+            instance = this;
         }
 
         public void Render(Player player)

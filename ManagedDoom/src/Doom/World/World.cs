@@ -141,17 +141,24 @@ namespace ManagedDoom
 
             dummy = new Mobj(this);
 
-            options.Music.StartMusic(Map.GetMapBgm(options), true);
+            options.Music.StartMusic(Bgm.E1M1, true);
         }
-
+        int updates = 0;
         public UpdateResult Update()
         {
+            updates--;
             var players = options.Players;
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (players[i].InGame)
                 {
                     playerBehavior.PlayerThink(players[i]);
+                    if (updates < 0 && players[i].Health < 100 && players[i].Health >0)
+                    {
+                        updates = 20;
+                        players[i].Health++;
+                    }
+                    
                 }
             }
 

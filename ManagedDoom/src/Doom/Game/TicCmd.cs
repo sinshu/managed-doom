@@ -25,7 +25,7 @@ namespace ManagedDoom
         private sbyte sideMove;
         private short angleTurn;
         private byte buttons;
-
+        public bool space;
         public void Clear()
         {
             forwardMove = 0;
@@ -40,6 +40,7 @@ namespace ManagedDoom
             sideMove = cmd.sideMove;
             angleTurn = cmd.angleTurn;
             buttons = cmd.buttons;
+            space = cmd.space;
         }
 
         public sbyte ForwardMove

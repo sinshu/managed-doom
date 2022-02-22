@@ -103,7 +103,7 @@ namespace ManagedDoom
             key_use = new KeyBinding(
                 new DoomKey[]
                 {
-                    DoomKey.Space
+                    DoomKey.E
                 },
                 new DoomMouseButton[]
                 {
@@ -138,7 +138,7 @@ namespace ManagedDoom
             audio_soundvolume = 8;
             audio_musicvolume = 8;
             audio_randompitch = true;
-            audio_soundfont = "TimGM6mb.sf2";
+            audio_soundfont = "karl.sf2";
             audio_musiceffect = true;
 
             isRestoredFromFile = false;

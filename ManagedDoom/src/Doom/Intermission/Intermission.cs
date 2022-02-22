@@ -225,6 +225,7 @@ namespace ManagedDoom
 
         public UpdateResult Update()
         {
+            return UpdateResult.Completed;
             // Counter for general background animation.
             bgCount++;
 

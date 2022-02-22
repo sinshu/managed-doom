@@ -24,10 +24,13 @@ namespace ManagedDoom.SFML
         public static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.White;
-            Console.BackgroundColor = ConsoleColor.DarkGreen;
+            Console.BackgroundColor = ConsoleColor.Black;
             Console.WriteLine(ApplicationInfo.Title);
+            Console.Title = ApplicationInfo.Title;
             Console.ResetColor();
-
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("WARNING: KarlDoom is only meant to run WADs SPECIFICALLY DESIGNED for this version of the doom engine, as it has been modified to allow for extra movement capabitities, along with other changes.");
+            Console.ResetColor();
             try
             {
                 string quitMessage = null;

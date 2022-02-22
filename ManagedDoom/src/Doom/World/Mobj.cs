@@ -164,6 +164,13 @@ namespace ManagedDoom
         // Thing being chased/attacked for tracers.
         private Mobj tracer;
 
+        public bool isPlayer = false;
+        public bool wasWallRunning = false;
+        public bool enableWallrun = true;
+        public bool IsGrounded;
+        public int framesSinceLastWallRun = 100000;
+        public Angle WallNorm;
+        public Fixed gunupdown;
         public Mobj(World world)
         {
             this.world = world;

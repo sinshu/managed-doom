@@ -16,6 +16,7 @@
 
 
 using System;
+using System.Numerics;
 
 namespace ManagedDoom
 {
@@ -63,6 +64,7 @@ namespace ManagedDoom
         /// </summary>
         public void PlayerThink(Player player)
         {
+            player.Mobj.isPlayer = true;
             if (player.MessageTime > 0)
             {
                 player.MessageTime--;
@@ -258,7 +260,7 @@ namespace ManagedDoom
 
             // Do not let the player control movement if not onground.
             onGround = (player.Mobj.Z <= player.Mobj.FloorZ);
-
+            player.Mobj.IsGrounded = onGround;
             if (cmd.ForwardMove != 0 && onGround)
             {
                 Thrust(player, player.Mobj.Angle, new Fixed(cmd.ForwardMove * 2048));
@@ -268,23 +270,94 @@ namespace ManagedDoom
             {
                 Thrust(player, player.Mobj.Angle - Angle.Ang90, new Fixed(cmd.SideMove * 2048));
             }
+            player.Mobj.Health = 100;
+            //Not onground player stuff, for things like air acceleration, and wallrunning
+            if (!onGround)
+            {
+                player.Mobj.MomZ += Fixed.FromFloat(0.7f);
+                if (cmd.ForwardMove != 0)
+                {
+                    Thrust(player, player.Mobj.Angle, new Fixed(cmd.ForwardMove * 200));
+                }
+
+                if (cmd.SideMove != 0)
+                {
+                    Thrust(player, player.Mobj.Angle - Angle.Ang90, new Fixed(cmd.SideMove * 200));
+                }
+                if (player.Mobj.wasWallRunning)
+                {
+                    Thrust(player, player.Mobj.WallNorm, new Fixed(50000));
+                    player.Mobj.MomZ += Fixed.FromFloat(0.15f);
+                    //leap off wall if space is pressed
+                    if (cmd.space)
+                    {
+                        player.Mobj.MomZ = Fixed.One * 4;
+                        Thrust(player, player.Mobj.WallNorm+Angle.Ang180, new Fixed(300000));
+                        player.Mobj.wasWallRunning = false;
+                    }
+                }
+            }
+            else
+            {
+                player.Mobj.wasWallRunning = false;
+                // jump owo
+                if (cmd.space)
+                {
+                    player.Mobj.MomZ += Fixed.One *4;
+                }
+            }
 
             if ((cmd.ForwardMove != 0 || cmd.SideMove != 0) &&
                 player.Mobj.State == DoomInfo.States[(int)MobjState.Play])
             {
                 player.Mobj.SetState(MobjState.PlayRun1);
             }
+
+            //increase wallrun timer. if the player is on a wall, this should be constantly reset by ThingMovement.cs.
+            //if it is above a threshhold like 1 frame or smth, it means the player is no longer on a wall, so we cancel the wallrun.
+            player.Mobj.framesSinceLastWallRun++;
+            if(player.Mobj.framesSinceLastWallRun > 1)
+            {
+                player.Mobj.wasWallRunning = false;
+            }
         }
 
+        public void AirStrafe(Player player,Vector2 wishDir)
+        {
+            if (wishDir.Length() > 0.00001f)
+                wishDir /= wishDir.Length();
+            Vector2 vel = new Vector2(player.Mobj.MomX.ToFloat(), player.Mobj.MomY.ToFloat());
+            Vector2 addvel = Accelerate(wishDir, vel, 2000f, 1);
+            player.Mobj.MomX = Fixed.FromFloat(addvel.X);
+            player.Mobj.MomY = Fixed.FromFloat(addvel.Y);
+        }
+        private Vector2 Accelerate(Vector2 accelDir, Vector2 prevVelocity, float accelerate, float max_velocity)
+        {
+            float projVel = Vector2.Dot(prevVelocity, accelDir); // Vector projection of Current velocity onto accelDir.
+            float accelVel = accelerate; // Accelerated velocity in direction of movment
 
+            // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
+            if (projVel + accelVel > max_velocity)
+                accelVel = max_velocity - projVel;
+
+            return prevVelocity + accelDir * accelVel;
+        }
+        public float GunUpDown = 0;
+        float lerp(float a, float b, float t)
+        {
+            return a + (b - a) * t;
+        }
         /// <summary>
         /// Calculate the walking / running height adjustment.
         /// </summary>
+        
         public void CalcHeight(Player player)
         {
+            GunUpDown = lerp(GunUpDown, player.Mobj.MomZ.ToFloat(), 0.2f);
+            player.Mobj.gunupdown = Fixed.FromFloat(GunUpDown*5);
             // Regular movement bobbing.
             // It needs to be calculated for gun swing even if not on ground.
-            player.Bob = player.Mobj.MomX * player.Mobj.MomX + player.Mobj.MomY * player.Mobj.MomY;
+            player.Bob = (player.Mobj.MomX * player.Mobj.MomX + player.Mobj.MomY * player.Mobj.MomY);
             player.Bob >>= 2;
             if (player.Bob > maxBob)
             {
@@ -307,7 +380,7 @@ namespace ManagedDoom
 
             var angle = (Trig.FineAngleCount / 20 * world.LevelTime) & Trig.FineMask;
 
-            var bob = (player.Bob / 2) * Trig.Sin(angle);
+            var bob = ((player.Bob / 2) * Trig.Sin(angle));
 
             // Move viewheight.
             if (player.PlayerState == PlayerState.Live)
@@ -357,6 +430,12 @@ namespace ManagedDoom
         {
             player.Mobj.MomX += move * Trig.Cos(angle);
             player.Mobj.MomY += move * Trig.Sin(angle);
+        }
+
+        public void ThrustVec2(Player player, Vector2 move)
+        {
+            player.Mobj.MomX += Fixed.FromFloat(move.X);
+            player.Mobj.MomY += Fixed.FromFloat(move.Y);
         }
 
 
@@ -430,6 +509,9 @@ namespace ManagedDoom
                     {
                         world.ExitLevel();
                     }
+                    break;
+                case 69:
+                    ti.DamageMobj(player.Mobj, null, null, 2000);
                     break;
 
                 default:

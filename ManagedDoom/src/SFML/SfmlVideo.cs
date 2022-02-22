@@ -91,6 +91,7 @@ namespace ManagedDoom.SFML
             }
         }
 
+
         public void Render(Doom doom)
         {
             renderer.Render(doom, textureData);

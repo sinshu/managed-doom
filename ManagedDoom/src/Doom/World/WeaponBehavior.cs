@@ -46,7 +46,7 @@ namespace ManagedDoom
             player.ExtraLight = 0;
         }
 
-
+        float weaponWallRunPos = 0;
         public void WeaponReady(Player player, PlayerSpriteDef psp)
         {
             var pb = world.PlayerBehavior;
@@ -95,9 +95,17 @@ namespace ManagedDoom
             // Bob the weapon based on movement speed.
             var angle = (128 * player.Mobj.World.LevelTime) & Trig.FineMask;
             psp.Sx = Fixed.One + player.Bob * Trig.Cos(angle);
+            if (player.Mobj.wasWallRunning)
+            {
+                weaponWallRunPos = weaponWallRunPos + (60-weaponWallRunPos)/8;
+            }
+            else
+            {
+                weaponWallRunPos /= 1.3f;
+            }
 
             angle &= Trig.FineAngleCount / 2 - 1;
-            psp.Sy = WeaponTop + player.Bob * Trig.Sin(angle);
+            psp.Sy = WeaponTop + player.Bob * Trig.Sin(angle) + Fixed.FromFloat(weaponWallRunPos) + player.Mobj.gunupdown;
         }
 
 
@@ -305,7 +313,6 @@ namespace ManagedDoom
             }
 
             player.ReadyWeapon = player.PendingWeapon;
-
             pb.BringUpWeapon(player);
         }
 

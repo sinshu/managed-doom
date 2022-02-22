@@ -1,0 +1,546 @@
+{
+  "version": 3,
+  "targets": {
+    "net5.0": {
+      "CSFML/2.5.0": {
+        "type": "package",
+        "runtimeTargets": {
+          "runtimes/alpine-x64/native/libcsfml-audio.so": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libcsfml-graphics.so": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libcsfml-system.so": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libcsfml-window.so": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-audio.so": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-audio.so.2.5": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-audio.so.2.5.1": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-graphics.so": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-graphics.so.2.5": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-graphics.so.2.5.1": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-system.so": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-system.so.2.5": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-system.so.2.5.1": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-window.so": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-window.so.2.5": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/alpine-x64/native/libsfml-window.so.2.5.1": {
+            "assetType": "native",
+            "rid": "alpine-x64"
+          },
+          "runtimes/debian-x64/native/libcsfml-audio.so": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libcsfml-graphics.so": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libcsfml-system.so": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libcsfml-window.so": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-audio.so": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-audio.so.2.5": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-audio.so.2.5.1": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-graphics.so": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-graphics.so.2.5": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-graphics.so.2.5.1": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-system.so": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-system.so.2.5": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-system.so.2.5.1": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-window.so": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-window.so.2.5": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/debian-x64/native/libsfml-window.so.2.5.1": {
+            "assetType": "native",
+            "rid": "debian-x64"
+          },
+          "runtimes/fedora-x64/native/libcsfml-audio.so": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libcsfml-graphics.so": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libcsfml-system.so": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libcsfml-window.so": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-audio.so": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-audio.so.2.5": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-audio.so.2.5.1": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-graphics.so": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-graphics.so.2.5": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-graphics.so.2.5.1": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-system.so": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-system.so.2.5": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-system.so.2.5.1": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-window.so": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-window.so.2.5": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/fedora-x64/native/libsfml-window.so.2.5.1": {
+            "assetType": "native",
+            "rid": "fedora-x64"
+          },
+          "runtimes/win-x64/native/csfml-Audio.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/csfml-Graphics.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/csfml-System.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/csfml-Window.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/openal32.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x86/native/csfml-Audio.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          },
+          "runtimes/win-x86/native/csfml-Graphics.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          },
+          "runtimes/win-x86/native/csfml-System.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          },
+          "runtimes/win-x86/native/csfml-Window.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          },
+          "runtimes/win-x86/native/openal32.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          }
+        }
+      },
+      "MeltySynth/2.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.1/MeltySynth.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/MeltySynth.dll": {}
+        }
+      },
+      "SFML.Audio/2.5.0": {
+        "type": "package",
+        "dependencies": {
+          "CSFML": "2.5.0",
+          "SFML.Graphics": "2.5.0",
+          "SFML.System": "2.5.0",
+          "SFML.Window": "2.5.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/SFML.Audio.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/SFML.Audio.dll": {}
+        }
+      },
+      "SFML.Graphics/2.5.0": {
+        "type": "package",
+        "dependencies": {
+          "CSFML": "2.5.0",
+          "SFML.System": "2.5.0",
+          "SFML.Window": "2.5.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/SFML.Graphics.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/SFML.Graphics.dll": {}
+        }
+      },
+      "SFML.Net/2.5.0": {
+        "type": "package",
+        "dependencies": {
+          "SFML.Audio": "2.5.0",
+          "SFML.Graphics": "2.5.0",
+          "SFML.System": "2.5.0",
+          "SFML.Window": "2.5.0"
+        }
+      },
+      "SFML.System/2.5.0": {
+        "type": "package",
+        "dependencies": {
+          "CSFML": "2.5.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/SFML.System.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/SFML.System.dll": {}
+        }
+      },
+      "SFML.Window/2.5.0": {
+        "type": "package",
+        "dependencies": {
+          "CSFML": "2.5.0",
+          "SFML.System": "2.5.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/SFML.Window.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/SFML.Window.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "CSFML/2.5.0": {
+      "sha512": "A3X+zyjAtvIQkpwCSS/F5fDOFRWeT+USIAK+DhGujNufF+qV1ty5cYGJihmmGeokX3yd89uZoNH8mcsmXCY/yw==",
+      "type": "package",
+      "path": "csfml/2.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "csfml.2.5.0.nupkg.sha512",
+        "csfml.nuspec",
+        "runtimes/alpine-x64/native/libcsfml-audio.so",
+        "runtimes/alpine-x64/native/libcsfml-graphics.so",
+        "runtimes/alpine-x64/native/libcsfml-system.so",
+        "runtimes/alpine-x64/native/libcsfml-window.so",
+        "runtimes/alpine-x64/native/libsfml-audio.so",
+        "runtimes/alpine-x64/native/libsfml-audio.so.2.5",
+        "runtimes/alpine-x64/native/libsfml-audio.so.2.5.1",
+        "runtimes/alpine-x64/native/libsfml-graphics.so",
+        "runtimes/alpine-x64/native/libsfml-graphics.so.2.5",
+        "runtimes/alpine-x64/native/libsfml-graphics.so.2.5.1",
+        "runtimes/alpine-x64/native/libsfml-system.so",
+        "runtimes/alpine-x64/native/libsfml-system.so.2.5",
+        "runtimes/alpine-x64/native/libsfml-system.so.2.5.1",
+        "runtimes/alpine-x64/native/libsfml-window.so",
+        "runtimes/alpine-x64/native/libsfml-window.so.2.5",
+        "runtimes/alpine-x64/native/libsfml-window.so.2.5.1",
+        "runtimes/debian-x64/native/libcsfml-audio.so",
+        "runtimes/debian-x64/native/libcsfml-graphics.so",
+        "runtimes/debian-x64/native/libcsfml-system.so",
+        "runtimes/debian-x64/native/libcsfml-window.so",
+        "runtimes/debian-x64/native/libsfml-audio.so",
+        "runtimes/debian-x64/native/libsfml-audio.so.2.5",
+        "runtimes/debian-x64/native/libsfml-audio.so.2.5.1",
+        "runtimes/debian-x64/native/libsfml-graphics.so",
+        "runtimes/debian-x64/native/libsfml-graphics.so.2.5",
+        "runtimes/debian-x64/native/libsfml-graphics.so.2.5.1",
+        "runtimes/debian-x64/native/libsfml-system.so",
+        "runtimes/debian-x64/native/libsfml-system.so.2.5",
+        "runtimes/debian-x64/native/libsfml-system.so.2.5.1",
+        "runtimes/debian-x64/native/libsfml-window.so",
+        "runtimes/debian-x64/native/libsfml-window.so.2.5",
+        "runtimes/debian-x64/native/libsfml-window.so.2.5.1",
+        "runtimes/fedora-x64/native/libcsfml-audio.so",
+        "runtimes/fedora-x64/native/libcsfml-graphics.so",
+        "runtimes/fedora-x64/native/libcsfml-system.so",
+        "runtimes/fedora-x64/native/libcsfml-window.so",
+        "runtimes/fedora-x64/native/libsfml-audio.so",
+        "runtimes/fedora-x64/native/libsfml-audio.so.2.5",
+        "runtimes/fedora-x64/native/libsfml-audio.so.2.5.1",
+        "runtimes/fedora-x64/native/libsfml-graphics.so",
+        "runtimes/fedora-x64/native/libsfml-graphics.so.2.5",
+        "runtimes/fedora-x64/native/libsfml-graphics.so.2.5.1",
+        "runtimes/fedora-x64/native/libsfml-system.so",
+        "runtimes/fedora-x64/native/libsfml-system.so.2.5",
+        "runtimes/fedora-x64/native/libsfml-system.so.2.5.1",
+        "runtimes/fedora-x64/native/libsfml-window.so",
+        "runtimes/fedora-x64/native/libsfml-window.so.2.5",
+        "runtimes/fedora-x64/native/libsfml-window.so.2.5.1",
+        "runtimes/win-x64/native/csfml-Audio.dll",
+        "runtimes/win-x64/native/csfml-Graphics.dll",
+        "runtimes/win-x64/native/csfml-System.dll",
+        "runtimes/win-x64/native/csfml-Window.dll",
+        "runtimes/win-x64/native/openal32.dll",
+        "runtimes/win-x86/native/csfml-Audio.dll",
+        "runtimes/win-x86/native/csfml-Graphics.dll",
+        "runtimes/win-x86/native/csfml-System.dll",
+        "runtimes/win-x86/native/csfml-Window.dll",
+        "runtimes/win-x86/native/openal32.dll"
+      ]
+    },
+    "MeltySynth/2.2.0": {
+      "sha512": "xAEaefRKSThptzlIqCTKa97m4Z1+GghdKRzQgZ/cDzLO/z8dSZSiSbF18zf3mPcKJOwinC4LKejloikHHO0K3Q==",
+      "type": "package",
+      "path": "meltysynth/2.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "lib/netstandard2.1/MeltySynth.dll",
+        "lib/netstandard2.1/MeltySynth.xml",
+        "meltysynth.2.2.0.nupkg.sha512",
+        "meltysynth.nuspec"
+      ]
+    },
+    "SFML.Audio/2.5.0": {
+      "sha512": "M5EIksRefT3nsLT32oEpESStsnlixR+YjKS6fUMl+vDQ3gdMaV4jc84pg3kbfM9w4RYKAyH6OWV4bzDU5FNZyA==",
+      "type": "package",
+      "path": "sfml.audio/2.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/SFML.Audio.dll",
+        "lib/netstandard2.0/SFML.Audio.xml",
+        "sfml.audio.2.5.0.nupkg.sha512",
+        "sfml.audio.nuspec"
+      ]
+    },
+    "SFML.Graphics/2.5.0": {
+      "sha512": "77Nuz0qmK2q2+901J0439LC6qFNw5VT0qjqqA7zSaM0WrV7K/UozBjfO/ROCY0iW+w7IEqPYiXBK4A7xO5nvsQ==",
+      "type": "package",
+      "path": "sfml.graphics/2.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/SFML.Graphics.dll",
+        "lib/netstandard2.0/SFML.Graphics.xml",
+        "sfml.graphics.2.5.0.nupkg.sha512",
+        "sfml.graphics.nuspec"
+      ]
+    },
+    "SFML.Net/2.5.0": {
+      "sha512": "XVxrtNX6FJOpI7OzsTlKUKI92C8CKVe1rYtNbyj9fdIdZgidwpK/kExhxH5XYxpJ5C1/EUsGdOrGx4BCfsQvbw==",
+      "type": "package",
+      "path": "sfml.net/2.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "sfml.net.2.5.0.nupkg.sha512",
+        "sfml.net.nuspec"
+      ]
+    },
+    "SFML.System/2.5.0": {
+      "sha512": "vdlmLjPRhOD25WX/L2wP3F9dg/3mTj6hhyHkqtleC0fA5WNr71F0ijLbvs32BBpow5OoyU7BryKMjy1WNmU0GQ==",
+      "type": "package",
+      "path": "sfml.system/2.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/SFML.System.dll",
+        "lib/netstandard2.0/SFML.System.xml",
+        "sfml.system.2.5.0.nupkg.sha512",
+        "sfml.system.nuspec"
+      ]
+    },
+    "SFML.Window/2.5.0": {
+      "sha512": "KuQvC0TrsxzhFJw9hDvMAzKD8/12jvXjP7sC3UO5MSM0sy5sfYNTqQktnQ3ELAV+rP1cqRKLsvosBfMfl1HkRw==",
+      "type": "package",
+      "path": "sfml.window/2.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/SFML.Window.dll",
+        "lib/netstandard2.0/SFML.Window.xml",
+        "sfml.window.2.5.0.nupkg.sha512",
+        "sfml.window.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net5.0": [
+      "MeltySynth >= 2.2.0",
+      "SFML.Net >= 2.5.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\dbasp\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
+    "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "D:\\VS\\MD\\ManagedDoom\\ManagedDoom.csproj",
+      "projectName": "managed-doom",
+      "projectPath": "D:\\VS\\MD\\ManagedDoom\\ManagedDoom.csproj",
+      "packagesPath": "C:\\Users\\dbasp\\.nuget\\packages\\",
+      "outputPath": "D:\\VS\\MD\\ManagedDoom\\obj\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+        "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\dbasp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net5.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Users\\dbasp\\AppData\\Roaming\\Cosmos User Kit\\packages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net5.0": {
+        "targetAlias": "net5.0",
+        "dependencies": {
+          "MeltySynth": {
+            "target": "Package",
+            "version": "[2.2.0, )"
+          },
+          "SFML.Net": {
+            "target": "Package",
+            "version": "[2.5.0, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100-rc.2.21505.57\\RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

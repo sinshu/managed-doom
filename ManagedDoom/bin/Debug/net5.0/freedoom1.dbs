@@ -1,0 +1,40 @@
+type = "Doom Builder Map Settings Configuration";
+gameconfig = "Doom.cfg";
+strictpatches = 1;
+
+maps
+{
+	
+	E1M1
+	{
+		
+		grid
+		{
+			backoffsety = 0;
+			backoffsetx = 0;
+			backscalex = 100;
+			gridsize = 32;
+			background = "";
+			backsource = 0;
+			backscaley = 100;
+		}
+		
+		
+		resources
+		{
+			
+			resource0
+			{
+				type = 0;
+				location = "D:\\VS\\MD\\ManagedDoom\\bin\\Debug\\net5.0\\freedoom1.wad";
+				option1 = 0;
+				option2 = 0;
+				notfortesting = 0;
+			}
+			
+		}
+		
+	}
+	
+}
+

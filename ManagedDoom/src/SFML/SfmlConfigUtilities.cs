@@ -41,7 +41,7 @@ namespace ManagedDoom.SFML
         {
             var desktop = VideoMode.DesktopMode;
 
-            var baseWidth = 640;
+            var baseWidth =640;
             var baseHeight = 400;
 
             var currentWidth = baseWidth;

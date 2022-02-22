@@ -15,6 +15,7 @@
 
 
 
+using SFML.Graphics;
 using System;
 
 namespace ManagedDoom.Video
@@ -112,6 +113,7 @@ namespace ManagedDoom.Video
         private NumberWidget frags;
 
         private MultIconWidget[] keys;
+
 
         public StatusBarRenderer(Wad wad, DrawScreen screen)
         {
@@ -222,7 +224,7 @@ namespace ManagedDoom.Video
                 screen.DrawPatch(
                     patches.Background,
                     0,
-                    scale * (200 - Height),
+                    scale * (182 - Height),
                     scale);
             }
 
@@ -296,8 +298,19 @@ namespace ManagedDoom.Video
                     DrawMultIcon(keys[i], i);
                 }
             }
-        }
+            int sec = player.Mobj.World.LevelTime/GameConst.TicRate;
+            int min = (int)MathF.Floor((float)sec/60);
+            int mil = (int)(((float)player.Mobj.World.LevelTime / GameConst.TicRate) * 100);
+            screen.DrawText($"{min}:{sec%60}.{mil%100}", 4 * scale, 167*scale, 2);
 
+            screen.FillRect((screen.Width / 2), (AutoMapRenderer.instance.amHeight/2), 1, 1, 0xf5f);
+            screen.DrawLine((screen.Width / 2), (AutoMapRenderer.instance.amHeight / 2)+5, (screen.Width / 2), (AutoMapRenderer.instance.amHeight / 2) + 8, 0xf5f);
+            screen.DrawLine((screen.Width / 2), (AutoMapRenderer.instance.amHeight / 2) - 5, (screen.Width / 2), (AutoMapRenderer.instance.amHeight / 2) - 8, 0xf5f);
+        }
+        private static uint ToUint(Color c)
+        {
+            return (uint)(((c.A << 24) | (c.R << 16) | (c.G << 8) | c.B) & 0xffffffffL);
+        }
         private void DrawNumber(NumberWidget widget, int num)
         {
             var digits = widget.Width;

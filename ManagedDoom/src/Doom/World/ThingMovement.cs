@@ -839,12 +839,16 @@ namespace ManagedDoom
         private Fixed slideMoveX;
         private Fixed slideMoveY;
 
+        private Fixed lastNormX;
+        private Fixed lastNormY;
+
         private Func<Intercept, bool> slideTraverseFunc;
 
         private void InitSlideMovement()
         {
             slideTraverseFunc = SlideTraverse;
         }
+        Angle lastNorm;
 
         /// <summary>
         /// Adjusts the x and y movement so that the next move will
@@ -852,6 +856,17 @@ namespace ManagedDoom
         /// </summary>
         private void HitSlideLine(LineDef line)
         {
+            //aquire wall normal for wallrunning
+            var side = Geometry.PointOnLineSide(slideThing.X, slideThing.Y, line);
+
+            var lineAngle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, line.Dx, line.Dy);
+            if (side == 1)
+            {
+                lineAngle += Angle.Ang180;
+            }
+
+            lastNorm = lineAngle + Angle.Ang90;
+
             if (line.SlopeType == SlopeType.Horizontal)
             {
                 slideMoveY = Fixed.Zero;
@@ -861,16 +876,11 @@ namespace ManagedDoom
             if (line.SlopeType == SlopeType.Vertical)
             {
                 slideMoveX = Fixed.Zero;
+                
                 return;
             }
 
-            var side = Geometry.PointOnLineSide(slideThing.X, slideThing.Y, line);
-
-            var lineAngle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, line.Dx, line.Dy);
-            if (side == 1)
-            {
-                lineAngle += Angle.Ang180;
-            }
+            
 
             var moveAngle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, slideMoveX, slideMoveY);
 
@@ -1048,14 +1058,29 @@ namespace ManagedDoom
                 return;
             }
 
-            slideMoveX = thing.MomX * bestSlideFrac;
-            slideMoveY = thing.MomY * bestSlideFrac;
+            //slideMoveX = thing.MomX * bestSlideFrac;
+            //slideMoveY = thing.MomY * bestSlideFrac;
+
+            slideMoveX = thing.MomX;
+            slideMoveY = thing.MomY;
 
             // Clip the moves.
             HitSlideLine(bestSlideLine);
 
             thing.MomX = slideMoveX;
             thing.MomY = slideMoveY;
+
+            if(thing.isPlayer && thing.enableWallrun && !thing.IsGrounded)
+            {
+                thing.WallNorm = lastNorm;
+                thing.framesSinceLastWallRun = 0;
+                if (!thing.wasWallRunning)
+                {
+                    world.StartSound(thing, Sfx.NOWAY, SfxType.Voice);
+                    thing.wasWallRunning = true;
+                    thing.MomZ = Fixed.FromFloat(2f); 
+                }
+            }
 
             if (!TryMove(thing, thing.X + slideMoveX, thing.Y + slideMoveY))
             {

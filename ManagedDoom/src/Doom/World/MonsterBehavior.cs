@@ -30,6 +30,7 @@ namespace ManagedDoom
             InitVile();
             InitBossDeath();
             InitBrain();
+            
         }
 
 
@@ -1063,6 +1064,7 @@ namespace ManagedDoom
 
             // Launch a missile.
             world.ThingAllocation.SpawnMissile(actor, actor.Target, MobjType.Arachplaz);
+            
         }
 
 

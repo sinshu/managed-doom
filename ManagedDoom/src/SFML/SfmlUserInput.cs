@@ -89,6 +89,8 @@ namespace ManagedDoom.SFML
             var keyRun = IsPressed(config.key_run);
             var keyStrafe = IsPressed(config.key_strafe);
 
+            var keyJump = Keyboard.IsKeyPressed(Keyboard.Key.Space);
+
             weaponKeys[0] = Keyboard.IsKeyPressed(Keyboard.Key.Num1);
             weaponKeys[1] = Keyboard.IsKeyPressed(Keyboard.Key.Num2);
             weaponKeys[2] = Keyboard.IsKeyPressed(Keyboard.Key.Num3);
@@ -98,6 +100,8 @@ namespace ManagedDoom.SFML
             weaponKeys[6] = Keyboard.IsKeyPressed(Keyboard.Key.Num7);
 
             cmd.Clear();
+
+            
 
             var strafe = keyStrafe;
             var speed = keyRun ? 1 : 0;
@@ -179,6 +183,7 @@ namespace ManagedDoom.SFML
                 cmd.Buttons |= TicCmdButtons.Use;
             }
 
+            cmd.space = keyJump;
             // Check weapon keys.
             for (var i = 0; i < weaponKeys.Length; i++)
             {
@@ -194,7 +199,7 @@ namespace ManagedDoom.SFML
             var ms = 0.5F * config.mouse_sensitivity;
             var mx = (int)MathF.Round(ms * mouseX);
             var my = (int)MathF.Round(ms * mouseY);
-            forward += my;
+            forward += 0*my;
             if (strafe)
             {
                 side += mx * 2;

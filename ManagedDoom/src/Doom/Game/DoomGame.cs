@@ -207,7 +207,7 @@ namespace ManagedDoom
 					break;
 
 				case GameState.Intermission:
-					result = intermission.Update();
+					result = UpdateResult.Completed;
 					if (result == UpdateResult.Completed)
 					{
 						gameAction = GameAction.WorldDone;
