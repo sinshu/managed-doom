@@ -26,7 +26,7 @@ namespace ManagedDoom.Raylib_CsLo
             int windowWidth = 2 * 640;
             int windowHeight = 2 * 400;
 
-            Raylib.InitWindow(windowWidth, windowHeight, "Raylib-CsLo Doom");
+            Raylib.InitWindow(windowWidth, windowHeight, ApplicationInfo.Title);
             Raylib.InitAudioDevice();
 
             var audioBufferSize = 4096;
