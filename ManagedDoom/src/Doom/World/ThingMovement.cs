@@ -40,7 +40,7 @@ namespace ManagedDoom
 
         public static readonly Fixed FloatSpeed = Fixed.FromInt(4);
 
-        private static readonly int maxSpecialCrossCount = 20;
+        private static readonly int maxSpecialCrossCount = 64;
         private static readonly Fixed maxMove = Fixed.FromInt(30);
         private static readonly Fixed gravity = Fixed.One;
 
