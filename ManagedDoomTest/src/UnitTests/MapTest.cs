@@ -17,7 +17,7 @@ namespace ManagedDoomTest.UnitTests
             using (var content = GameContent.CreateDummy(WadPath.Doom1))
             {
                 var options = new GameOptions();
-                var world = new World(content, options);
+                var world = new World(content, options, null);
                 var map = new Map(content, world);
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());
@@ -65,7 +65,7 @@ namespace ManagedDoomTest.UnitTests
             using (var content = GameContent.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
-                var world = new World(content, options);
+                var world = new World(content, options, null);
                 var map = new Map(content, world);
 
                 var mapMinX = map.Lines.Min(line => Fixed.Min(line.Vertex1.X, line.Vertex2.X).ToDouble());

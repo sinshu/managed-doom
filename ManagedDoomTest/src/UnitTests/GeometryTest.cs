@@ -175,7 +175,7 @@ namespace ManagedDoomTest.UnitTests
             using (var content = GameContent.CreateDummy(WadPath.Doom1))
             {
                 var options = new GameOptions();
-                var world = new World(content, options);
+                var world = new World(content, options, null);
                 var map = new Map(content, world);
 
                 var ok = 0;
@@ -227,7 +227,7 @@ namespace ManagedDoomTest.UnitTests
             using (var content = GameContent.CreateDummy(WadPath.Doom2))
             {
                 var options = new GameOptions();
-                var world = new World(content, options);
+                var world = new World(content, options, null);
                 var map = new Map(content, world);
 
                 var ok = 0;
