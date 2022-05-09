@@ -371,13 +371,7 @@ namespace ManagedDoom
             set => levelTime = value;
         }
 
-        public int GameTic
-        {
-            get
-            {
-                return game.GameTic;
-            }
-        }
+        public int GameTic => game.GameTic;
 
         public bool SecretExit => secretExit;
 
