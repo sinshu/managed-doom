@@ -33,7 +33,7 @@ namespace ManagedDoom.SFML
 
         private SfmlVideo video;
         private SfmlSound sound;
-        private SfmlMusic music;
+        //private SfmlMusic music;
         private SfmlUserInput userInput;
 
         private Doom doom;
@@ -68,7 +68,7 @@ namespace ManagedDoom.SFML
 
                 if (!args.nosound.Present && !args.nomusic.Present)
                 {
-                    music = SfmlConfigUtilities.GetMusicInstance(config, content.Wad);
+                    //music = null;
                 }
 
                 userInput = new SfmlUserInput(config, window, !args.nomouse.Present);
@@ -82,7 +82,7 @@ namespace ManagedDoom.SFML
                     window.SetFramerateLimit(35);
                 }
 
-                doom = new Doom(args, config, content, video, sound, music, userInput);
+                doom = new Doom(args, config, content, video, sound, null, userInput);
             }
             catch (Exception e)
             {
@@ -126,11 +126,13 @@ namespace ManagedDoom.SFML
                 userInput = null;
             }
 
+            /*
             if (music != null)
             {
                 music.Dispose();
                 music = null;
             }
+            */
 
             if (sound != null)
             {

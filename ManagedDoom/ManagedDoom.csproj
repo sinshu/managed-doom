@@ -4,11 +4,17 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>managed-doom</AssemblyName>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="MeltySynth" Version="2.2.2" />
     <PackageReference Include="SFML.Net" Version="2.5.0" />
+    <PackageReference Include="Silk.NET.OpenAL" Version="2.15.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\DrippyAL\" />
   </ItemGroup>
 
 </Project>

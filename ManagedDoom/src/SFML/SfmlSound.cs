@@ -16,9 +16,9 @@
 
 
 using System;
+using System.Numerics;
 using System.Runtime.ExceptionServices;
-using SFML.Audio;
-using SFML.System;
+using DrippyAL;
 using ManagedDoom.Audio;
 
 namespace ManagedDoom.SFML
@@ -36,15 +36,17 @@ namespace ManagedDoom.SFML
 
         private Config config;
 
-        private SoundBuffer[] buffers;
+        private AudioDevice device;
+
+        private WaveData[] buffers;
         private float[] amplitudes;
 
         private DoomRandom random;
 
-        private Sound[] channels;
+        private Channel[] channels;
         private ChannelInfo[] infos;
 
-        private Sound uiChannel;
+        private Channel uiChannel;
         private Sfx uiReserved;
 
         private Mobj listener;
@@ -63,7 +65,9 @@ namespace ManagedDoom.SFML
 
                 config.audio_soundvolume = Math.Clamp(config.audio_soundvolume, 0, MaxVolume);
 
-                buffers = new SoundBuffer[DoomInfo.SfxNames.Length];
+                device = new AudioDevice();
+
+                buffers = new WaveData[DoomInfo.SfxNames.Length];
                 amplitudes = new float[DoomInfo.SfxNames.Length];
 
                 if (config.audio_randompitch)
@@ -85,20 +89,20 @@ namespace ManagedDoom.SFML
                     var samples = GetSamples(wad, name, out sampleRate, out sampleCount);
                     if (samples != null)
                     {
-                        buffers[i] = new SoundBuffer(samples, 1, (uint)sampleRate);
+                        buffers[i] = new WaveData(device, sampleRate, 1, samples);
                         amplitudes[i] = GetAmplitude(samples, sampleRate, sampleCount);
                     }
                 }
 
-                channels = new Sound[channelCount];
+                channels = new Channel[channelCount];
                 infos = new ChannelInfo[channelCount];
                 for (var i = 0; i < channels.Length; i++)
                 {
-                    channels[i] = new Sound();
+                    channels[i] = new Channel(device);
                     infos[i] = new ChannelInfo();
                 }
 
-                uiChannel = new Sound();
+                uiChannel = new Channel(device);
                 uiReserved = Sfx.NONE;
 
                 masterVolumeDecay = (float)config.audio_soundvolume / MaxVolume;
@@ -229,7 +233,7 @@ namespace ManagedDoom.SFML
 
                 if (info.Playing != Sfx.NONE)
                 {
-                    if (channel.Status != SoundStatus.Stopped)
+                    if (channel.State != ChannelState.Stopped)
                     {
                         if (info.Type == SfxType.Diffuse)
                         {
@@ -258,10 +262,10 @@ namespace ManagedDoom.SFML
                         channel.Stop();
                     }
 
-                    channel.SoundBuffer = buffers[(int)info.Reserved];
+                    //channel.SoundBuffer = buffers[(int)info.Reserved];
                     SetParam(channel, info);
-                    channel.Pitch = GetPitch(info.Type, info.Reserved);
-                    channel.Play();
+                    //channel.Pitch = GetPitch(info.Type, info.Reserved);
+                    channel.Play(buffers[(int)info.Reserved]);
                     info.Playing = info.Reserved;
                     info.Reserved = Sfx.NONE;
                 }
@@ -269,13 +273,12 @@ namespace ManagedDoom.SFML
 
             if (uiReserved != Sfx.NONE)
             {
-                if (uiChannel.Status == SoundStatus.Playing)
+                if (uiChannel.State == ChannelState.Playing)
                 {
                     uiChannel.Stop();
                 }
-                uiChannel.Volume = 100 * masterVolumeDecay;
-                uiChannel.SoundBuffer = buffers[(int)uiReserved];
-                uiChannel.Play();
+                uiChannel.Volume = masterVolumeDecay;
+                uiChannel.Play(buffers[(int)uiReserved]);
                 uiReserved = Sfx.NONE;
             }
 
@@ -403,8 +406,8 @@ namespace ManagedDoom.SFML
             {
                 var channel = channels[i];
 
-                if (channel.Status == SoundStatus.Playing &&
-                    channel.SoundBuffer.Duration - channel.PlayingOffset > Time.FromMilliseconds(200))
+                if (channel.State == ChannelState.Playing &&
+                    channel.WaveData.Duration - channel.PlayingOffset > TimeSpan.FromMilliseconds(200))
                 {
                     channels[i].Pause();
                 }
@@ -417,19 +420,19 @@ namespace ManagedDoom.SFML
             {
                 var channel = channels[i];
 
-                if (channel.Status == SoundStatus.Paused)
+                if (channel.State == ChannelState.Paused)
                 {
-                    channel.Play();
+                    channel.Resume();
                 }
             }
         }
 
-        private void SetParam(Sound sound, ChannelInfo info)
+        private void SetParam(Channel sound, ChannelInfo info)
         {
             if (info.Type == SfxType.Diffuse)
             {
-                sound.Position = new Vector3f(0, 1, 0);
-                sound.Volume = masterVolumeDecay * info.Volume;
+                sound.Position = new Vector3(0, 1, 0);
+                sound.Volume = 0.01F * masterVolumeDecay * info.Volume;
             }
             else
             {
@@ -451,15 +454,15 @@ namespace ManagedDoom.SFML
 
                 if (Math.Abs(x) < 16 && Math.Abs(y) < 16)
                 {
-                    sound.Position = new Vector3f(0, 1, 0);
-                    sound.Volume = masterVolumeDecay * info.Volume;
+                    sound.Position = new Vector3(0, 1, 0);
+                    sound.Volume = 0.01F * masterVolumeDecay * info.Volume;
                 }
                 else
                 {
                     var dist = MathF.Sqrt(x * x + y * y);
                     var angle = MathF.Atan2(y, x) - (float)listener.Angle.ToRadian() + MathF.PI / 2;
-                    sound.Position = new Vector3f(MathF.Cos(angle), MathF.Sin(angle), 0);
-                    sound.Volume = masterVolumeDecay * GetDistanceDecay(dist) * info.Volume;
+                    sound.Position = new Vector3(MathF.Cos(angle), MathF.Sin(angle), 0);
+                    sound.Volume = 0.01F * masterVolumeDecay * GetDistanceDecay(dist) * info.Volume;
                 }
             }
         }

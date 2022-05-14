@@ -64,19 +64,5 @@ namespace ManagedDoom.SFML
 
             return new VideoMode((uint)currentWidth, (uint)currentHeight);
         }
-
-        public static SfmlMusic GetMusicInstance(Config config, Wad wad)
-        {
-            var sfPath = Path.Combine(ConfigUtilities.GetExeDirectory(), config.audio_soundfont);
-            if (File.Exists(sfPath))
-            {
-                return new SfmlMusic(config, wad, sfPath);
-            }
-            else
-            {
-                Console.WriteLine("SoundFont '" + config.audio_soundfont + "' was not found!");
-                return null;
-            }
-        }
     }
 }
