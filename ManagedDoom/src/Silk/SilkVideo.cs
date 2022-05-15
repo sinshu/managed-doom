@@ -111,7 +111,7 @@ namespace ManagedDoom.Silk
 
         public void Dispose()
         {
-            Console.WriteLine("Shutdown renderer.");
+            Console.WriteLine("Shutdown video.");
 
             if (shader != null)
             {

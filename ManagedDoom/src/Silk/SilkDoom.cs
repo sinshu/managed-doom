@@ -109,6 +109,12 @@ namespace ManagedDoom.Silk
                 userInput = null;
             }
 
+            if (music != null)
+            {
+                music.Dispose();
+                music = null;
+            }
+
             if (sound != null)
             {
                 sound.Dispose();
@@ -126,12 +132,15 @@ namespace ManagedDoom.Silk
                 video.Dispose();
                 video = null;
             }
+
+            config.Save(ConfigUtilities.GetConfigPath());
         }
 
         public void Dispose()
         {
             if (window != null)
             {
+                window.Close();
                 window.Dispose();
                 window = null;
             }
