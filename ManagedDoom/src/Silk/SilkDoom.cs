@@ -3,6 +3,7 @@ using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
+using DrippyAL;
 
 namespace ManagedDoom.Silk
 {
@@ -14,10 +15,12 @@ namespace ManagedDoom.Silk
 
         private IWindow window;
         private GL gl;
+        private AudioDevice audioDevice;
 
         private GameContent content;
 
         private SilkVideo video;
+        private SilkSound sound;
         private SilkUserInput userInput;
 
         private Doom doom;
@@ -69,9 +72,13 @@ namespace ManagedDoom.Silk
             content = new GameContent(args);
 
             video = new SilkVideo(config, content, window, gl);
+
+            audioDevice = new AudioDevice();
+            sound = new SilkSound(config, content.Wad, audioDevice);
+
             userInput = new SilkUserInput(config, window, this);
 
-            doom = new Doom(args, config, content, video, null, null, userInput);
+            doom = new Doom(args, config, content, video, sound, null, userInput);
         }
 
         private void OnUpdate(double obj)
@@ -98,6 +105,18 @@ namespace ManagedDoom.Silk
             {
                 userInput.Dispose();
                 userInput = null;
+            }
+
+            if (sound != null)
+            {
+                sound.Dispose();
+                sound = null;
+            }
+
+            if (audioDevice != null)
+            {
+                audioDevice.Dispose();
+                audioDevice = null;
             }
 
             if (video != null)
