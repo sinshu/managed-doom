@@ -21,6 +21,7 @@ namespace ManagedDoom.Silk
 
         private SilkVideo video;
         private SilkSound sound;
+        private SilkMusic music;
         private SilkUserInput userInput;
 
         private Doom doom;
@@ -75,10 +76,11 @@ namespace ManagedDoom.Silk
 
             audioDevice = new AudioDevice();
             sound = new SilkSound(config, content.Wad, audioDevice);
+            music = new SilkMusic(config, content.Wad, audioDevice, "TimGM6mb.sf2");
 
             userInput = new SilkUserInput(config, window, this);
 
-            doom = new Doom(args, config, content, video, sound, null, userInput);
+            doom = new Doom(args, config, content, video, sound, music, userInput);
         }
 
         private void OnUpdate(double obj)
