@@ -83,7 +83,7 @@ namespace ManagedDoom.Silk
                     int sampleRate;
                     int sampleCount;
                     var samples = GetSamples(wad, name, out sampleRate, out sampleCount);
-                    if (samples != null)
+                    if (!samples.IsEmpty)
                     {
                         buffers[i] = new WaveData(device, sampleRate, 1, samples);
                         amplitudes[i] = GetAmplitude(samples, sampleRate, sampleCount);
@@ -115,7 +115,7 @@ namespace ManagedDoom.Silk
             }
         }
 
-        private static short[] GetSamples(Wad wad, string name, out int sampleRate, out int sampleCount)
+        private static Span<byte> GetSamples(Wad wad, string name, out int sampleRate, out int sampleCount)
         {
             var data = wad.ReadLump(name);
 
@@ -138,16 +138,11 @@ namespace ManagedDoom.Silk
 
             if (sampleCount > 0)
             {
-                var samples = new short[sampleCount];
-                for (var t = 0; t < samples.Length; t++)
-                {
-                    samples[t] = (short)((data[offset + t] - 128) << 8);
-                }
-                return samples;
+                return data.AsSpan(offset, sampleCount);
             }
             else
             {
-                return null;
+                return Span<byte>.Empty;
             }
         }
 
@@ -186,7 +181,7 @@ namespace ManagedDoom.Silk
             return true;
         }
 
-        private static float GetAmplitude(short[] samples, int sampleRate, int sampleCount)
+        private static float GetAmplitude(Span<byte> samples, int sampleRate, int sampleCount)
         {
             var max = 0;
             if (sampleCount > 0)
@@ -194,10 +189,10 @@ namespace ManagedDoom.Silk
                 var count = Math.Min(sampleRate / 5, sampleCount);
                 for (var t = 0; t < count; t++)
                 {
-                    var a = (int)samples[t];
+                    var a = samples[t] - 128;
                     if (a < 0)
                     {
-                        a = (short)(-a);
+                        a = -a;
                     }
                     if (a > max)
                     {
@@ -205,7 +200,7 @@ namespace ManagedDoom.Silk
                     }
                 }
             }
-            return (float)max / 32768;
+            return (float)max / 128;
         }
 
         public void SetListener(Mobj listener)
