@@ -75,6 +75,9 @@ namespace ManagedDoom.Silk
         private void OnLoad()
         {
             gl = window.CreateOpenGL();
+            gl.ClearColor(0.25F, 0.25F, 0.25F, 1F);
+            gl.Clear(ClearBufferMask.ColorBufferBit);
+            window.SwapBuffers();
             video = new SilkVideo(config, content, window, gl);
 
             if (!args.nosound.Present && !(args.nosfx.Present && args.nomusic.Present))
