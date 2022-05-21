@@ -110,6 +110,7 @@ namespace ManagedDoom.Silk
 
         private void OnResize(Vector2D<int> obj)
         {
+            video.Resize(obj.X, obj.Y);
         }
 
         private void OnClose()
