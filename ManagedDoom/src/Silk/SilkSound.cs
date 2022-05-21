@@ -53,7 +53,7 @@ namespace ManagedDoom.Silk
 
         private DateTime lastUpdate;
 
-        public SilkSound(Config config, Wad wad, AudioDevice device)
+        public SilkSound(Config config, GameContent content, AudioDevice device)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace ManagedDoom.Silk
                 for (var i = 0; i < DoomInfo.SfxNames.Length; i++)
                 {
                     var name = "DS" + DoomInfo.SfxNames[i].ToString().ToUpper();
-                    var lump = wad.GetLumpNumber(name);
+                    var lump = content.Wad.GetLumpNumber(name);
                     if (lump == -1)
                     {
                         continue;
@@ -82,7 +82,7 @@ namespace ManagedDoom.Silk
 
                     int sampleRate;
                     int sampleCount;
-                    var samples = GetSamples(wad, name, out sampleRate, out sampleCount);
+                    var samples = GetSamples(content.Wad, name, out sampleRate, out sampleCount);
                     if (!samples.IsEmpty)
                     {
                         buffers[i] = new WaveData(device, sampleRate, 1, samples);

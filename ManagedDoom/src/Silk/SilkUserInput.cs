@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.ExceptionServices;
 using Silk.NET.Input;
 using Silk.NET.Windowing;
 using ManagedDoom.UserInput;
@@ -9,24 +10,37 @@ namespace ManagedDoom.Silk
     {
         private Config config;
 
+        private IInputContext input;
         private IKeyboard keyboard;
 
         private bool[] weaponKeys;
         private int turnHeld;
 
-        public SilkUserInput(Config config, IWindow window, SilkDoom app)
+        public SilkUserInput(Config config, IWindow window, SilkDoom doom)
         {
-            this.config = config;
+            try
+            {
+                Console.Write("Initialize user input: ");
 
-            var input = window.CreateInput();
+                this.config = config;
 
-            keyboard = input.Keyboards[0];
-            keyboard.KeyDown += (sender, key, value) => app.KeyDown(key);
-            keyboard.KeyUp += (sender, key, value) => app.KeyUp(key);
+                input = window.CreateInput();
 
-            weaponKeys = new bool[7];
-            turnHeld = 0;
+                keyboard = input.Keyboards[0];
+                keyboard.KeyDown += (sender, key, value) => doom.KeyDown(key);
+                keyboard.KeyUp += (sender, key, value) => doom.KeyUp(key);
 
+                weaponKeys = new bool[7];
+                turnHeld = 0;
+
+                Console.WriteLine("OK");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                Dispose();
+                ExceptionDispatchInfo.Throw(e);
+            }
         }
 
         public void BuildTicCmd(TicCmd cmd)
@@ -191,6 +205,13 @@ namespace ManagedDoom.Silk
 
         public void Dispose()
         {
+            Console.WriteLine("Shutdown user input.");
+
+            if (input != null)
+            {
+                input.Dispose();
+                input = null;
+            }
         }
 
         public static DoomKey SilkToDoom(Key silkKey)

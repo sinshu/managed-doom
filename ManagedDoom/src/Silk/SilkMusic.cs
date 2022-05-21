@@ -32,14 +32,14 @@ namespace ManagedDoom.Silk
         private MusStream stream;
         private Bgm current;
 
-        public SilkMusic(Config config, Wad wad, AudioDevice device, string sfPath)
+        public SilkMusic(Config config, GameContent content, AudioDevice device, string sfPath)
         {
             try
             {
                 Console.Write("Initialize music: ");
 
                 this.config = config;
-                this.wad = wad;
+                this.wad = content.Wad;
 
                 stream = new MusStream(this, config, device, sfPath);
                 current = Bgm.NONE;
