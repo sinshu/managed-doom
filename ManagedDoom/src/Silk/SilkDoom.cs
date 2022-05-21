@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.ExceptionServices;
+using Silk.NET.Core.Loader;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
@@ -33,6 +34,8 @@ namespace ManagedDoom.Silk
             try
             {
                 this.args = args;
+
+                CheckPathResolver();
 
                 config = SilkConfigUtilities.GetConfig();
                 content = new GameContent(args);
@@ -174,6 +177,22 @@ namespace ManagedDoom.Silk
                 window.Close();
                 window.Dispose();
                 window = null;
+            }
+        }
+
+        private static void CheckPathResolver()
+        {
+            if (PathResolver.Default is DefaultPathResolver pr)
+            {
+                pr.Resolvers = new()
+                {
+                    DefaultPathResolver.NativePackageResolver,
+                    DefaultPathResolver.BaseDirectoryResolver,
+                    DefaultPathResolver.MainModuleDirectoryResolver,
+                    // DefaultPathResolver.RuntimesFolderResolver,
+                    DefaultPathResolver.LinuxVersioningResolver,
+                    DefaultPathResolver.MacVersioningResolver,
+                };
             }
         }
 
