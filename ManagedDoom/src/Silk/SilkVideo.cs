@@ -35,9 +35,6 @@ namespace ManagedDoom.Silk
 
                 renderer = new Renderer(config, content);
 
-                config.video_gamescreensize = Math.Clamp(config.video_gamescreensize, 0, MaxWindowSize);
-                config.video_gammacorrection = Math.Clamp(config.video_gammacorrection, 0, MaxGammaCorrectionLevel);
-
                 device = new GraphicsDevice(gl);
 
                 if (config.video_highresolution)
