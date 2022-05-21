@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Runtime.ExceptionServices;
 using Silk.NET.Input;
 using Silk.NET.Windowing;
@@ -9,6 +10,7 @@ namespace ManagedDoom.Silk
     public class SilkUserInput : IUserInput, IDisposable
     {
         private Config config;
+        private IWindow window;
 
         private IInputContext input;
         private IKeyboard keyboard;
@@ -16,13 +18,23 @@ namespace ManagedDoom.Silk
         private bool[] weaponKeys;
         private int turnHeld;
 
-        public SilkUserInput(Config config, IWindow window, SilkDoom doom)
+        private IMouse mouse;
+        private bool mouseGrabbed;
+        private float mouseX;
+        private float mouseY;
+        private float mousePrevX;
+        private float mousePrevY;
+        private float mouseDeltaX;
+        private float mouseDeltaY;
+
+        public SilkUserInput(Config config, IWindow window, SilkDoom doom, bool useMouse)
         {
             try
             {
                 Console.Write("Initialize user input: ");
 
                 this.config = config;
+                this.window = window;
 
                 input = window.CreateInput();
 
@@ -32,6 +44,12 @@ namespace ManagedDoom.Silk
 
                 weaponKeys = new bool[7];
                 turnHeld = 0;
+
+                if (useMouse)
+                {
+                    mouse = input.Mice[0];
+                    mouseGrabbed = false;
+                }
 
                 Console.WriteLine("OK");
             }
@@ -157,6 +175,20 @@ namespace ManagedDoom.Silk
                 }
             }
 
+            UpdateMouse();
+            var ms = 0.5F * config.mouse_sensitivity;
+            var mx = (int)MathF.Round(ms * mouseDeltaX);
+            var my = (int)MathF.Round(ms * -mouseDeltaY);
+            forward += my;
+            if (strafe)
+            {
+                side += mx * 2;
+            }
+            else
+            {
+                cmd.AngleTurn -= (short)(mx * 0x8);
+            }
+
             if (forward > PlayerBehavior.MaxMove)
             {
                 forward = PlayerBehavior.MaxMove;
@@ -188,19 +220,86 @@ namespace ManagedDoom.Silk
                 }
             }
 
+            if (mouseGrabbed)
+            {
+                foreach (var mouseButton in keyBinding.MouseButtons)
+                {
+                    if (mouse.IsButtonPressed((MouseButton)mouseButton))
+                    {
+                        return true;
+                    }
+                }
+            }
+
             return false;
         }
 
         public void Reset()
         {
+            if (mouse == null)
+            {
+                return;
+            }
+
+            mouseX = mouse.Position.X;
+            mouseY = mouse.Position.Y;
+            mousePrevX = mouseX;
+            mousePrevY = mouseY;
+            mouseDeltaX = 0;
+            mouseDeltaY = 0;
         }
 
         public void GrabMouse()
         {
+            if (mouse == null)
+            {
+                return;
+            }
+
+            if (!mouseGrabbed)
+            {
+                mouse.Cursor.CursorMode = CursorMode.Raw;
+                mouseGrabbed = true;
+                mouseX = mouse.Position.X;
+                mouseY = mouse.Position.Y;
+                mousePrevX = mouseX;
+                mousePrevY = mouseY;
+                mouseDeltaX = 0;
+                mouseDeltaY = 0;
+            }
         }
 
         public void ReleaseMouse()
         {
+            if (mouse == null)
+            {
+                return;
+            }
+
+            if (mouseGrabbed)
+            {
+                mouse.Cursor.CursorMode = CursorMode.Normal;
+                mouse.Position = new Vector2(window.Size.X - 10, window.Size.Y - 10);
+                mouseGrabbed = false;
+            }
+        }
+
+        private void UpdateMouse()
+        {
+            if (mouse == null)
+            {
+                return;
+            }
+
+            if (mouseGrabbed)
+            {
+                mousePrevX = mouseX;
+                mousePrevY = mouseY;
+                mouseX = mouse.Position.X;
+                mouseY = mouse.Position.Y;
+                mouseDeltaX = mouseX - mousePrevX;
+                mouseDeltaY = mouseY - mousePrevY;
+            }
         }
 
         public void Dispose()
@@ -218,23 +317,14 @@ namespace ManagedDoom.Silk
         {
             switch (silkKey)
             {
-                case Key.Backspace: return DoomKey.Backspace;
-                case Key.Tab: return DoomKey.Tab;
-                case Key.Enter: return DoomKey.Enter;
-                case Key.Pause: return DoomKey.Pause;
-                case Key.Escape: return DoomKey.Escape;
                 case Key.Space: return DoomKey.Space;
-                case Key.PageUp: return DoomKey.PageUp;
-                case Key.PageDown: return DoomKey.PageDown;
-                case Key.End: return DoomKey.End;
-                case Key.Home: return DoomKey.Home;
-                case Key.Left: return DoomKey.Left;
-                case Key.Up: return DoomKey.Up;
-                case Key.Right: return DoomKey.Right;
-                case Key.Down: return DoomKey.Down;
-                case Key.Insert: return DoomKey.Insert;
-                case Key.Delete: return DoomKey.Delete;
+                // case Key.Apostrophe: return DoomKey.Apostrophe;
+                case Key.Comma: return DoomKey.Comma;
+                case Key.Minus: return DoomKey.Subtract;
+                case Key.Period: return DoomKey.Period;
+                case Key.Slash: return DoomKey.Slash;
                 case Key.Number0: return DoomKey.Num0;
+                // case Key.D0: return DoomKey.D0;
                 case Key.Number1: return DoomKey.Num1;
                 case Key.Number2: return DoomKey.Num2;
                 case Key.Number3: return DoomKey.Num3;
@@ -244,6 +334,8 @@ namespace ManagedDoom.Silk
                 case Key.Number7: return DoomKey.Num7;
                 case Key.Number8: return DoomKey.Num8;
                 case Key.Number9: return DoomKey.Num9;
+                case Key.Semicolon: return DoomKey.Semicolon;
+                case Key.Equal: return DoomKey.Equal;
                 case Key.A: return DoomKey.A;
                 case Key.B: return DoomKey.B;
                 case Key.C: return DoomKey.C;
@@ -270,20 +362,31 @@ namespace ManagedDoom.Silk
                 case Key.X: return DoomKey.X;
                 case Key.Y: return DoomKey.Y;
                 case Key.Z: return DoomKey.Z;
-                case Key.Keypad0: return DoomKey.Numpad0;
-                case Key.Keypad1: return DoomKey.Numpad1;
-                case Key.Keypad2: return DoomKey.Numpad2;
-                case Key.Keypad3: return DoomKey.Numpad3;
-                case Key.Keypad4: return DoomKey.Numpad4;
-                case Key.Keypad5: return DoomKey.Numpad5;
-                case Key.Keypad6: return DoomKey.Numpad6;
-                case Key.Keypad7: return DoomKey.Numpad7;
-                case Key.Keypad8: return DoomKey.Numpad8;
-                case Key.Keypad9: return DoomKey.Numpad9;
-                case Key.KeypadMultiply: return DoomKey.Multiply;
-                case Key.KeypadAdd: return DoomKey.Add;
-                case Key.KeypadSubtract: return DoomKey.Subtract;
-                case Key.KeypadDivide: return DoomKey.Divide;
+                case Key.LeftBracket: return DoomKey.LBracket;
+                case Key.BackSlash: return DoomKey.Backslash;
+                case Key.RightBracket: return DoomKey.RBracket;
+                // case Key.GraveAccent: return DoomKey.GraveAccent;
+                // case Key.World1: return DoomKey.World1;
+                // case Key.World2: return DoomKey.World2;
+                case Key.Escape: return DoomKey.Escape;
+                case Key.Enter: return DoomKey.Enter;
+                case Key.Tab: return DoomKey.Tab;
+                case Key.Backspace: return DoomKey.Backspace;
+                case Key.Insert: return DoomKey.Insert;
+                case Key.Delete: return DoomKey.Delete;
+                case Key.Right: return DoomKey.Right;
+                case Key.Left: return DoomKey.Left;
+                case Key.Down: return DoomKey.Down;
+                case Key.Up: return DoomKey.Up;
+                case Key.PageUp: return DoomKey.PageUp;
+                case Key.PageDown: return DoomKey.PageDown;
+                case Key.Home: return DoomKey.Home;
+                case Key.End: return DoomKey.End;
+                // case Key.CapsLock: return DoomKey.CapsLock;
+                // case Key.ScrollLock: return DoomKey.ScrollLock;
+                // case Key.NumLock: return DoomKey.NumLock;
+                // case Key.PrintScreen: return DoomKey.PrintScreen;
+                case Key.Pause: return DoomKey.Pause;
                 case Key.F1: return DoomKey.F1;
                 case Key.F2: return DoomKey.F2;
                 case Key.F3: return DoomKey.F3;
@@ -299,12 +402,42 @@ namespace ManagedDoom.Silk
                 case Key.F13: return DoomKey.F13;
                 case Key.F14: return DoomKey.F14;
                 case Key.F15: return DoomKey.F15;
+                // case Key.F16: return DoomKey.F16;
+                // case Key.F17: return DoomKey.F17;
+                // case Key.F18: return DoomKey.F18;
+                // case Key.F19: return DoomKey.F19;
+                // case Key.F20: return DoomKey.F20;
+                // case Key.F21: return DoomKey.F21;
+                // case Key.F22: return DoomKey.F22;
+                // case Key.F23: return DoomKey.F23;
+                // case Key.F24: return DoomKey.F24;
+                // case Key.F25: return DoomKey.F25;
+                case Key.Keypad0: return DoomKey.Numpad0;
+                case Key.Keypad1: return DoomKey.Numpad1;
+                case Key.Keypad2: return DoomKey.Numpad2;
+                case Key.Keypad3: return DoomKey.Numpad3;
+                case Key.Keypad4: return DoomKey.Numpad4;
+                case Key.Keypad5: return DoomKey.Numpad5;
+                case Key.Keypad6: return DoomKey.Numpad6;
+                case Key.Keypad7: return DoomKey.Numpad7;
+                case Key.Keypad8: return DoomKey.Numpad8;
+                case Key.Keypad9: return DoomKey.Numpad9;
+                // case Key.KeypadDecimal: return DoomKey.Decimal;
+                case Key.KeypadDivide: return DoomKey.Divide;
+                case Key.KeypadMultiply: return DoomKey.Multiply;
+                case Key.KeypadSubtract: return DoomKey.Subtract;
+                case Key.KeypadAdd: return DoomKey.Add;
+                case Key.KeypadEnter: return DoomKey.Enter;
+                case Key.KeypadEqual: return DoomKey.Equal;
                 case Key.ShiftLeft: return DoomKey.LShift;
-                case Key.ShiftRight: return DoomKey.RShift;
                 case Key.ControlLeft: return DoomKey.LControl;
-                case Key.ControlRight: return DoomKey.RControl;
                 case Key.AltLeft: return DoomKey.LAlt;
+                // case Key.SuperLeft: return DoomKey.SuperLeft;
+                case Key.ShiftRight: return DoomKey.RShift;
+                case Key.ControlRight: return DoomKey.RControl;
                 case Key.AltRight: return DoomKey.RAlt;
+                // case Key.SuperRight: return DoomKey.SuperRight;
+                case Key.Menu: return DoomKey.Menu;
                 default: return DoomKey.Unknown;
             }
         }
@@ -313,32 +446,6 @@ namespace ManagedDoom.Silk
         {
             switch (key)
             {
-                case DoomKey.Backspace: return Key.Backspace;
-                case DoomKey.Tab: return Key.Tab;
-                case DoomKey.Enter: return Key.Enter;
-                case DoomKey.Pause: return Key.Pause;
-                case DoomKey.Escape: return Key.Escape;
-                case DoomKey.Space: return Key.Space;
-                case DoomKey.PageUp: return Key.PageUp;
-                case DoomKey.PageDown: return Key.PageDown;
-                case DoomKey.End: return Key.End;
-                case DoomKey.Home: return Key.Home;
-                case DoomKey.Left: return Key.Left;
-                case DoomKey.Up: return Key.Up;
-                case DoomKey.Right: return Key.Right;
-                case DoomKey.Down: return Key.Down;
-                case DoomKey.Insert: return Key.Insert;
-                case DoomKey.Delete: return Key.Delete;
-                case DoomKey.Num0: return Key.Number0;
-                case DoomKey.Num1: return Key.Number1;
-                case DoomKey.Num2: return Key.Number2;
-                case DoomKey.Num3: return Key.Number3;
-                case DoomKey.Num4: return Key.Number4;
-                case DoomKey.Num5: return Key.Number5;
-                case DoomKey.Num6: return Key.Number6;
-                case DoomKey.Num7: return Key.Number7;
-                case DoomKey.Num8: return Key.Number8;
-                case DoomKey.Num9: return Key.Number9;
                 case DoomKey.A: return Key.A;
                 case DoomKey.B: return Key.B;
                 case DoomKey.C: return Key.C;
@@ -365,20 +472,65 @@ namespace ManagedDoom.Silk
                 case DoomKey.X: return Key.X;
                 case DoomKey.Y: return Key.Y;
                 case DoomKey.Z: return Key.Z;
-                case DoomKey.Numpad0: return Key.Keypad0;
-                case DoomKey.Numpad1: return Key.Keypad1;
-                case DoomKey.Numpad2: return Key.Keypad2;
-                case DoomKey.Numpad3: return Key.Keypad3;
-                case DoomKey.Numpad4: return Key.Keypad4;
-                case DoomKey.Numpad5: return Key.Keypad5;
-                case DoomKey.Numpad6: return Key.Keypad6;
-                case DoomKey.Numpad7: return Key.Keypad7;
-                case DoomKey.Numpad8: return Key.Keypad8;
-                case DoomKey.Numpad9: return Key.Keypad9;
-                case DoomKey.Multiply: return Key.KeypadMultiply;
+                case DoomKey.Num0: return Key.Number0;
+                case DoomKey.Num1: return Key.Number1;
+                case DoomKey.Num2: return Key.Number2;
+                case DoomKey.Num3: return Key.Number3;
+                case DoomKey.Num4: return Key.Number4;
+                case DoomKey.Num5: return Key.Number5;
+                case DoomKey.Num6: return Key.Number6;
+                case DoomKey.Num7: return Key.Number7;
+                case DoomKey.Num8: return Key.Number8;
+                case DoomKey.Num9: return Key.Number9;
+                case DoomKey.Escape: return Key.Escape;
+                case DoomKey.LControl: return Key.ControlLeft;
+                case DoomKey.LShift: return Key.ShiftLeft;
+                case DoomKey.LAlt: return Key.AltLeft;
+                // case DoomKey.LSystem: return Key.LSystem;
+                case DoomKey.RControl: return Key.ControlRight;
+                case DoomKey.RShift: return Key.ShiftRight;
+                case DoomKey.RAlt: return Key.AltRight;
+                // case DoomKey.RSystem: return Key.RSystem;
+                case DoomKey.Menu: return Key.Menu;
+                case DoomKey.LBracket: return Key.LeftBracket;
+                case DoomKey.RBracket: return Key.RightBracket;
+                case DoomKey.Semicolon: return Key.Semicolon;
+                case DoomKey.Comma: return Key.Comma;
+                case DoomKey.Period: return Key.Period;
+                // case DoomKey.Quote: return Key.Quote;
+                case DoomKey.Slash: return Key.Slash;
+                case DoomKey.Backslash: return Key.BackSlash;
+                // case DoomKey.Tilde: return Key.Tilde;
+                case DoomKey.Equal: return Key.Equal;
+                // case DoomKey.Hyphen: return Key.Hyphen;
+                case DoomKey.Space: return Key.Space;
+                case DoomKey.Enter: return Key.Enter;
+                case DoomKey.Backspace: return Key.Backspace;
+                case DoomKey.Tab: return Key.Tab;
+                case DoomKey.PageUp: return Key.PageUp;
+                case DoomKey.PageDown: return Key.PageDown;
+                case DoomKey.End: return Key.End;
+                case DoomKey.Home: return Key.Home;
+                case DoomKey.Insert: return Key.Insert;
+                case DoomKey.Delete: return Key.Delete;
                 case DoomKey.Add: return Key.KeypadAdd;
                 case DoomKey.Subtract: return Key.KeypadSubtract;
+                case DoomKey.Multiply: return Key.KeypadMultiply;
                 case DoomKey.Divide: return Key.KeypadDivide;
+                case DoomKey.Left: return Key.Left;
+                case DoomKey.Right: return Key.Right;
+                case DoomKey.Up: return Key.Up;
+                case DoomKey.Down: return Key.Down;
+                case DoomKey.Numpad0: return Key.Number0;
+                case DoomKey.Numpad1: return Key.Number1;
+                case DoomKey.Numpad2: return Key.Number2;
+                case DoomKey.Numpad3: return Key.Number3;
+                case DoomKey.Numpad4: return Key.Number4;
+                case DoomKey.Numpad5: return Key.Number5;
+                case DoomKey.Numpad6: return Key.Number6;
+                case DoomKey.Numpad7: return Key.Number7;
+                case DoomKey.Numpad8: return Key.Number8;
+                case DoomKey.Numpad9: return Key.Number9;
                 case DoomKey.F1: return Key.F1;
                 case DoomKey.F2: return Key.F2;
                 case DoomKey.F3: return Key.F3;
@@ -394,12 +546,7 @@ namespace ManagedDoom.Silk
                 case DoomKey.F13: return Key.F13;
                 case DoomKey.F14: return Key.F14;
                 case DoomKey.F15: return Key.F15;
-                case DoomKey.LShift: return Key.ShiftLeft;
-                case DoomKey.RShift: return Key.ShiftRight;
-                case DoomKey.LControl: return Key.ControlLeft;
-                case DoomKey.RControl: return Key.ControlRight;
-                case DoomKey.LAlt: return Key.AltLeft;
-                case DoomKey.RAlt: return Key.AltRight;
+                case DoomKey.Pause: return Key.Pause;
                 default: return Key.Unknown;
             }
         }
@@ -408,7 +555,7 @@ namespace ManagedDoom.Silk
         {
             get
             {
-                return 9;
+                return 15;
             }
         }
 
@@ -416,11 +563,12 @@ namespace ManagedDoom.Silk
         {
             get
             {
-                return 3;
+                return config.mouse_sensitivity;
             }
 
             set
             {
+                config.mouse_sensitivity = value;
             }
         }
     }

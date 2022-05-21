@@ -96,7 +96,7 @@ namespace ManagedDoom.Silk
                 }
             }
 
-            userInput = new SilkUserInput(config, window, this);
+            userInput = new SilkUserInput(config, window, this, !args.nomouse.Present);
 
             doom = new Doom(args, config, content, video, sound, music, userInput);
         }
