@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="DrippyAL" Version="1.1.2" />
-    <PackageReference Include="MeltySynth" Version="2.2.2" />
+    <PackageReference Include="MeltySynth" Version="2.2.3" />
     <PackageReference Include="Silk.NET.Input.Glfw" Version="2.15.0" />
     <PackageReference Include="Silk.NET.Windowing.Glfw" Version="2.15.0" />
     <PackageReference Include="TrippyGL" Version="1.1.1" />
