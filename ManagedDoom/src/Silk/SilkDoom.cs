@@ -35,8 +35,6 @@ namespace ManagedDoom.Silk
             {
                 this.args = args;
 
-                CheckPathResolver();
-
                 config = SilkConfigUtilities.GetConfig();
                 content = new GameContent(args);
 
@@ -47,6 +45,7 @@ namespace ManagedDoom.Silk
                 windowOptions.Size = new Vector2D<int>(config.video_screenwidth, config.video_screenheight);
                 windowOptions.Title = ApplicationInfo.Title;
                 windowOptions.WindowState = config.video_fullscreen ? WindowState.Fullscreen : WindowState.Normal;
+                windowOptions.IsVisible = false;
 
                 window = Window.Create(windowOptions);
 
@@ -78,9 +77,7 @@ namespace ManagedDoom.Silk
         private void OnLoad()
         {
             gl = window.CreateOpenGL();
-            gl.ClearColor(0.25F, 0.25F, 0.25F, 1F);
-            gl.Clear(ClearBufferMask.ColorBufferBit);
-            window.SwapBuffers();
+
             video = new SilkVideo(config, content, window, gl);
 
             if (!args.nosound.Present && !(args.nosfx.Present && args.nomusic.Present))
@@ -112,6 +109,11 @@ namespace ManagedDoom.Silk
         private void OnRender(double obj)
         {
             video.Render(doom);
+
+            if (!window.IsVisible)
+            {
+                window.IsVisible = true;
+            }
         }
 
         private void OnResize(Vector2D<int> obj)
@@ -177,22 +179,6 @@ namespace ManagedDoom.Silk
                 window.Close();
                 window.Dispose();
                 window = null;
-            }
-        }
-
-        private static void CheckPathResolver()
-        {
-            if (PathResolver.Default is DefaultPathResolver pr)
-            {
-                pr.Resolvers = new()
-                {
-                    DefaultPathResolver.NativePackageResolver,
-                    DefaultPathResolver.BaseDirectoryResolver,
-                    DefaultPathResolver.MainModuleDirectoryResolver,
-                    // DefaultPathResolver.RuntimesFolderResolver,
-                    DefaultPathResolver.LinuxVersioningResolver,
-                    DefaultPathResolver.MacVersioningResolver,
-                };
             }
         }
 
