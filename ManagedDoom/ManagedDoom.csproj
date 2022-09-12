@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DrippyAL" Version="1.1.3" />
+    <PackageReference Include="DrippyAL" Version="2.0.0" />
     <PackageReference Include="MeltySynth" Version="2.3.0" />
     <PackageReference Include="Silk.NET.Input.Glfw" Version="2.16.0" />
     <PackageReference Include="Silk.NET.Windowing.Glfw" Version="2.16.0" />

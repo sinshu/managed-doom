@@ -36,7 +36,7 @@ namespace ManagedDoom.Silk
 
         private Config config;
 
-        private WaveData[] buffers;
+        private AudioClip[] buffers;
         private float[] amplitudes;
 
         private DoomRandom random;
@@ -63,7 +63,7 @@ namespace ManagedDoom.Silk
 
                 config.audio_soundvolume = Math.Clamp(config.audio_soundvolume, 0, MaxVolume);
 
-                buffers = new WaveData[DoomInfo.SfxNames.Length];
+                buffers = new AudioClip[DoomInfo.SfxNames.Length];
                 amplitudes = new float[DoomInfo.SfxNames.Length];
 
                 if (config.audio_randompitch)
@@ -85,7 +85,7 @@ namespace ManagedDoom.Silk
                     var samples = GetSamples(content.Wad, name, out sampleRate, out sampleCount);
                     if (!samples.IsEmpty)
                     {
-                        buffers[i] = new WaveData(device, sampleRate, 1, samples);
+                        buffers[i] = new AudioClip(device, sampleRate, 1, samples);
                         amplitudes[i] = GetAmplitude(samples, sampleRate, sampleCount);
                     }
                 }
@@ -253,7 +253,7 @@ namespace ManagedDoom.Silk
                         channel.Stop();
                     }
 
-                    channel.WaveData = buffers[(int)info.Reserved];
+                    channel.AudioClip = buffers[(int)info.Reserved];
                     SetParam(channel, info);
                     channel.Pitch = GetPitch(info.Type, info.Reserved);
                     channel.Play();
@@ -269,7 +269,7 @@ namespace ManagedDoom.Silk
                     uiChannel.Stop();
                 }
                 uiChannel.Volume = masterVolumeDecay;
-                uiChannel.WaveData = buffers[(int)uiReserved];
+                uiChannel.AudioClip = buffers[(int)uiReserved];
                 uiChannel.Play();
                 uiReserved = Sfx.NONE;
             }
@@ -399,7 +399,7 @@ namespace ManagedDoom.Silk
                 var channel = channels[i];
 
                 if (channel.State == PlaybackState.Playing &&
-                    channel.WaveData.Duration - channel.PlayingOffset > TimeSpan.FromMilliseconds(200))
+                    channel.AudioClip.Duration - channel.PlayingOffset > TimeSpan.FromMilliseconds(200))
                 {
                     channels[i].Pause();
                 }
