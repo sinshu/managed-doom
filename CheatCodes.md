@@ -1,4 +1,4 @@
-## Doom Cheat Codes
+# Doom Cheat Codes
 
 * IDDQD -- Invulnerability
 * IDBEHOLDI -- Temporary invisibility
