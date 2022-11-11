@@ -1,4 +1,19 @@
-# Doom Cheat Codes
+# Guide
+
+## Game Play
+
+Press, `ESC` to release the mouse. This also shows the main menu.
+
+## Getting Started
+
+Add one of the following approved `WAD` files in the same folder as `managed-doom.exe`.
+
+* DOOM.WAD - Ultimate Doom
+* DOOM2.WAD - Doom II
+* PLTONIA.WAD - Final Doom
+* TNT.WAD - Final Doom
+
+## Cheat Codes
 
 * IDDQD -- Invulnerability
 * IDBEHOLDI -- Temporary invisibility
