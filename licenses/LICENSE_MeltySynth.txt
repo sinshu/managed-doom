@@ -1,8 +1,11 @@
+MIT License
+
 C# Synth (http://csharpsynthproject.codeplex.com):
 Copyright (C) 2014 Alex Veltsistas
 
 TinySoundFont (https://github.com/schellingb/TinySoundFont):
-Copyright (C) 2017-2018 Bernhard Schelling (Based on SFZero, Copyright (C) 2012 Steve Folta, https://github.com/stevefolta/SFZero)
+Copyright (C) 2017, 2018 Bernhard Schelling
+Based on SFZero, Copyright (C) 2012 Steve Folta (https://github.com/stevefolta/SFZero)
 
 MeltySynth:
 Copyright (C) 2021 Nobuaki Tanaka

@@ -73,6 +73,9 @@ namespace ManagedDoom.Video
                 screen = new DrawScreen(content.Wad, 320, 200);
             }
 
+            config.video_gamescreensize = Math.Clamp(config.video_gamescreensize, 0, MaxWindowSize);
+            config.video_gammacorrection = Math.Clamp(config.video_gammacorrection, 0, MaxGammaCorrectionLevel);
+
             menu = new MenuRenderer(content.Wad, screen);
             threeD = new ThreeDRenderer(content, screen, config.video_gamescreensize);
             statusBar = new StatusBarRenderer(content.Wad, screen);

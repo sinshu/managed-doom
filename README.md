@@ -70,19 +70,16 @@ https://www.youtube.com/watch?v=9_tncwL7qvM
 Managed Doom is distributed under the [GPLv2 license](licenses/LICENSE_ManagedDoom.txt).  
 Managed Doom uses the following libraries.
 
-* [SFML](https://github.com/SFML/SFML), [CSFML](https://github.com/SFML/CSFML) and [SFML.Net](https://github.com/SFML/SFML.Net) by Laurent Gomila ([zlib license](licenses/LICENSE_SFML.txt))
+* [Silk.NET](https://github.com/dotnet/Silk.NET) by the the Silk.NET team ([MIT License](licenses/LICENSE_SilkNET.txt))
+* [TrippyGL](https://github.com/SilkCommunity/TrippyGL) by Thomas Mizrahi ([MIT License](licenses/LICENSE_TrippyGL.txt))
 * [TimGM6mb](https://musescore.org/en/handbook/soundfonts-and-sfz-files#gm_soundfonts) by Tim Brechbill ([GPLv2 license](licenses/LICENSE_TimGM6mb.txt))
+* [DrippyAL](https://github.com/sinshu/DrippyAL) ([MIT License](licenses/LICENSE_DrippyAL.txt))
 * [MeltySynth](https://github.com/sinshu/meltysynth/) ([MIT license](licenses/LICENSE_MeltySynth.txt))
 
-SFML uses the following libraries.
+Silk.NET uses the following native libraries.
 
-* FreeType ([GPLv2 license](licenses/LICENSE_FreeType.txt))
-* libjpeg (public domain)
-* stb_image (public domain)
+* GLFW ([zlib/libpng license](licenses/LICENSE_GLFW.txt))
 * OpenAL Soft ([LGPL license](licenses/LICENSE_OpenALSoft.txt))
-* libogg ([BSD-3 license](licenses/LICENSE_libogg.txt))
-* libvorbis ([BSD-3 license](licenses/LICENSE_libvorbis.txt))
-* libFLAC ([BSD-3 license](licenses/LICENSE_libFRAC.txt))
 
 ## References
 
