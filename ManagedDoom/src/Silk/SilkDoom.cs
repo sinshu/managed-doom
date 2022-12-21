@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Runtime.ExceptionServices;
-using Silk.NET.Core.Loader;
 using Silk.NET.Input;
+using Silk.NET.Input.Glfw;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
+using Silk.NET.Windowing.Glfw;
 using DrippyAL;
 
 namespace ManagedDoom.Silk
@@ -35,6 +36,9 @@ namespace ManagedDoom.Silk
             {
                 this.args = args;
 
+                GlfwWindowing.RegisterPlatform();
+                GlfwInput.RegisterPlatform();
+
                 config = SilkConfigUtilities.GetConfig();
                 content = new GameContent(args);
 
@@ -45,16 +49,21 @@ namespace ManagedDoom.Silk
                 windowOptions.Size = new Vector2D<int>(config.video_screenwidth, config.video_screenheight);
                 windowOptions.Title = ApplicationInfo.Title;
                 windowOptions.WindowState = config.video_fullscreen ? WindowState.Fullscreen : WindowState.Normal;
-                windowOptions.IsVisible = false;
 
                 window = Window.Create(windowOptions);
 
-                if (!args.timedemo.Present)
+                if (args.timedemo.Present)
+                {
+                    window.UpdatesPerSecond = 0;
+                    window.FramesPerSecond = 0;
+                    window.VSync = false;
+                }
+                else
                 {
                     window.UpdatesPerSecond = 35;
                     window.FramesPerSecond = 35;
+                    window.VSync = true;
                 }
-                window.VSync = false;
 
                 window.Load += OnLoad;
                 window.Update += OnUpdate;
@@ -77,6 +86,9 @@ namespace ManagedDoom.Silk
         private void OnLoad()
         {
             gl = window.CreateOpenGL();
+            gl.ClearColor(0.15F, 0.15F, 0.15F, 1F);
+            gl.Clear(ClearBufferMask.ColorBufferBit);
+            window.SwapBuffers();
 
             video = new SilkVideo(config, content, window, gl);
 
@@ -109,11 +121,6 @@ namespace ManagedDoom.Silk
         private void OnRender(double obj)
         {
             video.Render(doom);
-
-            if (!window.IsVisible)
-            {
-                window.IsVisible = true;
-            }
         }
 
         private void OnResize(Vector2D<int> obj)
