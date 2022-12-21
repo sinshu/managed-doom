@@ -62,7 +62,7 @@ namespace ManagedDoom.Silk
                 {
                     window.UpdatesPerSecond = 35;
                     window.FramesPerSecond = 35;
-                    window.VSync = true;
+                    window.VSync = false;
                 }
 
                 window.Load += OnLoad;
