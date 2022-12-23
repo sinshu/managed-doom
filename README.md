@@ -68,7 +68,7 @@ https://www.youtube.com/watch?v=9_tncwL7qvM
 ## License
 
 Managed Doom is distributed under the [GPLv2 license](licenses/LICENSE_ManagedDoom.txt).  
-Managed Doom uses the following libraries.
+Managed Doom uses the following libraries:
 
 * [Silk.NET](https://github.com/dotnet/Silk.NET) by the the Silk.NET team ([MIT License](licenses/LICENSE_SilkNET.txt))
 * [TrippyGL](https://github.com/SilkCommunity/TrippyGL) by Thomas Mizrahi ([MIT License](licenses/LICENSE_TrippyGL.txt))
@@ -76,10 +76,10 @@ Managed Doom uses the following libraries.
 * [DrippyAL](https://github.com/sinshu/DrippyAL) ([MIT License](licenses/LICENSE_DrippyAL.txt))
 * [MeltySynth](https://github.com/sinshu/meltysynth/) ([MIT license](licenses/LICENSE_MeltySynth.txt))
 
-Silk.NET uses the following native libraries.
+Silk.NET uses the following native libraries:
 
-* GLFW ([zlib/libpng license](licenses/LICENSE_GLFW.txt))
-* OpenAL Soft ([LGPL license](licenses/LICENSE_OpenALSoft.txt))
+* [GLFW](https://www.glfw.org/) ([zlib/libpng license](licenses/LICENSE_GLFW.txt))
+* [OpenAL Soft](https://openal-soft.org/) ([LGPL license](licenses/LICENSE_OpenALSoft.txt))
 
 ## References
 
