@@ -41,10 +41,10 @@ namespace ManagedDoom.Silk
 
         private DoomRandom random;
 
-        private Channel[] channels;
+        private AudioChannel[] channels;
         private ChannelInfo[] infos;
 
-        private Channel uiChannel;
+        private AudioChannel uiChannel;
         private Sfx uiReserved;
 
         private Mobj listener;
@@ -90,15 +90,15 @@ namespace ManagedDoom.Silk
                     }
                 }
 
-                channels = new Channel[channelCount];
+                channels = new AudioChannel[channelCount];
                 infos = new ChannelInfo[channelCount];
                 for (var i = 0; i < channels.Length; i++)
                 {
-                    channels[i] = new Channel(device);
+                    channels[i] = new AudioChannel(device);
                     infos[i] = new ChannelInfo();
                 }
 
-                uiChannel = new Channel(device);
+                uiChannel = new AudioChannel(device);
                 uiReserved = Sfx.NONE;
 
                 masterVolumeDecay = (float)config.audio_soundvolume / MaxVolume;
@@ -419,7 +419,7 @@ namespace ManagedDoom.Silk
             }
         }
 
-        private void SetParam(Channel sound, ChannelInfo info)
+        private void SetParam(AudioChannel sound, ChannelInfo info)
         {
             if (info.Type == SfxType.Diffuse)
             {
