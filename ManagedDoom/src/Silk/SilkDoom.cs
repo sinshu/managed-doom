@@ -10,7 +10,7 @@ using DrippyAL;
 
 namespace ManagedDoom.Silk
 {
-    public class SilkDoom : IDisposable
+    public partial class SilkDoom : IDisposable
     {
         private CommandLineArgs args;
 
@@ -48,23 +48,10 @@ namespace ManagedDoom.Silk
                 var windowOptions = WindowOptions.Default;
                 windowOptions.Size = new Vector2D<int>(config.video_screenwidth, config.video_screenheight);
                 windowOptions.Title = ApplicationInfo.Title;
+                windowOptions.VSync = false;
                 windowOptions.WindowState = config.video_fullscreen ? WindowState.Fullscreen : WindowState.Normal;
 
                 window = Window.Create(windowOptions);
-
-                if (args.timedemo.Present)
-                {
-                    window.UpdatesPerSecond = 0;
-                    window.FramesPerSecond = 0;
-                    window.VSync = false;
-                }
-                else
-                {
-                    window.UpdatesPerSecond = 35;
-                    window.FramesPerSecond = 35;
-                    window.VSync = false;
-                }
-
                 window.Load += OnLoad;
                 window.Update += OnUpdate;
                 window.Render += OnRender;
@@ -76,11 +63,6 @@ namespace ManagedDoom.Silk
                 Dispose();
                 ExceptionDispatchInfo.Throw(e);
             }
-        }
-
-        public void Run()
-        {
-            window.Run();
         }
 
         private void OnLoad()
