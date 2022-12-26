@@ -9,8 +9,7 @@
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
     <UseSystemResourceKeys>true</UseSystemResourceKeys>
-    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
-    <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+    <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
     <DebuggerSupport>false</DebuggerSupport>
     <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
     <EventSourceSupport>false</EventSourceSupport>
