@@ -268,6 +268,7 @@ namespace ManagedDoom.Silk
                 {
                     uiChannel.Stop();
                 }
+                uiChannel.Position = new Vector3(0, 0, -1);
                 uiChannel.Volume = masterVolumeDecay;
                 uiChannel.AudioClip = buffers[(int)uiReserved];
                 uiChannel.Play();
@@ -423,7 +424,7 @@ namespace ManagedDoom.Silk
         {
             if (info.Type == SfxType.Diffuse)
             {
-                sound.Position = new Vector3(0, 0, 1);
+                sound.Position = new Vector3(0, 0, -1);
                 sound.Volume = 0.01F * masterVolumeDecay * info.Volume;
             }
             else
@@ -446,14 +447,14 @@ namespace ManagedDoom.Silk
 
                 if (Math.Abs(x) < 16 && Math.Abs(y) < 16)
                 {
-                    sound.Position = new Vector3(0, 0, 1);
+                    sound.Position = new Vector3(0, 0, -1);
                     sound.Volume = 0.01F * masterVolumeDecay * info.Volume;
                 }
                 else
                 {
                     var dist = MathF.Sqrt(x * x + y * y);
-                    var angle = MathF.Atan2(y, x) - (float)listener.Angle.ToRadian() + MathF.PI / 2;
-                    sound.Position = new Vector3(MathF.Cos(angle), 0, MathF.Sin(angle));
+                    var angle = MathF.Atan2(y, x) - (float)listener.Angle.ToRadian();
+                    sound.Position = new Vector3(-MathF.Sin(angle), 0, -MathF.Cos(angle));
                     sound.Volume = 0.01F * masterVolumeDecay * GetDistanceDecay(dist) * info.Volume;
                 }
             }
