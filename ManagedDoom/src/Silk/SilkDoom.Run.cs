@@ -8,6 +8,12 @@ namespace ManagedDoom.Silk
 {
     public partial class SilkDoom : IDisposable
     {
+        // The main loop provided by Silk.NET with the IWindow.Run method uses a busy loop
+        // to control the drawing timing, which is CPU-intensive.
+        // Here, I have implemented my own main loop to reduce the CPU load, targeting only
+        // Windows, which I can test at hand.
+        // In other environments, the IWindow.Run method provided by Silk.NET is used.
+
 #if !WINDOWS_RELEASE
         public void Run()
         {
