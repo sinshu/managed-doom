@@ -169,7 +169,7 @@ namespace ManagedDoom.Silk
                 left = new float[blockLength];
                 right = new float[blockLength];
 
-                audioStream = new AudioStream(device, MusDecoder.SampleRate, 2, latency, blockLength);
+                audioStream = new AudioStream(device, MusDecoder.SampleRate, 2, true, latency, blockLength);
             }
 
             public void SetDecoder(IDecoder decoder)
