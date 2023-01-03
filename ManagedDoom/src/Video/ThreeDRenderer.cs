@@ -1328,11 +1328,7 @@ namespace ManagedDoom.Video
             //
 
             var planeLightLevel = (frontSector.LightLevel >> lightSegShift) + extraLight;
-            if (planeLightLevel >= lightLevelCount)
-            {
-                planeLightLevel = lightLevelCount - 1;
-            }
-            var planeLights = zLight[planeLightLevel];
+            var planeLights = zLight[Math.Clamp(planeLightLevel, 0, lightLevelCount - 1)];
 
             //
             // Prepare to record the rendering history.
@@ -1675,11 +1671,7 @@ namespace ManagedDoom.Video
             //
 
             var planeLightLevel = (frontSector.LightLevel >> lightSegShift) + extraLight;
-            if (planeLightLevel >= lightLevelCount)
-            {
-                planeLightLevel = lightLevelCount - 1;
-            }
-            var planeLights = zLight[planeLightLevel];
+            var planeLights = zLight[Math.Clamp(planeLightLevel, 0, lightLevelCount - 1)];
 
             //
             // Prepare to record the rendering history.
