@@ -299,6 +299,11 @@ namespace ManagedDoom.Silk
                 mouseY = mouse.Position.Y;
                 mouseDeltaX = mouseX - mousePrevX;
                 mouseDeltaY = mouseY - mousePrevY;
+
+                if (config.mouse_disableyaxis)
+                {
+                    mouseDeltaY = 0;
+                }
             }
         }
 
