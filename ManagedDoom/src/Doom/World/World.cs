@@ -143,6 +143,16 @@ namespace ManagedDoom
         public UpdateResult Update()
         {
             var players = options.Players;
+
+            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                if (players[i].InGame)
+                {
+                    players[i].UpdateFrameInterpolationInfo();
+                }
+            }
+            thinkers.UpdateFrameInterpolationInfo();
+
             for (var i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (players[i].InGame)

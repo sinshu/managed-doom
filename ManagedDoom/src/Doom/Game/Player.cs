@@ -16,6 +16,7 @@
 
 
 using System;
+using System.Numerics;
 
 namespace ManagedDoom
 {
@@ -122,6 +123,10 @@ namespace ManagedDoom
         // True if secret level has been done.
         private bool didSecret;
 
+        private bool interpolate;
+        private Fixed oldViewZ;
+        private Angle oldAngle;
+
         public Player(int number)
         {
             this.number = number;
@@ -205,6 +210,10 @@ namespace ManagedDoom
             }
 
             didSecret = false;
+
+            interpolate = false;
+            oldViewZ = Fixed.Zero;
+            oldAngle = Angle.Ang0;
         }
 
         public void Reborn()
@@ -269,6 +278,10 @@ namespace ManagedDoom
             }
 
             didSecret = false;
+
+            interpolate = false;
+            oldViewZ = Fixed.Zero;
+            oldAngle = Angle.Ang0;
         }
 
         public void FinishLevel()
@@ -300,6 +313,45 @@ namespace ManagedDoom
 
             this.message = message;
             messageTime = 4 * GameConst.TicRate;
+        }
+
+        public void UpdateFrameInterpolationInfo()
+        {
+            interpolate = true;
+            oldViewZ = viewZ;
+            oldAngle = mobj.Angle;
+        }
+
+        public Fixed GetInterpolatedViewZ(Fixed frameFrac)
+        {
+            if (interpolate)
+            {
+                return oldViewZ + frameFrac * (viewZ - oldViewZ);
+            }
+            else
+            {
+                return viewZ;
+            }
+        }
+
+        public Angle GetInterpolatedAngle(Fixed frameFrac)
+        {
+            if (interpolate)
+            {
+                var delta = mobj.Angle - oldAngle;
+                if (delta < Angle.Ang180)
+                {
+                    return oldAngle + Angle.FromDegree(frameFrac.ToDouble() * delta.ToDegree());
+                }
+                else
+                {
+                    return oldAngle - Angle.FromDegree(frameFrac.ToDouble() * (360.0 - delta.ToDegree()));
+                }
+            }
+            else
+            {
+                return mobj.Angle;
+            }
         }
 
         public int Number => number;

@@ -37,6 +37,8 @@ namespace ManagedDoom.Video
 
         private int windowSize;
 
+        private Fixed frameFrac;
+
         public ThreeDRenderer(GameContent content, DrawScreen screen, int windowSize)
         {
             colorMap = content.ColorMap;
@@ -707,14 +709,16 @@ namespace ManagedDoom.Video
 
 
 
-        public void Render(Player player)
+        public void Render(Player player, Fixed frameFrac)
         {
+            this.frameFrac = frameFrac;
+
             world = player.Mobj.World;
 
-            viewX = player.Mobj.X;
-            viewY = player.Mobj.Y;
-            viewZ = player.ViewZ;
-            viewAngle = player.Mobj.Angle;
+            viewX = player.Mobj.GetInterpolatedX(frameFrac);
+            viewY = player.Mobj.GetInterpolatedY(frameFrac);
+            viewZ = player.GetInterpolatedViewZ(frameFrac);
+            viewAngle = player.GetInterpolatedAngle(frameFrac);
 
             viewSin = Trig.Sin(viewAngle);
             viewCos = Trig.Cos(viewAngle);
@@ -2453,9 +2457,13 @@ namespace ManagedDoom.Video
                 return;
             }
 
+            var thingX = thing.GetInterpolatedX(frameFrac);
+            var thingY = thing.GetInterpolatedY(frameFrac);
+            var thingZ = thing.GetInterpolatedZ(frameFrac);
+
             // Transform the origin point.
-            var trX = thing.X - viewX;
-            var trY = thing.Y - viewY;
+            var trX = thingX - viewX;
+            var trY = thingY - viewY;
 
             var gxt = (trX * viewCos);
             var gyt = -(trY * viewSin);
@@ -2489,7 +2497,7 @@ namespace ManagedDoom.Video
             if (spriteFrame.Rotate)
             {
                 // Choose a different rotation based on player view.
-                var ang = Geometry.PointToAngle(viewX, viewY, thing.X, thing.Y);
+                var ang = Geometry.PointToAngle(viewX, viewY, thingX, thingY);
                 var rot = (ang.Data - thing.Angle.Data + (uint)(Angle.Ang45.Data / 2) * 9) >> 29;
                 lump = spriteFrame.Patches[rot];
                 flip = spriteFrame.Flip[rot];
@@ -2526,10 +2534,10 @@ namespace ManagedDoom.Video
 
             vis.MobjFlags = thing.Flags;
             vis.Scale = xScale;
-            vis.GlobalX = thing.X;
-            vis.GlobalY = thing.Y;
-            vis.GlobalBottomZ = thing.Z;
-            vis.GlobalTopZ = thing.Z + Fixed.FromInt(lump.TopOffset);
+            vis.GlobalX = thingX;
+            vis.GlobalY = thingY;
+            vis.GlobalBottomZ = thingZ;
+            vis.GlobalTopZ = thingZ + Fixed.FromInt(lump.TopOffset);
             vis.TextureAlt = vis.GlobalTopZ - viewZ;
             vis.X1 = x1 < 0 ? 0 : x1;
             vis.X2 = x2 >= windowWidth ? windowWidth - 1 : x2;

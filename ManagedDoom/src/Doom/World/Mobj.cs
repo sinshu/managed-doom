@@ -164,6 +164,11 @@ namespace ManagedDoom
         // Thing being chased/attacked for tracers.
         private Mobj tracer;
 
+        private bool interpolate;
+        private Fixed oldX;
+        private Fixed oldY;
+        private Fixed oldZ;
+
         public Mobj(World world)
         {
             this.world = world;
@@ -362,6 +367,50 @@ namespace ManagedDoom
 
             // Remove the old monster.
             world.ThingAllocation.RemoveMobj(this);
+        }
+
+        public override void UpdateFrameInterpolationInfo()
+        {
+            interpolate = true;
+            oldX = x;
+            oldY = y;
+            oldZ = z;
+        }
+
+        public Fixed GetInterpolatedX(Fixed frameFrac)
+        {
+            if (interpolate)
+            {
+                return oldX + frameFrac * (x - oldX);
+            }
+            else
+            {
+                return x;
+            }
+        }
+
+        public Fixed GetInterpolatedY(Fixed frameFrac)
+        {
+            if (interpolate)
+            {
+                return oldY + frameFrac * (y - oldY);
+            }
+            else
+            {
+                return y;
+            }
+        }
+
+        public Fixed GetInterpolatedZ(Fixed frameFrac)
+        {
+            if (interpolate)
+            {
+                return oldZ + frameFrac * (z - oldZ);
+            }
+            else
+            {
+                return z;
+            }
         }
 
         public World World => world;

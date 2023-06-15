@@ -33,6 +33,10 @@ namespace ManagedDoom
         {
         }
 
+        public virtual void UpdateFrameInterpolationInfo()
+        {
+        }
+
         public Thinker Prev
         {
             get => prev;

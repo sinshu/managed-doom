@@ -30,6 +30,8 @@ namespace ManagedDoom.Silk
 
         private Doom doom;
 
+        private int frameCount;
+
         public SilkDoom(CommandLineArgs args)
         {
             try
@@ -90,19 +92,36 @@ namespace ManagedDoom.Silk
             userInput = new SilkUserInput(config, window, this, !args.nomouse.Present);
 
             doom = new Doom(args, config, content, video, sound, music, userInput);
+
+            frameCount = -1;
         }
 
         private void OnUpdate(double obj)
         {
-            if (doom.Update() == UpdateResult.Completed)
+            frameCount++;
+
+            if (frameCount % 2 == 0)
             {
-                window.Close();
+                if (doom.Update() == UpdateResult.Completed)
+                {
+                    window.Close();
+                }
             }
         }
 
         private void OnRender(double obj)
         {
-            video.Render(doom);
+            Fixed frameFrac;
+            if (frameCount % 2 == 0)
+            {
+                frameFrac = Fixed.One / 2;
+            }
+            else
+            {
+                frameFrac = Fixed.One;
+            }
+
+            video.Render(doom, frameFrac);
         }
 
         private void OnResize(Vector2D<int> obj)
