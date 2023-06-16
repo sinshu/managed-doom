@@ -136,6 +136,11 @@ namespace ManagedDoom.Video
 
         public void RenderGame(DoomGame game, Fixed frameFrac)
         {
+            if (game.Paused)
+            {
+                frameFrac = Fixed.One;
+            }
+
             if (game.State == GameState.Level)
             {
                 var consolePlayer = game.World.ConsolePlayer;

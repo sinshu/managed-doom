@@ -324,7 +324,7 @@ namespace ManagedDoom
 
         public Fixed GetInterpolatedViewZ(Fixed frameFrac)
         {
-            if (interpolate)
+            if (interpolate && mobj.World.LevelTime > 1)
             {
                 return oldViewZ + frameFrac * (viewZ - oldViewZ);
             }
