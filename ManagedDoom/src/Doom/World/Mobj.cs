@@ -164,6 +164,7 @@ namespace ManagedDoom
         // Thing being chased/attacked for tracers.
         private Mobj tracer;
 
+        // For frame interpolation.
         private bool interpolate;
         private Fixed oldX;
         private Fixed oldY;

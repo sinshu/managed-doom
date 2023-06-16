@@ -123,6 +123,7 @@ namespace ManagedDoom
         // True if secret level has been done.
         private bool didSecret;
 
+        // For frame interpolation.
         private bool interpolate;
         private Fixed oldViewZ;
         private Angle oldAngle;
@@ -324,6 +325,7 @@ namespace ManagedDoom
 
         public Fixed GetInterpolatedViewZ(Fixed frameFrac)
         {
+            // Without the second condition, flicker will occur on the first frame.
             if (interpolate && mobj.World.LevelTime > 1)
             {
                 return oldViewZ + frameFrac * (viewZ - oldViewZ);
