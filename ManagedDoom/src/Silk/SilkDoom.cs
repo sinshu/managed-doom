@@ -33,6 +33,8 @@ namespace ManagedDoom.Silk
         private int fpsScale;
         private int frameCount;
 
+        private Exception exception;
+
         public SilkDoom(CommandLineArgs args)
         {
             try
@@ -68,6 +70,14 @@ namespace ManagedDoom.Silk
             }
         }
 
+        private void Quit()
+        {
+            if (exception != null)
+            {
+                ExceptionDispatchInfo.Throw(exception);
+            }
+        }
+
         private void OnLoad()
         {
             gl = window.CreateOpenGL();
@@ -100,21 +110,40 @@ namespace ManagedDoom.Silk
 
         private void OnUpdate(double obj)
         {
-            frameCount++;
-
-            if (frameCount % fpsScale == 0)
+            try
             {
-                if (doom.Update() == UpdateResult.Completed)
+                frameCount++;
+
+                if (frameCount % fpsScale == 0)
                 {
-                    window.Close();
+                    if (doom.Update() == UpdateResult.Completed)
+                    {
+                        window.Close();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                exception = e;
+            }
+
+            if (exception != null)
+            {
+                window.Close();
             }
         }
 
         private void OnRender(double obj)
         {
-            var frameFrac = Fixed.FromInt(frameCount % fpsScale + 1) / fpsScale;
-            video.Render(doom, frameFrac);
+            try
+            {
+                var frameFrac = Fixed.FromInt(frameCount % fpsScale + 1) / fpsScale;
+                video.Render(doom, frameFrac);
+            }
+            catch (Exception e)
+            {
+                exception = e;
+            }
         }
 
         private void OnResize(Vector2D<int> obj)
@@ -184,5 +213,6 @@ namespace ManagedDoom.Silk
         }
 
         public string QuitMessage => doom.QuitMessage;
+        public Exception Exception => exception;
     }
 }

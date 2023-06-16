@@ -29,6 +29,8 @@ namespace ManagedDoom.Silk
             }
 
             window.Run();
+
+            Quit();
         }
 #else
         [DllImport("winmm.dll")]
@@ -94,8 +96,9 @@ namespace ManagedDoom.Silk
 
                 window.DoEvents();
                 window.Reset();
-
             }
+
+            Quit();
         }
 #endif
     }
