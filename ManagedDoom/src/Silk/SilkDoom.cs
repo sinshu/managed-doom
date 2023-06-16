@@ -30,6 +30,7 @@ namespace ManagedDoom.Silk
 
         private Doom doom;
 
+        private int fpsScale;
         private int frameCount;
 
         public SilkDoom(CommandLineArgs args)
@@ -93,6 +94,7 @@ namespace ManagedDoom.Silk
 
             doom = new Doom(args, config, content, video, sound, music, userInput);
 
+            fpsScale = 2;
             frameCount = -1;
         }
 
@@ -100,7 +102,7 @@ namespace ManagedDoom.Silk
         {
             frameCount++;
 
-            if (frameCount % 2 == 0)
+            if (frameCount % fpsScale == 0)
             {
                 if (doom.Update() == UpdateResult.Completed)
                 {
@@ -111,16 +113,7 @@ namespace ManagedDoom.Silk
 
         private void OnRender(double obj)
         {
-            Fixed frameFrac;
-            if (frameCount % 2 == 0)
-            {
-                frameFrac = Fixed.One / 2;
-            }
-            else
-            {
-                frameFrac = Fixed.One;
-            }
-
+            var frameFrac = Fixed.FromInt(frameCount % fpsScale + 1) / fpsScale;
             video.Render(doom, frameFrac);
         }
 
