@@ -142,6 +142,12 @@ namespace ManagedDoom
             return oldCeilingHeight + frameFrac * (ceilingHeight - oldCeilingHeight);
         }
 
+        public void DisableFrameInterpolationForOneFrame()
+        {
+            oldFloorHeight = floorHeight;
+            oldCeilingHeight = ceilingHeight;
+        }
+
         public ThingEnumerator GetEnumerator()
         {
             return new ThingEnumerator(this);

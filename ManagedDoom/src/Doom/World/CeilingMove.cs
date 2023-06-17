@@ -84,6 +84,7 @@ namespace ManagedDoom
 						{
 							case CeilingMoveType.RaiseToHighest:
 								sa.RemoveActiveCeiling(this);
+								sector.DisableFrameInterpolationForOneFrame();
 								break;
 
 							case CeilingMoveType.SilentCrushAndRaise:
@@ -148,6 +149,7 @@ namespace ManagedDoom
 							case CeilingMoveType.LowerAndCrush:
 							case CeilingMoveType.LowerToFloor:
 								sa.RemoveActiveCeiling(this);
+								sector.DisableFrameInterpolationForOneFrame();
 								break;
 
 							default:

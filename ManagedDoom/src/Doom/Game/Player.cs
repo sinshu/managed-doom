@@ -323,6 +323,11 @@ namespace ManagedDoom
             oldAngle = mobj.Angle;
         }
 
+        public void DisableFrameInterpolationForOneFrame()
+        {
+            interpolate = false;
+        }
+
         public Fixed GetInterpolatedViewZ(Fixed frameFrac)
         {
             // Without the second condition, flicker will occur on the first frame.

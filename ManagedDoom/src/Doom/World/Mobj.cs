@@ -378,6 +378,11 @@ namespace ManagedDoom
             oldZ = z;
         }
 
+        public void DisableFrameInterpolationForOneFrame()
+        {
+            interpolate = false;
+        }
+
         public Fixed GetInterpolatedX(Fixed frameFrac)
         {
             if (interpolate)
