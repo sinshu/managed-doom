@@ -985,6 +985,9 @@ namespace ManagedDoom.Video
             var frontSector = seg.FrontSector;
             var backSector = seg.BackSector;
 
+            var frontSectorFloorHeight = frontSector.GetInterpolatedFloorHeight(frameFrac);
+            var frontSectorCeilingHeight = frontSector.GetInterpolatedCeilingHeight(frameFrac);
+
             // Single sided line?
             if (backSector == null)
             {
@@ -992,17 +995,20 @@ namespace ManagedDoom.Video
                 return;
             }
 
+            var backSectorFloorHeight = backSector.GetInterpolatedFloorHeight(frameFrac);
+            var backSectorCeilingHeight = backSector.GetInterpolatedCeilingHeight(frameFrac);
+
             // Closed door.
-            if (backSector.CeilingHeight <= frontSector.FloorHeight ||
-                backSector.FloorHeight >= frontSector.CeilingHeight)
+            if (backSectorCeilingHeight <= frontSectorFloorHeight ||
+                backSectorFloorHeight >= frontSectorCeilingHeight)
             {
                 DrawSolidWall(seg, rwAngle1, x1, x2 - 1);
                 return;
             }
 
             // Window.
-            if (backSector.CeilingHeight != frontSector.CeilingHeight ||
-                backSector.FloorHeight != frontSector.FloorHeight)
+            if (backSectorCeilingHeight != frontSectorCeilingHeight ||
+                backSectorFloorHeight != frontSectorFloorHeight)
             {
                 DrawPassWall(seg, rwAngle1, x1, x2 - 1);
                 return;
@@ -1212,12 +1218,15 @@ namespace ManagedDoom.Video
             var side = seg.SideDef;
             var frontSector = seg.FrontSector;
 
+            var frontSectorFloorHeight = frontSector.GetInterpolatedFloorHeight(frameFrac);
+            var frontSectorCeilingHeight = frontSector.GetInterpolatedCeilingHeight(frameFrac);
+
             // Mark the segment as visible for auto map.
             line.Flags |= LineFlags.Mapped;
 
             // Calculate the relative plane heights of front and back sector.
-            var worldFrontZ1 = frontSector.CeilingHeight - viewZ;
-            var worldFrontZ2 = frontSector.FloorHeight - viewZ;
+            var worldFrontZ1 = frontSectorCeilingHeight - viewZ;
+            var worldFrontZ2 = frontSectorFloorHeight - viewZ;
 
             // Check which parts must be rendered.
             var drawWall = side.MiddleTexture != 0;
@@ -1234,7 +1243,7 @@ namespace ManagedDoom.Video
             Fixed middleTextureAlt;
             if ((line.Flags & LineFlags.DontPegBottom) != 0)
             {
-                var vTop = frontSector.FloorHeight + Fixed.FromInt(wallTexture.Height);
+                var vTop = frontSectorFloorHeight + Fixed.FromInt(wallTexture.Height);
                 middleTextureAlt = vTop - viewZ;
             }
             else
@@ -1438,15 +1447,20 @@ namespace ManagedDoom.Video
             var frontSector = seg.FrontSector;
             var backSector = seg.BackSector;
 
+            var frontSectorFloorHeight = frontSector.GetInterpolatedFloorHeight(frameFrac);
+            var frontSectorCeilingHeight = frontSector.GetInterpolatedCeilingHeight(frameFrac);
+            var backSectorFloorHeight = backSector.GetInterpolatedFloorHeight(frameFrac);
+            var backSectorCeilingHeight = backSector.GetInterpolatedCeilingHeight(frameFrac);
+
             // Mark the segment as visible for auto map.
             line.Flags |= LineFlags.Mapped;
 
             // Calculate the relative plane heights of front and back sector.
             // These values are later 4 bits right shifted to calculate the rendering area.
-            var worldFrontZ1 = frontSector.CeilingHeight - viewZ;
-            var worldFrontZ2 = frontSector.FloorHeight - viewZ;
-            var worldBackZ1 = backSector.CeilingHeight - viewZ;
-            var worldBackZ2 = backSector.FloorHeight - viewZ;
+            var worldFrontZ1 = frontSectorCeilingHeight - viewZ;
+            var worldFrontZ2 = frontSectorFloorHeight - viewZ;
+            var worldBackZ1 = backSectorCeilingHeight - viewZ;
+            var worldBackZ2 = backSectorFloorHeight - viewZ;
 
             // The hack below enables ceiling height change in outdoor area without showing the upper wall.
             if (frontSector.CeilingFlat == flats.SkyFlatNumber &&
@@ -1519,7 +1533,7 @@ namespace ManagedDoom.Video
                 }
                 else
                 {
-                    var vTop = backSector.CeilingHeight + Fixed.FromInt(upperWallTexture.Height);
+                    var vTop = backSectorCeilingHeight + Fixed.FromInt(upperWallTexture.Height);
                     uperTextureAlt = vTop - viewZ;
                 }
                 uperTextureAlt += side.RowOffset;
@@ -1695,36 +1709,36 @@ namespace ManagedDoom.Video
             visWallRange.LowerClip = -1;
             visWallRange.Silhouette = 0;
 
-            if (frontSector.FloorHeight > backSector.FloorHeight)
+            if (frontSectorFloorHeight > backSectorFloorHeight)
             {
                 visWallRange.Silhouette = Silhouette.Lower;
-                visWallRange.LowerSilHeight = frontSector.FloorHeight;
+                visWallRange.LowerSilHeight = frontSectorFloorHeight;
             }
-            else if (backSector.FloorHeight > viewZ)
+            else if (backSectorFloorHeight > viewZ)
             {
                 visWallRange.Silhouette = Silhouette.Lower;
                 visWallRange.LowerSilHeight = Fixed.MaxValue;
             }
 
-            if (frontSector.CeilingHeight < backSector.CeilingHeight)
+            if (frontSectorCeilingHeight < backSectorCeilingHeight)
             {
                 visWallRange.Silhouette |= Silhouette.Upper;
-                visWallRange.UpperSilHeight = frontSector.CeilingHeight;
+                visWallRange.UpperSilHeight = frontSectorCeilingHeight;
             }
-            else if (backSector.CeilingHeight < viewZ)
+            else if (backSectorCeilingHeight < viewZ)
             {
                 visWallRange.Silhouette |= Silhouette.Upper;
                 visWallRange.UpperSilHeight = Fixed.MinValue;
             }
 
-            if (backSector.CeilingHeight <= frontSector.FloorHeight)
+            if (backSectorCeilingHeight <= frontSectorFloorHeight)
             {
                 visWallRange.LowerClip = negOneArray;
                 visWallRange.LowerSilHeight = Fixed.MaxValue;
                 visWallRange.Silhouette |= Silhouette.Lower;
             }
 
-            if (backSector.FloorHeight >= frontSector.CeilingHeight)
+            if (backSectorFloorHeight >= frontSectorCeilingHeight)
             {
                 visWallRange.UpperClip = windowHeightArray;
                 visWallRange.UpperSilHeight = Fixed.MinValue;
