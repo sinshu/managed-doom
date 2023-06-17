@@ -22,9 +22,9 @@ Managed Doom is a Doom source port written in C#. The entire code is manually tr
 
 ## Demo video
 
-https://www.youtube.com/watch?v=9_tncwL7qvM  
+https://www.youtube.com/watch?v=WIdIOzQFVq0  
 
-[![Demo video](https://img.youtube.com/vi/9_tncwL7qvM/0.jpg)](https://www.youtube.com/watch?v=9_tncwL7qvM)
+[![Demo video](https://img.youtube.com/vi/WIdIOzQFVq0/0.jpg)](https://www.youtube.com/watch?v=WIdIOzQFVq0)
 
 ## Todo
 
@@ -64,6 +64,7 @@ https://www.youtube.com/watch?v=9_tncwL7qvM
     - [x] Screen melt animation
     - [x] Config
     - [x] DeHackEd support
+    - [x] Frame interpolation
 
 ## License
 
