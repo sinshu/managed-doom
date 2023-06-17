@@ -1362,6 +1362,8 @@ namespace ManagedDoom.Video
             visWallRange.MaskedTextureColumn = -1;
             visWallRange.UpperClip = windowHeightArray;
             visWallRange.LowerClip = negOneArray;
+            visWallRange.FrontSectorFloorHeight = frontSectorFloorHeight;
+            visWallRange.FrontSectorCeilingHeight = frontSectorCeilingHeight;
 
             //
             // Floor and ceiling.
@@ -1383,7 +1385,7 @@ namespace ManagedDoom.Video
                 {
                     var cy1 = upperClip[x] + 1;
                     var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
-                    DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2);
+                    DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2, frontSectorCeilingHeight);
                 }
 
                 if (drawWall)
@@ -1414,7 +1416,7 @@ namespace ManagedDoom.Video
                 {
                     var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
                     var fy2 = lowerClip[x] - 1;
-                    DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2);
+                    DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2, frontSectorFloorHeight);
                 }
 
                 rwScale += rwScaleStep;
@@ -1757,6 +1759,11 @@ namespace ManagedDoom.Video
                 visWallRange.MaskedTextureColumn = -1;
             }
 
+            visWallRange.FrontSectorFloorHeight = frontSectorFloorHeight;
+            visWallRange.FrontSectorCeilingHeight = frontSectorCeilingHeight;
+            visWallRange.BackSectorFloorHeight = backSectorFloorHeight;
+            visWallRange.BackSectorCeilingHeight = backSectorCeilingHeight;
+
             //
             // Floor and ceiling.
             //
@@ -1800,7 +1807,7 @@ namespace ManagedDoom.Video
                     {
                         var cy1 = upperClip[x] + 1;
                         var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
-                        DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2);
+                        DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2, frontSectorCeilingHeight);
                     }
 
                     var wy1 = Math.Max(drawUpperWallY1, upperClip[x] + 1);
@@ -1822,7 +1829,7 @@ namespace ManagedDoom.Video
                 {
                     var cy1 = upperClip[x] + 1;
                     var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
-                    DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2);
+                    DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2, frontSectorCeilingHeight);
 
                     if (upperClip[x] < cy2)
                     {
@@ -1847,7 +1854,7 @@ namespace ManagedDoom.Video
                     {
                         var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
                         var fy2 = lowerClip[x] - 1;
-                        DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2);
+                        DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2, frontSectorFloorHeight);
                     }
 
                     if (lowerClip[x] > wy1)
@@ -1861,7 +1868,7 @@ namespace ManagedDoom.Video
                 {
                     var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
                     var fy2 = lowerClip[x] - 1;
-                    DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2);
+                    DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2, frontSectorFloorHeight);
 
                     if (lowerClip[x] > drawWallY2 + 1)
                     {
@@ -1950,14 +1957,14 @@ namespace ManagedDoom.Video
             Fixed midTextureAlt;
             if ((seg.LineDef.Flags & LineFlags.DontPegBottom) != 0)
             {
-                midTextureAlt = seg.FrontSector.FloorHeight > seg.BackSector.FloorHeight
-                    ? seg.FrontSector.FloorHeight : seg.BackSector.FloorHeight;
+                midTextureAlt = drawSeg.FrontSectorFloorHeight > drawSeg.BackSectorFloorHeight
+                    ? drawSeg.FrontSectorFloorHeight : drawSeg.BackSectorFloorHeight;
                 midTextureAlt = midTextureAlt + Fixed.FromInt(wallTexture.Height) - viewZ;
             }
             else
             {
-                midTextureAlt = seg.FrontSector.CeilingHeight < seg.BackSector.CeilingHeight
-                    ? seg.FrontSector.CeilingHeight : seg.BackSector.CeilingHeight;
+                midTextureAlt = drawSeg.FrontSectorCeilingHeight < drawSeg.BackSectorCeilingHeight
+                    ? drawSeg.FrontSectorCeilingHeight : drawSeg.BackSectorCeilingHeight;
                 midTextureAlt = midTextureAlt - viewZ;
             }
             midTextureAlt += seg.SideDef.RowOffset;
@@ -2003,7 +2010,8 @@ namespace ManagedDoom.Video
             byte[][] planeLights,
             int x,
             int y1,
-            int y2)
+            int y2,
+            Fixed ceilingHeight)
         {
             if (flat == flats.SkyFlat)
             {
@@ -2016,7 +2024,7 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var height = Fixed.Abs(sector.CeilingHeight - viewZ);
+            var height = Fixed.Abs(ceilingHeight - viewZ);
 
             var flatData = flat.Data;
 
@@ -2120,7 +2128,8 @@ namespace ManagedDoom.Video
             byte[][] planeLights,
             int x,
             int y1,
-            int y2)
+            int y2,
+            Fixed floorHeight)
         {
             if (flat == flats.SkyFlat)
             {
@@ -2133,7 +2142,7 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var height = Fixed.Abs(sector.FloorHeight - viewZ);
+            var height = Fixed.Abs(floorHeight - viewZ);
 
             var flatData = flat.Data;
 
@@ -2996,6 +3005,11 @@ namespace ManagedDoom.Video
             public int UpperClip;
             public int LowerClip;
             public int MaskedTextureColumn;
+
+            public Fixed FrontSectorFloorHeight;
+            public Fixed FrontSectorCeilingHeight;
+            public Fixed BackSectorFloorHeight;
+            public Fixed BackSectorCeilingHeight;
         }
 
         [Flags]
