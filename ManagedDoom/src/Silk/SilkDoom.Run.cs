@@ -24,8 +24,10 @@ namespace ManagedDoom.Silk
             }
             else
             {
-                window.UpdatesPerSecond = 70;
-                window.FramesPerSecond = 70;
+                config.video_fpsscale = Math.Clamp(config.video_fpsscale, 1, 100);
+                var targetFps = 35 * config.video_fpsscale;
+                window.UpdatesPerSecond = targetFps;
+                window.FramesPerSecond = targetFps;
             }
 
             window.Run();
@@ -48,6 +50,9 @@ namespace ManagedDoom.Silk
 
         public void Run()
         {
+            config.video_fpsscale = Math.Clamp(config.video_fpsscale, 1, 100);
+            var targetFps = 35 * config.video_fpsscale;
+
             window.FramesPerSecond = 0;
             window.UpdatesPerSecond = 0;
 
@@ -60,7 +65,7 @@ namespace ManagedDoom.Silk
                 window.Initialize();
 
                 var gameTime = TimeSpan.Zero;
-                var gameTimeStep = TimeSpan.FromSeconds(1.0 / 35);
+                var gameTimeStep = TimeSpan.FromSeconds(1.0 / targetFps);
 
                 var sw = new Stopwatch();
                 sw.Start();

@@ -104,7 +104,7 @@ namespace ManagedDoom.Silk
 
             doom = new Doom(args, config, content, video, sound, music, userInput);
 
-            fpsScale = 2;
+            fpsScale = config.video_fpsscale;
             frameCount = -1;
         }
 
