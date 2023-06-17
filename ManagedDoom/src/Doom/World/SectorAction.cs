@@ -1548,6 +1548,12 @@ namespace ManagedDoom
 						thing.Angle = dest.Angle;
 						thing.MomX = thing.MomY = thing.MomZ = Fixed.Zero;
 
+						thing.DisableFrameInterpolationForOneFrame();
+						if (thing.Player != null)
+						{
+							thing.Player.DisableFrameInterpolationForOneFrame();
+						}
+
 						return true;
 					}
 				}

@@ -30,6 +30,11 @@ namespace ManagedDoom.Silk
 
         private Doom doom;
 
+        private int fpsScale;
+        private int frameCount;
+
+        private Exception exception;
+
         public SilkDoom(CommandLineArgs args)
         {
             try
@@ -65,6 +70,14 @@ namespace ManagedDoom.Silk
             }
         }
 
+        private void Quit()
+        {
+            if (exception != null)
+            {
+                ExceptionDispatchInfo.Throw(exception);
+            }
+        }
+
         private void OnLoad()
         {
             gl = window.CreateOpenGL();
@@ -90,11 +103,31 @@ namespace ManagedDoom.Silk
             userInput = new SilkUserInput(config, window, this, !args.nomouse.Present);
 
             doom = new Doom(args, config, content, video, sound, music, userInput);
+
+            fpsScale = config.video_fpsscale;
+            frameCount = -1;
         }
 
         private void OnUpdate(double obj)
         {
-            if (doom.Update() == UpdateResult.Completed)
+            try
+            {
+                frameCount++;
+
+                if (frameCount % fpsScale == 0)
+                {
+                    if (doom.Update() == UpdateResult.Completed)
+                    {
+                        window.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                exception = e;
+            }
+
+            if (exception != null)
             {
                 window.Close();
             }
@@ -102,7 +135,15 @@ namespace ManagedDoom.Silk
 
         private void OnRender(double obj)
         {
-            video.Render(doom);
+            try
+            {
+                var frameFrac = Fixed.FromInt(frameCount % fpsScale + 1) / fpsScale;
+                video.Render(doom, frameFrac);
+            }
+            catch (Exception e)
+            {
+                exception = e;
+            }
         }
 
         private void OnResize(Vector2D<int> obj)
@@ -172,5 +213,6 @@ namespace ManagedDoom.Silk
         }
 
         public string QuitMessage => doom.QuitMessage;
+        public Exception Exception => exception;
     }
 }

@@ -57,6 +57,10 @@ namespace ManagedDoom
 
         private LineDef[] lines;
 
+        // For frame interpolation.
+        private Fixed oldFloorHeight;
+        private Fixed oldCeilingHeight;
+
         public Sector(
             int number,
             Fixed floorHeight,
@@ -75,6 +79,9 @@ namespace ManagedDoom
             this.lightLevel = lightLevel;
             this.special = special;
             this.tag = tag;
+
+            oldFloorHeight = floorHeight;
+            oldCeilingHeight = ceilingHeight;
         }
 
         public static Sector FromData(byte[] data, int offset, int number, IFlatLookup flats)
@@ -117,6 +124,28 @@ namespace ManagedDoom
             }
 
             return sectors;
+        }
+
+        public void UpdateFrameInterpolationInfo()
+        {
+            oldFloorHeight = floorHeight;
+            oldCeilingHeight = ceilingHeight;
+        }
+
+        public Fixed GetInterpolatedFloorHeight(Fixed frameFrac)
+        {
+            return oldFloorHeight + frameFrac * (floorHeight - oldFloorHeight);
+        }
+
+        public Fixed GetInterpolatedCeilingHeight(Fixed frameFrac)
+        {
+            return oldCeilingHeight + frameFrac * (ceilingHeight - oldCeilingHeight);
+        }
+
+        public void DisableFrameInterpolationForOneFrame()
+        {
+            oldFloorHeight = floorHeight;
+            oldCeilingHeight = ceilingHeight;
         }
 
         public ThingEnumerator GetEnumerator()

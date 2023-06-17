@@ -95,19 +95,19 @@ namespace ManagedDoom.Video
             palette.ResetColors(gammaCorrectionParameters[config.video_gammacorrection]);
         }
 
-        public void RenderDoom(Doom doom)
+        public void RenderDoom(Doom doom, Fixed frameFrac)
         {
             if (doom.State == DoomState.Opening)
             {
-                openingSequence.Render(doom.Opening);
+                openingSequence.Render(doom.Opening, frameFrac);
             }
             else if (doom.State == DoomState.DemoPlayback)
             {
-                RenderGame(doom.DemoPlayback.Game);
+                RenderGame(doom.DemoPlayback.Game, frameFrac);
             }
             else if (doom.State == DoomState.Game)
             {
-                RenderGame(doom.Game);
+                RenderGame(doom.Game, frameFrac);
             }
 
             if (!doom.Menu.Active)
@@ -134,8 +134,13 @@ namespace ManagedDoom.Video
             }
         }
 
-        public void RenderGame(DoomGame game)
+        public void RenderGame(DoomGame game, Fixed frameFrac)
         {
+            if (game.Paused)
+            {
+                frameFrac = Fixed.One;
+            }
+
             if (game.State == GameState.Level)
             {
                 var consolePlayer = game.World.ConsolePlayer;
@@ -148,7 +153,7 @@ namespace ManagedDoom.Video
                 }
                 else
                 {
-                    threeD.Render(displayPlayer);
+                    threeD.Render(displayPlayer, frameFrac);
                     if (threeD.WindowSize < 8)
                     {
                         statusBar.Render(consolePlayer, true);
@@ -178,7 +183,7 @@ namespace ManagedDoom.Video
             }
         }
 
-        public void Render(Doom doom, byte[] destination)
+        public void Render(Doom doom, byte[] destination, Fixed frameFrac)
         {
             if (doom.Wiping)
             {
@@ -186,7 +191,7 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            RenderDoom(doom);
+            RenderDoom(doom, frameFrac);
             RenderMenu(doom);
 
             var colors = palette[0];
@@ -212,7 +217,7 @@ namespace ManagedDoom.Video
 
         private void RenderWipe(Doom doom, byte[] destination)
         {
-            RenderDoom(doom);
+            RenderDoom(doom, Fixed.One);
 
             var wipe = doom.WipeEffect;
             var scale = screen.Width / 320;
