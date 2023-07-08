@@ -245,9 +245,15 @@ namespace ManagedDoom
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int ToIntFloor()
+        internal static int ToIntFloor(int data)
         {
             return data >> FracBits;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int ToIntFloor()
+        {
+            return ToIntFloor(data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

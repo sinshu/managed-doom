@@ -112,6 +112,7 @@ namespace ManagedDoom.Video
             var step = Fixed.One / scale;
 
             Fixed initialFrac = step - Fixed.Epsilon;
+            int stepData = step.Data;
             foreach (var column in source)
             {
                 var exTopDelta = scale * column.TopDelta;
@@ -139,11 +140,12 @@ namespace ManagedDoom.Video
                     drawLength -= exceed;
                 }
 
+                int fracData = frac.Data;
                 for (; i < drawLength; i++)
                 {
-                    data[p] = column.Data[sourceIndex + frac.ToIntFloor()];
+                    data[p] = column.Data[sourceIndex + Fixed.ToIntFloor(fracData)];
                     p++;
-                    frac += step;
+                    fracData += stepData;
                 }
             }
         }

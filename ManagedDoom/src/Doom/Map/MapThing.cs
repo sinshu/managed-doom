@@ -23,18 +23,18 @@ namespace ManagedDoom
     {
         private static readonly int dataSize = 10;
 
-        public static MapThing Empty = new MapThing(
+        public static readonly MapThing Empty = new MapThing(
             Fixed.Zero,
             Fixed.Zero,
             Angle.Ang0,
             0,
             0);
 
-        private Fixed x;
-        private Fixed y;
-        private Angle angle;
+        private readonly Fixed x;
+        private readonly Fixed y;
+        private readonly Angle angle;
         private int type;
-        private ThingFlags flags;
+        private readonly ThingFlags flags;
 
         public MapThing(
             Fixed x,

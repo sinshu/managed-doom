@@ -20,7 +20,7 @@ using System.Runtime.CompilerServices;
 
 namespace ManagedDoom
 {
-    public struct Angle
+    public readonly struct Angle
     {
         public static readonly Angle Ang0 = new Angle(0x00000000);
         public static readonly Angle Ang45 = new Angle(0x20000000);
@@ -28,7 +28,7 @@ namespace ManagedDoom
         public static readonly Angle Ang180 = new Angle(0x80000000);
         public static readonly Angle Ang270 = new Angle(0xC0000000);
 
-        private uint data;
+        private readonly uint data;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Angle(uint data)
