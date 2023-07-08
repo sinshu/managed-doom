@@ -22,7 +22,7 @@ namespace ManagedDoom.Video
 {
     public sealed class Renderer
     {
-        private static double[] gammaCorrectionParameters = new double[]
+        private static readonly double[] gammaCorrectionParameters = new double[]
         {
             1.00,
             0.95,
@@ -37,26 +37,26 @@ namespace ManagedDoom.Video
             0.50
         };
 
-        private Config config;
+        private readonly Config config;
 
-        private Palette palette;
+        private readonly Palette palette;
 
-        private DrawScreen screen;
+        private readonly DrawScreen screen;
 
-        private MenuRenderer menu;
-        private ThreeDRenderer threeD;
-        private StatusBarRenderer statusBar;
-        private IntermissionRenderer intermission;
-        private OpeningSequenceRenderer openingSequence;
-        private AutoMapRenderer autoMap;
-        private FinaleRenderer finale;
+        private readonly MenuRenderer menu;
+        private readonly ThreeDRenderer threeD;
+        private readonly StatusBarRenderer statusBar;
+        private readonly IntermissionRenderer intermission;
+        private readonly OpeningSequenceRenderer openingSequence;
+        private readonly AutoMapRenderer autoMap;
+        private readonly FinaleRenderer finale;
 
-        private Patch pause;
+        private readonly Patch pause;
 
-        private int wipeBandWidth;
-        private int wipeBandCount;
-        private int wipeHeight;
-        private byte[] wipeBuffer;
+        private readonly int wipeBandWidth;
+        private readonly int wipeBandCount;
+        private readonly int wipeHeight;
+        private readonly byte[] wipeBuffer;
 
         public Renderer(Config config, GameContent content)
         {

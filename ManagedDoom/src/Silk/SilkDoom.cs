@@ -12,10 +12,10 @@ namespace ManagedDoom.Silk
 {
     public partial class SilkDoom : IDisposable
     {
-        private CommandLineArgs args;
+        private readonly CommandLineArgs args;
 
-        private Config config;
-        private GameContent content;
+        private readonly Config config;
+        private readonly GameContent content;
 
         private IWindow window;
 

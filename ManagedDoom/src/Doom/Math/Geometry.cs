@@ -47,9 +47,7 @@ namespace ManagedDoom
 
             if (dy > dx)
             {
-                var temp = dx;
-                dx = dy;
-                dy = temp;
+                (dx, dy) = (dy, dx);
             }
 
             // The code below to avoid division by zero is based on Chocolate Doom's implementation.

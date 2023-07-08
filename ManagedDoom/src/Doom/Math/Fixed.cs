@@ -20,7 +20,7 @@ using System.Runtime.CompilerServices;
 
 namespace ManagedDoom
 {
-    public struct Fixed
+    public readonly struct Fixed
     {
         public const int FracBits = 16;
         public const int FracUnit = 1 << FracBits;
@@ -35,7 +35,7 @@ namespace ManagedDoom
         public static readonly Fixed OnePlusEpsilon = new Fixed(FracUnit + 1);
         public static readonly Fixed OneMinusEpsilon = new Fixed(FracUnit - 1);
 
-        private int data;
+        private readonly int data;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Fixed(int data)

@@ -22,11 +22,11 @@ namespace ManagedDoom.Video
 {
     public sealed class DrawScreen
     {
-        private int width;
-        private int height;
-        private byte[] data;
+        private readonly int width;
+        private readonly int height;
+        private readonly byte[] data;
 
-        private Patch[] chars;
+        private readonly Patch[] chars;
 
         public DrawScreen(Wad wad, int width, int height)
         {
@@ -111,6 +111,7 @@ namespace ManagedDoom.Video
         {
             var step = Fixed.One / scale;
 
+            Fixed initialFrac = step - Fixed.Epsilon;
             foreach (var column in source)
             {
                 var exTopDelta = scale * column.TopDelta;
@@ -122,7 +123,7 @@ namespace ManagedDoom.Video
 
                 var i = 0;
                 var p = height * x + drawY;
-                var frac = Fixed.One / scale - Fixed.Epsilon;
+                var frac = initialFrac;
 
                 if (drawY < 0)
                 {

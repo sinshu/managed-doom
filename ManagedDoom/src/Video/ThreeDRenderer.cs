@@ -2271,12 +2271,14 @@ namespace ManagedDoom.Video
             // This is as fast as it gets.
             var source = column.Data;
             var offset = column.Offset;
+            int fracData = frac.Data;
+            int fracStepData = fracStep.Data;
             for (var pos = pos1; pos <= pos2; pos++)
             {
                 // Re-map color indices from wall texture column
                 // using a lighting/special effects LUT.
-                screenData[pos] = map[source[offset + ((frac.Data >> Fixed.FracBits) & 127)]];
-                frac += fracStep;
+                screenData[pos] = map[source[offset + ((fracData >> Fixed.FracBits) & 127)]];
+                fracData += fracStepData;
             }
         }
 
