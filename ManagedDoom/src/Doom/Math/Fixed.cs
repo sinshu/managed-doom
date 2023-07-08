@@ -113,7 +113,13 @@ namespace ManagedDoom
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed operator *(Fixed a, Fixed b)
         {
-            return new Fixed((int)(((long)a.data * (long)b.data) >> FracBits));
+            return new Fixed(Multiply(a.Data, b));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int Multiply(int aData, Fixed b)
+        {
+            return (int)(((long)aData * b.Data) >> FracBits);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

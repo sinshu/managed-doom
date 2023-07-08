@@ -234,8 +234,8 @@ namespace ManagedDoom.Video
         private int floorPrevY2;
         private int[] floorXFracData;
         private int[] floorYFracData;
-        private Fixed[] floorXStep;
-        private Fixed[] floorYStep;
+        private int[] floorXStepData;
+        private int[] floorYStepData;
         private byte[][] floorLights;
 
         private void InitPlaneRendering()
@@ -249,8 +249,8 @@ namespace ManagedDoom.Video
             ceilingLights = new byte[screenHeight][];
             floorXFracData = new int[screenHeight];
             floorYFracData = new int[screenHeight];
-            floorXStep = new Fixed[screenHeight];
-            floorYStep = new Fixed[screenHeight];
+            floorXStepData = new int[screenHeight];
+            floorYStepData = new int[screenHeight];
             floorLights = new byte[screenHeight][];
         }
 
@@ -2143,6 +2143,7 @@ namespace ManagedDoom.Video
             }
 
             var height = Fixed.Abs(floorHeight - viewZ);
+            int heightData = height.Data;
 
             var flatData = flat.Data;
 
@@ -2155,18 +2156,18 @@ namespace ManagedDoom.Video
 
                 for (var y = y1; y < p1; y++)
                 {
-                    var distance = height * planeYSlope[y];
-                    floorXStep[y] = distance * planeBaseXScale;
-                    floorYStep[y] = distance * planeBaseYScale;
+                    int distanceData = Fixed.Multiply(heightData, planeYSlope[y]);
+                    floorXStepData[y] = Fixed.Multiply(distanceData, planeBaseXScale);
+                    floorYStepData[y] = Fixed.Multiply(distanceData, planeBaseYScale);
 
-                    var length = distance * planeDistScale[x];
+                    int length = Fixed.Multiply(distanceData, planeDistScale[x]);
                     var angle = viewAngle + xToAngle[x];
                     var xFrac = viewX + Trig.Cos(angle) * length;
                     var yFrac = -viewY - Trig.Sin(angle) * length;
                     floorXFracData[y] = xFrac.Data;
                     floorYFracData[y] = yFrac.Data;
 
-                    var colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
+                    byte[] colorMap = planeLights[Math.Min((uint)(distanceData >> zLightShift), maxZLight - 1)];
                     floorLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
@@ -2176,8 +2177,8 @@ namespace ManagedDoom.Video
 
                 for (var y = p1; y <= p2; y++)
                 {
-                    int xFracData = floorXFracData[y] + floorXStep[y].Data;
-                    int yFracData = floorYFracData[y] + floorYStep[y].Data;
+                    int xFracData = floorXFracData[y] + floorXStepData[y];
+                    int yFracData = floorYFracData[y] + floorYStepData[y];
 
                     var spot = ((yFracData >> (16 - 6)) & (63 * 64)) + ((xFracData >> 16) & 63);
                     screenData[pos] = floorLights[y][flatData[spot]];
@@ -2189,18 +2190,18 @@ namespace ManagedDoom.Video
 
                 for (var y = p2 + 1; y <= y2; y++)
                 {
-                    var distance = height * planeYSlope[y];
-                    floorXStep[y] = distance * planeBaseXScale;
-                    floorYStep[y] = distance * planeBaseYScale;
+                    int distanceData = Fixed.Multiply(heightData, planeYSlope[y]);
+                    floorXStepData[y] = Fixed.Multiply(distanceData, planeBaseXScale);
+                    floorYStepData[y] = Fixed.Multiply(distanceData, planeBaseYScale);
 
-                    var length = distance * planeDistScale[x];
+                    int length = Fixed.Multiply(distanceData, planeDistScale[x]);
                     var angle = viewAngle + xToAngle[x];
                     var xFrac = viewX + Trig.Cos(angle) * length;
                     var yFrac = -viewY - Trig.Sin(angle) * length;
                     floorXFracData[y] = xFrac.Data;
                     floorYFracData[y] = yFrac.Data;
 
-                    var colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
+                    byte[] colorMap = planeLights[Math.Min((uint)(distanceData >> zLightShift), maxZLight - 1)];
                     floorLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
@@ -2214,18 +2215,18 @@ namespace ManagedDoom.Video
 
                 for (var y = y1; y <= y2; y++)
                 {
-                    var distance = height * planeYSlope[y];
-                    floorXStep[y] = distance * planeBaseXScale;
-                    floorYStep[y] = distance * planeBaseYScale;
+                    int distanceData = Fixed.Multiply(heightData, planeYSlope[y]);
+                    floorXStepData[y] = Fixed.Multiply(distanceData, planeBaseXScale);
+                    floorXStepData[y] = Fixed.Multiply(distanceData, planeBaseYScale);
 
-                    var length = distance * planeDistScale[x];
+                    int length = Fixed.Multiply(distanceData, planeDistScale[x]);
                     var angle = viewAngle + xToAngle[x];
                     var xFrac = viewX + Trig.Cos(angle) * length;
                     var yFrac = -viewY - Trig.Sin(angle) * length;
                     floorXFracData[y] = xFrac.Data;
                     floorYFracData[y] = yFrac.Data;
 
-                    var colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
+                    byte[] colorMap = planeLights[Math.Min((uint)(distanceData >> zLightShift), maxZLight - 1)];
                     floorLights[y] = colorMap;
 
                     var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
