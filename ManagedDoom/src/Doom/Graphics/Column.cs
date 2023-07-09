@@ -14,19 +14,16 @@
 //
 
 
-
-using System;
-
 namespace ManagedDoom
 {
     public sealed class Column
     {
         public const int Last = 0xFF;
 
-        private int topDelta;
-        private byte[] data;
-        private int offset;
-        private int length;
+        private readonly int topDelta;
+        private readonly byte[] data;
+        private readonly int offset;
+        private readonly int length;
 
         public Column(int topDelta, byte[] data, int offset, int length)
         {
