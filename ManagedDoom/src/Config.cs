@@ -46,6 +46,7 @@ namespace ManagedDoom
         public bool video_displaymessage;
         public int video_gamescreensize;
         public int video_gammacorrection;
+        public int video_fpsscale;
 
         public int audio_soundvolume;
         public int audio_musicvolume;
@@ -134,6 +135,7 @@ namespace ManagedDoom
             video_gamescreensize = 7;
             video_displaymessage = true;
             video_gammacorrection = 2;
+            video_fpsscale = 2;
 
             audio_soundvolume = 8;
             audio_musicvolume = 8;
@@ -183,6 +185,7 @@ namespace ManagedDoom
                 video_displaymessage = GetBool(dic, nameof(video_displaymessage), video_displaymessage);
                 video_gamescreensize = GetInt(dic, nameof(video_gamescreensize), video_gamescreensize);
                 video_gammacorrection = GetInt(dic, nameof(video_gammacorrection), video_gammacorrection);
+                video_fpsscale = GetInt(dic, nameof(video_fpsscale), video_fpsscale);
 
                 audio_soundvolume = GetInt(dic, nameof(audio_soundvolume), audio_soundvolume);
                 audio_musicvolume = GetInt(dic, nameof(audio_musicvolume), audio_musicvolume);
@@ -229,6 +232,7 @@ namespace ManagedDoom
                     writer.WriteLine(nameof(video_displaymessage) + " = " + BoolToString(video_displaymessage));
                     writer.WriteLine(nameof(video_gamescreensize) + " = " + video_gamescreensize);
                     writer.WriteLine(nameof(video_gammacorrection) + " = " + video_gammacorrection);
+                    writer.WriteLine(nameof(video_fpsscale) + " = " + video_fpsscale);
 
                     writer.WriteLine(nameof(audio_soundvolume) + " = " + audio_soundvolume);
                     writer.WriteLine(nameof(audio_musicvolume) + " = " + audio_musicvolume);

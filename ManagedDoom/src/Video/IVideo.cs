@@ -21,7 +21,7 @@ namespace ManagedDoom.Video
 {
     public interface IVideo
     {
-        public void Render(Doom doom);
+        public void Render(Doom doom, Fixed frameFrac);
         public void InitializeWipe();
         public bool HasFocus();
 

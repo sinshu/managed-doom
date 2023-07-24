@@ -18,14 +18,13 @@
 using System;
 using System.IO;
 using System.Runtime.ExceptionServices;
-using SFML.Audio;
-using SFML.System;
+using DrippyAL;
 using MeltySynth;
 using ManagedDoom.Audio;
 
-namespace ManagedDoom.SFML
+namespace ManagedDoom.Silk
 {
-    public sealed class SfmlMusic : IMusic, IDisposable
+    public sealed class SilkMusic : IMusic, IDisposable
     {
         private Config config;
         private Wad wad;
@@ -33,16 +32,16 @@ namespace ManagedDoom.SFML
         private MusStream stream;
         private Bgm current;
 
-        public SfmlMusic(Config config, Wad wad, string sfPath)
+        public SilkMusic(Config config, GameContent content, AudioDevice device, string sfPath)
         {
             try
             {
                 Console.Write("Initialize music: ");
 
                 this.config = config;
-                this.wad = wad;
+                this.wad = content.Wad;
 
-                stream = new MusStream(this, config, sfPath);
+                stream = new MusStream(this, config, device, sfPath);
                 current = Bgm.NONE;
 
                 Console.WriteLine("OK");
@@ -109,7 +108,6 @@ namespace ManagedDoom.SFML
 
             if (stream != null)
             {
-                stream.Stop();
                 stream.Dispose();
                 stream = null;
             }
@@ -138,22 +136,25 @@ namespace ManagedDoom.SFML
 
 
 
-        private class MusStream : SoundStream
+        private class MusStream : IDisposable
         {
-            private SfmlMusic parent;
+            private static readonly int latency = 200;
+            private static readonly int blockLength = 2048;
+
+            private SilkMusic parent;
             private Config config;
 
             private Synthesizer synthesizer;
 
-            private int batchLength;
+            private AudioStream audioStream;
+
             private float[] left;
             private float[] right;
-            private short[] batch;
 
-            private IDecoder current;
-            private IDecoder reserved;
+            private volatile IDecoder current;
+            private volatile IDecoder reserved;
 
-            public MusStream(SfmlMusic parent, Config config, string sfPath)
+            public MusStream(SilkMusic parent, Config config, AudioDevice device, string sfPath)
             {
                 this.parent = parent;
                 this.config = config;
@@ -165,25 +166,23 @@ namespace ManagedDoom.SFML
                 settings.EnableReverbAndChorus = config.audio_musiceffect;
                 synthesizer = new Synthesizer(sfPath, settings);
 
-                batchLength = (int)Math.Round(0.05 * MusDecoder.SampleRate);
-                left = new float[batchLength];
-                right = new float[batchLength];
-                batch = new short[2 * batchLength];
+                left = new float[blockLength];
+                right = new float[blockLength];
 
-                Initialize(2, (uint)MusDecoder.SampleRate);
+                audioStream = new AudioStream(device, MusDecoder.SampleRate, 2, true, latency, blockLength);
             }
 
             public void SetDecoder(IDecoder decoder)
             {
                 reserved = decoder;
 
-                if (Status == SoundStatus.Stopped)
+                if (audioStream.State == PlaybackState.Stopped)
                 {
-                    Play();
+                    audioStream.Play(OnGetData);
                 }
             }
 
-            protected override bool OnGetData(out short[] samples)
+            private void OnGetData(short[] samples)
             {
                 if (reserved != current)
                 {
@@ -197,7 +196,7 @@ namespace ManagedDoom.SFML
 
                 var pos = 0;
 
-                for (var t = 0; t < batchLength; t++)
+                for (var t = 0; t < blockLength; t++)
                 {
                     var sampleLeft = (int)(a * left[t]);
                     if (sampleLeft < short.MinValue)
@@ -219,17 +218,19 @@ namespace ManagedDoom.SFML
                         sampleRight = short.MaxValue;
                     }
 
-                    batch[pos++] = (short)sampleLeft;
-                    batch[pos++] = (short)sampleRight;
+                    samples[pos++] = (short)sampleLeft;
+                    samples[pos++] = (short)sampleRight;
                 }
-
-                samples = batch;
-
-                return true;
             }
 
-            protected override void OnSeek(Time timeOffset)
+            public void Dispose()
             {
+                if (audioStream != null)
+                {
+                    audioStream.Stop();
+                    audioStream.Dispose();
+                    audioStream = null;
+                }
             }
         }
 
