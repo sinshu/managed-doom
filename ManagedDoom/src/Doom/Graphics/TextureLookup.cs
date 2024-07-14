@@ -18,6 +18,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom
 {
@@ -35,8 +36,20 @@ namespace ManagedDoom
 
         public TextureLookup(Wad wad, bool useDummy)
         {
-            InitLookup(wad);
-            InitSwitchList();
+            try
+            {
+                Console.Write("Load textures: ");
+
+                InitLookup(wad);
+                InitSwitchList();
+
+                Console.WriteLine("OK (" + textures.Count + " textures)");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                ExceptionDispatchInfo.Throw(e);
+            }
         }
 
         private void InitLookup(Wad wad)
