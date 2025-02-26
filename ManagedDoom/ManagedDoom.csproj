@@ -29,6 +29,9 @@
     <None Update="DOOM1.WAD">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="managed-doom.cfg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
