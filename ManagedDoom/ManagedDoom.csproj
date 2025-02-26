@@ -25,4 +25,10 @@
     <PackageReference Include="TrippyGL" Version="1.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="DOOM1.WAD">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

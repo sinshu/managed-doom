@@ -606,3 +606,9 @@ fabric.properties
 
 # Coverlet Test Result
 test-results
+
+
+
+#Misc Files
+*.wad
+managed-doom.cfg
