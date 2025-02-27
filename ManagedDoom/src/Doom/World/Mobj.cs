@@ -172,6 +172,7 @@ namespace ManagedDoom
 
         public Mobj(World world)
         {
+            
             this.world = world;
         }
 
@@ -368,6 +369,70 @@ namespace ManagedDoom
 
             // Remove the old monster.
             world.ThingAllocation.RemoveMobj(this);
+        }
+
+        public bool Respawn() {
+
+            MapThing sp;
+            if ( spawnPoint != null ) {
+                sp = spawnPoint;
+            } else {
+                sp = MapThing.Empty;
+            }
+
+            // Somthing is occupying it's position?
+            if ( !world.ThingMovement.CheckPosition( this, sp.X, sp.Y ) ) {
+
+                return false;
+
+            }
+
+            var ta = world.ThingAllocation;
+
+            // Spawn a teleport fog at old spot.
+            var fog1 = ta.SpawnMobj(
+                x, y,
+                subsector.Sector.FloorHeight,
+                MobjType.Tfog);
+
+            // Initiate teleport sound.
+            world.StartSound( fog1, Sfx.TELEPT, SfxType.Misc );
+
+            // Spawn a teleport fog at the new spot.
+            var ss = Geometry.PointInSubsector(sp.X, sp.Y, world.Map);
+
+            var fog2 = ta.SpawnMobj(
+                sp.X, sp.Y,
+                ss.Sector.FloorHeight, MobjType.Tfog);
+
+            world.StartSound( fog2, Sfx.TELEPT, SfxType.Misc );
+
+            // Spawn the new monster.
+            Fixed z;
+            if ( ( info.Flags & MobjFlags.SpawnCeiling ) != 0 ) {
+                z = OnCeilingZ;
+            } else {
+                z = OnFloorZ;
+            }
+
+            // Inherit attributes from deceased one.
+            var mobj = ta.SpawnMobj(sp.X, sp.Y, z, type);
+            mobj.SpawnPoint = spawnPoint;
+            mobj.Angle = sp.Angle;
+
+            if ( ( sp.Flags & ThingFlags.Ambush ) != 0 ) {
+
+                mobj.Flags |= MobjFlags.Ambush;
+
+            }
+
+            mobj.ReactionTime = 18;
+
+            // Remove the old monster.
+            world.ThingAllocation.RemoveMobj( this );
+                
+            return true;
+
         }
 
         public override void UpdateFrameInterpolationInfo()

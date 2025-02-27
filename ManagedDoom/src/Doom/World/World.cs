@@ -393,5 +393,20 @@ namespace ManagedDoom
         public Player ConsolePlayer => options.Players[options.ConsolePlayer];
         public Player DisplayPlayer => options.Players[displayPlayer];
         public bool FirstTicIsNotYetDone => ConsolePlayer.ViewZ == Fixed.Epsilon;
+
+        public void SpawnMonster( MobjType type) {
+
+            foreach ( var thinker in thinkers ) {
+
+                if ( thinker is Mobj mobj && ( mobj.Flags & MobjFlags.CountKill ) != 0 && mobj.Type == type ) {
+
+                    mobj.Respawn();
+
+                }
+
+            }
+
+        }
+
     }
 }
