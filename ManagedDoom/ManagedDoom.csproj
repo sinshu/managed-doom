@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="DOOM1.WAD">
+    <None Update="DOOMTestMap.WAD">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="managed-doom.cfg">
