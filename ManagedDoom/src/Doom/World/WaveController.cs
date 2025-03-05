@@ -7,12 +7,14 @@ namespace ManagedDoom {
 
         private int wave = 0;
 
-        private int currentMonsterCount = 0; //Currently Spawned Monsters
-        private int monsterSpawnCount = 0; //Monsters to be spawned
-        private int maxMonsterCount = 10; //Max monsters at once
-        private int currentMonstersPerWave = 2; //Monsters per wave
+        private int monstersKilledTotal = 0;
+        private int monstersKilledNeeeded = 0;
+        private int monsterSpawnCount = 0;
+        private int currentMonstersPerWave = 2;
 
         private bool Started = false;
+        private int waveStartTime;
+        private int waveDelay = 150;
 
         private MobjType currentMonsterType = MobjType.Troop;
 
@@ -48,13 +50,19 @@ namespace ManagedDoom {
 
             if ( !Started ) return;
 
-            if ( currentMonsterCount <= 0 ) {
 
+            monstersKilledTotal = world.Options.Players[0].KillCount;
+            if ( monstersKilledNeeeded <= monstersKilledTotal ) {
+
+                waveStartTime = world.LevelTime;
                 StartWave();
 
             }
 
-            if ( currentMonsterCount >= maxMonsterCount || monsterSpawnCount <= 0 ) return;
+
+            if ( waveStartTime + waveDelay > world.LevelTime ) return;
+
+            if ( monsterSpawnCount <= 0 ) return;
             SpawnMonster( currentMonsterType );
 
         }
@@ -62,12 +70,11 @@ namespace ManagedDoom {
         public void StartWave() {
 
             wave++;
-            currentMonsterCount = 0;
 
             currentMonstersPerWave += 3;
 
-            //world.Options.Players[0].KillCount
             monsterSpawnCount = currentMonstersPerWave;
+            monstersKilledNeeeded = monstersKilledTotal + currentMonstersPerWave;
 
         }
 
@@ -75,16 +82,11 @@ namespace ManagedDoom {
 
             MapThing spawnPoint = spawnPoints[ new Random().Next( spawnPoints.Count ) ];
 
-            if ( !CheckPosition( Fixed.FromInt(20), spawnPoint.X, spawnPoint.Y ) ) {
-                Console.WriteLine( "Wave {0}: Spawnpoint blocked", wave );
-                return;
-            }
+            if ( !CheckPosition( Fixed.FromInt( 20 ), spawnPoint.X, spawnPoint.Y ) ) return;
 
-            Console.WriteLine( "Wave {0}: Spawning Monster", wave );
             var mobj =  world.ThingAllocation.SpawnMobj( spawnPoint.X, spawnPoint.Y, Mobj.OnFloorZ, type );
             mobj.SpawnPoint = spawnPoint;
             monsterSpawnCount--;
-            currentMonsterCount++;
 
         }
 
@@ -94,14 +96,13 @@ namespace ManagedDoom {
             foreach ( Thinker thinker in thinkers ) {
 
                 if ( thinker is not Mobj mobj ) continue;
-                if ( ( mobj.Flags & MobjFlags.Solid ) == 0) continue;
+                if ( ( mobj.Flags & MobjFlags.Solid ) == 0 ) continue;
 
                 if ( mobj.X >= x - radius &&
-                    mobj.X <= x + radius &&
-                    mobj.Y >= y - radius &&
-                    mobj.Y <= y + radius ) {
+                     mobj.X <= x + radius &&
+                     mobj.Y >= y - radius &&
+                     mobj.Y <= y + radius ) {
 
-                    Console.WriteLine( "Blocked at ({0}, {1})", x, y );
                     return false;
 
                 }
