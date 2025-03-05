@@ -51,6 +51,7 @@ namespace ManagedDoom
 				// Count for intermission.
 				if ((target.Flags & MobjFlags.CountKill) != 0)
 				{
+					source.Player.Currency += 10;
 					source.Player.KillCount++;
 				}
 

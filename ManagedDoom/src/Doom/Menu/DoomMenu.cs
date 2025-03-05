@@ -105,9 +105,16 @@ namespace ManagedDoom
                 new SimpleMenuItem(
                     "M_NMARE", 16, 122, 48, 127,
                     null,
-                    nightmareConfirm));
+                    nightmareConfirm),
 
-            if (doom.Options.GameMode == GameMode.Retail)
+                new SimpleMenuItem(
+                    "M_SVOL", 16, 138, 48, 143,
+                    () => doom.Opening.DemoGame.World.ThingInteraction.DamageMobj(doom.Opening.DemoGame.Options.Players[0].Mobj, null, doom.Opening.DemoGame.Options.Players[0].Mobj, 10000),
+					null));
+			//doom.Opening.DemoGame.World.ThingInteraction.DamageMobj(doom.Opening.DemoGame.Options.Players[0].Mobj, null, doom.Opening.DemoGame.Options.Players[0].Mobj, 10000)
+			//doom.Opening.DemoGame.Options.Players[0].SendMessage("Testing")
+
+			if (doom.Options.GameMode == GameMode.Retail)
             {
                 episodeMenu = new SelectableMenu(
                     this,

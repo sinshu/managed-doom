@@ -103,9 +103,10 @@ namespace ManagedDoom.Video
         private NumberWidget ready;
         private PercentWidget health;
         private PercentWidget armor;
+        private NumberWidget currency;
 
         private NumberWidget[] ammo;
-        private NumberWidget[] maxAmmo;
+		private NumberWidget[] maxAmmo;
 
         private MultIconWidget[] weapons;
 
@@ -140,6 +141,12 @@ namespace ManagedDoom.Video
             armor.NumberWidget.X = armorX;
             armor.NumberWidget.Y = armorY;
             armor.Patch = patches.TallPercent;
+
+            currency = new NumberWidget();
+            currency.Patches = patches.TallNumbers;
+            currency.Width = ammoWidth;
+            currency.X = maxAmmo0X;
+            currency.Y = ammoY - 24;
 
             ammo = new NumberWidget[(int)AmmoType.Count];
             ammo[0] = new NumberWidget();
@@ -232,6 +239,7 @@ namespace ManagedDoom.Video
                 DrawNumber(ready, num);
             }
 
+            DrawNumber(currency, player.Currency);
             DrawPercent(health, player.Health);
             DrawPercent(armor, player.ArmorPoints);
 

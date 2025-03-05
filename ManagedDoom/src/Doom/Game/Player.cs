@@ -55,6 +55,9 @@ namespace ManagedDoom
         // Bounded / scaled total momentum.
         private Fixed bob;
 
+        // currency for the player for zombie gamemode
+        private int currency;
+
         // This is only used between levels,
         // mobj.Health is used during levels.
         private int health;
@@ -141,7 +144,9 @@ namespace ManagedDoom
 
             frags = new int[MaxPlayerCount];
 
-            weaponOwned = new bool[(int)WeaponType.Count];
+			currency = 0;
+
+			weaponOwned = new bool[(int)WeaponType.Count];
             ammo = new int[(int)AmmoType.Count];
             maxAmmo = new int[(int)AmmoType.Count];
 
@@ -163,7 +168,9 @@ namespace ManagedDoom
             deltaViewHeight = Fixed.Zero;
             bob = Fixed.Zero;
 
-            health = 0;
+			currency = 0;
+
+			health = 0;
             armorPoints = 0;
             armorType = 0;
 
@@ -228,7 +235,7 @@ namespace ManagedDoom
             deltaViewHeight = Fixed.Zero;
             bob = Fixed.Zero;
 
-            health = DoomInfo.DeHackEdConst.InitialHealth;
+			health = DoomInfo.DeHackEdConst.InitialHealth;
             armorPoints = 0;
             armorType = 0;
 
@@ -410,6 +417,12 @@ namespace ManagedDoom
         {
             get => bob;
             set => bob = value;
+        }
+
+        public int Currency
+        {
+            get => currency;
+            set => currency = value;
         }
 
         public int Health
