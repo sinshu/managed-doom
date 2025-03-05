@@ -46,6 +46,7 @@ namespace ManagedDoom
         private StatusBar statusBar;
         private AutoMap autoMap;
         private Cheat cheat;
+        private WaveController waveController;
 
         private int totalKills;
         private int totalItems;
@@ -91,6 +92,7 @@ namespace ManagedDoom
             statusBar = new StatusBar(this);
             autoMap = new AutoMap(this);
             cheat = new Cheat(this);
+            waveController = new WaveController( this );
 
             options.IntermissionInfo.TotalFrags = 0;
             options.IntermissionInfo.ParTime = 180;
@@ -138,6 +140,8 @@ namespace ManagedDoom
             dummy = new Mobj(this);
 
             options.Music.StartMusic(Map.GetMapBgm(options), true);
+
+            waveController.Start();
         }
 
         public UpdateResult Update()
@@ -172,6 +176,7 @@ namespace ManagedDoom
 
             statusBar.Update();
             autoMap.Update();
+            waveController.Update();
 
             levelTime++;
 
@@ -393,20 +398,6 @@ namespace ManagedDoom
         public Player ConsolePlayer => options.Players[options.ConsolePlayer];
         public Player DisplayPlayer => options.Players[displayPlayer];
         public bool FirstTicIsNotYetDone => ConsolePlayer.ViewZ == Fixed.Epsilon;
-
-        public void SpawnMonster( MobjType type) {
-
-            foreach ( var thinker in thinkers ) {
-
-                if ( thinker is Mobj mobj && ( mobj.Flags & MobjFlags.CountKill ) != 0 && mobj.Type == type ) {
-
-                    mobj.Respawn();
-
-                }
-
-            }
-
-        }
 
     }
 }
