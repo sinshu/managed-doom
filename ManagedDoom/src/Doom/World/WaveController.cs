@@ -10,13 +10,20 @@ namespace ManagedDoom {
         private int monstersKilledTotal = 0;
         private int monstersKilledNeeeded = 0;
         private int monsterSpawnCount = 0;
+
         private int currentMonstersPerWave = 2;
+        private int monstersPerWaveIncrease = 3;
+
+        private int specialMonstersWaveInterval = 5;
+
+        private float currentMonsterHealthMultiplyer = 0.5f;
+        private float monsterHealthMultiplyerIncrease = 0.5f;
 
         private bool Started = false;
         private int waveStartTime;
-        private int waveDelay = 150;
+        private int waveDelay = GameConst.TicRate * 5;
 
-        private MobjType currentMonsterType = MobjType.Troop;
+        private MobjType currentMonsterType = MobjType.Possessed;
 
         private World world;
         private List<MapThing> spawnPoints;
@@ -28,7 +35,7 @@ namespace ManagedDoom {
             spawnPoints = new List<MapThing>();
             foreach ( var thing in world.Map.Things ) {
 
-                if ( thing.Type != 3004 ) continue; //Replace with ID for Spawnpoint
+                if ( thing.Type != 3004 && thing.Type != 9 ) continue; //Replace with ID for Spawnpoint
 
                 spawnPoints.Add( thing );
 
@@ -63,34 +70,40 @@ namespace ManagedDoom {
             if ( waveStartTime + waveDelay > world.LevelTime ) return;
 
             if ( monsterSpawnCount <= 0 ) return;
-            SpawnMonster( currentMonsterType );
+            SpawnMonster();
 
         }
 
         public void StartWave() {
 
             wave++;
+            world.Options.Players[0].SendMessage( "Wave " + wave + " Starting..." );
 
-            currentMonstersPerWave += 3;
+            currentMonstersPerWave += monstersPerWaveIncrease;
 
             monsterSpawnCount = currentMonstersPerWave;
             monstersKilledNeeeded = monstersKilledTotal + currentMonstersPerWave;
+            currentMonsterHealthMultiplyer += monsterHealthMultiplyerIncrease;
 
         }
 
-        public void SpawnMonster( MobjType type ) {
+        public void SpawnMonster() {
+
+            MobjType type = currentMonsterType;
+            if ( wave % specialMonstersWaveInterval == 0 ) type = MobjType.Troop;
 
             MapThing spawnPoint = spawnPoints[ new Random().Next( spawnPoints.Count ) ];
 
-            if ( !CheckPosition( Fixed.FromInt( 20 ), spawnPoint.X, spawnPoint.Y ) ) return;
+            if ( !CheckOpenPoint( Fixed.FromInt( 20 ), spawnPoint.X, spawnPoint.Y ) ) return;
 
-            var mobj =  world.ThingAllocation.SpawnMobj( spawnPoint.X, spawnPoint.Y, Mobj.OnFloorZ, type );
+            var mobj = world.ThingAllocation.SpawnMobj( spawnPoint.X, spawnPoint.Y, Mobj.OnFloorZ, type );
             mobj.SpawnPoint = spawnPoint;
+            mobj.Health = (int) (float) currentMonsterHealthMultiplyer * mobj.Health;
             monsterSpawnCount--;
 
         }
 
-        public bool CheckPosition( Fixed radius, Fixed x, Fixed y ) {
+        public bool CheckOpenPoint( Fixed radius, Fixed x, Fixed y ) {
 
             var thinkers = world.Thinkers;
             foreach ( Thinker thinker in thinkers ) {
