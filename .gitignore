@@ -617,5 +617,5 @@ DOOM.wad
 DOOM1.wad
 FREEDOOM2.wad
 FREEDOOM1.wad
-.dbs
+*.dbs
 managed-doom.cfg
