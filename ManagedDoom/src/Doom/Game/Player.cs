@@ -235,6 +235,8 @@ namespace ManagedDoom
             deltaViewHeight = Fixed.Zero;
             bob = Fixed.Zero;
 
+			currency = 0;
+
 			health = DoomInfo.DeHackEdConst.InitialHealth;
             armorPoints = 0;
             armorType = 0;
