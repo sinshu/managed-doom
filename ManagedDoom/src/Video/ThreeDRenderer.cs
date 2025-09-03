@@ -2025,14 +2025,12 @@ namespace ManagedDoom.Video
             }
 
             var height = Fixed.Abs(ceilingHeight - viewZ);
-
             var flatData = flat.Data;
+            var p1 = Math.Max(y1, ceilingPrevY1);
+            var p2 = Math.Min(y2, ceilingPrevY2);
 
-            if (sector == ceilingPrevSector && ceilingPrevX == x - 1)
+            if (sector == ceilingPrevSector && ceilingPrevX == x - 1 && p1 <= p2)
             {
-                var p1 = Math.Max(y1, ceilingPrevY1);
-                var p2 = Math.Min(y2, ceilingPrevY2);
-
                 var pos = screenHeight * (windowX + x) + windowY + y1;
 
                 for (var y = y1; y < p1; y++)
@@ -2143,14 +2141,12 @@ namespace ManagedDoom.Video
             }
 
             var height = Fixed.Abs(floorHeight - viewZ);
-
             var flatData = flat.Data;
+            var p1 = Math.Max(y1, floorPrevY1);
+            var p2 = Math.Min(y2, floorPrevY2);
 
-            if (sector == floorPrevSector && floorPrevX == x - 1)
+            if (sector == floorPrevSector && floorPrevX == x - 1 && p1 <= p2)
             {
-                var p1 = Math.Max(y1, floorPrevY1);
-                var p2 = Math.Min(y2, floorPrevY2);
-
                 var pos = screenHeight * (windowX + x) + windowY + y1;
 
                 for (var y = y1; y < p1; y++)
