@@ -45,13 +45,13 @@ namespace ManagedDoom
         public static Angle FromRadian(double radian)
         {
             var data = Math.Round(0x100000000 * (radian / (2 * Math.PI)));
-            return new Angle((uint)data);
+            return new Angle((uint)(long)data);
         }
 
         public static Angle FromDegree(double degree)
         {
             var data = Math.Round(0x100000000 * (degree / 360));
-            return new Angle((uint)data);
+            return new Angle((uint)(long)data);
         }
 
         public double ToRadian()

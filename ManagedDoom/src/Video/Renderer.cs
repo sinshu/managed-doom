@@ -254,7 +254,7 @@ namespace ManagedDoom.Video
         private void WriteData(uint[] colors, byte[] destination)
         {
             var screenData = screen.Data;
-            var p = MemoryMarshal.Cast<byte, uint>(destination);
+            var p = MemoryMarshal.Cast<byte, uint>(destination.AsSpan());
             for (var i = 0; i < p.Length; i++)
             {
                 p[i] = colors[screenData[i]];

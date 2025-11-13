@@ -40,7 +40,7 @@ namespace ManagedDoom
                 {
                     using (var reader = new FileStream(path, FileMode.Open, FileAccess.Read))
                     {
-                        reader.Read(buffer, 0, buffer.Length);
+                        reader.ReadExactly(buffer);
                         slots[i] = DoomInterop.ToString(buffer, 0, buffer.Length);
                     }
                 }
