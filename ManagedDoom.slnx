@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ManagedDoom/ManagedDoom.csproj" />
+  <Project Path="ManagedDoomTest/ManagedDoomTest.csproj" />
+</Solution>
