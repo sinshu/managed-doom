@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace ManagedDoom.Silk
 {
@@ -35,6 +36,7 @@ namespace ManagedDoom.Silk
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(e);
                 Console.ResetColor();
+                Thread.Sleep(3000);
                 Console.Write("Press any key to exit.");
                 Console.ReadKey();
             }
